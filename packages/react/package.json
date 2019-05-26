@@ -1,0 +1,20 @@
+{
+  "name": "@simplux/react",
+  "version": "0.1.0",
+  "description": "",
+  "module": "./bundles/bundle.es5.js",
+  "es2015": "./bundles/bundle.js",
+  "main": "./bundles/bundle.umd.js",
+  "typings": "./index.d.ts",
+  "keywords": [
+    "react",
+    "redux",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "@simplux/core": ">=0.1.0"
+  }
+}

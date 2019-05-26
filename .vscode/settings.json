@@ -1,0 +1,16 @@
+{
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/build": true,
+    "**/coverge": true
+  },
+  "files.insertFinalNewline": true,
+  "tslint.ignoreDefinitionFiles": false,
+  "tslint.exclude": "**/node_modules/**/*",
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.referencesCodeLens.enabled": false,
+  "typescript.preferences.importModuleSpecifier": "auto",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true
+  }
+}

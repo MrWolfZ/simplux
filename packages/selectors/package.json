@@ -1,0 +1,18 @@
+{
+  "name": "@simplux/selectors",
+  "version": "0.1.0",
+  "description": "",
+  "module": "./bundles/bundle.es5.js",
+  "es2015": "./bundles/bundle.js",
+  "main": "./bundles/bundle.umd.js",
+  "typings": "./index.d.ts",
+  "keywords": [
+    "redux",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "@simplux/core": ">=0.1.0"
+  }
+}
