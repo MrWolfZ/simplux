@@ -70,7 +70,6 @@ export function createSimpluxStore(
     setReducer: (name, reducerToAdd) => {
       reducers[name] = reducerToAdd
       reducer = combineReducers(reducers)
-      getStoreProxy().dispatch({ type: '' })
     },
 
     getReducer: name => reducers[name],

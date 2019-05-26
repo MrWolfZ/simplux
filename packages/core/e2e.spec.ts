@@ -5,7 +5,7 @@ import {
   getSimpluxReducer,
   useSimpluxWithExistingStore,
 } from '@simplux/core'
-import { combineReducers, createStore } from 'redux'
+import { combineReducers, createStore, Store } from 'redux'
 
 describe(`@simplux/core`, () => {
   interface Todo {
@@ -109,21 +109,59 @@ describe(`@simplux/core`, () => {
 
     const undo = useSimpluxWithExistingStore(customStore, s => s.simplux)
 
-    try {
-      const { getState, createMutations } = createSimpluxModule({
-        name: 'counter',
-        initialState: 10,
-      })
+    const { getState, createMutations } = createSimpluxModule({
+      name: 'counter',
+      initialState: 10,
+    })
 
-      const { increment } = createMutations({
-        increment: c => c + 1,
-      })
+    const { increment } = createMutations({
+      increment: c => c + 1,
+    })
 
-      const updatedState = increment()
-      expect(updatedState).toBe(11)
-      expect(getState()).toBe(11)
-    } finally {
-      undo()
+    const updatedState = increment()
+    expect(updatedState).toBe(11)
+    expect(getState()).toBe(11)
+
+    undo()
+  })
+
+  it('does not access the store before any mutation is executed', () => {
+    const dispatchMock = jest.fn()
+    const getStateMock = jest.fn()
+    const replaceReducerMock = jest.fn()
+    const subscribeMock = jest.fn()
+
+    const customStore: Store = {
+      dispatch: dispatchMock,
+      getState: getStateMock,
+      replaceReducer: replaceReducerMock,
+      subscribe: subscribeMock,
     }
+
+    const undo = useSimpluxWithExistingStore(customStore, s => s.simplux)
+
+    const { createMutations } = createSimpluxModule({
+      name: 'todos',
+      initialState: initialTodoState,
+    })
+
+    createMutations({
+      addTodo({ todosById, todoIds }, todo: Todo) {
+        return {
+          todosById: {
+            ...todosById,
+            [todo.id]: todo,
+          },
+          todoIds: [...todoIds, todo.id],
+        }
+      },
+    })
+
+    expect(dispatchMock).not.toHaveBeenCalled()
+    expect(getStateMock).not.toHaveBeenCalled()
+    expect(replaceReducerMock).not.toHaveBeenCalled()
+    expect(subscribeMock).not.toHaveBeenCalled()
+
+    undo()
   })
 })
