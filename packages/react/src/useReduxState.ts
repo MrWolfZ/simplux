@@ -1,4 +1,4 @@
-import { getReduxStore } from '@simplux/core'
+import { getSimpluxStore } from '@simplux/core'
 import { useEffect, useLayoutEffect, useReducer, useRef } from 'react'
 import { shallowEquals } from './util/shallowEquals'
 
@@ -43,7 +43,7 @@ export function useReduxState<TStoreState = any, TSelected = any>(
     throw new Error(`You must pass a selector to useReduxState`)
   }
 
-  const store = getReduxStore()
+  const store = getSimpluxStore()
   const [, forceRender] = useReducer((s: number) => s + 1, 0)
 
   const latestSubscriptionCallbackError = useRef<Error>()

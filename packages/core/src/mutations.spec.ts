@@ -5,20 +5,22 @@ import {
   MutationsFactory,
   mutationsModuleExtension,
 } from './mutations'
-import { ReduxStoreProxy } from './store'
+import { SimpluxStore } from './store'
 
 describe('mutations', () => {
   const dispatchMock = jest.fn().mockImplementation(a => a)
   let storeState = {}
   const getStoreStateMock = jest.fn().mockImplementation(() => storeState)
-  const getChildReducerMock = jest.fn()
-  const setChildReducerMock = jest.fn()
+  const setReducerMock = jest.fn()
+  const getReducerMock = jest.fn()
 
-  const storeProxy: ReduxStoreProxy = {
-    dispatch: dispatchMock,
+  const store: SimpluxStore = {
+    rootReducer: s => s,
     getState: getStoreStateMock,
-    getChildReducer: getChildReducerMock,
-    setChildReducer: setChildReducerMock,
+    dispatch: dispatchMock,
+    subscribe: jest.fn(),
+    setReducer: setReducerMock,
+    getReducer: getReducerMock,
   }
 
   beforeEach(() => {
@@ -33,14 +35,11 @@ describe('mutations', () => {
           name: 'test',
           initialState: 0,
         },
-        storeProxy,
+        store,
         {},
       )
 
-      expect(setChildReducerMock).toHaveBeenCalledWith(
-        'test',
-        expect.any(Function),
-      )
+      expect(setReducerMock).toHaveBeenCalledWith('test', expect.any(Function))
     })
 
     it('adds the mutation state container', () => {
@@ -50,7 +49,7 @@ describe('mutations', () => {
           name: 'test',
           initialState: 0,
         },
-        storeProxy,
+        store,
         c,
       )
 
@@ -63,7 +62,7 @@ describe('mutations', () => {
           name: 'test',
           initialState: 0,
         },
-        storeProxy,
+        store,
         {},
       )
 
@@ -79,7 +78,7 @@ describe('mutations', () => {
       moduleMutations = {}
       createMutations = createMutationsFactory<number>(
         'test',
-        storeProxy,
+        store,
         moduleMutations,
       )
     })
@@ -156,7 +155,7 @@ describe('mutations', () => {
       it('returns the state when called with state and not mutation does not return state', () => {
         const mutatingCreateMutations = createMutationsFactory<{
           test: string;
-        }>('test', storeProxy, {})
+        }>('test', store, {})
 
         const { update } = mutatingCreateMutations({
           update: state => {

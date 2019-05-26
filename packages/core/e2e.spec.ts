@@ -2,9 +2,8 @@
 
 import {
   createSimpluxModule,
-  getReduxStore,
   getSimpluxReducer,
-  useSimpluxWithExistingStore
+  useSimpluxWithExistingStore,
 } from '@simplux/core'
 import { combineReducers, createStore } from 'redux'
 
@@ -39,7 +38,12 @@ describe(`@simplux/core`, () => {
   }
 
   it('works', () => {
-    const { getState, setState, createMutations } = createSimpluxModule({
+    const {
+      getState,
+      setState,
+      subscribeToStateChanges,
+      createMutations,
+    } = createSimpluxModule({
       name: 'todos',
       initialState: initialTodoState,
     })
@@ -72,6 +76,9 @@ describe(`@simplux/core`, () => {
       },
     })
 
+    const handler = jest.fn()
+    const unsubscribe = subscribeToStateChanges(handler)
+
     let updatedState = addTodo(todo1)
     expect(updatedState).toEqual(todoStoreWithOneTodo)
     expect(getState()).toEqual(todoStoreWithOneTodo)
@@ -86,21 +93,23 @@ describe(`@simplux/core`, () => {
     updatedState = addTodos(todo1, todo2)
     expect(updatedState).toEqual(todoStoreWithTwoTodos)
     expect(getState()).toEqual(todoStoreWithTwoTodos)
+
+    expect(handler).toHaveBeenCalledTimes(5)
+
+    unsubscribe()
   })
 
   it('works with an external store', () => {
-    const existingStore = getReduxStore()
+    const customStore = createStore(
+      combineReducers({
+        otherState: (c: number = 10) => c,
+        simplux: getSimpluxReducer(),
+      }),
+    )
+
+    const undo = useSimpluxWithExistingStore(customStore, s => s.simplux)
 
     try {
-      const customStore = createStore(
-        combineReducers({
-          otherState: (c: number = 10) => c,
-          simplux: getSimpluxReducer(),
-        }),
-      )
-
-      useSimpluxWithExistingStore(customStore, s => s.simplux)
-
       const { getState, createMutations } = createSimpluxModule({
         name: 'counter',
         initialState: 10,
@@ -114,7 +123,7 @@ describe(`@simplux/core`, () => {
       expect(updatedState).toBe(11)
       expect(getState()).toBe(11)
     } finally {
-      useSimpluxWithExistingStore(existingStore, s => s)
+      undo()
     }
   })
 })

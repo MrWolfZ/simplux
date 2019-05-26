@@ -1,45 +1,78 @@
-import { AnyAction, createStore, Store } from 'redux'
-import { getChildReducer, getRootReducer, setChildReducer } from './reducer'
+import {
+  combineReducers,
+  createStore as createReduxStore,
+  Reducer,
+  Store,
+} from 'redux'
 
-let store: Store | undefined
-let stateGetter: (rootState: any) => any = s => s
+export interface ReduxStoreProxy {
+  getState: () => any
+  dispatch: Store['dispatch']
+  subscribe: Store['subscribe']
+}
 
-export function getStore() {
-  if (!store) {
-    store = createStore(getRootReducer())
+let simpluxStore: SimpluxStore | undefined
+let managedReduxStore: Store | undefined
+let externalReduxStoreProxy: ReduxStoreProxy | undefined
+
+export function getSimpluxStore() {
+  if (!simpluxStore) {
+    simpluxStore = createSimpluxStore(
+      () => externalReduxStoreProxy || managedReduxStore!,
+      s => s,
+    )
+
+    managedReduxStore = createReduxStore(simpluxStore.rootReducer)
   }
 
-  return store
+  return simpluxStore
 }
 
 export function useExistingStore<TState>(
   storeToUse: Store<TState>,
   simpluxStateGetter: (rootState: TState) => any,
 ) {
-  store = storeToUse
-  stateGetter = simpluxStateGetter
+  externalReduxStoreProxy = {
+    ...storeToUse,
+    getState: () => simpluxStateGetter(storeToUse.getState()),
+  }
+
+  return () => {
+    externalReduxStoreProxy = undefined
+  }
 }
 
-export function getStoreState() {
-  return stateGetter(getStore().getState())
+export interface SimpluxStore {
+  rootReducer: Reducer
+  getState: () => any
+  dispatch: Store['dispatch']
+  subscribe: Store['subscribe']
+  setReducer: <T>(name: string, reducer: Reducer<T>) => void
+  getReducer: <T>(name: string) => Reducer<T>
 }
 
-export function dispatch<TAction extends AnyAction = AnyAction>(
-  action: TAction,
-) {
-  return getStore().dispatch(action)
-}
+export function createSimpluxStore(
+  getStoreProxy: () => ReduxStoreProxy,
+  stateGetter: (rootState: any) => any,
+): SimpluxStore {
+  const reducers: { [name: string]: Reducer } = {}
+  let reducer: Reducer | undefined
 
-export interface ReduxStoreProxy {
-  getState: typeof getStoreState
-  dispatch: typeof dispatch
-  getChildReducer: typeof getChildReducer
-  setChildReducer: typeof setChildReducer
-}
+  const rootReducer: Reducer = (state = {}, action) =>
+    reducer ? reducer(state, action) : state
 
-export const storeProxy: ReduxStoreProxy = {
-  getState: getStoreState,
-  dispatch,
-  getChildReducer,
-  setChildReducer,
+  return {
+    rootReducer,
+    getState: () => stateGetter(getStoreProxy().getState()),
+    dispatch: action => getStoreProxy().dispatch(action),
+    subscribe: listener => getStoreProxy().subscribe(listener),
+
+    setReducer: (name, reducerToAdd) => {
+      reducers[name] = reducerToAdd
+      reducer = combineReducers(reducers)
+      getStoreProxy().dispatch({ type: '' })
+    },
+
+    getReducer: name => reducers[name],
+  }
 }

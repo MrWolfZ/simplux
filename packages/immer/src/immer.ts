@@ -22,10 +22,10 @@ export function createImmerReducer<TState>(
   }
 }
 
-export const immerModuleExtension: SimpluxModuleExtension<{}> = (
+export const immerModuleExtension: SimpluxModuleExtension<any> = (
   { name },
-  { getChildReducer, setChildReducer },
+  { getReducer, setReducer },
 ) => {
-  setChildReducer(name, createImmerReducer(getChildReducer(name)))
+  setReducer(name, createImmerReducer<any>(getReducer(name)))
   return {}
 }

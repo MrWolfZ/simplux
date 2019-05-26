@@ -1,14 +1,19 @@
-import { registerModuleExtension } from './src/module'
+import {
+  createModule,
+  registerModuleExtension,
+  SimpluxModule,
+  SimpluxModuleConfig,
+} from './src/module'
 import { mutationsModuleExtension } from './src/mutations'
+import { getSimpluxStore } from './src/store'
 
 registerModuleExtension(mutationsModuleExtension)
 
 export {
-  createModule as createSimpluxModule,
   registerModuleExtension as registerSimpluxModuleExtension,
   SimpluxModule,
   SimpluxModuleConfig,
-  SimpluxModuleExtension
+  SimpluxModuleExtension,
 } from './src/module'
 export {
   MutationBase,
@@ -19,14 +24,20 @@ export {
   ResolvedMutation,
   ResolvedMutationExtras,
   ResolvedMutations,
-  SimpluxModuleMutationExtensions
+  SimpluxModuleMutationExtensions,
 } from './src/mutations'
 export {
-  getRootReducer as getSimpluxReducer,
-  setChildReducer as addReducerToSimpluxReducer
-} from './src/reducer'
-export {
-  getStore as getReduxStore,
-  ReduxStoreProxy,
-  useExistingStore as useSimpluxWithExistingStore
+  getSimpluxStore,
+  SimpluxStore,
+  useExistingStore as useSimpluxWithExistingStore,
 } from './src/store'
+
+export function getSimpluxReducer() {
+  return getSimpluxStore().rootReducer
+}
+
+export function createSimpluxModule<TState>(
+  config: SimpluxModuleConfig<TState>,
+): SimpluxModule<TState> {
+  return createModule(getSimpluxStore(), config)
+}

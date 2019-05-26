@@ -1,17 +1,17 @@
 import { createStore } from 'redux'
-import { getStore, useExistingStore } from './store'
+import { getSimpluxStore, useExistingStore } from './store'
 
 describe('store', () => {
-  describe(getStore.name, () => {
+  describe(getSimpluxStore.name, () => {
     it(`creates the store`, () => {
-      expect(getStore()).toBeDefined()
+      expect(getSimpluxStore()).toBeDefined()
     })
   })
 
   describe(useExistingStore.name, () => {
     it(`sets the store`, () => {
       useExistingStore(createStore((c: number = 10) => c + 1), s => s)
-      expect(getStore().getState()).toBe(11)
+      expect(getSimpluxStore().getState()).toBe(11)
     })
   })
 })

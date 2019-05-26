@@ -1,6 +1,6 @@
 import { Action } from 'redux'
 import { SimpluxModuleExtension } from './module'
-import { ReduxStoreProxy } from './store'
+import { SimpluxStore } from './store'
 
 // this interface exists purely to allow plugins to overwrite the return type of mutations
 // @ts-ignore
@@ -78,7 +78,7 @@ export function createModuleReducer<TState>(
 
 export function createMutationsFactory<TState>(
   moduleName: string,
-  { getState, dispatch }: ReduxStoreProxy,
+  { getState, dispatch }: SimpluxStore,
   moduleMutations: MutationsBase<TState>,
 ): MutationsFactory<TState> {
   return <TMutations extends MutationsBase<TState>>(
@@ -127,7 +127,7 @@ declare module './module' {
 
 export const mutationsModuleExtension: SimpluxModuleExtension<
   SimpluxModuleMutationExtensions<any>
-> = ({ name, initialState }, storeProxy, extensionState) => {
+> = ({ name, initialState }, store, extensionState) => {
   extensionState.mutations = extensionState.mutations || {}
   extensionState.mutations[name] = extensionState.mutations[name] || {}
   const reducer = createModuleReducer(
@@ -135,11 +135,13 @@ export const mutationsModuleExtension: SimpluxModuleExtension<
     initialState,
     extensionState.mutations[name],
   )
-  storeProxy.setChildReducer(name, reducer)
+
+  store.setReducer<any>(name, reducer)
+
   return {
     createMutations: createMutationsFactory(
       name,
-      storeProxy,
+      store,
       extensionState.mutations[name],
     ),
   }

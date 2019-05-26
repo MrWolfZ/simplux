@@ -1,23 +1,25 @@
-import { ReduxStoreProxy } from '@simplux/core'
+import { SimpluxStore } from '@simplux/core'
 import {
   createSelectorsFactory,
   SelectorsBase,
   SelectorsFactory,
-  selectorsModuleExtension
+  selectorsModuleExtension,
 } from './selectors'
 
 describe('selectors', () => {
   const dispatchMock = jest.fn().mockImplementation(a => a)
   let storeState = {}
   const getStoreStateMock = jest.fn().mockImplementation(() => storeState)
-  const getChildReducerMock = jest.fn()
-  const setChildReducerMock = jest.fn()
+  const setReducerMock = jest.fn()
+  const getReducerMock = jest.fn()
 
-  const storeProxy: ReduxStoreProxy = {
-    dispatch: dispatchMock,
+  const store: SimpluxStore = {
+    rootReducer: s => s,
     getState: getStoreStateMock,
-    getChildReducer: getChildReducerMock,
-    setChildReducer: setChildReducerMock,
+    dispatch: dispatchMock,
+    subscribe: jest.fn(),
+    setReducer: setReducerMock,
+    getReducer: getReducerMock,
   }
 
   beforeEach(() => {
@@ -33,7 +35,7 @@ describe('selectors', () => {
           name: 'test',
           initialState: 0,
         },
-        storeProxy,
+        store,
         c,
       )
 
@@ -46,7 +48,7 @@ describe('selectors', () => {
           name: 'test',
           initialState: 0,
         },
-        storeProxy,
+        store,
         {},
       )
 
@@ -62,7 +64,7 @@ describe('selectors', () => {
       moduleSelectors = {}
       createSelectors = createSelectorsFactory<number>(
         'test',
-        storeProxy.getState,
+        store.getState,
         moduleSelectors,
       )
     })

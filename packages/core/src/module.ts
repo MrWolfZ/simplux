@@ -1,21 +1,21 @@
-import { removeChildReducer } from './reducer'
-import { ReduxStoreProxy, storeProxy } from './store'
-
-const { dispatch, getState: getStoreState, setChildReducer } = storeProxy
+import { SimpluxStore } from './store'
 
 export interface SimpluxModuleConfig<TState> {
   name: string
   initialState: TState
 }
 
+export type StateChangeHandler<TState> = (state: TState) => void
+
 export interface SimpluxModule<TState> {
   getState(): TState
   setState(state: TState): void
+  subscribeToStateChanges(handler: StateChangeHandler<TState>): () => void
 }
 
 export type SimpluxModuleExtension<TReturn = object> = <TState>(
   config: SimpluxModuleConfig<TState>,
-  storeProxy: ReduxStoreProxy,
+  store: SimpluxStore,
   moduleExtensionStateContainer: any,
 ) => TReturn
 
@@ -28,39 +28,67 @@ export function registerModuleExtension(extension: SimpluxModuleExtension) {
   }
 }
 
-export function getModuleState(moduleName: string) {
-  return getStoreState()[moduleName]
-}
-
 export function createModule<TState>(
+  store: SimpluxStore,
   config: SimpluxModuleConfig<TState>,
 ): SimpluxModule<TState> {
-  const getState = () => getModuleState(config.name)
-  const setState = (state: TState) => {
-    dispatch({ type: `@simplux/${config.name}/setState`, state })
+  const { getState, dispatch, subscribe, setReducer: addReducer } = store
+
+  const getModuleState = () => getState()[config.name]
+  const setModuleState = (state: TState) => {
+    dispatch({
+      type: `@simplux/${config.name}/setState`,
+      state,
+    })
   }
 
-  setChildReducer(config.name, (s = config.initialState, { type, state }) =>
+  let unsubscribe: (() => void) | undefined
+  let latestModuleState = config.initialState
+  const handlers: StateChangeHandler<TState>[] = []
+
+  const subscribeToStateChanges = (handler: StateChangeHandler<TState>) => {
+    handlers.push(handler)
+
+    if (handlers.length === 1) {
+      unsubscribe = subscribe(() => {
+        const moduleState = getModuleState()
+
+        if (moduleState !== latestModuleState) {
+          latestModuleState = moduleState
+
+          for (const handler of handlers) {
+            handler(moduleState)
+          }
+        }
+      })
+    }
+
+    return () => {
+      handlers.splice(handlers.indexOf(handler), 1)
+
+      if (handlers.length === 0 && unsubscribe) {
+        unsubscribe()
+        unsubscribe = undefined
+      }
+    }
+  }
+
+  addReducer(config.name, (s = config.initialState, { type, state }) =>
     type === `@simplux/${config.name}/setState` ? state : s,
   )
 
-  setState(config.initialState)
-
   const result = {
-    getState,
-    setState,
+    getState: getModuleState,
+    setState: setModuleState,
+    subscribeToStateChanges,
   }
 
   const moduleExtensionStateContainer = {}
   return moduleExtensions.reduce(
     (acc, ext) => ({
       ...acc,
-      ...ext(config, storeProxy, moduleExtensionStateContainer),
+      ...ext(config, store, moduleExtensionStateContainer),
     }),
     result,
   ) as SimpluxModule<TState>
-}
-
-export function removeModule(moduleName: string): void {
-  removeChildReducer(moduleName)
 }
