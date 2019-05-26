@@ -18,12 +18,12 @@
     "test:selectors": "jest --config=packages/selectors/jest.config.js --forceExit --verbose --detectOpenHandles",
     "test:immer": "jest --config=packages/immer/jest.config.js --forceExit --verbose --detectOpenHandles",
     "test:react": "jest --config=packages/react/jest.config.js --forceExit --verbose --detectOpenHandles",
-    "test-changed-since-master": "npm run test:core -- --changedSince=master && npm run test:selectors -- --changedSince=master && npm run test:immer -- --changedSince=master && npm run test:react -- --changedSince=master",
+    "precommit": "node ./scripts/pre-commit-hook.js",
     "build:config": "tsc -p ./tsconfig.config.json"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run test-changed-since-master",
+      "pre-commit": "npm run precommit",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
@@ -68,6 +68,7 @@
     "rollup-plugin-node-resolve": "^4.2.4",
     "shelljs": "^0.8.3",
     "sorcery": "^0.10.0",
+    "staged-git-files": "^1.2.0",
     "ts-jest": "^24.0.2",
     "tslint": "^5.16.0",
     "tslint-react": "^4.0.0",
