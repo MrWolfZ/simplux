@@ -17,7 +17,7 @@ build().catch(err => {
 })
 
 async function build() {
-  const PACKAGE_DIR = path.join(__dirname, process.argv[2])
+  const PACKAGE_DIR = path.join(process.cwd(), process.argv[2])
   const OUTPUT_DIR = path.join(PACKAGE_DIR, `dist`)
   const BUNDLES_DIR = path.join(OUTPUT_DIR, `bundles`)
   const PACKAGE = require(path.join(PACKAGE_DIR, 'package.json'))
@@ -107,7 +107,7 @@ async function build() {
 
     const ret = await execAsync(
       `rollup`,
-      `-c ${path.join(__dirname, 'rollup.config.js')}`,
+      `-c ${path.join(process.cwd(), 'rollup.config.js')}`,
       `-f umd`,
       `-i ${BUNDLES_DIR}/bundle.es5.js`,
       `-o ${BUNDLES_DIR}/bundle.umd.js`,
@@ -128,7 +128,7 @@ async function build() {
 
   await executeStep(`Minifying`, async () => {
     let code = await execAsync(
-      `${path.join(__dirname, 'node_modules/.bin/uglifyjs')}`,
+      `${path.join(process.cwd(), 'node_modules/.bin/uglifyjs')}`,
       false,
       `-c`,
       `-m`,

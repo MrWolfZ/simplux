@@ -19,7 +19,7 @@ build().catch(err => {
     shelljs_1.default.exit(1);
 });
 async function build() {
-    const PACKAGE_DIR = path_1.default.join(__dirname, process.argv[2]);
+    const PACKAGE_DIR = path_1.default.join(process.cwd(), process.argv[2]);
     const OUTPUT_DIR = path_1.default.join(PACKAGE_DIR, `dist`);
     const BUNDLES_DIR = path_1.default.join(OUTPUT_DIR, `bundles`);
     const PACKAGE = require(path_1.default.join(PACKAGE_DIR, 'package.json'));
@@ -64,7 +64,7 @@ async function build() {
         const globalsArg = externals.length > 0
             ? `-g ${externals.map(e => `${e}:${e}`).join(',')}`
             : '';
-        const ret = await util_2.execAsync(`rollup`, `-c ${path_1.default.join(__dirname, 'rollup.config.js')}`, `-f umd`, `-i ${BUNDLES_DIR}/bundle.es5.js`, `-o ${BUNDLES_DIR}/bundle.umd.js`, `-n ${PACKAGE.name}`, `-m`, `--exports named`, externalsArg, globalsArg);
+        const ret = await util_2.execAsync(`rollup`, `-c ${path_1.default.join(process.cwd(), 'rollup.config.js')}`, `-f umd`, `-i ${BUNDLES_DIR}/bundle.es5.js`, `-o ${BUNDLES_DIR}/bundle.umd.js`, `-n ${PACKAGE.name}`, `-m`, `--exports named`, externalsArg, globalsArg);
         if (ret.code !== 0) {
             return ret;
         }
@@ -72,7 +72,7 @@ async function build() {
         return ret;
     });
     await executeStep(`Minifying`, async () => {
-        let code = await util_2.execAsync(`${path_1.default.join(__dirname, 'node_modules/.bin/uglifyjs')}`, false, `-c`, `-m`, `--comments`, `-o ${BUNDLES_DIR}/bundle.umd.min.js`, 
+        let code = await util_2.execAsync(`${path_1.default.join(process.cwd(), 'node_modules/.bin/uglifyjs')}`, false, `-c`, `-m`, `--comments`, `-o ${BUNDLES_DIR}/bundle.umd.min.js`, 
         // tslint:disable-next-line: max-line-length
         `--source-map "filename='bundle.umd.min.js.map',url='bundle.umd.min.js.map',includeSources"`, `${BUNDLES_DIR}/bundle.umd.js`);
         if (code !== 0) {
