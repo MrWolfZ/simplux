@@ -59,34 +59,14 @@ describe('mutations', () => {
       createMutations = createMutationsFactory<number>('test', storeProxy, moduleMutations)
     })
 
-    it('merges mutations if called multiple times', () => {
+    it('throws when existing mutation is declared again', () => {
       createMutations({
         increment: c => c + 1,
       })
 
-      createMutations({
-        decrement: c => c - 1,
-      })
-
-      expect(moduleMutations.increment).toBeDefined()
-      expect(moduleMutations.decrement).toBeDefined()
-    })
-
-    it('overwrites mutations with the same name when called multiple times', () => {
-      const increment1 = (c: number) => c + 1
-      const increment2 = (c: number) => c + 2
-
-      createMutations({
-        increment: increment1,
-      })
-
-      expect(moduleMutations.increment).toBe(increment1)
-
-      createMutations({
-        increment: increment2,
-      })
-
-      expect(moduleMutations.increment).toBe(increment2)
+      expect(() => createMutations({
+        increment: c => c + 2,
+      })).toThrowError(`mutation 'increment' is already defined for module 'test'`)
     })
 
     describe(`returned mutations`, () => {

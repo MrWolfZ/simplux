@@ -56,6 +56,12 @@ export function createMutationsFactory<TState>(
   moduleMutations: MutationsBase<TState>,
 ): MutationsFactory<TState> {
   return <TMutations extends MutationsBase<TState>>(mutations: TMutations): ResolvedMutations<TState, TMutations> => {
+    for (const mutationName of Object.keys(mutations)) {
+      if (moduleMutations[mutationName]) {
+        throw new Error(`mutation '${mutationName}' is already defined for module '${moduleName}'`)
+      }
+    }
+
     Object.assign(moduleMutations, mutations)
 
     const resolvedMutations = Object.keys(mutations).reduce((acc, mutationName: keyof TMutations) => {
