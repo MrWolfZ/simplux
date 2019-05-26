@@ -1,17 +1,16 @@
 import { Action, AnyAction, combineReducers, Reducer, ReducersMapObject } from 'redux'
 
 const reducers: { [name: string]: Reducer } = {}
-let reducer: Reducer = (_ = {}) => ({})
+let reducer: Reducer | undefined
 
-// tslint:disable-next-line:no-unnecessary-callback-wrapper (reducer reference changes, so we need the lambda)
-const rootReducer: Reducer = (state = {}, action) => reducer(state, action)
+const rootReducer: Reducer = (state = {}, action) => reducer ? reducer(state, action) : state
 
 export function getRootReducer() {
   return rootReducer
 }
 
 function createReducer() {
-  return Object.keys(reducers).length > 0 ? combineReducers(reducers) : ((s = {}) => s)
+  return Object.keys(reducers).length > 0 ? combineReducers(reducers) : undefined
 }
 
 function updateReducer() {
