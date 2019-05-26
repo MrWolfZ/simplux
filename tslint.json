@@ -1,14 +1,9 @@
 {
-  "extends": [
-    "tslint-react"
-  ],
+  "extends": ["tslint-react"],
   "rules": {
     "adjacent-overload-signatures": true,
     "align": false,
-    "array-type": [
-      true,
-      "array"
-    ],
+    "array-type": [true, "array"],
     "arrow-parens": false,
     "arrow-return-shorthand": true,
     "await-promise": true,
@@ -17,10 +12,7 @@
     "binary-expression-operand-order": false,
     "callable-types": true,
     "class-name": true,
-    "comment-format": [
-      true,
-      "check-space"
-    ],
+    "comment-format": [true, "check-space"],
     "completed-docs": false,
     "curly": true,
     "cyclomatic-complexity": false,
@@ -29,14 +21,9 @@
     "eofline": true,
     "file-header": false,
     "forin": true,
-    "import-blacklist": [
-      false
-    ],
+    "import-blacklist": [false],
     "import-spacing": true,
-    "indent": [
-      true,
-      "spaces"
-    ],
+    "indent": [true, "spaces"],
     "interface-name": false,
     "interface-over-type-literal": true,
     "jsdoc-format": false,
@@ -45,10 +32,7 @@
     "match-default-export-name": false,
     "max-classes-per-file": false,
     "max-file-line-count": false,
-    "max-line-length": [
-      true,
-      160
-    ],
+    "max-line-length": [true, 100],
     "member-access": false,
     "member-ordering": false,
     "new-parens": true,
@@ -60,14 +44,7 @@
     "no-boolean-literal-compare": true,
     "no-conditional-assignment": true,
     "no-consecutive-blank-lines": true,
-    "no-console": [
-      true,
-      "debug",
-      "info",
-      "time",
-      "timeEnd",
-      "trace"
-    ],
+    "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
     "no-construct": true,
     "no-debugger": true,
     "no-default-export": false,
@@ -80,10 +57,7 @@
     "no-floating-promises": true,
     "no-for-in-array": true,
     "no-import-side-effect": false,
-    "no-inferrable-types": [
-      true,
-      "ignore-params"
-    ],
+    "no-inferrable-types": [true, "ignore-params"],
     "no-inferred-empty-object-type": true,
     "no-internal-module": true,
     "no-invalid-template-strings": true,
@@ -109,10 +83,7 @@
     "no-switch-case-fall-through": true,
     "no-this-assignment": false,
     "no-trailing-whitespace": true,
-    "no-unbound-method": [
-      true,
-      "ignore-static"
-    ],
+    "no-unbound-method": [true, "ignore-static"],
     "no-unnecessary-callback-wrapper": true,
     "no-unnecessary-initializer": true,
     "no-unnecessary-qualifier": true,
@@ -124,10 +95,7 @@
     "no-var-requires": true,
     "no-void-expression": false,
     "number-literal-format": true,
-    "object-literal-key-quotes": [
-      true,
-      "single"
-    ],
+    "object-literal-key-quotes": [true, "single"],
     "object-literal-shorthand": true,
     "object-literal-sort-keys": false,
     "one-line": [
@@ -149,17 +117,11 @@
     "prefer-switch": true,
     "prefer-template": true,
     "promise-function-async": false,
-    "quotemark": [
-      true,
-      "single"
-    ],
+    "quotemark": [true, "single"],
     "radix": true,
     "restrict-plus-operands": true,
     "return-undefined": false,
-    "semicolon": [
-      true,
-      "never"
-    ],
+    "semicolon": [true, "never"],
     "space-before-function-paren": [
       true,
       {
@@ -179,16 +141,13 @@
         "multiline": {
           "objects": "always",
           "arrays": "always",
-          "functions": "ignore",
+          "functions": "always",
           "typeLiterals": "always"
         },
         "esSpecCompliant": true
       }
     ],
-    "triple-equals": [
-      true,
-      "allow-null-check"
-    ],
+    "triple-equals": [true, "allow-null-check"],
     "type-literal-delimiter": true,
     "typedef": true,
     "typedef-whitespace": [
@@ -205,10 +164,7 @@
     "unified-signatures": false,
     "use-default-type-parameter": true,
     "use-isnan": true,
-    "variable-name": [
-      true,
-      "allow-pascal-case"
-    ],
+    "variable-name": [true, "allow-pascal-case"],
     "whitespace": [
       true,
       "check-branch",
@@ -217,9 +173,7 @@
       "check-separator",
       "check-type"
     ],
-    "jsx-curly-spacing": [
-      "always"
-    ],
+    "jsx-curly-spacing": ["always"],
     "jsx-no-lambda": false,
     "jsx-no-multiline-js": false,
     "jsx-key": false

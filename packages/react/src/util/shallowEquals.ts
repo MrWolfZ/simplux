@@ -10,7 +10,9 @@ function is(x: any, y: any) {
 }
 
 export function shallowEquals(objA: any, objB: any) {
-  if (is(objA, objB)) { return true }
+  if (is(objA, objB)) {
+    return true
+  }
 
   if (
     typeof objA !== 'object' ||
@@ -24,7 +26,9 @@ export function shallowEquals(objA: any, objB: any) {
   const keysA = Object.keys(objA)
   const keysB = Object.keys(objB)
 
-  if (keysA.length !== keysB.length) { return false }
+  if (keysA.length !== keysB.length) {
+    return false
+  }
 
   // tslint:disable-next-line: prefer-for-of
   for (let i = 0; i < keysA.length; i++) {

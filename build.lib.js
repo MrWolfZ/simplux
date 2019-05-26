@@ -10,8 +10,8 @@ const path_1 = __importDefault(require("path"));
 const pretty_time_1 = __importDefault(require("pretty-time"));
 const shelljs_1 = __importDefault(require("shelljs"));
 const util_1 = require("util");
-// tslint:disable:no-var-requires
-// tslint:disable:no-require-imports
+// tslint:disable: no-var-requires
+// tslint:disable: no-require-imports
 // tslint:disable-next-line: no-floating-promises
 build().catch(err => {
     shelljs_1.default.echo(chalk_1.default.red(`Error while building: ${err}`));
@@ -28,12 +28,14 @@ async function build() {
         shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*`);
         shelljs_1.default.mkdir(`-p`, BUNDLES_DIR);
     });
-    await executeStep(`Linting`, () => execAsync(`tslint -c tslint.json -t stylish --project ${LIB_DIR} ${LIB_DIR}/**/*.ts`));
+    await executeStep(`Linting`, () => execAsync(`tslint`, `-c tslint.json`, `-t stylish`, `--project ${LIB_DIR} ${LIB_DIR}/**/*.ts`));
     await executeStep(`Compiling`, () => execAsync(`tsc -p ${LIB_DIR}/tsconfig.json`));
     await executeStep(`Bundling`, async () => {
-        const externals = Object.keys(PACKAGE.dependencies || {}).concat(Object.keys(PACKAGE.peerDependencies || {})).join(',');
+        const externals = Object.keys(PACKAGE.dependencies || {})
+            .concat(Object.keys(PACKAGE.peerDependencies || {}))
+            .join(',');
         const externalsArg = externals ? ` -e ${externals}` : '';
-        const ret = await execAsync(`rollup -f esm -n ${PACKAGE.name} -i ${OUTPUT_DIR}/index.js -o ${BUNDLES_DIR}/bundle.js -m${externalsArg}`);
+        const ret = await execAsync(`rollup`, `-f esm`, `-n ${PACKAGE.name}`, `-i ${OUTPUT_DIR}/index.js`, `-o ${BUNDLES_DIR}/bundle.js`, `-m`, externalsArg);
         if (ret.code !== 0) {
             return ret;
         }
@@ -42,8 +44,9 @@ async function build() {
     });
     await executeStep(`Downleveling ES2015 to ESM/ES5`, async () => {
         shelljs_1.default.cp(`${BUNDLES_DIR}/bundle.js`, `${BUNDLES_DIR}/bundle.es5.ts`);
-        const ret = await execAsync(`tsc ${BUNDLES_DIR}/bundle.es5.ts --target es5 --module es2015 --noLib --sourceMap`);
-        // 2 indicates failure with output still being generated (this command will usually fail because of the --noLib flag)
+        const ret = await execAsync(`tsc`, `${BUNDLES_DIR}/bundle.es5.ts`, `--target es5`, `--module es2015`, `--noLib`, `--sourceMap`);
+        // 2 indicates failure with output still being generated
+        // (this command will usually fail because of the --noLib flag)
         if (![0, 2].includes(ret.code)) {
             return ret;
         }
@@ -56,10 +59,11 @@ async function build() {
     });
     await executeStep(`Bundling UMD`, async () => {
         const externals = Object.keys(PACKAGE.dependencies || {}).concat(Object.keys(PACKAGE.peerDependencies || {}));
-        const externalsArg = externals.length > 0 ? ` -e ${externals.join(',')}` : '';
-        const globalsArg = externals.length > 0 ? ` -g ${externals.map(e => `${e}:${e}`).join(',')}` : '';
-        // tslint:disable-next-line: max-line-length
-        const ret = await execAsync(`rollup -c ${path_1.default.join(__dirname, 'rollup.config.js')} -f umd -i ${BUNDLES_DIR}/bundle.es5.js -o ${BUNDLES_DIR}/bundle.umd.js -n ${PACKAGE.name} -m --exports named${externalsArg}${globalsArg}`);
+        const externalsArg = externals.length > 0 ? `-e ${externals.join(',')}` : '';
+        const globalsArg = externals.length > 0
+            ? `-g ${externals.map(e => `${e}:${e}`).join(',')}`
+            : '';
+        const ret = await execAsync(`rollup`, `-c ${path_1.default.join(__dirname, 'rollup.config.js')}`, `-f umd`, `-i ${BUNDLES_DIR}/bundle.es5.js`, `-o ${BUNDLES_DIR}/bundle.umd.js`, `-n ${PACKAGE.name}`, `-m`, `--exports named`, externalsArg, globalsArg);
         if (ret.code !== 0) {
             return ret;
         }
@@ -67,8 +71,9 @@ async function build() {
         return ret;
     });
     await executeStep(`Minifying`, async () => {
+        const ret = await execAsync(`${path_1.default.join(__dirname, 'node_modules/.bin/uglifyjs')}`, false, `-c`, `-m`, `--comments`, `-o ${BUNDLES_DIR}/bundle.umd.min.js`, 
         // tslint:disable-next-line: max-line-length
-        const ret = await execAsync(`${path_1.default.join(__dirname, 'node_modules/.bin/uglifyjs')} -c -m --comments -o ${BUNDLES_DIR}/bundle.umd.min.js --source-map "filename='bundle.umd.min.js.map',url='bundle.umd.min.js.map',includeSources" ${BUNDLES_DIR}/bundle.umd.js`, false);
+        `--source-map "filename='bundle.umd.min.js.map',url='bundle.umd.min.js.map',includeSources"`, `${BUNDLES_DIR}/bundle.umd.js`);
         if (ret.code !== 0) {
             return ret;
         }
@@ -108,11 +113,12 @@ async function executeStep(stepName, fn) {
     let code = 0;
     try {
         const fnResult = await fn();
-        code = typeof fnResult === 'object'
-            ? fnResult.code
-            : typeof fnResult === 'number'
-                ? fnResult
-                : code;
+        code =
+            typeof fnResult === 'object'
+                ? fnResult.code
+                : typeof fnResult === 'number'
+                    ? fnResult
+                    : code;
         if (typeof fnResult === 'object') {
             if (fnResult.stdout) {
                 shelljs_1.default.echo(fnResult.stdout);
@@ -134,15 +140,20 @@ async function executeStep(stepName, fn) {
     }
     shelljs_1.default.echo(chalk_1.default.green(`${stepName} successful in ${formattedTime}!`));
 }
-function execAsync(command, silent = true) {
-    return new Promise(resolve => shelljs_1.default.exec(command, { silent }, (code, stdout, stderr) => resolve({ code, stdout, stderr })));
+function execAsync(command, silent, ...params) {
+    const allParams = typeof silent === 'string' ? [silent, ...params] : params;
+    const fullCommand = `${command} ${allParams.filter(p => !!p).join(' ')}`;
+    return new Promise(resolve => shelljs_1.default.exec(fullCommand, { silent: typeof silent === 'boolean' ? silent : true }, (code, stdout, stderr) => resolve({ code, stdout, stderr })));
 }
-// TODO: ensure the sources path is correct (i.e. @simplux/core/src/... instead of ../../src/...)
+// TODO: ensure the sources path is correct
+// (i.e. @simplux/core/src/... instead of ../../src/...)
 async function mapSources(file) {
     const sorcery = require('sorcery');
     await sorcery.loadSync(file).write();
-    // another second run of mapping the sources is required for sorcery to properly map the sources since after the first run
-    // the source files are correctly identified, but their content is not properly added to the source mapping
+    // another second run of mapping the sources is required for sorcery to
+    // properly map the sources since after the first run the source files
+    // are correctly identified, but their content is not properly added to
+    // the source mapping
     await sorcery.loadSync(file).write();
     return 0;
 }

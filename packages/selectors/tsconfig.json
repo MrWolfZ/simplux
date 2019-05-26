@@ -4,20 +4,10 @@
     "baseUrl": "./",
     "outDir": "./dist",
     "paths": {
-      "@simplux/core": [
-        "../core/dist"
-      ],
-      "@simplux/core/*": [
-        "../core/dist/*"
-      ],
-      "@simplux/selectors": [
-        "."
-      ]
+      "@simplux/core": ["../core/dist"],
+      "@simplux/core/*": ["../core/dist/*"],
+      "@simplux/selectors": ["."]
     }
   },
-  "include": [
-    "index.ts",
-    "e2e.spec.ts",
-    "src/**/*.ts"
-  ]
+  "include": ["index.ts", "e2e.spec.ts", "src/**/*.ts"]
 }

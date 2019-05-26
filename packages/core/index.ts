@@ -4,24 +4,12 @@ import { mutationsModuleExtension } from './src/mutations'
 registerModuleExtension(mutationsModuleExtension)
 
 export {
-  getStore as getReduxStore,
-  useExistingStore as useSimpluxWithExistingStore,
-  ReduxStoreProxy,
-} from './src/store'
-
-export {
-  getRootReducer as getSimpluxReducer,
-  setChildReducer as addReducerToSimpluxReducer,
-} from './src/reducer'
-
-export {
   createModule as createSimpluxModule,
   registerModuleExtension as registerSimpluxModuleExtension,
   SimpluxModule,
   SimpluxModuleConfig,
-  SimpluxModuleExtension,
+  SimpluxModuleExtension
 } from './src/module'
-
 export {
   MutationBase,
   MutationReturnType,
@@ -29,7 +17,16 @@ export {
   MutationsBase,
   MutationsFactory,
   ResolvedMutation,
-  ResolvedMutations,
   ResolvedMutationExtras,
-  SimpluxModuleMutationExtensions,
+  ResolvedMutations,
+  SimpluxModuleMutationExtensions
 } from './src/mutations'
+export {
+  getRootReducer as getSimpluxReducer,
+  setChildReducer as addReducerToSimpluxReducer
+} from './src/reducer'
+export {
+  getStore as getReduxStore,
+  ReduxStoreProxy,
+  useExistingStore as useSimpluxWithExistingStore
+} from './src/store'

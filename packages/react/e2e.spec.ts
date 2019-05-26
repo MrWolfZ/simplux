@@ -40,7 +40,10 @@ describe(`@simplux/react`, () => {
   }
 
   it('works', () => {
-    const { createMutations, reactHooks: { useState } } = createSimpluxModule({
+    const {
+      createMutations,
+      reactHooks: { useState },
+    } = createSimpluxModule({
       name: 'todos',
       initialState: todoStoreWithOneTodo,
     })
@@ -49,7 +52,8 @@ describe(`@simplux/react`, () => {
       addTodo({ todosById, todoIds }, todo: Todo) {
         return {
           todosById: {
-            ...todosById, [todo.id]: todo,
+            ...todosById,
+            [todo.id]: todo,
           },
           todoIds: [...todoIds, todo.id],
         }
@@ -71,20 +75,28 @@ describe(`@simplux/react`, () => {
 
     // tslint:disable-next-line: no-unnecessary-callback-wrapper
     const { result: state } = renderHook(() => useState())
-    const { result: todoIds } = renderHook(() => useState(state => state.todoIds))
-    const { result: nrOfTodos } = renderHook(() => useState(state => Object.keys(state.todosById).length))
+    const { result: todoIds } = renderHook(() =>
+      useState(state => state.todoIds),
+    )
+    const { result: nrOfTodos } = renderHook(() =>
+      useState(state => Object.keys(state.todosById).length),
+    )
 
     expect(state.current).toBe(todoStoreWithOneTodo)
     expect(todoIds.current).toBe(todoStoreWithOneTodo.todoIds)
     expect(nrOfTodos.current).toBe(1)
 
-    act(() => { addTodo(todo2) })
+    act(() => {
+      addTodo(todo2)
+    })
 
     expect(state.current).toEqual(todoStoreWithTwoTodos)
     expect(todoIds.current).toEqual(todoStoreWithTwoTodos.todoIds)
     expect(nrOfTodos.current).toBe(2)
 
-    act(() => { removeTodo(todo2.id) })
+    act(() => {
+      removeTodo(todo2.id)
+    })
 
     expect(state.current).toEqual(todoStoreWithOneTodo)
     expect(todoIds.current).toEqual(todoStoreWithOneTodo.todoIds)

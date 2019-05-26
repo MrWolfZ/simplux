@@ -1,4 +1,10 @@
-import { createModuleReducer, createMutationsFactory, MutationsBase, MutationsFactory, mutationsModuleExtension } from './mutations'
+import {
+  createModuleReducer,
+  createMutationsFactory,
+  MutationsBase,
+  MutationsFactory,
+  mutationsModuleExtension,
+} from './mutations'
 import { ReduxStoreProxy } from './store'
 
 describe('mutations', () => {
@@ -22,29 +28,44 @@ describe('mutations', () => {
 
   describe(`module extension`, () => {
     it('creates and sets the module reducer', () => {
-      mutationsModuleExtension<number>({
-        name: 'test',
-        initialState: 0,
-      }, storeProxy, {})
+      mutationsModuleExtension<number>(
+        {
+          name: 'test',
+          initialState: 0,
+        },
+        storeProxy,
+        {},
+      )
 
-      expect(setChildReducerMock).toHaveBeenCalledWith('test', expect.any(Function))
+      expect(setChildReducerMock).toHaveBeenCalledWith(
+        'test',
+        expect.any(Function),
+      )
     })
 
     it('adds the mutation state container', () => {
       const c: any = {}
-      mutationsModuleExtension<number>({
-        name: 'test',
-        initialState: 0,
-      }, storeProxy, c)
+      mutationsModuleExtension<number>(
+        {
+          name: 'test',
+          initialState: 0,
+        },
+        storeProxy,
+        c,
+      )
 
       expect(c.mutations.test).toEqual({})
     })
 
     it('returns an object with the factory function', () => {
-      const value = mutationsModuleExtension<number>({
-        name: 'test',
-        initialState: 0,
-      }, storeProxy, {})
+      const value = mutationsModuleExtension<number>(
+        {
+          name: 'test',
+          initialState: 0,
+        },
+        storeProxy,
+        {},
+      )
 
       expect(value.createMutations).toBeDefined()
     })
@@ -56,7 +77,11 @@ describe('mutations', () => {
 
     beforeEach(() => {
       moduleMutations = {}
-      createMutations = createMutationsFactory<number>('test', storeProxy, moduleMutations)
+      createMutations = createMutationsFactory<number>(
+        'test',
+        storeProxy,
+        moduleMutations,
+      )
     })
 
     it('throws when existing mutation is declared again', () => {
@@ -64,9 +89,13 @@ describe('mutations', () => {
         increment: c => c + 1,
       })
 
-      expect(() => createMutations({
-        increment: c => c + 2,
-      })).toThrowError(`mutation 'increment' is already defined for module 'test'`)
+      expect(() =>
+        createMutations({
+          increment: c => c + 2,
+        }),
+      ).toThrowError(
+        `mutation 'increment' is already defined for module 'test'`,
+      )
     })
 
     describe(`returned mutations`, () => {
@@ -81,7 +110,10 @@ describe('mutations', () => {
 
         increment()
 
-        expect(dispatchMock).toHaveBeenCalledWith({ type: '@simplux/test/mutation/increment', args: [] })
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: '@simplux/test/mutation/increment',
+          args: [],
+        })
       })
 
       it('dispatch action when called with args', () => {
@@ -91,7 +123,10 @@ describe('mutations', () => {
 
         increment('foo', { nestedArg: true })
 
-        expect(dispatchMock).toHaveBeenCalledWith({ type: '@simplux/test/mutation/increment', args: ['foo', { nestedArg: true }] })
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: '@simplux/test/mutation/increment',
+          args: ['foo', { nestedArg: true }],
+        })
       })
 
       it('returns the updated store state', () => {
@@ -108,8 +143,9 @@ describe('mutations', () => {
         const mutationSpy = jest.fn().mockImplementation((c: number) => c + 1)
 
         const { increment } = createMutations({
-          // tslint:disable-next-line:no-unnecessary-callback-wrapper (for type annotations)
-          increment: (c, arg1: string, arg2: { nestedArg: boolean }) => mutationSpy(c, arg1, arg2),
+          // tslint:disable-next-line: no-unnecessary-callback-wrapper (for type annotations)
+          increment: (c, arg1: string, arg2: { nestedArg: boolean }) =>
+            mutationSpy(c, arg1, arg2),
         })
 
         increment.withState(10)('foo', { nestedArg: true })
@@ -118,7 +154,9 @@ describe('mutations', () => {
       })
 
       it('returns the state when called with state and not mutation does not return state', () => {
-        const mutatingCreateMutations = createMutationsFactory<{ test: string }>('test', storeProxy, {})
+        const mutatingCreateMutations = createMutationsFactory<{
+          test: string;
+        }>('test', storeProxy, {})
 
         const { update } = mutatingCreateMutations({
           update: state => {
@@ -139,12 +177,20 @@ describe('mutations', () => {
     })
 
     it('updates the state', () => {
-      const result = reducer(undefined, { type: '@simplux/test/mutation/increment', args: [] })
+      const result = reducer(undefined, {
+        type: '@simplux/test/mutation/increment',
+        args: [],
+      })
       expect(result).toBe(11)
     })
 
     it('throws if the mutation does not exist', () => {
-      expect(() => reducer(undefined, { type: '@simplux/test/mutation/doesNotExist', args: [] })).toThrowError(/does not exist/)
+      expect(() =>
+        reducer(undefined, {
+          type: '@simplux/test/mutation/doesNotExist',
+          args: [],
+        }),
+      ).toThrowError(/does not exist/)
     })
 
     it('ignores unknown actions', () => {
@@ -153,14 +199,21 @@ describe('mutations', () => {
     })
 
     it('returns state if it gets mutated without getting returned', () => {
-      const mutatingReducer = createModuleReducer('test', { test: 'test' }, {
-        update: state => {
-          state.test = 'updated'
-          return undefined!
+      const mutatingReducer = createModuleReducer(
+        'test',
+        { test: 'test' },
+        {
+          update: state => {
+            state.test = 'updated'
+            return undefined!
+          },
         },
-      })
+      )
 
-      const result = mutatingReducer(undefined, { type: '@simplux/test/mutation/update', args: [] })
+      const result = mutatingReducer(undefined, {
+        type: '@simplux/test/mutation/update',
+        args: [],
+      })
       expect(result).toEqual({ test: 'updated' })
     })
   })

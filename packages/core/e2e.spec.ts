@@ -1,6 +1,11 @@
 // this file contains an end-to-end test for the public API
 
-import { createSimpluxModule, getReduxStore, getSimpluxReducer, useSimpluxWithExistingStore } from '@simplux/core'
+import {
+  createSimpluxModule,
+  getReduxStore,
+  getSimpluxReducer,
+  useSimpluxWithExistingStore
+} from '@simplux/core'
 import { combineReducers, createStore } from 'redux'
 
 describe(`@simplux/core`, () => {
@@ -43,7 +48,8 @@ describe(`@simplux/core`, () => {
       addTodo({ todosById, todoIds }, todo: Todo) {
         return {
           todosById: {
-            ...todosById, [todo.id]: todo,
+            ...todosById,
+            [todo.id]: todo,
           },
           todoIds: [...todoIds, todo.id],
         }
@@ -86,10 +92,12 @@ describe(`@simplux/core`, () => {
     const existingStore = getReduxStore()
 
     try {
-      const customStore = createStore(combineReducers({
-        otherState: (c: number = 10) => c,
-        simplux: getSimpluxReducer(),
-      }))
+      const customStore = createStore(
+        combineReducers({
+          otherState: (c: number = 10) => c,
+          simplux: getSimpluxReducer(),
+        }),
+      )
 
       useSimpluxWithExistingStore(customStore, s => s.simplux)
 

@@ -13,8 +13,9 @@ import { shallowEquals } from './util/shallowEquals'
 // which may cause missed updates; we also must ensure the store subscription
 // is created synchronously, otherwise a store update may occur before the
 // subscription is created and an inconsistent state may be observed
-// tslint:disable-next-line: strict-type-predicates
-const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
+const useIsomorphicLayoutEffect =
+  // tslint:disable-next-line: strict-type-predicates
+  typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 /**
  * A hook to access the redux store's state. This hook takes a selector function
@@ -35,7 +36,9 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
  *   return <div>{counter}</div>
  * }
  */
-export function useReduxState<TStoreState = any, TSelected = any>(selector: (state: TStoreState) => TSelected): TSelected {
+export function useReduxState<TStoreState = any, TSelected = any>(
+  selector: (state: TStoreState) => TSelected,
+): TSelected {
   if (!selector) {
     throw new Error(`You must pass a selector to useReduxState`)
   }
@@ -51,12 +54,14 @@ export function useReduxState<TStoreState = any, TSelected = any>(selector: (sta
   try {
     selectedState = selector(store.getState())
   } catch (err) {
-    let errorMessage = `An error occured while selecting the store state: ${err.message}.`
+    let errorMessage = `An error occured while selecting the store state: ${
+      err.message
+    }.`
 
     if (latestSubscriptionCallbackError.current) {
       errorMessage += `\nThe error may be correlated with this previous error:\n${
         latestSubscriptionCallbackError.current!.stack
-        }\n\nOriginal stack trace:`
+      }\n\nOriginal stack trace:`
     }
 
     throw new Error(errorMessage)

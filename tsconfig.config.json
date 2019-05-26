@@ -3,12 +3,8 @@
   "compilerOptions": {
     "module": "commonjs",
     "sourceMap": false,
-    "types": [
-      "node"
-    ],
+    "types": ["node"]
   },
-  "files": [
-    "./build.lib.ts"
-  ],
+  "files": ["./build.lib.ts"],
   "include": []
 }

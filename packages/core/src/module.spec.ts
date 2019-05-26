@@ -1,4 +1,9 @@
-import { createModule, moduleExtensions, registerModuleExtension, removeModule } from './module'
+import {
+  createModule,
+  moduleExtensions,
+  registerModuleExtension,
+  removeModule,
+} from './module'
 
 describe('registering extension', () => {
   it('stores the extension', () => {

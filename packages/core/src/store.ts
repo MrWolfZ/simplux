@@ -12,7 +12,10 @@ export function getStore() {
   return store
 }
 
-export function useExistingStore<TState>(storeToUse: Store<TState>, simpluxStateGetter: (rootState: TState) => any) {
+export function useExistingStore<TState>(
+  storeToUse: Store<TState>,
+  simpluxStateGetter: (rootState: TState) => any,
+) {
   store = storeToUse
   stateGetter = simpluxStateGetter
 }
@@ -21,7 +24,9 @@ export function getStoreState() {
   return stateGetter(getStore().getState())
 }
 
-export function dispatch<TAction extends AnyAction = AnyAction>(action: TAction) {
+export function dispatch<TAction extends AnyAction = AnyAction>(
+  action: TAction,
+) {
   return getStore().dispatch(action)
 }
 

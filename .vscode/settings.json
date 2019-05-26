@@ -1,16 +1,25 @@
 {
+  "prettier.tslintIntegration": true,
   "search.exclude": {
     "**/node_modules": true,
-    "**/build": true,
-    "**/coverge": true
+    "**/packages/*/dist": true,
+    "**/packages/*/coverge": true
   },
   "files.insertFinalNewline": true,
   "tslint.ignoreDefinitionFiles": false,
   "tslint.exclude": "**/node_modules/**/*",
   "typescript.tsdk": "node_modules\\typescript\\lib",
-  "typescript.referencesCodeLens.enabled": false,
-  "typescript.preferences.importModuleSpecifier": "auto",
+  "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.tslint": true
+    "source.organizeImports": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

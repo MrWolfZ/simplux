@@ -8,17 +8,24 @@ declare module '@simplux/core/src/mutations' {
   }
 }
 
-export function createImmerReducer<TState>(wrappedMutatingReducer: Reducer<TState>): Reducer<TState> {
+export function createImmerReducer<TState>(
+  wrappedMutatingReducer: Reducer<TState>,
+): Reducer<TState> {
   return (state, action) => {
     if (!state) {
       state = wrappedMutatingReducer(state, { type: '@simplux/immer/init' })
     }
 
-    return produce(state, draft => wrappedMutatingReducer(draft as TState, action)) as TState
+    return produce(state, draft =>
+      wrappedMutatingReducer(draft as TState, action),
+    ) as TState
   }
 }
 
-export const immerModuleExtension: SimpluxModuleExtension<{}> = ({ name }, { getChildReducer, setChildReducer }) => {
+export const immerModuleExtension: SimpluxModuleExtension<{}> = (
+  { name },
+  { getChildReducer, setChildReducer },
+) => {
   setChildReducer(name, createImmerReducer(getChildReducer(name)))
   return {}
 }

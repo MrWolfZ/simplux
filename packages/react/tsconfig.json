@@ -4,24 +4,11 @@
     "baseUrl": "./",
     "outDir": "./dist",
     "paths": {
-      "@simplux/core": [
-        "../core/dist"
-      ],
-      "@simplux/core/*": [
-        "../core/dist/*"
-      ],
-      "@simplux/react": [
-        "."
-      ]
+      "@simplux/core": ["../core/dist"],
+      "@simplux/core/*": ["../core/dist/*"],
+      "@simplux/react": ["."]
     },
-    "lib": [
-      "dom",
-      "esnext"
-    ]
+    "lib": ["dom", "esnext"]
   },
-  "include": [
-    "index.ts",
-    "e2e.spec.ts",
-    "src/**/*.ts"
-  ]
+  "include": ["index.ts", "e2e.spec.ts", "src/**/*.ts"]
 }

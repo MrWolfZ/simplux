@@ -1,5 +1,10 @@
 import { ReduxStoreProxy } from '@simplux/core'
-import { createSelectorsFactory, SelectorsBase, SelectorsFactory, selectorsModuleExtension } from './selectors'
+import {
+  createSelectorsFactory,
+  SelectorsBase,
+  SelectorsFactory,
+  selectorsModuleExtension
+} from './selectors'
 
 describe('selectors', () => {
   const dispatchMock = jest.fn().mockImplementation(a => a)
@@ -23,19 +28,27 @@ describe('selectors', () => {
   describe(`module extension`, () => {
     it('adds the selectors state container', () => {
       const c: any = {}
-      selectorsModuleExtension<number>({
-        name: 'test',
-        initialState: 0,
-      }, storeProxy, c)
+      selectorsModuleExtension<number>(
+        {
+          name: 'test',
+          initialState: 0,
+        },
+        storeProxy,
+        c,
+      )
 
       expect(c.selectors.test).toEqual({})
     })
 
     it('returns an object with the factory function', () => {
-      const value = selectorsModuleExtension<number>({
-        name: 'test',
-        initialState: 0,
-      }, storeProxy, {})
+      const value = selectorsModuleExtension<number>(
+        {
+          name: 'test',
+          initialState: 0,
+        },
+        storeProxy,
+        {},
+      )
 
       expect(value.createSelectors).toBeDefined()
     })
@@ -47,7 +60,11 @@ describe('selectors', () => {
 
     beforeEach(() => {
       moduleSelectors = {}
-      createSelectors = createSelectorsFactory<number>('test', storeProxy.getState, moduleSelectors)
+      createSelectors = createSelectorsFactory<number>(
+        'test',
+        storeProxy.getState,
+        moduleSelectors,
+      )
     })
 
     it('throws when existing selector is declared again', () => {
@@ -55,9 +72,11 @@ describe('selectors', () => {
         plus: c => c + 1,
       })
 
-      expect(() => createSelectors({
-        plus: c => c + 2,
-      })).toThrowError(`selector 'plus' is already defined for module 'test'`)
+      expect(() =>
+        createSelectors({
+          plus: c => c + 2,
+        }),
+      ).toThrowError(`selector 'plus' is already defined for module 'test'`)
     })
 
     describe(`returned selectors`, () => {

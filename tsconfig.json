@@ -16,25 +16,18 @@
     "noUnusedParameters": true,
     "skipLibCheck": true,
     "pretty": true,
-    "types": [
-      "webpack-env",
-      "jest"
-    ],
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
+    "types": ["webpack-env", "jest"],
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "paths": {
+      "@simplux/*": ["./packages/*"]
+    }
   },
+  "files": ["./build.lib.ts"],
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
     "packages/**/*.ts",
     "packages/**/*.tsx"
   ],
-  "exclude": [
-    "packages/*/dist/**/*.ts",
-    "packages/*/dist/**/*.tsx"
-  ]
+  "exclude": ["packages/*/dist/**/*.ts", "packages/*/dist/**/*.tsx"]
 }

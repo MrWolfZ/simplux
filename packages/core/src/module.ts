@@ -35,11 +35,15 @@ export function getModuleState(moduleName: string) {
 export function createModule<TState>(
   config: SimpluxModuleConfig<TState>,
 ): SimpluxModule<TState> {
-
   const getState = () => getModuleState(config.name)
-  const setState = (state: TState) => { dispatch({ type: `@simplux/${config.name}/setState`, state }) }
+  const setState = (state: TState) => {
+    dispatch({ type: `@simplux/${config.name}/setState`, state })
+  }
 
-  setChildReducer(config.name, (s = config.initialState, { type, state }) => type === `@simplux/${config.name}/setState` ? state : s)
+  setChildReducer(config.name, (s = config.initialState, { type, state }) =>
+    type === `@simplux/${config.name}/setState` ? state : s,
+  )
+
   setState(config.initialState)
 
   const result = {
@@ -48,7 +52,13 @@ export function createModule<TState>(
   }
 
   const moduleExtensionStateContainer = {}
-  return moduleExtensions.reduce((acc, ext) => ({ ...acc, ...ext(config, storeProxy, moduleExtensionStateContainer) }), result) as SimpluxModule<TState>
+  return moduleExtensions.reduce(
+    (acc, ext) => ({
+      ...acc,
+      ...ext(config, storeProxy, moduleExtensionStateContainer),
+    }),
+    result,
+  ) as SimpluxModule<TState>
 }
 
 export function removeModule(moduleName: string): void {

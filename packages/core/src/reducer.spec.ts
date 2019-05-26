@@ -1,4 +1,10 @@
-import { getChildReducer, getRootReducer, removeChildReducer, setChildReducer, setChildReducers } from './reducer'
+import {
+  getChildReducer,
+  getRootReducer,
+  removeChildReducer,
+  setChildReducer,
+  setChildReducers
+} from './reducer'
 
 describe('reducer', () => {
   afterEach(() => {
@@ -27,7 +33,9 @@ describe('reducer', () => {
         test2: (s = { test2: 'test2' }) => s,
       })
       expect(getRootReducer()(undefined, { type: '' }).test.test).toBe('test')
-      expect(getRootReducer()(undefined, { type: '' }).test2.test2).toBe('test2')
+      expect(getRootReducer()(undefined, { type: '' }).test2.test2).toBe(
+        'test2',
+      )
     })
   })
 

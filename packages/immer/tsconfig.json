@@ -4,20 +4,10 @@
     "baseUrl": "./",
     "outDir": "./dist",
     "paths": {
-      "@simplux/core": [
-        "../core/dist"
-      ],
-      "@simplux/core/*": [
-        "../core/dist/*"
-      ],
-      "@simplux/immer": [
-        "."
-      ]
+      "@simplux/core": ["../core/dist"],
+      "@simplux/core/*": ["../core/dist/*"],
+      "@simplux/immer": ["."]
     }
   },
-  "include": [
-    "index.ts",
-    "src/**/*.ts",
-    "src/**/*.ts"
-  ]
+  "include": ["index.ts", "src/**/*.ts", "src/**/*.ts"]
 }

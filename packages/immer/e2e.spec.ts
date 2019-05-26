@@ -27,7 +27,7 @@ describe(`@simplux/immer`, () => {
 
   const initialTodoState: TodoState = Object.freeze({
     todosById: Object.freeze({}),
-    todoIds: Object.freeze([]) as any as string[],
+    todoIds: (Object.freeze([]) as any) as string[],
   })
 
   const todo1: Todo = { id: '1', description: 'go shopping', isDone: false }

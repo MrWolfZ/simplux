@@ -2,7 +2,9 @@ import { createImmerReducer } from './immer'
 
 describe(createImmerReducer.name, () => {
   describe(`created reducer`, () => {
-    interface T { test: string }
+    interface T {
+      test: string
+    }
     const initialState: T = Object.freeze({ test: 'test' })
     const reducer = createImmerReducer<T>((s = initialState, { type }) => {
       if (type === 'update') {
