@@ -10,6 +10,7 @@ const path_1 = __importDefault(require("path"));
 const pretty_time_1 = __importDefault(require("pretty-time"));
 const shelljs_1 = __importDefault(require("shelljs"));
 const util_1 = require("util");
+const util_2 = require("./util");
 // tslint:disable: no-var-requires
 // tslint:disable: no-require-imports
 // tslint:disable-next-line: no-floating-promises
@@ -18,24 +19,24 @@ build().catch(err => {
     shelljs_1.default.exit(1);
 });
 async function build() {
-    const LIB_DIR = path_1.default.join(__dirname, process.argv[2]);
-    const OUTPUT_DIR = path_1.default.join(LIB_DIR, `dist`);
+    const PACKAGE_DIR = path_1.default.join(__dirname, process.argv[2]);
+    const OUTPUT_DIR = path_1.default.join(PACKAGE_DIR, `dist`);
     const BUNDLES_DIR = path_1.default.join(OUTPUT_DIR, `bundles`);
-    const PACKAGE = require(path_1.default.join(LIB_DIR, 'package.json'));
+    const PACKAGE = require(path_1.default.join(PACKAGE_DIR, 'package.json'));
     const buildStart = process.hrtime();
-    shelljs_1.default.echo(`Building lib '${chalk_1.default.cyan(PACKAGE.name)}'...`);
+    shelljs_1.default.echo(`Building package '${chalk_1.default.cyan(PACKAGE.name)}'...`);
     await executeStep(`Cleaning output directory`, () => {
         shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*`);
         shelljs_1.default.mkdir(`-p`, BUNDLES_DIR);
     });
-    await executeStep(`Linting`, () => execAsync(`tslint`, `-c tslint.json`, `-t stylish`, `--project ${LIB_DIR} ${LIB_DIR}/**/*.ts`));
-    await executeStep(`Compiling`, () => execAsync(`tsc -p ${LIB_DIR}/tsconfig.json`));
+    await executeStep(`Linting`, () => util_2.execAsync(`tslint`, `-c tslint.json`, `-t stylish`, `--project ${PACKAGE_DIR} ${PACKAGE_DIR}/**/*.ts`));
+    await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`));
     await executeStep(`Bundling`, async () => {
         const externals = Object.keys(PACKAGE.dependencies || {})
             .concat(Object.keys(PACKAGE.peerDependencies || {}))
             .join(',');
         const externalsArg = externals ? ` -e ${externals}` : '';
-        const ret = await execAsync(`rollup`, `-f esm`, `-n ${PACKAGE.name}`, `-i ${OUTPUT_DIR}/index.js`, `-o ${BUNDLES_DIR}/bundle.js`, `-m`, externalsArg);
+        const ret = await util_2.execAsync(`rollup`, `-f esm`, `-n ${PACKAGE.name}`, `-i ${OUTPUT_DIR}/index.js`, `-o ${BUNDLES_DIR}/bundle.js`, `-m`, externalsArg);
         if (ret.code !== 0) {
             return ret;
         }
@@ -44,7 +45,7 @@ async function build() {
     });
     await executeStep(`Downleveling ES2015 to ESM/ES5`, async () => {
         shelljs_1.default.cp(`${BUNDLES_DIR}/bundle.js`, `${BUNDLES_DIR}/bundle.es5.ts`);
-        const ret = await execAsync(`tsc`, `${BUNDLES_DIR}/bundle.es5.ts`, `--target es5`, `--module es2015`, `--noLib`, `--sourceMap`);
+        const ret = await util_2.execAsync(`tsc`, `${BUNDLES_DIR}/bundle.es5.ts`, `--target es5`, `--module es2015`, `--noLib`, `--sourceMap`);
         // 2 indicates failure with output still being generated
         // (this command will usually fail because of the --noLib flag)
         if (![0, 2].includes(ret.code)) {
@@ -63,7 +64,7 @@ async function build() {
         const globalsArg = externals.length > 0
             ? `-g ${externals.map(e => `${e}:${e}`).join(',')}`
             : '';
-        const ret = await execAsync(`rollup`, `-c ${path_1.default.join(__dirname, 'rollup.config.js')}`, `-f umd`, `-i ${BUNDLES_DIR}/bundle.es5.js`, `-o ${BUNDLES_DIR}/bundle.umd.js`, `-n ${PACKAGE.name}`, `-m`, `--exports named`, externalsArg, globalsArg);
+        const ret = await util_2.execAsync(`rollup`, `-c ${path_1.default.join(__dirname, 'rollup.config.js')}`, `-f umd`, `-i ${BUNDLES_DIR}/bundle.es5.js`, `-o ${BUNDLES_DIR}/bundle.umd.js`, `-n ${PACKAGE.name}`, `-m`, `--exports named`, externalsArg, globalsArg);
         if (ret.code !== 0) {
             return ret;
         }
@@ -71,14 +72,14 @@ async function build() {
         return ret;
     });
     await executeStep(`Minifying`, async () => {
-        const ret = await execAsync(`${path_1.default.join(__dirname, 'node_modules/.bin/uglifyjs')}`, false, `-c`, `-m`, `--comments`, `-o ${BUNDLES_DIR}/bundle.umd.min.js`, 
+        let code = await util_2.execAsync(`${path_1.default.join(__dirname, 'node_modules/.bin/uglifyjs')}`, false, `-c`, `-m`, `--comments`, `-o ${BUNDLES_DIR}/bundle.umd.min.js`, 
         // tslint:disable-next-line: max-line-length
         `--source-map "filename='bundle.umd.min.js.map',url='bundle.umd.min.js.map',includeSources"`, `${BUNDLES_DIR}/bundle.umd.js`);
-        if (ret.code !== 0) {
-            return ret;
+        if (code !== 0) {
+            return code;
         }
-        ret.code = await mapSources(`${BUNDLES_DIR}/bundle.umd.min.js`);
-        return ret;
+        code = await mapSources(`${BUNDLES_DIR}/bundle.umd.min.js`);
+        return code;
     });
     await executeStep(`Adjusting bundle sourcemap sources paths`, async () => {
         const globPromise = util_1.promisify(glob_1.default);
@@ -99,13 +100,13 @@ async function build() {
         shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/src/**/*.spec.d.ts`);
     });
     await executeStep(`Copying static assets`, () => {
-        shelljs_1.default.cp(`-Rf`, [`${LIB_DIR}/package.json`], OUTPUT_DIR);
+        shelljs_1.default.cp(`-Rf`, [`${PACKAGE_DIR}/package.json`], OUTPUT_DIR);
         shelljs_1.default.cp(`-Rf`, [`LICENSE`], OUTPUT_DIR);
-        shelljs_1.default.cp(`-Rf`, [`${LIB_DIR}/README.md`], OUTPUT_DIR);
+        shelljs_1.default.cp(`-Rf`, [`${PACKAGE_DIR}/README.md`], OUTPUT_DIR);
     });
     const buildTime = process.hrtime(buildStart);
     const formattedBuildTime = chalk_1.default.yellow(pretty_time_1.default(buildTime, 'ms'));
-    shelljs_1.default.echo(chalk_1.default.green(`Finished building lib '${chalk_1.default.cyan(PACKAGE.name)}' in ${formattedBuildTime}!`));
+    shelljs_1.default.echo(chalk_1.default.green(`Finished building package '${chalk_1.default.cyan(PACKAGE.name)}' in ${formattedBuildTime}!`));
 }
 async function executeStep(stepName, fn) {
     const start = process.hrtime();
@@ -139,11 +140,6 @@ async function executeStep(stepName, fn) {
         shelljs_1.default.exit(code);
     }
     shelljs_1.default.echo(chalk_1.default.green(`${stepName} successful in ${formattedTime}!`));
-}
-function execAsync(command, silent, ...params) {
-    const allParams = typeof silent === 'string' ? [silent, ...params] : params;
-    const fullCommand = `${command} ${allParams.filter(p => !!p).join(' ')}`;
-    return new Promise(resolve => shelljs_1.default.exec(fullCommand, { silent: typeof silent === 'boolean' ? silent : true }, (code, stdout, stderr) => resolve({ code, stdout, stderr })));
 }
 // TODO: ensure the sources path is correct
 // (i.e. @simplux/core/src/... instead of ../../src/...)

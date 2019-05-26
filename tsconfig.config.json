@@ -5,6 +5,5 @@
     "sourceMap": false,
     "types": ["node"]
   },
-  "files": ["./build.lib.ts"],
-  "include": []
+  "include": ["scripts/**/*.ts"]
 }

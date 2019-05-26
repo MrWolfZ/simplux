@@ -5,6 +5,7 @@ import path from 'path'
 import pretty from 'pretty-time'
 import shell from 'shelljs'
 import { promisify } from 'util'
+import { execAsync, ExecReturnValue } from './util'
 
 // tslint:disable: no-var-requires
 // tslint:disable: no-require-imports
@@ -16,14 +17,14 @@ build().catch(err => {
 })
 
 async function build() {
-  const LIB_DIR = path.join(__dirname, process.argv[2])
-  const OUTPUT_DIR = path.join(LIB_DIR, `dist`)
+  const PACKAGE_DIR = path.join(__dirname, process.argv[2])
+  const OUTPUT_DIR = path.join(PACKAGE_DIR, `dist`)
   const BUNDLES_DIR = path.join(OUTPUT_DIR, `bundles`)
-  const PACKAGE = require(path.join(LIB_DIR, 'package.json'))
+  const PACKAGE = require(path.join(PACKAGE_DIR, 'package.json'))
 
   const buildStart = process.hrtime()
 
-  shell.echo(`Building lib '${chalk.cyan(PACKAGE.name)}'...`)
+  shell.echo(`Building package '${chalk.cyan(PACKAGE.name)}'...`)
 
   await executeStep(`Cleaning output directory`, () => {
     shell.rm(`-Rf`, `${OUTPUT_DIR}/*`)
@@ -35,12 +36,12 @@ async function build() {
       `tslint`,
       `-c tslint.json`,
       `-t stylish`,
-      `--project ${LIB_DIR} ${LIB_DIR}/**/*.ts`,
+      `--project ${PACKAGE_DIR} ${PACKAGE_DIR}/**/*.ts`,
     ),
   )
 
   await executeStep(`Compiling`, () =>
-    execAsync(`tsc -p ${LIB_DIR}/tsconfig.json`),
+    execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`),
   )
 
   await executeStep(`Bundling`, async () => {
@@ -126,7 +127,7 @@ async function build() {
   })
 
   await executeStep(`Minifying`, async () => {
-    const ret = await execAsync(
+    let code = await execAsync(
       `${path.join(__dirname, 'node_modules/.bin/uglifyjs')}`,
       false,
       `-c`,
@@ -138,12 +139,12 @@ async function build() {
       `${BUNDLES_DIR}/bundle.umd.js`,
     )
 
-    if (ret.code !== 0) {
-      return ret
+    if (code !== 0) {
+      return code
     }
 
-    ret.code = await mapSources(`${BUNDLES_DIR}/bundle.umd.min.js`)
-    return ret
+    code = await mapSources(`${BUNDLES_DIR}/bundle.umd.min.js`)
+    return code
   })
 
   await executeStep(`Adjusting bundle sourcemap sources paths`, async () => {
@@ -173,9 +174,9 @@ async function build() {
   })
 
   await executeStep(`Copying static assets`, () => {
-    shell.cp(`-Rf`, [`${LIB_DIR}/package.json`], OUTPUT_DIR)
+    shell.cp(`-Rf`, [`${PACKAGE_DIR}/package.json`], OUTPUT_DIR)
     shell.cp(`-Rf`, [`LICENSE`], OUTPUT_DIR)
-    shell.cp(`-Rf`, [`${LIB_DIR}/README.md`], OUTPUT_DIR)
+    shell.cp(`-Rf`, [`${PACKAGE_DIR}/README.md`], OUTPUT_DIR)
   })
 
   const buildTime = process.hrtime(buildStart)
@@ -183,18 +184,13 @@ async function build() {
 
   shell.echo(
     chalk.green(
-      `Finished building lib '${chalk.cyan(
+      `Finished building package '${chalk.cyan(
         PACKAGE.name,
       )}' in ${formattedBuildTime}!`,
     ),
   )
 }
 
-interface ExecReturnValue {
-  code: number
-  stdout: string
-  stderr: string
-}
 type StepReturnValue = void | number | ExecReturnValue
 
 async function executeStep(
@@ -236,31 +232,6 @@ async function executeStep(
   }
 
   shell.echo(chalk.green(`${stepName} successful in ${formattedTime}!`))
-}
-
-function execAsync(
-  command: string,
-  ...params: string[]
-): Promise<ExecReturnValue>
-function execAsync(
-  command: string,
-  silent: boolean,
-  ...params: string[]
-): Promise<ExecReturnValue>
-function execAsync(
-  command: string,
-  silent?: boolean | string,
-  ...params: string[]
-): Promise<ExecReturnValue> {
-  const allParams = typeof silent === 'string' ? [silent, ...params] : params
-  const fullCommand = `${command} ${allParams.filter(p => !!p).join(' ')}`
-  return new Promise(resolve =>
-    shell.exec(
-      fullCommand,
-      { silent: typeof silent === 'boolean' ? silent : true },
-      (code, stdout, stderr) => resolve({ code, stdout, stderr }),
-    ),
-  )
 }
 
 // TODO: ensure the sources path is correct

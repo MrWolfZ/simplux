@@ -22,12 +22,6 @@
       "@simplux/*": ["./packages/*"]
     }
   },
-  "files": ["./build.lib.ts"],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "packages/**/*.ts",
-    "packages/**/*.tsx"
-  ],
+  "include": ["packages/**/*.ts", "packages/**/*.tsx", "scripts/**/*.ts"],
   "exclude": ["packages/*/dist/**/*.ts", "packages/*/dist/**/*.tsx"]
 }
