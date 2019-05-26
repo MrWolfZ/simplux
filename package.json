@@ -18,12 +18,12 @@
     "test:selectors": "jest --config=packages/selectors/jest.config.js --forceExit --verbose --detectOpenHandles",
     "test:immer": "jest --config=packages/immer/jest.config.js --forceExit --verbose --detectOpenHandles",
     "test:react": "jest --config=packages/react/jest.config.js --forceExit --verbose --detectOpenHandles",
+    "test-changed-since-master": "npm run test:core -- --changedSince=master && npm run test:selectors -- --changedSince=master && npm run test:immer -- --changedSince=master && npm run test:react -- --changedSince=master",
     "build:config": "tsc -p ./tsconfig.config.json"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm test",
-      "pre-push": "npm test"
+      "pre-commit": "npm run test-changed-since-master"
     }
   },
   "keywords": [
