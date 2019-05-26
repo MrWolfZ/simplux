@@ -50,34 +50,14 @@ describe('selectors', () => {
       createSelectors = createSelectorsFactory<number>('test', storeProxy.getState, moduleSelectors)
     })
 
-    it('merges selectors if called multiple times', () => {
+    it('throws when existing selector is declared again', () => {
       createSelectors({
-        plusOne: c => c + 1,
+        plus: c => c + 1,
       })
 
-      createSelectors({
-        minusOne: c => c - 1,
-      })
-
-      expect(moduleSelectors.plusOne).toBeDefined()
-      expect(moduleSelectors.minusOne).toBeDefined()
-    })
-
-    it('overwrites selectors with the same name when called multiple times', () => {
-      const plus1 = (c: number) => c + 1
-      const plus2 = (c: number) => c + 2
-
-      createSelectors({
-        plus: plus1,
-      })
-
-      expect(moduleSelectors.plus).toBe(plus1)
-
-      createSelectors({
-        plus: plus2,
-      })
-
-      expect(moduleSelectors.plus).toBe(plus2)
+      expect(() => createSelectors({
+        plus: c => c + 2,
+      })).toThrowError(`selector 'plus' is already defined for module 'test'`)
     })
 
     describe(`returned selectors`, () => {

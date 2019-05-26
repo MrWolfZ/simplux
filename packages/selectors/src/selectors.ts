@@ -21,6 +21,12 @@ export type SelectorsFactory<TState> = <TSelectors extends SelectorsBase<TState>
 
 export function createSelectorsFactory<TState>(moduleName: string, getStoreState: () => any, moduleSelectors: SelectorsBase<TState>): SelectorsFactory<TState> {
   return <TSelectors extends SelectorsBase<TState>>(selectors: TSelectors): ResolvedSelectors<TState, TSelectors> => {
+    for (const selectorName of Object.keys(selectors)) {
+      if (moduleSelectors[selectorName]) {
+        throw new Error(`selector '${selectorName}' is already defined for module '${moduleName}'`)
+      }
+    }
+
     Object.assign(moduleSelectors, selectors)
 
     const resolvedSelectors = Object.keys(selectors).reduce((acc, key) => {
