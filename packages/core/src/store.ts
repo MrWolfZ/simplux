@@ -47,8 +47,8 @@ export interface SimpluxStore {
   getState: () => any
   dispatch: Store['dispatch']
   subscribe: Store['subscribe']
-  setReducer: <T>(name: string, reducer: Reducer<T>) => void
-  getReducer: <T>(name: string) => Reducer<T>
+  setReducer: <T = any>(name: string, reducer: Reducer<T>) => void
+  getReducer: <T = any>(name: string) => Reducer<T>
 }
 
 export function createSimpluxStore(
