@@ -20,6 +20,12 @@
     "test:react": "jest --config=packages/react/jest.config.js --forceExit --verbose --detectOpenHandles",
     "build:config": "tsc -p ./tsconfig.config.json"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test",
+      "pre-push": "npm test"
+    }
+  },
   "keywords": [
     "redux",
     "react",
@@ -44,6 +50,7 @@
     "@types/webpack-chain": "^5.2.0",
     "@types/webpack-env": "^1.13.9",
     "glob": "^7.1.4",
+    "husky": "^2.3.0",
     "immer": "^3.1.2",
     "jest": "^24.7.1",
     "jest-transform-stub": "^2.0.0",
