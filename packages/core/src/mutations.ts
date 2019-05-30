@@ -1,6 +1,5 @@
-import { Action } from 'redux'
+import { Action, Dispatch } from 'redux'
 import { SimpluxModuleExtension } from './module'
-import { SimpluxStore } from './store'
 
 // this interface exists purely to allow plugins to overwrite the return type of mutations
 // @ts-ignore
@@ -79,7 +78,8 @@ export function createModuleReducer<TState>(
 
 export function createMutationsFactory<TState>(
   moduleName: string,
-  { getState, dispatch }: SimpluxStore,
+  getModuleState: () => TState,
+  dispatch: Dispatch,
   moduleMutations: MutationsBase<TState>,
 ): MutationsFactory<TState> {
   return <TMutations extends MutationsBase<TState>>(
@@ -104,7 +104,7 @@ export function createMutationsFactory<TState>(
 
         acc[mutationName] = ((...args: any[]) => {
           dispatch(createAction(...args))
-          return getState()[moduleName]
+          return getModuleState()
         }) as ResolvedMutation<TState, TMutations[typeof mutationName]>
         acc[mutationName].withState = (state: TState) => (...args: any[]) => {
           const result = mutations[mutationName](state, ...args)
@@ -131,7 +131,12 @@ declare module './module' {
 
 export const mutationsModuleExtension: SimpluxModuleExtension<
   SimpluxModuleMutationExtensions<any>
-> = ({ name, initialState }, store, extensionState) => {
+> = (
+  { name, initialState },
+  { dispatch, setReducer },
+  { getState },
+  extensionState,
+) => {
   extensionState.mutations = extensionState.mutations || {}
   extensionState.mutations[name] = extensionState.mutations[name] || {}
   const reducer = createModuleReducer(
@@ -140,12 +145,13 @@ export const mutationsModuleExtension: SimpluxModuleExtension<
     extensionState.mutations[name],
   )
 
-  store.setReducer(name, reducer)
+  setReducer(name, reducer)
 
   return {
     createMutations: createMutationsFactory(
       name,
-      store,
+      getState,
+      dispatch,
       extensionState.mutations[name],
     ),
   }

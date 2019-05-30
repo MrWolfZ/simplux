@@ -1,3 +1,4 @@
+import { SimpluxModuleCore } from './module'
 import {
   createModuleReducer,
   createMutationsFactory,
@@ -9,12 +10,18 @@ import { SimpluxStore } from './store'
 
 describe('mutations', () => {
   const dispatchMock = jest.fn().mockImplementation(a => a)
-  let storeState = {}
-  const getStoreStateMock = jest.fn().mockImplementation(() => storeState)
+  const getStoreStateMock = jest.fn()
   const setReducerMock = jest.fn()
   const getReducerMock = jest.fn()
 
-  const store: SimpluxStore = {
+  let moduleState = {}
+  const getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
+  const setModuleStateMock = jest.fn()
+  const subscribeToModuleStateChangesMock = jest
+    .fn()
+    .mockImplementation(() => () => void 0)
+
+  const storeMock: SimpluxStore = {
     rootReducer: s => s,
     getState: getStoreStateMock,
     dispatch: dispatchMock,
@@ -23,8 +30,14 @@ describe('mutations', () => {
     getReducer: getReducerMock,
   }
 
+  const moduleMock: SimpluxModuleCore<any> = {
+    getState: getModuleStateMock,
+    setState: setModuleStateMock,
+    subscribeToStateChanges: subscribeToModuleStateChangesMock,
+  }
+
   beforeEach(() => {
-    storeState = {}
+    moduleState = {}
     jest.clearAllMocks()
   })
 
@@ -35,7 +48,8 @@ describe('mutations', () => {
           name: 'test',
           initialState: 0,
         },
-        store,
+        storeMock,
+        moduleMock,
         {},
       )
 
@@ -49,7 +63,8 @@ describe('mutations', () => {
           name: 'test',
           initialState: 0,
         },
-        store,
+        storeMock,
+        moduleMock,
         c,
       )
 
@@ -62,7 +77,8 @@ describe('mutations', () => {
           name: 'test',
           initialState: 0,
         },
-        store,
+        storeMock,
+        moduleMock,
         {},
       )
 
@@ -78,7 +94,8 @@ describe('mutations', () => {
       moduleMutations = {}
       createMutations = createMutationsFactory<number>(
         'test',
-        store,
+        getModuleStateMock,
+        dispatchMock,
         moduleMutations,
       )
     })
@@ -99,7 +116,7 @@ describe('mutations', () => {
 
     describe(`returned mutations`, () => {
       beforeEach(() => {
-        storeState = { test: 0 }
+        moduleState = 0
       })
 
       it('dispatch action when called without args', () => {
@@ -133,7 +150,7 @@ describe('mutations', () => {
           increment: c => c + 1,
         })
 
-        storeState = { test: 1 }
+        moduleState = 1
         const updatedState = increment()
         expect(updatedState).toBe(1)
       })
@@ -155,7 +172,7 @@ describe('mutations', () => {
       it('returns the state when called with state and not mutation does not return state', () => {
         const mutatingCreateMutations = createMutationsFactory<{
           test: string;
-        }>('test', store, {})
+        }>('test', getModuleStateMock, dispatchMock, {})
 
         const { update } = mutatingCreateMutations({
           update: state => {

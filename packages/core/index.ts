@@ -13,6 +13,7 @@ export {
   registerModuleExtension as registerSimpluxModuleExtension,
   SimpluxModule,
   SimpluxModuleConfig,
+  SimpluxModuleCore,
   SimpluxModuleExtension,
   StateChangeHandler,
   Unsubscribe,

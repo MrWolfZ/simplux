@@ -8,15 +8,18 @@ export interface SimpluxModuleConfig<TState> {
 export type StateChangeHandler<TState> = (state: TState) => void
 export type Unsubscribe = () => void
 
-export interface SimpluxModule<TState> {
+export interface SimpluxModuleCore<TState> {
   getState(): TState
   setState(state: TState): void
   subscribeToStateChanges(handler: StateChangeHandler<TState>): Unsubscribe
 }
 
+export interface SimpluxModule<TState> extends SimpluxModuleCore<TState> {}
+
 export type SimpluxModuleExtension<TReturn = object> = <TState>(
   config: SimpluxModuleConfig<TState>,
   store: SimpluxStore,
+  moduleCore: SimpluxModuleCore<TState>,
   moduleExtensionStateContainer: any,
 ) => TReturn
 
@@ -78,7 +81,7 @@ export function createModule<TState>(
     type === `@simplux/${config.name}/setState` ? state : s,
   )
 
-  const result = {
+  const result: SimpluxModuleCore<TState> = {
     getState: getModuleState,
     setState: setModuleState,
     subscribeToStateChanges,
@@ -88,7 +91,7 @@ export function createModule<TState>(
   return moduleExtensions.reduce(
     (acc, ext) => ({
       ...acc,
-      ...ext(config, store, moduleExtensionStateContainer),
+      ...ext(config, store, acc, moduleExtensionStateContainer),
     }),
     result,
   ) as SimpluxModule<TState>
