@@ -15,6 +15,7 @@ export {
   SimpluxModuleConfig,
   SimpluxModuleExtension,
   StateChangeHandler,
+  Unsubscribe,
 } from './src/module'
 export {
   MutationBase,

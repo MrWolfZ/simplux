@@ -4,6 +4,7 @@ import {
   moduleExtensions,
   registerModuleExtension,
   SimpluxModule,
+  Unsubscribe,
 } from './module'
 import { createSimpluxStore, SimpluxStore } from './store'
 
@@ -58,7 +59,7 @@ describe('created module', () => {
   })
 
   describe(`subscribeToStateChanges`, () => {
-    let unsubscribe: () => void
+    let unsubscribe: Unsubscribe
     let handlerSpy: jest.Mock
     const initialState = {
       prop: 'value',
