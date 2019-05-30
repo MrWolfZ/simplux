@@ -1,20 +1,10 @@
 // this file contains an end-to-end test for the public API
 
 import { createSimpluxModule } from '@simplux/core'
-import { registerSimpluxReactExtension } from '@simplux/react'
+import '@simplux/react'
 import { act, renderHook } from 'react-hooks-testing-library'
 
 describe(`@simplux/react`, () => {
-  let unregister: () => void
-
-  beforeAll(() => {
-    unregister = registerSimpluxReactExtension()
-  })
-
-  afterAll(() => {
-    unregister()
-  })
-
   interface Todo {
     id: string
     description: string
