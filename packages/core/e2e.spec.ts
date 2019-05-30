@@ -5,7 +5,7 @@ import {
   getSimpluxReducer,
   useSimpluxWithExistingStore,
 } from '@simplux/core'
-import { combineReducers, createStore, Store } from 'redux'
+import { combineReducers, createStore } from 'redux'
 
 describe(`@simplux/core`, () => {
   interface Todo {
@@ -126,41 +126,26 @@ describe(`@simplux/core`, () => {
   })
 
   it('does not access the store before any mutation is executed', () => {
-    const dispatchMock = jest.fn()
-    const getStateMock = jest.fn()
-    const replaceReducerMock = jest.fn()
-    const subscribeMock = jest.fn()
+    const undo = useSimpluxWithExistingStore(undefined!, s => s)
 
-    const customStore: Store = {
-      dispatch: dispatchMock,
-      getState: getStateMock,
-      replaceReducer: replaceReducerMock,
-      subscribe: subscribeMock,
-    }
+    expect(() => {
+      const { createMutations } = createSimpluxModule({
+        name: 'todos',
+        initialState: initialTodoState,
+      })
 
-    const undo = useSimpluxWithExistingStore(customStore, s => s.simplux)
-
-    const { createMutations } = createSimpluxModule({
-      name: 'todos',
-      initialState: initialTodoState,
-    })
-
-    createMutations({
-      addTodo({ todosById, todoIds }, todo: Todo) {
-        return {
-          todosById: {
-            ...todosById,
-            [todo.id]: todo,
-          },
-          todoIds: [...todoIds, todo.id],
-        }
-      },
-    })
-
-    expect(dispatchMock).not.toHaveBeenCalled()
-    expect(getStateMock).not.toHaveBeenCalled()
-    expect(replaceReducerMock).not.toHaveBeenCalled()
-    expect(subscribeMock).not.toHaveBeenCalled()
+      createMutations({
+        addTodo({ todosById, todoIds }, todo: Todo) {
+          return {
+            todosById: {
+              ...todosById,
+              [todo.id]: todo,
+            },
+            todoIds: [...todoIds, todo.id],
+          }
+        },
+      })
+    }).not.toThrow()
 
     undo()
   })
