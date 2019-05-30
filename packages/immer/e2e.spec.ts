@@ -1,19 +1,9 @@
 // this file contains an end-to-end test that verifies mutating reducers can be used
 
 import { createSimpluxModule } from '@simplux/core'
-import { registerSimpluxImmerExtension } from '@simplux/immer'
+import '@simplux/immer'
 
 describe(`@simplux/immer`, () => {
-  let unregister: () => void
-
-  beforeAll(() => {
-    unregister = registerSimpluxImmerExtension()
-  })
-
-  afterAll(() => {
-    unregister()
-  })
-
   interface Todo {
     id: string
     description: string
