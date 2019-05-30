@@ -1,18 +1,19 @@
 import { SubscribeToStateChanges } from '@simplux/core'
 import { useEffect, useLayoutEffect, useReducer, useRef } from 'react'
+import { getWindow } from './window'
 
 // TODO: wrap store with proxy that notifies subscribers using batching (or just
 // switch to react-redux or another existing react bindings implementation)
 
-// React currently throws a warning when using useLayoutEffect on the server.
-// To get around it, we can conditionally useEffect on the server (no-op) and
-// useLayoutEffect in the browser. We need useLayoutEffect to ensure the store
-// subscription callback always has the selector from the latest render commit
-// available, otherwise a store update may happen between render and the effect,
-// which may cause missed updates
-const useIsomorphicLayoutEffect =
-  // tslint:disable-next-line: strict-type-predicates
-  typeof window !== 'undefined' ? useLayoutEffect : useEffect
+function getEffectHook() {
+  // React currently throws a warning when using useLayoutEffect on the server.
+  // To get around it, we can conditionally useEffect on the server (no-op) and
+  // useLayoutEffect in the browser. We need useLayoutEffect to ensure the store
+  // subscription callback always has the selector from the latest render commit
+  // available, otherwise a store update may happen between render and the effect,
+  // which may cause missed updates
+  return typeof getWindow() !== 'undefined' ? useLayoutEffect : useEffect
+}
 
 export function useModuleSelector<TState, TSelected>(
   getModuleState: () => TState,
@@ -37,12 +38,12 @@ export function useModuleSelector<TState, TSelected>(
 
   const latestSelectedState = useRef(selectedState)
 
-  useIsomorphicLayoutEffect(() => {
+  getEffectHook()(() => {
     latestSelector.current = selector
     latestSelectedState.current = selectedState
   })
 
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     function checkForUpdates(state: TState) {
       try {
         const newSelectedState = latestSelector.current(state)

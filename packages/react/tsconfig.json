@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist",
+    "jsx": "react",
     "paths": {
       "@simplux/core": ["../core/dist"],
       "@simplux/core/*": ["../core/dist/*"],

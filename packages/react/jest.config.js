@@ -1,6 +1,6 @@
 module.exports = {
   roots: ['<rootDir>/src', '<rootDir>'],
-  moduleFileExtensions: ['js', 'ts'],
+  moduleFileExtensions: ['js', 'ts', 'tsx'],
   moduleNameMapper: {
     '^@simplux/core$': '<rootDir>/../core/index.ts',
     '^@simplux/react$': '<rootDir>/index.ts',
@@ -8,6 +8,6 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
-  testMatch: ['<rootDir>/src/**/*.spec.tsx?', '<rootDir>/e2e.spec.ts'],
+  testMatch: ['<rootDir>/src/**/*.spec.ts?(x)', '<rootDir>/e2e.spec.ts'],
   testPathIgnorePatterns: ['node_modules'],
 }
