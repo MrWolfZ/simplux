@@ -167,6 +167,24 @@ describe('mutations', () => {
         const result = update.withState({ test: 'test' })()
         expect(result).toEqual({ test: 'updated' })
       })
+
+      it('returns the action if called as action creator', () => {
+        const mutationSpy = jest.fn()
+
+        const { increment } = createMutations({
+          // tslint:disable-next-line: no-unnecessary-callback-wrapper (for type annotations)
+          increment: (c, arg1: string, arg2: { nestedArg: boolean }) =>
+            mutationSpy(c, arg1, arg2),
+        })
+
+        const action = increment.asActionCreator('foo', { nestedArg: true })
+
+        expect(mutationSpy).not.toHaveBeenCalled()
+        expect(action).toEqual({
+          type: '@simplux/test/mutation/increment',
+          args: ['foo', { nestedArg: true }],
+        })
+      })
     })
   })
 

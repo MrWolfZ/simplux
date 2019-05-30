@@ -23,6 +23,7 @@ export interface MutationsBase<TState> {
 
 export interface ResolvedMutationExtras<TState, TArgs extends any[]> {
   withState: (state: TState) => (...args: TArgs) => TState
+  asActionCreator: (...args: TArgs) => { type: string; args: TArgs }
 }
 
 export type ResolvedMutation<
@@ -96,17 +97,20 @@ export function createMutationsFactory<TState>(
 
     const resolvedMutations = Object.keys(mutations).reduce(
       (acc, mutationName: keyof TMutations) => {
+        const createAction = (...args: any[]) => ({
+          type: `${mutationPrefix(moduleName)}${mutationName}`,
+          args,
+        })
+
         acc[mutationName] = ((...args: any[]) => {
-          dispatch({
-            type: `${mutationPrefix(moduleName)}${mutationName}`,
-            args,
-          })
+          dispatch(createAction(...args))
           return getState()[moduleName]
         }) as ResolvedMutation<TState, TMutations[typeof mutationName]>
         acc[mutationName].withState = (state: TState) => (...args: any[]) => {
           const result = mutations[mutationName](state, ...args)
           return result || state
         }
+        acc[mutationName].asActionCreator = createAction
         return acc
       },
       {} as ResolvedMutations<TState, TMutations>,
@@ -136,7 +140,7 @@ export const mutationsModuleExtension: SimpluxModuleExtension<
     extensionState.mutations[name],
   )
 
-  store.setReducer<any>(name, reducer)
+  store.setReducer(name, reducer)
 
   return {
     createMutations: createMutationsFactory(
