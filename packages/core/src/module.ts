@@ -7,11 +7,14 @@ export interface SimpluxModuleConfig<TState> {
 
 export type StateChangeHandler<TState> = (state: TState) => void
 export type Unsubscribe = () => void
+export type SubscribeToStateChanges<TState> = (
+  handler: StateChangeHandler<TState>,
+) => Unsubscribe
 
 export interface SimpluxModuleCore<TState> {
   getState(): TState
   setState(state: TState): void
-  subscribeToStateChanges(handler: StateChangeHandler<TState>): Unsubscribe
+  subscribeToStateChanges: SubscribeToStateChanges<TState>
 }
 
 export interface SimpluxModule<TState> extends SimpluxModuleCore<TState> {}
