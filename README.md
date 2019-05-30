@@ -6,10 +6,15 @@ This repository is a work-in-progress and is not suitable for use in production.
 
 ### Open points
 
-- selectors: add extension for creating factory selectors
 - all: register extensions automatically when importing the package
+- core: add examples
+- core: add testing package that allows mocking mutations
+- selectors: add extension for creating factory selectors
+- selectors: add testing package that allows mocking selectors
 - react: write more tests
 - async: create package for performing async work for a module
+- async: add testing package that allows mocking async work
+- async: support cancelling work
 - observable: create package for getting an observable of module state changes
 - observable: add support for observable epics
 - docs: create website
