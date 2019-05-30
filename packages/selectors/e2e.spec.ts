@@ -1,19 +1,9 @@
 // this file contains an end-to-end test for the public API
 
 import { createSimpluxModule } from '@simplux/core'
-import { registerSimpluxSelectExtension } from '@simplux/selectors'
+import '@simplux/selectors'
 
 describe(`@simplux/selectors`, () => {
-  let unregister: () => void
-
-  beforeAll(() => {
-    unregister = registerSimpluxSelectExtension()
-  })
-
-  afterAll(() => {
-    unregister()
-  })
-
   interface Todo {
     id: string
     description: string
