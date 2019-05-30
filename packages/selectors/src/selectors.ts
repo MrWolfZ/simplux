@@ -34,7 +34,7 @@ export type SelectorsFactory<TState> = <
 
 export function createSelectorsFactory<TState>(
   moduleName: string,
-  getStoreState: () => any,
+  getModuleState: () => TState,
   moduleSelectors: SelectorsBase<TState>,
 ): SelectorsFactory<TState> {
   return <TSelectors extends SelectorsBase<TState>>(
@@ -57,7 +57,7 @@ export function createSelectorsFactory<TState>(
           return selector(state, ...args)
         }) as ResolvedSelector<TState, TSelectors[typeof key]>
         acc[key].bound = ((...args: any[]) => {
-          return selector(getStoreState()[moduleName], ...args)
+          return selector(getModuleState(), ...args)
         }) as ResolvedSelector<TState, TSelectors[typeof key]>
         return acc
       },
@@ -79,7 +79,7 @@ declare module '@simplux/core' {
 
 export const selectorsModuleExtension: SimpluxModuleExtension<
   SimpluxModuleSelectorExtensions<any>
-> = ({ name }, { getState }, moduleExtensionStateContainer) => {
+> = ({ name }, _, { getState }, moduleExtensionStateContainer) => {
   moduleExtensionStateContainer.selectors =
     moduleExtensionStateContainer.selectors || {}
   const moduleSelectors: SelectorsBase<

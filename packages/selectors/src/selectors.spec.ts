@@ -1,4 +1,4 @@
-import { SimpluxStore } from '@simplux/core'
+import { SimpluxModuleCore, SimpluxStore } from '@simplux/core'
 import {
   createSelectorsFactory,
   SelectorsBase,
@@ -8,12 +8,18 @@ import {
 
 describe('selectors', () => {
   const dispatchMock = jest.fn().mockImplementation(a => a)
-  let storeState = {}
-  const getStoreStateMock = jest.fn().mockImplementation(() => storeState)
+  const getStoreStateMock = jest.fn()
   const setReducerMock = jest.fn()
   const getReducerMock = jest.fn()
 
-  const store: SimpluxStore = {
+  let moduleState = {}
+  const getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
+  const setModuleStateMock = jest.fn()
+  const subscribeToModuleStateChangesMock = jest
+    .fn()
+    .mockImplementation(() => () => void 0)
+
+  const storeMock: SimpluxStore = {
     rootReducer: s => s,
     getState: getStoreStateMock,
     dispatch: dispatchMock,
@@ -22,8 +28,14 @@ describe('selectors', () => {
     getReducer: getReducerMock,
   }
 
+  const moduleMock: SimpluxModuleCore<any> = {
+    getState: getModuleStateMock,
+    setState: setModuleStateMock,
+    subscribeToStateChanges: subscribeToModuleStateChangesMock,
+  }
+
   beforeEach(() => {
-    storeState = {}
+    moduleState = {}
     jest.clearAllMocks()
   })
 
@@ -35,7 +47,8 @@ describe('selectors', () => {
           name: 'test',
           initialState: 0,
         },
-        store,
+        storeMock,
+        moduleMock,
         c,
       )
 
@@ -48,7 +61,8 @@ describe('selectors', () => {
           name: 'test',
           initialState: 0,
         },
-        store,
+        storeMock,
+        moduleMock,
         {},
       )
 
@@ -64,7 +78,7 @@ describe('selectors', () => {
       moduleSelectors = {}
       createSelectors = createSelectorsFactory<number>(
         'test',
-        store.getState,
+        getModuleStateMock,
         moduleSelectors,
       )
     })
@@ -83,7 +97,7 @@ describe('selectors', () => {
 
     describe(`returned selectors`, () => {
       beforeEach(() => {
-        storeState = { test: 20 }
+        moduleState = 20
       })
 
       it('selects the state', () => {
