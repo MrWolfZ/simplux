@@ -1,23 +1,26 @@
-import { SimpluxModuleExtension } from '@simplux/core'
-import { useReduxState } from './useReduxState'
+import { SimpluxModuleExtension, SubscribeToStateChanges } from '@simplux/core'
+import { useModuleSelector } from './useModuleSelector'
 
-export type SimpluxStateHook<TState> = <TResult = TState>(
-  selector?: (state: TState) => TResult,
+export type SimpluxModuleSelectorHook<TState> = <TResult>(
+  selector: (state: TState) => TResult,
 ) => TResult
 
-export function createStateHook<TState>(
-  moduleName: string,
-): SimpluxStateHook<TState> {
-  return <TResult = TState>(selector?: (state: TState) => TResult) => {
-    return useReduxState<any, TResult>(state =>
-      selector ? selector(state[moduleName]) : state[moduleName],
+export function createSelectorHook<TState>(
+  getModuleState: () => TState,
+  subscribeToModuleStateChanges: SubscribeToStateChanges<TState>,
+): SimpluxModuleSelectorHook<TState> {
+  return <TResult = TState>(selector: (state: TState) => TResult) => {
+    return useModuleSelector<TState, TResult>(
+      getModuleState,
+      subscribeToModuleStateChanges,
+      selector,
     )
   }
 }
 
 export interface SimpluxModuleReactExtensions<TState> {
   reactHooks: {
-    useState: SimpluxStateHook<TState>;
+    useSelector: SimpluxModuleSelectorHook<TState>;
   }
 }
 
@@ -28,10 +31,10 @@ declare module '@simplux/core' {
 
 export const reactHooksModuleExtension: SimpluxModuleExtension<
   SimpluxModuleReactExtensions<any>
-> = ({ name }) => {
+> = (_, _2, { getState, subscribeToStateChanges }) => {
   return {
     reactHooks: {
-      useState: createStateHook(name),
+      useSelector: createSelectorHook(getState, subscribeToStateChanges),
     },
   }
 }

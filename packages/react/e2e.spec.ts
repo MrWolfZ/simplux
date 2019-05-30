@@ -42,7 +42,7 @@ describe(`@simplux/react`, () => {
   it('works', () => {
     const {
       createMutations,
-      reactHooks: { useState },
+      reactHooks: { useSelector },
     } = createSimpluxModule({
       name: 'todos',
       initialState: todoStoreWithOneTodo,
@@ -74,12 +74,12 @@ describe(`@simplux/react`, () => {
     })
 
     // tslint:disable-next-line: no-unnecessary-callback-wrapper
-    const { result: state } = renderHook(() => useState())
+    const { result: state } = renderHook(() => useSelector(s => s))
     const { result: todoIds } = renderHook(() =>
-      useState(state => state.todoIds),
+      useSelector(state => state.todoIds),
     )
     const { result: nrOfTodos } = renderHook(() =>
-      useState(state => Object.keys(state.todosById).length),
+      useSelector(state => Object.keys(state.todosById).length),
     )
 
     expect(state.current).toBe(todoStoreWithOneTodo)
