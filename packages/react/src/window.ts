@@ -1,3 +1,3 @@
-export function getWindow() {
+export function getWindow(): Window | undefined {
   return window
 }
