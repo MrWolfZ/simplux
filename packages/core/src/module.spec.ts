@@ -1,4 +1,4 @@
-import { createStore, Store } from 'redux'
+import { createStore } from 'redux'
 import {
   createModule,
   moduleExtensions,
@@ -6,7 +6,7 @@ import {
   SimpluxModule,
   Unsubscribe,
 } from './module'
-import { createSimpluxStore, SimpluxStore } from './store'
+import { setReduxStore, simpluxStore } from './store'
 
 describe('registering extension', () => {
   it('stores the extension', () => {
@@ -20,23 +20,34 @@ describe('registering extension', () => {
     unregister()
     expect(moduleExtensions.length).toBe(0)
   })
+
+  it('does not throw when unregistering multiple times', () => {
+    const unregister = registerModuleExtension(() => ({}))
+    expect(() => {
+      unregister()
+      unregister()
+    }).not.toThrow()
+  })
 })
 
 describe('created module', () => {
-  let store: SimpluxStore
   let subscribeSpy: jest.SpyInstance
+  let undo: () => void
 
   beforeEach(() => {
-    let reduxStore: Store
-    store = createSimpluxStore(() => reduxStore, s => s)
-    reduxStore = createStore(store.rootReducer)
+    const reduxStore = createStore(simpluxStore.rootReducer)
+    undo = setReduxStore(reduxStore, s => s)
     subscribeSpy = jest.spyOn(reduxStore, 'subscribe')
+  })
+
+  afterEach(() => {
+    undo()
   })
 
   describe(`getState`, () => {
     it('returns initial state', () => {
       const initialState = { prop: 'value' }
-      const { getState } = createModule(store, {
+      const { getState } = createModule(simpluxStore, {
         name: 'test',
         initialState,
       })
@@ -48,7 +59,7 @@ describe('created module', () => {
   describe(`setState`, () => {
     it('replaces the whole state', () => {
       const replacedState = { prop: 'updated' }
-      const { getState, setState } = createModule(store, {
+      const { getState, setState } = createModule(simpluxStore, {
         name: 'test',
         initialState: { prop: 'value' },
       })
@@ -69,7 +80,7 @@ describe('created module', () => {
     let subscribeToStateChanges: Module['subscribeToStateChanges']
 
     beforeEach(() => {
-      const module = createModule(store, {
+      const module = createModule(simpluxStore, {
         name: 'test',
         initialState,
       })

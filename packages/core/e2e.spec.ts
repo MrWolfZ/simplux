@@ -3,9 +3,9 @@
 import {
   createSimpluxModule,
   getSimpluxReducer,
-  useSimpluxWithExistingStore,
+  setReduxStoreForSimplux,
 } from '@simplux/core'
-import { combineReducers, createStore } from 'redux'
+import { createStore } from 'redux'
 
 describe(`@simplux/core`, () => {
   interface Todo {
@@ -76,57 +76,41 @@ describe(`@simplux/core`, () => {
       },
     })
 
+    const cleanup = setReduxStoreForSimplux(
+      createStore(getSimpluxReducer()),
+      s => s,
+    )
+
     const handler = jest.fn()
     const unsubscribe = subscribeToStateChanges(handler)
 
     let updatedState = addTodo(todo1)
     expect(updatedState).toEqual(todoStoreWithOneTodo)
     expect(getState()).toEqual(todoStoreWithOneTodo)
+    expect(handler).toHaveBeenCalledWith(updatedState)
 
     updatedState = removeTodo(todo1.id)
     expect(updatedState).toEqual(initialTodoState)
+    expect(handler).toHaveBeenCalledWith(updatedState)
 
     setState(todoStoreWithOneTodo)
     expect(getState()).toBe(todoStoreWithOneTodo)
+    expect(handler).toHaveBeenCalledWith(todoStoreWithOneTodo)
 
     setState(initialTodoState)
     updatedState = addTodos(todo1, todo2)
     expect(updatedState).toEqual(todoStoreWithTwoTodos)
     expect(getState()).toEqual(todoStoreWithTwoTodos)
+    expect(handler).toHaveBeenCalledWith(updatedState)
 
     expect(handler).toHaveBeenCalledTimes(5)
 
     unsubscribe()
-  })
-
-  it('works with an external store', () => {
-    const customStore = createStore(
-      combineReducers({
-        otherState: (c: number = 10) => c,
-        simplux: getSimpluxReducer(),
-      }),
-    )
-
-    const undo = useSimpluxWithExistingStore(customStore, s => s.simplux)
-
-    const { getState, createMutations } = createSimpluxModule({
-      name: 'counter',
-      initialState: 10,
-    })
-
-    const { increment } = createMutations({
-      increment: c => c + 1,
-    })
-
-    const updatedState = increment()
-    expect(updatedState).toBe(11)
-    expect(getState()).toBe(11)
-
-    undo()
+    cleanup()
   })
 
   it('does not access the store before any mutation is executed', () => {
-    const undo = useSimpluxWithExistingStore(undefined!, s => s)
+    const undo = setReduxStoreForSimplux(undefined!, s => s)
 
     expect(() => {
       const { createMutations } = createSimpluxModule({

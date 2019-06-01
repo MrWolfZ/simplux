@@ -1,59 +1,89 @@
-import {
-  combineReducers,
-  createStore as createReduxStore,
-  Reducer,
-  Store,
-} from 'redux'
+import { combineReducers, Reducer, Store as ReduxStore } from 'redux'
 
-export interface ReduxStoreProxy {
+interface ReduxStoreProxy {
+  id: number
   getState: () => any
-  dispatch: Store['dispatch']
-  subscribe: Store['subscribe']
+  dispatch: ReduxStore['dispatch']
+  subscribe: ReduxStore['subscribe']
+  subscribers: { handler: () => void; unsubscribe: () => void }[]
 }
 
-let simpluxStore: SimpluxStore | undefined
-let managedReduxStore: Store | undefined
-let externalReduxStoreProxy: ReduxStoreProxy | undefined
+let latestReduxStoreId = 0
+let reduxStoreProxy: ReduxStoreProxy | undefined
 
-export function getSimpluxStore() {
-  if (!simpluxStore) {
-    simpluxStore = createSimpluxStore(
-      () => externalReduxStoreProxy || managedReduxStore!,
-      s => s,
+export const simpluxStore = createSimpluxStore(() => {
+  if (!reduxStoreProxy) {
+    throw new Error(
+      'simplux must be initialized with a redux store before it can be used!',
     )
-
-    managedReduxStore = createReduxStore(simpluxStore.rootReducer)
   }
 
-  return simpluxStore
-}
+  return reduxStoreProxy
+})
 
-export function useExistingStore<TState>(
-  storeToUse: Store<TState>,
+export function setReduxStore<TState>(
+  storeToUse: ReduxStore<TState>,
   simpluxStateGetter: (rootState: TState) => any,
 ) {
-  externalReduxStoreProxy = {
+  const id = latestReduxStoreId
+  latestReduxStoreId += 1
+
+  const subscribers: ReduxStoreProxy['subscribers'] = []
+
+  const previousStoreProxy = reduxStoreProxy
+
+  reduxStoreProxy = {
+    id,
+    subscribers,
     ...storeToUse,
     getState: () => simpluxStateGetter(storeToUse.getState()),
+    subscribe: handler => {
+      const unsubscribe = storeToUse.subscribe(handler)
+      const subscriber = { handler, unsubscribe }
+      subscribers.push(subscriber)
+
+      return () => {
+        unsubscribe()
+
+        const idx = subscribers.indexOf(subscriber)
+        if (idx >= 0) {
+          subscribers.splice(idx, 1)
+        }
+      }
+    },
+  }
+
+  if (previousStoreProxy) {
+    for (const subscriber of previousStoreProxy.subscribers) {
+      subscriber.unsubscribe()
+      reduxStoreProxy.subscribe(subscriber.handler)
+    }
   }
 
   return () => {
-    externalReduxStoreProxy = undefined
+    if (!reduxStoreProxy) {
+      return
+    }
+
+    if (reduxStoreProxy.id !== id) {
+      throw new Error('cannot cleanup store since another store has been set')
+    }
+
+    reduxStoreProxy = undefined
   }
 }
 
 export interface SimpluxStore {
   rootReducer: Reducer
   getState: () => any
-  dispatch: Store['dispatch']
-  subscribe: Store['subscribe']
+  dispatch: ReduxStore['dispatch']
+  subscribe: ReduxStore['subscribe']
   setReducer: <T = any>(name: string, reducer: Reducer<T>) => void
   getReducer: <T = any>(name: string) => Reducer<T>
 }
 
 export function createSimpluxStore(
-  getStoreProxy: () => ReduxStoreProxy,
-  stateGetter: (rootState: any) => any,
+  getReduxStoreProxy: () => ReduxStoreProxy,
 ): SimpluxStore {
   const reducers: { [name: string]: Reducer } = {}
   let reducer: Reducer | undefined
@@ -63,9 +93,9 @@ export function createSimpluxStore(
 
   return {
     rootReducer,
-    getState: () => stateGetter(getStoreProxy().getState()),
-    dispatch: action => getStoreProxy().dispatch(action),
-    subscribe: listener => getStoreProxy().subscribe(listener),
+    getState: () => getReduxStoreProxy().getState(),
+    dispatch: action => getReduxStoreProxy().dispatch(action),
+    subscribe: listener => getReduxStoreProxy().subscribe(listener),
 
     setReducer: (name, reducerToAdd) => {
       reducers[name] = reducerToAdd

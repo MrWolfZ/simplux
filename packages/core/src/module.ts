@@ -31,7 +31,10 @@ export const moduleExtensions: SimpluxModuleExtension[] = []
 export function registerModuleExtension(extension: SimpluxModuleExtension) {
   moduleExtensions.push(extension)
   return () => {
-    moduleExtensions.splice(moduleExtensions.indexOf(extension), 1)
+    const idx = moduleExtensions.indexOf(extension)
+    if (idx >= 0) {
+      moduleExtensions.splice(idx, 1)
+    }
   }
 }
 
@@ -71,7 +74,10 @@ export function createModule<TState>(
     }
 
     return () => {
-      handlers.splice(handlers.indexOf(handler), 1)
+      const idx = handlers.indexOf(handler)
+      if (idx >= 0) {
+        handlers.splice(idx, 1)
+      }
 
       if (handlers.length === 0 && unsubscribe) {
         unsubscribe()

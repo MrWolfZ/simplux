@@ -5,7 +5,7 @@ import {
   SimpluxModuleConfig,
 } from './src/module'
 import { mutationsModuleExtension } from './src/mutations'
-import { getSimpluxStore } from './src/store'
+import { simpluxStore } from './src/store'
 
 registerModuleExtension(mutationsModuleExtension)
 
@@ -31,17 +31,16 @@ export {
   SimpluxModuleMutationExtensions,
 } from './src/mutations'
 export {
-  getSimpluxStore,
+  setReduxStore as setReduxStoreForSimplux,
   SimpluxStore,
-  useExistingStore as useSimpluxWithExistingStore,
 } from './src/store'
 
 export function getSimpluxReducer() {
-  return getSimpluxStore().rootReducer
+  return simpluxStore.rootReducer
 }
 
 export function createSimpluxModule<TState>(
   config: SimpluxModuleConfig<TState>,
 ): SimpluxModule<TState> {
-  return createModule(getSimpluxStore(), config)
+  return createModule(simpluxStore, config)
 }
