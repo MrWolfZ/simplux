@@ -1,4 +1,4 @@
-# simplux
+# simplux - redux made simple
 
 **simplux** is a collection of libaries for frontend state management that require little to no boilerplate and are built with TypeScript in mind, all while giving you the full power of redux.
 
