@@ -21,7 +21,9 @@ async function testChangedFiles() {
     const packageNames = await util_1.promisify(fs_1.default.readdir)('./packages');
     let code = 0;
     for (const packageName of packageNames) {
-        const changedFiles = stagedFilePaths.filter(f => f.startsWith(`packages/${packageName}`));
+        const changedFiles = stagedFilePaths
+            .filter(f => f.startsWith(`packages/${packageName}`))
+            .filter(f => !f.endsWith('.md') || !f.endsWith('package.json'));
         code += await runTestsForPackage(packageName, changedFiles);
     }
     process.exit(code);
