@@ -1,7 +1,12 @@
 // this file contains an end-to-end test that verifies mutating reducers can be used
 
-import { createSimpluxModule } from '@simplux/core'
+import {
+  createSimpluxModule,
+  getSimpluxReducer,
+  setReduxStoreForSimplux,
+} from '@simplux/core'
 import '@simplux/immer'
+import { createStore } from 'redux'
 
 describe(`@simplux/immer`, () => {
   interface Todo {
@@ -56,6 +61,11 @@ describe(`@simplux/immer`, () => {
       },
     })
 
+    const cleanup = setReduxStoreForSimplux(
+      createStore(getSimpluxReducer()),
+      s => s,
+    )
+
     let updatedState = addTodo(todo1)
     expect(updatedState).toEqual(todoStoreWithOneTodo)
     expect(getState()).toEqual(todoStoreWithOneTodo)
@@ -70,5 +80,7 @@ describe(`@simplux/immer`, () => {
     updatedState = addTodos(todo1, todo2)
     expect(updatedState).toEqual(todoStoreWithTwoTodos)
     expect(getState()).toEqual(todoStoreWithTwoTodos)
+
+    cleanup()
   })
 })
