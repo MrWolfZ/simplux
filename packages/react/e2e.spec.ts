@@ -1,8 +1,13 @@
 // this file contains an end-to-end test for the public API
 
-import { createSimpluxModule } from '@simplux/core'
+import {
+  createSimpluxModule,
+  getSimpluxReducer,
+  setReduxStoreForSimplux,
+} from '@simplux/core'
 import '@simplux/react'
 import { act, renderHook } from 'react-hooks-testing-library'
+import { createStore } from 'redux'
 
 describe(`@simplux/react`, () => {
   interface Todo {
@@ -63,6 +68,11 @@ describe(`@simplux/react`, () => {
       },
     })
 
+    const cleanup = setReduxStoreForSimplux(
+      createStore(getSimpluxReducer()),
+      s => s,
+    )
+
     // tslint:disable-next-line: no-unnecessary-callback-wrapper
     const { result: state } = renderHook(() => useSelector(s => s))
     const { result: todoIds } = renderHook(() =>
@@ -91,5 +101,7 @@ describe(`@simplux/react`, () => {
     expect(state.current).toEqual(todoStoreWithOneTodo)
     expect(todoIds.current).toEqual(todoStoreWithOneTodo.todoIds)
     expect(nrOfTodos.current).toBe(1)
+
+    cleanup()
   })
 })
