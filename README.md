@@ -4,13 +4,23 @@
 
 This repository is a work-in-progress and is not suitable for use in production.
 
-### Open points
+## Recipes
+
+Here you can find some recipes that will make it simple to learn how to use **simplux**.
+
+- [Getting Started](recipes/getting-started#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/getting-started))
+
+## Open points
 
 - core: add examples
+- core: merge modules if defined multiple times, but print a warning during DEV mode
 - core: add testing package that allows mocking mutations
+- core: freeze module state in DEV mode
 - selectors: add extension for creating factory selectors
 - selectors: add testing package that allows mocking selectors
 - selectors: add test to verify store is not eagerly accessed
+- selectors: add basic memoization
+- react: use batching for notifying subscribers
 - react: add test to verify store is not eagerly accessed
 - async: create package for performing async work for a module
 - async: add testing package that allows mocking async work
@@ -27,3 +37,21 @@ This repository is a work-in-progress and is not suitable for use in production.
 - add code coverage builds
 - add tests that verify HMR works
 - add tests that verify server-side rendering works
+- angular: create package for angular service
+- presets: create preset packages that only contain package.json files that pull in all recommended packages
+
+## Contributing
+
+#### Commit Types
+
+Must be one of the following:
+
+- build: Changes that affect the build system or external dependencies (example scopes: rollup, npm)
+- ci: Changes to our CI configuration files and scripts (example scopes: Travis)
+- docs: Documentation only changes
+- feat: A new feature
+- fix: A bug fix
+- perf: A code change that improves performance
+- refactor: A code change that neither fixes a bug nor adds a feature
+- style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- test: Adding missing tests or correcting existing tests
