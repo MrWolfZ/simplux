@@ -20,6 +20,11 @@
     "test:selectors": "npm run test:base -- --config=packages/selectors/jest.config.js",
     "test:immer": "npm run test:base -- --config=packages/immer/jest.config.js",
     "test:react": "npm run test:base -- --config=packages/react/jest.config.js",
+    "publish": "npm run publish:core && npm run publish:selectors && npm run publish:immer && npm run publish:react",
+    "publish:core": "npm publish ./packages/core/dist --access public",
+    "publish:selectors": "npm publish ./packages/selectors/dist --access public",
+    "publish:immer": "npm publish ./packages/immer/dist --access public",
+    "publish:react": "npm publish ./packages/react/dist --access public",
     "precommit": "node ./scripts/pre-commit-hook.js",
     "build:config": "tsc -p ./tsconfig.config.json"
   },
