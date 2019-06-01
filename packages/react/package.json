@@ -1,20 +1,30 @@
 {
   "name": "@simplux/react",
   "version": "0.1.0",
-  "description": "",
+  "description": "The react extension package of simplux. Provides a simple way to use simplux in react applications.",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
   "main": "./bundles/bundle.umd.js",
   "typings": "./index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWolfZ/simplux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/simplux/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/simplux",
   "keywords": [
     "react",
     "redux",
+    "simplux",
     "typescript"
   ],
-  "author": "",
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
   "license": "MIT",
+  "private": false,
   "peerDependencies": {
-    "react": ">=16.8.0",
-    "@simplux/core": ">=0.1.0"
+    "@simplux/core": ">=0.1.0",
+    "react": ">=16.8.0"
   }
 }

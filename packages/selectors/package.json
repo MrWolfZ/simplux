@@ -1,17 +1,28 @@
 {
   "name": "@simplux/selectors",
   "version": "0.1.0",
-  "description": "",
+  "description": "The selectors extension package of simplux. Enhances modules by providing a simple way to compute derived state.",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
   "main": "./bundles/bundle.umd.js",
   "typings": "./index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWolfZ/simplux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/simplux/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/simplux",
   "keywords": [
     "redux",
+    "selectors",
+    "simplux",
     "typescript"
   ],
-  "author": "",
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
   "license": "MIT",
+  "private": false,
   "peerDependencies": {
     "@simplux/core": ">=0.1.0"
   }

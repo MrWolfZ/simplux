@@ -1,17 +1,28 @@
 {
   "name": "@simplux/immer",
   "version": "0.1.0",
-  "description": "",
+  "description": "The immer extension package of simplux. Enhances mutations by allowing a simpler way of writing them.",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
   "main": "./bundles/bundle.umd.js",
   "typings": "./index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWolfZ/simplux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/simplux/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/simplux",
   "keywords": [
+    "immer",
     "redux",
+    "simplux",
     "typescript"
   ],
-  "author": "",
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
   "license": "MIT",
+  "private": false,
   "peerDependencies": {
     "@simplux/core": ">=0.1.0",
     "immer": ">=3.0.0"
