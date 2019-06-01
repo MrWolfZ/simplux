@@ -1,7 +1,12 @@
 // this file contains an end-to-end test for the public API
 
-import { createSimpluxModule } from '@simplux/core'
+import {
+  createSimpluxModule,
+  getSimpluxReducer,
+  setReduxStoreForSimplux,
+} from '@simplux/core'
 import '@simplux/selectors'
+import { createStore } from 'redux'
 
 describe(`@simplux/selectors`, () => {
   interface Todo {
@@ -43,5 +48,12 @@ describe(`@simplux/selectors`, () => {
     expect(nrOfTodos(todoStoreWithTwoTodos)).toBe(2)
     expect(nrOfTodosTimes2(todoStoreWithTwoTodos)).toBe(4)
     expect(getTodosWithDoneState(todoStoreWithTwoTodos, true)).toEqual([todo1])
+
+    const cleanup = setReduxStoreForSimplux(
+      createStore(getSimpluxReducer()),
+      s => s,
+    )
+    expect(nrOfTodos.bound()).toBe(2)
+    cleanup()
   })
 })
