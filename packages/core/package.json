@@ -13,7 +13,7 @@
   "bugs": {
     "url": "https://github.com/MrWolfZ/simplux/issues"
   },
-  "homepage": "https://github.com/MrWolfZ/simplux",
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/packages/core#readme",
   "keywords": [
     "redux",
     "simplux",
