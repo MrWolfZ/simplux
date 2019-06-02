@@ -1,5 +1,5 @@
 {
-  "name": "@simplux/recipes-getting-started",
+  "name": "@simplux/recipes.basics.getting-started",
   "version": "0.1.0",
   "description": "A simplux recipe that shows how to get started using modules and mutations.",
   "main": "src/index.ts",
