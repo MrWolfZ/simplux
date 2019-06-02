@@ -1,7 +1,7 @@
 {
   "name": "@simplux/recipes.basics.getting-started",
   "version": "0.1.0",
-  "description": "A simplux recipe that shows how to get started using modules and mutations.",
+  "description": "This is a recipe that shows how simple it is to get started using simplux with modules and mutations.",
   "main": "src/index.ts",
   "scripts": {
     "start": "webpack-dev-server --mode development --progress --color"
