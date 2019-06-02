@@ -21,7 +21,7 @@ Here you can find some recipes that will make it simple to learn how to use **si
 - selectors: add extension for creating factory selectors
 - selectors: add testing package that allows mocking selectors
 - selectors: add test to verify store is not eagerly accessed
-- selectors: add basic memoization
+- selectors: add basic memoization (also update derived state recipe with example of this)
 - react: verify package works with react-native
 - react: add test to verify store is not eagerly accessed
 - async: create package for performing async work for a module
