@@ -53,7 +53,7 @@ describe(`@simplux/selectors`, () => {
       createStore(getSimpluxReducer()),
       s => s,
     )
-    expect(nrOfTodos.bound()).toBe(2)
+    expect(nrOfTodos.withLatestModuleState()).toBe(2)
     cleanup()
   })
 })

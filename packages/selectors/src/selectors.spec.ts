@@ -115,7 +115,7 @@ describe('selectors', () => {
           plus: (c, amount: number) => c + amount,
         })
 
-        expect(plus.bound(5)).toBe(25)
+        expect(plus.withLatestModuleState(5)).toBe(25)
       })
     })
   })

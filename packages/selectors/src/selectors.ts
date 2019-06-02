@@ -16,7 +16,7 @@ export interface ResolvedSelectorExtras<TArgs extends any[], TReturn> {
    * module's latest state and only provide the additional arguments. This function
    * will do just that.
    */
-  bound: (...args: TArgs) => TReturn
+  withLatestModuleState: (...args: TArgs) => TReturn
 }
 
 export type ResolvedSelector<
@@ -62,7 +62,7 @@ export function createSelectorsFactory<TState>(
         acc[key] = ((state: TState, ...args: any[]) => {
           return selector(state, ...args)
         }) as ResolvedSelector<TState, TSelectors[typeof key]>
-        acc[key].bound = ((...args: any[]) => {
+        acc[key].withLatestModuleState = ((...args: any[]) => {
           return selector(getModuleState(), ...args)
         }) as ResolvedSelector<TState, TSelectors[typeof key]>
         return acc
