@@ -1,5 +1,46 @@
-import { SimpluxModuleExtension, SubscribeToStateChanges } from '@simplux/core'
+import {
+  SimpluxModuleExtension,
+  StateChangeHandler,
+  SubscribeToStateChanges,
+} from '@simplux/core'
+import { unstable_batchedUpdates } from 'react-dom'
 import { useModuleSelector } from './useModuleSelector'
+
+export function createBatchedSubscribeFunction<TState>(
+  subscribeToModuleStateChanges: SubscribeToStateChanges<TState>,
+) {
+  const handlers: StateChangeHandler<TState>[] = []
+
+  let unsubscribe: (() => void) | undefined
+
+  const subscribeWithBatching: SubscribeToStateChanges<TState> = handler => {
+    handlers.push(handler)
+
+    if (handlers.length === 1) {
+      unsubscribe = subscribeToModuleStateChanges(state => {
+        unstable_batchedUpdates(() => {
+          for (const handler of handlers) {
+            handler(state)
+          }
+        })
+      })
+    }
+
+    return () => {
+      const idx = handlers.indexOf(handler)
+      if (idx >= 0) {
+        handlers.splice(idx, 1)
+      }
+
+      if (handlers.length === 0 && unsubscribe) {
+        unsubscribe()
+        unsubscribe = undefined
+      }
+    }
+  }
+
+  return subscribeWithBatching
+}
 
 export type SimpluxModuleSelectorHook<TState> = <TResult>(
   selector: (state: TState) => TResult,
@@ -9,10 +50,14 @@ export function createSelectorHook<TState>(
   getModuleState: () => TState,
   subscribeToModuleStateChanges: SubscribeToStateChanges<TState>,
 ): SimpluxModuleSelectorHook<TState> {
+  const subscribe = createBatchedSubscribeFunction(
+    subscribeToModuleStateChanges,
+  )
+
   return <TResult = TState>(selector: (state: TState) => TResult) => {
     return useModuleSelector<TState, TResult>(
       getModuleState,
-      subscribeToModuleStateChanges,
+      subscribe,
       selector,
     )
   }

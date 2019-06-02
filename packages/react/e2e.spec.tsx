@@ -6,7 +6,9 @@ import {
   setReduxStoreForSimplux,
 } from '@simplux/core'
 import '@simplux/react'
-import { act, renderHook } from 'react-hooks-testing-library'
+import React from 'react'
+import { act as actHook, renderHook } from 'react-hooks-testing-library'
+import { act, render } from 'react-testing-library'
 import { createStore } from 'redux'
 
 describe(`@simplux/react`, () => {
@@ -88,7 +90,7 @@ describe(`@simplux/react`, () => {
     expect(todoIds.current).toBe(todoStoreWithOneTodo.todoIds)
     expect(nrOfTodos.current).toBe(1)
 
-    act(() => {
+    actHook(() => {
       addTodo(todo2)
     })
 
@@ -96,7 +98,7 @@ describe(`@simplux/react`, () => {
     expect(todoIds.current).toEqual(todoStoreWithTwoTodos.todoIds)
     expect(nrOfTodos.current).toBe(2)
 
-    act(() => {
+    actHook(() => {
       removeTodo(todo2.id)
     })
 
@@ -105,5 +107,62 @@ describe(`@simplux/react`, () => {
     expect(nrOfTodos.current).toBe(1)
 
     cleanup()
+  })
+
+  it('uses batching for notifying subscribers', () => {
+    const {
+      createMutations,
+      react: {
+        hooks: { useSelector },
+      },
+    } = createSimpluxModule({
+      name: 'batching',
+      initialState: 0,
+    })
+
+    const { increment } = createMutations({
+      increment: c => c + 1,
+    })
+
+    const renderedItems: number[] = []
+
+    const Parent = () => {
+      const result = useSelector(c => c + 10)
+      renderedItems.push(result)
+      return <Child />
+    }
+
+    const Child = () => {
+      const result = useSelector(c => c + 20)
+      renderedItems.push(result)
+      return <div>{result}</div>
+    }
+
+    const cleanup = setReduxStoreForSimplux(
+      createStore(getSimpluxReducer()),
+      s => s,
+    )
+
+    render(<Parent />)
+
+    act(() => {
+      increment()
+      increment()
+    })
+
+    // we intentionally perform the calls below outside of an `act` to
+    // simulate a store update outside of the react lifecycle (e.g. due
+    // to asynchronous events); since the testing tools log an error when
+    // this is done, we simply supress the error by mocking out the error
+    // log function
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
+
+    increment()
+    increment()
+
+    spy.mockRestore()
+    cleanup()
+
+    expect(renderedItems).toEqual([10, 20, 12, 22, 13, 23, 14, 24])
   })
 })

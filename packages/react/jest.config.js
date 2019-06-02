@@ -8,6 +8,6 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
-  testMatch: ['<rootDir>/src/**/*.spec.ts?(x)', '<rootDir>/e2e.spec.ts'],
+  testMatch: ['<rootDir>/src/**/*.spec.ts?(x)', '<rootDir>/e2e.spec.tsx'],
   testPathIgnorePatterns: ['node_modules'],
 }
