@@ -1,6 +1,6 @@
 {
   "name": "@simplux/selectors",
-  "version": "0.2.2",
+  "version": "0.2.3-alpha.0",
   "description": "The selectors extension package of simplux. Enhances modules by providing a simple way to compute derived state.",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
@@ -33,6 +33,6 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/core": "0.2.2"
+    "@simplux/core": "0.2.3-alpha.0"
   }
 }
