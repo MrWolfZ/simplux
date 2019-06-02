@@ -89,6 +89,18 @@ export function createModuleReducer<TState>(
   }
 }
 
+// this helper function allows creating a function with a dynamic name
+function nameFunction<T extends (...args: any[]) => any>(
+  name: string,
+  body: T,
+): T {
+  return {
+    [name](...args: any[]) {
+      return body(...args)
+    },
+  }[name] as T
+}
+
 export function createMutationsFactory<TState>(
   moduleName: string,
   getModuleState: () => TState,
@@ -115,15 +127,23 @@ export function createMutationsFactory<TState>(
           args,
         })
 
-        acc[mutationName] = ((...args: any[]) => {
-          dispatch(createAction(...args))
-          return getModuleState()
-        }) as ResolvedMutation<TState, TMutations[typeof mutationName]>
+        const mutation = nameFunction(
+          mutationName as string,
+          (...args: any[]) => {
+            dispatch(createAction(...args))
+            return getModuleState()
+          },
+        ) as ResolvedMutation<TState, TMutations[typeof mutationName]>
+
+        acc[mutationName] = mutation
+
         acc[mutationName].withState = (state: TState) => (...args: any[]) => {
           const result = mutations[mutationName](state, ...args)
           return result || state
         }
+
         acc[mutationName].asActionCreator = createAction
+
         return acc
       },
       {} as ResolvedMutations<TState, TMutations>,

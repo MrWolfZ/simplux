@@ -202,6 +202,14 @@ describe('mutations', () => {
           args: ['foo', { nestedArg: true }],
         })
       })
+
+      it('has the same name as the mutation', () => {
+        const { increment } = createMutations({
+          increment: c => c,
+        })
+
+        expect(increment.name).toBe('increment')
+      })
     })
   })
 
