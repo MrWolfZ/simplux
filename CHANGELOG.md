@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.2.3-alpha.0...v0.3.0-alpha.0) (2019-06-02)
+
+
+### Bug Fixes
+
+* **immer:** add missing exports to public API ([87d406a](https://github.com/MrWolfZ/simplux/commit/87d406a))
+* **react:** add missing exports to public API ([08226e9](https://github.com/MrWolfZ/simplux/commit/08226e9))
+* **selectors:** add missing exports to public API ([d8c3513](https://github.com/MrWolfZ/simplux/commit/d8c3513))
+
+
+### Features
+
+* **react:** use react batching to notify module selector hooks ([d83dc43](https://github.com/MrWolfZ/simplux/commit/d83dc43))
+
+
+
+
+
 ## [0.2.3-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.2.2...v0.2.3-alpha.0) (2019-06-02)
 
 **Note:** Version bump only for package @simplux/platform

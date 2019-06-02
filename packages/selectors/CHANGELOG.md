@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.2.3-alpha.0...v0.3.0-alpha.0) (2019-06-02)
+
+
+### Bug Fixes
+
+* **selectors:** add missing exports to public API ([d8c3513](https://github.com/MrWolfZ/simplux/commit/d8c3513))
+
+
+
+
+
 ## [0.2.3-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.2.2...v0.2.3-alpha.0) (2019-06-02)
 
 **Note:** Version bump only for package @simplux/selectors
