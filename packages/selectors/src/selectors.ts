@@ -10,6 +10,12 @@ export interface SelectorsBase<TState> {
 }
 
 export interface ResolvedSelectorExtras<TArgs extends any[], TReturn> {
+  /**
+   * By default a selector needs to be provided the module's state and arguments.
+   * However, sometimes it is useful to automatically bind the selector to the
+   * module's latest state and only provide the additional arguments. This function
+   * will do just that.
+   */
   bound: (...args: TArgs) => TReturn
 }
 
@@ -69,6 +75,19 @@ export function createSelectorsFactory<TState>(
 }
 
 export interface SimpluxModuleSelectorExtensions<TState> {
+  /**
+   * Create new selectors for the module. A selector is a function
+   * that takes the module state and optionally additional parameters
+   * and returns some selected value.
+   *
+   * The selector must be a pure function. It's result is memoized
+   * by simplux for the latest state and parameters.
+   *
+   * @param selectors the selectors to create
+   *
+   * @returns an object that contains a function for each provided
+   * selector which can be called to select the value
+   */
   createSelectors: SelectorsFactory<TState>
 }
 
