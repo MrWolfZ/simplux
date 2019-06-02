@@ -1,6 +1,6 @@
 {
   "name": "@simplux/immer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The immer extension package of simplux. Enhances mutations by allowing a simpler way of writing them.",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
