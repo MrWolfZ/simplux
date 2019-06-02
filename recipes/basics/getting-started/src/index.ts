@@ -51,13 +51,21 @@ setState({ counter: 2 })
 
 // instead of directly setting the state, usually it is better
 // to define mutations
-const { increment } = createMutations({
-  increment: s => ({ ...s, counter: s.counter + 1 }),
+const { increment, incrementBy } = createMutations({
+  increment: state => ({ ...state, counter: state.counter + 1 }),
+  incrementBy: (state, amount: number) => ({
+    ...state,
+    counter: state.counter + amount,
+  }),
 })
 
 // to update the module state, just call the mutation
-console.log('incrementing counter...')
 increment()
+console.log('incremented counter:', getState())
+
+// we can also pass arguments to the mutation
+incrementBy(5)
+console.log('incremented counter by 5:', getState())
 
 // you can define new mutations at any time (but you cannot
 // overwrite an existing mutation)
@@ -65,8 +73,8 @@ const { decrement } = createMutations({
   decrement: s => ({ ...s, counter: s.counter - 1 }),
 })
 
-console.log('decrementing counter...')
 decrement()
+console.log('decremented counter:', getState())
 
 // if we want to stop getting notified, we just unsubscribe
 unsubscribe()
