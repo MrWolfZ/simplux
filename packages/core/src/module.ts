@@ -12,8 +12,28 @@ export type SubscribeToStateChanges<TState> = (
 ) => Unsubscribe
 
 export interface SimpluxModuleCore<TState> {
+  /**
+   * Get the current module state.
+   *
+   * @returns the module state
+   */
   getState(): TState
+
+  /**
+   * Replace the whole module state.
+   *
+   * @param state the state to set for the module
+   */
   setState(state: TState): void
+
+  /**
+   * Register a handler to be called whenever the module's state
+   * changes.
+   *
+   * @param handler the function to call whenever the module's state changes
+   *
+   * @returns an unsubscribe function that will remove the handler
+   */
   subscribeToStateChanges: SubscribeToStateChanges<TState>
 }
 

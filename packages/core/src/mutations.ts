@@ -121,6 +121,16 @@ export function createMutationsFactory<TState>(
 }
 
 export interface SimpluxModuleMutationExtensions<TState> {
+  /**
+   * Create new mutations for the module. A mutation is a function
+   * that takes the module state and optionally additional parameters
+   * and returns an updated version of the state.
+   *
+   * @param mutations the mutations to create
+   *
+   * @returns an object that contains a function for each provided
+   * mutation which when called will execute the mutation on the module
+   */
   createMutations: MutationsFactory<TState>
 }
 
