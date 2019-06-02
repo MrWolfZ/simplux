@@ -66,6 +66,15 @@ export function createSelectorHook<TState>(
 export interface SimpluxModuleReactExtensions<TState> {
   react: {
     hooks: {
+      /**
+       * A react hook that allows accessing the module's state inside
+       * a component.
+       *
+       * @param selector a function that selects some derived state from
+       * the module's state
+       *
+       * @returns the selected value
+       */
       useSelector: SimpluxModuleSelectorHook<TState>;
     };
   }
