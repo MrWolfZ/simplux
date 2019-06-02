@@ -37,7 +37,9 @@ describe(`@simplux/react`, () => {
   it('works', () => {
     const {
       createMutations,
-      reactHooks: { useSelector },
+      react: {
+        hooks: { useSelector },
+      },
     } = createSimpluxModule({
       name: 'todos',
       initialState: todoStoreWithOneTodo,

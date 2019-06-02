@@ -1,4 +1,4 @@
 import { registerSimpluxModuleExtension } from '@simplux/core'
-import { reactHooksModuleExtension } from './src/hooks'
+import { reactModuleExtension } from './src/hooks'
 
-registerSimpluxModuleExtension(reactHooksModuleExtension)
+registerSimpluxModuleExtension(reactModuleExtension)

@@ -19,8 +19,10 @@ export function createSelectorHook<TState>(
 }
 
 export interface SimpluxModuleReactExtensions<TState> {
-  reactHooks: {
-    useSelector: SimpluxModuleSelectorHook<TState>;
+  react: {
+    hooks: {
+      useSelector: SimpluxModuleSelectorHook<TState>;
+    };
   }
 }
 
@@ -29,12 +31,14 @@ declare module '@simplux/core' {
     extends SimpluxModuleReactExtensions<TState> {}
 }
 
-export const reactHooksModuleExtension: SimpluxModuleExtension<
+export const reactModuleExtension: SimpluxModuleExtension<
   SimpluxModuleReactExtensions<any>
 > = (_, _2, { getState, subscribeToStateChanges }) => {
   return {
-    reactHooks: {
-      useSelector: createSelectorHook(getState, subscribeToStateChanges),
+    react: {
+      hooks: {
+        useSelector: createSelectorHook(getState, subscribeToStateChanges),
+      },
     },
   }
 }

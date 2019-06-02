@@ -1,6 +1,6 @@
 import { SimpluxModuleCore, SimpluxStore } from '@simplux/core'
 import { renderHook } from 'react-hooks-testing-library'
-import { reactHooksModuleExtension } from './hooks'
+import { reactModuleExtension } from './hooks'
 
 describe('selectors', () => {
   const dispatchMock = jest.fn().mockImplementation(a => a)
@@ -37,7 +37,7 @@ describe('selectors', () => {
 
   describe(`module extension`, () => {
     it('returns an object with the hooks', () => {
-      const value = reactHooksModuleExtension<number>(
+      const value = reactModuleExtension<number>(
         {
           name: 'test',
           initialState: 0,
@@ -47,15 +47,16 @@ describe('selectors', () => {
         {},
       )
 
-      expect(value.reactHooks).toBeDefined()
-      expect(value.reactHooks.useSelector).toBeDefined()
+      expect(value.react).toBeDefined()
+      expect(value.react.hooks).toBeDefined()
+      expect(value.react.hooks.useSelector).toBeDefined()
     })
 
     describe('returned selector hook', () => {
       it('works', () => {
         moduleState = 10
 
-        const value = reactHooksModuleExtension<number>(
+        const value = reactModuleExtension<number>(
           {
             name: 'test',
             initialState: 0,
@@ -66,7 +67,7 @@ describe('selectors', () => {
         )
 
         const { result } = renderHook(() =>
-          value.reactHooks.useSelector(c => c),
+          value.react.hooks.useSelector(c => c),
         )
 
         expect(result.current).toBe(10)
