@@ -12,7 +12,6 @@ Here you can find some recipes that will make it simple to learn how to use **si
 
 ## Open points
 
-- core: add examples
 - core: merge modules if defined multiple times, but print a warning during DEV mode
 - core: add testing package that allows mocking mutations
 - core: freeze module state in DEV mode
@@ -20,7 +19,7 @@ Here you can find some recipes that will make it simple to learn how to use **si
 - selectors: add testing package that allows mocking selectors
 - selectors: add test to verify store is not eagerly accessed
 - selectors: add basic memoization
-- react: use batching for notifying subscribers
+- react: verify package works with react-native
 - react: add test to verify store is not eagerly accessed
 - async: create package for performing async work for a module
 - async: add testing package that allows mocking async work
@@ -39,6 +38,14 @@ Here you can find some recipes that will make it simple to learn how to use **si
 - add tests that verify server-side rendering works
 - angular: create package for angular service
 - presets: create preset packages that only contain package.json files that pull in all recommended packages
+- add recipes:
+  - testing mutations
+  - derived state
+  - testing selectors
+  - using with react and simplux extension
+  - using with react and react-redux
+  - testing react-component that selects state
+  - testing react-component that mutates state
 
 ## Contributing
 
