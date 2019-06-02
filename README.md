@@ -8,7 +8,7 @@ This repository is a work-in-progress and is not suitable for use in production.
 
 Here you can find some recipes that will make it simple to learn how to use **simplux**.
 
-- [Getting Started](recipes/getting-started#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/getting-started))
+- [Getting Started](recipes/basics/getting-started#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started))
 
 ## Open points
 
