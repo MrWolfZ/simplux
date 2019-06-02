@@ -2,10 +2,13 @@ import { SimpluxModuleExtension } from '@simplux/core'
 import { produce } from 'immer'
 import { Reducer } from 'redux'
 
+export interface ImmerMutationReturnTypeOverride<TState> {
+  returnType: TState | void
+}
+
 declare module '@simplux/core/src/mutations' {
-  interface MutationReturnTypeOverride<TState> {
-    returnType: TState | void
-  }
+  interface MutationReturnTypeOverride<TState>
+    extends ImmerMutationReturnTypeOverride<TState> {}
 }
 
 export function createImmerReducer<TState>(
