@@ -10,7 +10,8 @@ Here you can find some recipes that will make it simple to learn how to use **si
 
 ### Basics
 
-- [Getting Started](recipes/basics/getting-started#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started))
+- [getting started](recipes/basics/getting-started#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started))
+- [derived state](recipes/basics/derived-state#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/derived-state))
 
 ## Open points
 
