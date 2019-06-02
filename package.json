@@ -7,8 +7,8 @@
     "lint-ci": "lerna run lint-ci --no-bail",
     "test": "lerna run test --stream --no-bail",
     "test-ci": "lerna run test-ci --no-bail",
-    "publish": "lerna version --conventional-commits --yes --exact",
-    "postpublish": "lerna run publish",
+    "publish": "npm run build && npm run test && lerna version --conventional-commits --yes --exact",
+    "postpublish": "npm run build && lerna run publish --stream --no-bail",
     "precommit": "node ./scripts/pre-commit-hook.js",
     "build:config": "tsc -p ./tsconfig.config.json"
   },

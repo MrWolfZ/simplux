@@ -13,7 +13,6 @@
     "lint-ci": "npm run lint -- --fix=false",
     "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --config=./jest.config.js",
     "test-ci": "npm run test -- --runInBand --ci",
-    "prepublish": "npm run build && npm run test",
     "publish": "npm publish ./dist --access public"
   },
   "repository": {
