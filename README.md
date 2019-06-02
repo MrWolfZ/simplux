@@ -42,6 +42,7 @@ Here you can find some recipes that will make it simple to learn how to use **si
 - add tests that verify server-side rendering works
 - angular: create package for angular service
 - presets: create preset packages that only contain package.json files that pull in all recommended packages
+- update recipe readmes
 - add recipes:
   - composing mutations
   - derived state
