@@ -51,8 +51,8 @@ export function createSelectorsFactory<TState>(
     Object.assign(moduleSelectors, selectors)
 
     const resolvedSelectors = Object.keys(selectors).reduce(
-      (acc, key) => {
-        const selector = moduleSelectors[key]
+      (acc, key: keyof TSelectors) => {
+        const selector = moduleSelectors[key as string]
         acc[key] = ((state: TState, ...args: any[]) => {
           return selector(state, ...args)
         }) as ResolvedSelector<TState, TSelectors[typeof key]>
