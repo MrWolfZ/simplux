@@ -38,6 +38,18 @@ export type SelectorsFactory<TState> = <
   selectors: TSelectors,
 ) => ResolvedSelectors<TState, TSelectors>
 
+// this helper function allows creating a function with a dynamic name
+function nameFunction<T extends (...args: any[]) => any>(
+  name: string,
+  body: T,
+): T {
+  return {
+    [name](...args: any[]) {
+      return body(...args)
+    },
+  }[name] as T
+}
+
 export function createSelectorsFactory<TState>(
   moduleName: string,
   getModuleState: () => TState,
@@ -57,14 +69,22 @@ export function createSelectorsFactory<TState>(
     Object.assign(moduleSelectors, selectors)
 
     const resolvedSelectors = Object.keys(selectors).reduce(
-      (acc, key: keyof TSelectors) => {
-        const selector = moduleSelectors[key as string]
-        acc[key] = ((state: TState, ...args: any[]) => {
-          return selector(state, ...args)
-        }) as ResolvedSelector<TState, TSelectors[typeof key]>
-        acc[key].withLatestModuleState = ((...args: any[]) => {
+      (acc, selectorName: keyof TSelectors) => {
+        const selector = moduleSelectors[selectorName as string]
+
+        const namedSelector = nameFunction(
+          selectorName as string,
+          (state: TState, ...args: any[]) => {
+            return selector(state, ...args)
+          },
+        ) as ResolvedSelector<TState, TSelectors[typeof selectorName]>
+
+        acc[selectorName] = namedSelector
+
+        acc[selectorName].withLatestModuleState = ((...args: any[]) => {
           return selector(getModuleState(), ...args)
-        }) as ResolvedSelector<TState, TSelectors[typeof key]>
+        }) as ResolvedSelector<TState, TSelectors[typeof selectorName]>
+
         return acc
       },
       {} as ResolvedSelectors<TState, TSelectors>,

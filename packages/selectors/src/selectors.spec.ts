@@ -117,6 +117,14 @@ describe('selectors', () => {
 
         expect(plus.withLatestModuleState(5)).toBe(25)
       })
+
+      it('has the same name as the selector', () => {
+        const { plus } = createSelectors({
+          plus: (c, amount: number) => c + amount,
+        })
+
+        expect(plus.name).toBe('plus')
+      })
     })
   })
 })
