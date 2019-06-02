@@ -1,6 +1,27 @@
-import { createSimpluxModule } from '@simplux/core'
+import {
+  createSimpluxModule,
+  getSimpluxReducer,
+  setReduxStoreForSimplux,
+} from '@simplux/core'
+import { combineReducers, createStore } from 'redux'
 
-// first we create our module and destructure it into all
+// first, we create our root reducer and the redux store (in an
+// existing application you would simply use your existing reducer
+// and store)
+const rootReducer = combineReducers({
+  // this key can be whatever you desire
+  simplux: getSimpluxReducer(),
+  // plus any of your other reducers
+})
+
+const store = createStore(rootReducer)
+
+// then, we tell simplux to use our store; the second argument
+// exists to tell simplux where it can find its state on the
+// root state
+setReduxStoreForSimplux(store, rootState => rootState.simplux)
+
+// now we create our module and destructure it into all
 // the functions we are going to use
 const {
   getState,
