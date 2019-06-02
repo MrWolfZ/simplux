@@ -37,7 +37,7 @@ async function testChangedFiles() {
   for (const packageName of packageNames) {
     const changedFiles = stagedFilePaths
       .filter(f => f.startsWith(`packages/${packageName}`))
-      .filter(f => !f.endsWith('.md') || !f.endsWith('package.json'))
+      .filter(f => !f.endsWith('.md') && !f.endsWith('package.json'))
 
     code += await runTestsForPackage(packageName, changedFiles)
   }
