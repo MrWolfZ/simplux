@@ -33,5 +33,5 @@ async function runTestsForPackage(packageName, changedFiles) {
         return 0;
     }
     shelljs_1.default.echo(`Running tests for ${chalk_1.default.yellow(`${changedFiles.length}`)} changed file(s) of package '${chalk_1.default.cyan(packageName)}'...`);
-    return await util_2.execAsync(`npm run test:${packageName}`, false, '--', '--findRelatedTests', ...changedFiles);
+    return await util_2.execAsync(`npm run test`, false, `--`, `--scope @simplux/${packageName} --stream=false`, `--`, `--`, `--findRelatedTests --passWithNoTests`, ...changedFiles);
 }

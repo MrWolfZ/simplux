@@ -10,7 +10,20 @@ const path_1 = __importDefault(require("path"));
 const pretty_time_1 = __importDefault(require("pretty-time"));
 const shelljs_1 = __importDefault(require("shelljs"));
 const util_1 = require("util");
+const yargs_1 = __importDefault(require("yargs"));
 const util_2 = require("./util");
+const argv = yargs_1.default
+    .scriptName('build-pacakge')
+    .option('packageDir', {
+    default: process.cwd(),
+})
+    .option('forceEnableColors', {
+    default: false,
+}).argv;
+if (argv.forceEnableColors) {
+    chalk_1.default.enabled = true;
+    chalk_1.default.level = 3 /* TrueColor */;
+}
 // tslint:disable: no-var-requires
 // tslint:disable: no-require-imports
 // tslint:disable-next-line: no-floating-promises
@@ -19,9 +32,10 @@ build().catch(err => {
     shelljs_1.default.exit(1);
 });
 async function build() {
-    const PACKAGE_DIR = path_1.default.join(process.cwd(), process.argv[2]);
+    const PACKAGE_DIR = argv.packageDir;
     const OUTPUT_DIR = path_1.default.join(PACKAGE_DIR, `dist`);
     const BUNDLES_DIR = path_1.default.join(OUTPUT_DIR, `bundles`);
+    const ROOT_DIR = path_1.default.resolve(path_1.default.join(__dirname, `..`));
     const PACKAGE = require(path_1.default.join(PACKAGE_DIR, 'package.json'));
     const buildStart = process.hrtime();
     shelljs_1.default.echo(`Building package '${chalk_1.default.cyan(PACKAGE.name)}'...`);
@@ -29,7 +43,7 @@ async function build() {
         shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*`);
         shelljs_1.default.mkdir(`-p`, BUNDLES_DIR);
     });
-    await executeStep(`Linting`, () => util_2.execAsync(`tslint`, `-c tslint.json`, `-t stylish`, `--project ${PACKAGE_DIR} ${PACKAGE_DIR}/**/*.ts`));
+    await executeStep(`Linting`, () => util_2.execAsync(`tslint`, `-c ${path_1.default.join(ROOT_DIR, 'tslint.json')}`, `-t stylish`, `--project ${PACKAGE_DIR} ${PACKAGE_DIR}/**/*.ts`));
     await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`));
     await executeStep(`Bundling`, async () => {
         const externals = Object.keys(PACKAGE.dependencies || {})
@@ -64,7 +78,7 @@ async function build() {
         const globalsArg = externals.length > 0
             ? `-g ${externals.map(e => `${e}:${e}`).join(',')}`
             : '';
-        const ret = await util_2.execAsync(`rollup`, `-c ${path_1.default.join(process.cwd(), 'rollup.config.js')}`, `-f umd`, `-i ${BUNDLES_DIR}/bundle.es5.js`, `-o ${BUNDLES_DIR}/bundle.umd.js`, `-n ${PACKAGE.name}`, `-m`, `--exports named`, externalsArg, globalsArg);
+        const ret = await util_2.execAsync(`rollup`, `-c ${path_1.default.join(ROOT_DIR, 'rollup.config.js')}`, `-f umd`, `-i ${BUNDLES_DIR}/bundle.es5.js`, `-o ${BUNDLES_DIR}/bundle.umd.js`, `-n ${PACKAGE.name}`, `-m`, `--exports named`, externalsArg, globalsArg);
         if (ret.code !== 0) {
             return ret;
         }
@@ -72,7 +86,7 @@ async function build() {
         return ret;
     });
     await executeStep(`Minifying`, async () => {
-        let code = await util_2.execAsync(`${path_1.default.join(process.cwd(), 'node_modules/.bin/uglifyjs')}`, false, `-c`, `-m`, `--comments`, `-o ${BUNDLES_DIR}/bundle.umd.min.js`, 
+        let code = await util_2.execAsync(`${path_1.default.join(ROOT_DIR, 'node_modules/.bin/uglifyjs')}`, false, `-c`, `-m`, `--comments`, `-o ${BUNDLES_DIR}/bundle.umd.min.js`, 
         // tslint:disable-next-line: max-line-length
         `--source-map "filename='bundle.umd.min.js.map',url='bundle.umd.min.js.map',includeSources"`, `${BUNDLES_DIR}/bundle.umd.js`);
         if (code !== 0) {
@@ -101,7 +115,7 @@ async function build() {
     });
     await executeStep(`Copying static assets`, () => {
         shelljs_1.default.cp(`-Rf`, [`${PACKAGE_DIR}/package.json`], OUTPUT_DIR);
-        shelljs_1.default.cp(`-Rf`, [`LICENSE`], OUTPUT_DIR);
+        shelljs_1.default.cp(`-Rf`, [`${ROOT_DIR}/LICENSE`], OUTPUT_DIR);
         shelljs_1.default.cp(`-Rf`, [`${PACKAGE_DIR}/README.md`], OUTPUT_DIR);
     });
     const buildTime = process.hrtime(buildStart);

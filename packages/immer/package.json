@@ -6,6 +6,16 @@
   "es2015": "./bundles/bundle.js",
   "main": "./bundles/bundle.umd.js",
   "typings": "./index.d.ts",
+  "scripts": {
+    "build": "node ../../scripts/build.package.js --forceEnableColors=true",
+    "build-ci": "npm run build -- --forceEnableColors=false",
+    "lint": "tslint -c ../../tslint.json -p ./tsconfig.json --fix",
+    "lint-ci": "npm run lint -- --fix=false",
+    "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --config=./jest.config.js",
+    "test-ci": "npm run test -- --runInBand --ci",
+    "prepublish": "npm run build && npm run test",
+    "publish": "npm publish ./dist --access public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/MrWolfZ/simplux.git"
@@ -23,8 +33,10 @@
   "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
   "license": "MIT",
   "private": false,
+  "dependencies": {
+    "@simplux/core": "0.2.0"
+  },
   "peerDependencies": {
-    "@simplux/core": ">=0.1.0",
     "immer": ">=3.0.0"
   }
 }

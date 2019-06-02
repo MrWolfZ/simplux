@@ -57,10 +57,13 @@ async function runTestsForPackage(packageName: string, changedFiles: string[]) {
   )
 
   return await execAsync(
-    `npm run test:${packageName}`,
+    `npm run test`,
     false,
-    '--',
-    '--findRelatedTests',
+    `--`,
+    `--scope @simplux/${packageName} --stream=false`,
+    `--`,
+    `--`,
+    `--findRelatedTests --passWithNoTests`,
     ...changedFiles,
   )
 }

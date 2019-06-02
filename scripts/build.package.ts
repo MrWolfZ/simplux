@@ -1,11 +1,26 @@
-import chalk from 'chalk'
+import chalk, { Level } from 'chalk'
 import fs from 'fs'
 import glob from 'glob'
 import path from 'path'
 import pretty from 'pretty-time'
 import shell from 'shelljs'
 import { promisify } from 'util'
+import yargs from 'yargs'
 import { execAsync, ExecReturnValue } from './util'
+
+const argv = yargs
+  .scriptName('build-pacakge')
+  .option('packageDir', {
+    default: process.cwd(),
+  })
+  .option('forceEnableColors', {
+    default: false,
+  }).argv
+
+if (argv.forceEnableColors) {
+  chalk.enabled = true
+  chalk.level = Level.TrueColor
+}
 
 // tslint:disable: no-var-requires
 // tslint:disable: no-require-imports
@@ -17,9 +32,10 @@ build().catch(err => {
 })
 
 async function build() {
-  const PACKAGE_DIR = path.join(process.cwd(), process.argv[2])
+  const PACKAGE_DIR = argv.packageDir
   const OUTPUT_DIR = path.join(PACKAGE_DIR, `dist`)
   const BUNDLES_DIR = path.join(OUTPUT_DIR, `bundles`)
+  const ROOT_DIR = path.resolve(path.join(__dirname, `..`))
   const PACKAGE = require(path.join(PACKAGE_DIR, 'package.json'))
 
   const buildStart = process.hrtime()
@@ -34,7 +50,7 @@ async function build() {
   await executeStep(`Linting`, () =>
     execAsync(
       `tslint`,
-      `-c tslint.json`,
+      `-c ${path.join(ROOT_DIR, 'tslint.json')}`,
       `-t stylish`,
       `--project ${PACKAGE_DIR} ${PACKAGE_DIR}/**/*.ts`,
     ),
@@ -107,7 +123,7 @@ async function build() {
 
     const ret = await execAsync(
       `rollup`,
-      `-c ${path.join(process.cwd(), 'rollup.config.js')}`,
+      `-c ${path.join(ROOT_DIR, 'rollup.config.js')}`,
       `-f umd`,
       `-i ${BUNDLES_DIR}/bundle.es5.js`,
       `-o ${BUNDLES_DIR}/bundle.umd.js`,
@@ -128,7 +144,7 @@ async function build() {
 
   await executeStep(`Minifying`, async () => {
     let code = await execAsync(
-      `${path.join(process.cwd(), 'node_modules/.bin/uglifyjs')}`,
+      `${path.join(ROOT_DIR, 'node_modules/.bin/uglifyjs')}`,
       false,
       `-c`,
       `-m`,
@@ -175,7 +191,7 @@ async function build() {
 
   await executeStep(`Copying static assets`, () => {
     shell.cp(`-Rf`, [`${PACKAGE_DIR}/package.json`], OUTPUT_DIR)
-    shell.cp(`-Rf`, [`LICENSE`], OUTPUT_DIR)
+    shell.cp(`-Rf`, [`${ROOT_DIR}/LICENSE`], OUTPUT_DIR)
     shell.cp(`-Rf`, [`${PACKAGE_DIR}/README.md`], OUTPUT_DIR)
   })
 
