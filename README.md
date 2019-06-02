@@ -8,6 +8,8 @@ This repository is a work-in-progress and is not suitable for use in production.
 
 Here you can find some recipes that will make it simple to learn how to use **simplux**.
 
+### Basics
+
 - [Getting Started](recipes/basics/getting-started#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started))
 
 ## Open points
@@ -39,9 +41,13 @@ Here you can find some recipes that will make it simple to learn how to use **si
 - angular: create package for angular service
 - presets: create preset packages that only contain package.json files that pull in all recommended packages
 - add recipes:
+  - composing mutations
   - testing mutations
   - derived state
   - testing selectors
+  - composing selectors
+  - writing mutations with less boilerplate
+  - usage with reselect
   - using with react and simplux extension
   - using with react and react-redux
   - testing react-component that selects state
