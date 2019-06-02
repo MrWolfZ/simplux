@@ -2,9 +2,6 @@ import { SubscribeToStateChanges } from '@simplux/core'
 import { useEffect, useLayoutEffect, useReducer, useRef } from 'react'
 import { getWindow } from './window'
 
-// TODO: wrap store with proxy that notifies subscribers using batching (or just
-// switch to react-redux or another existing react bindings implementation)
-
 function getEffectHook() {
   // React currently throws a warning when using useLayoutEffect on the server.
   // To get around it, we can conditionally useEffect on the server (no-op) and
@@ -24,18 +21,7 @@ export function useModuleSelector<TState, TSelected>(
 
   const latestSelector = useRef(selector)
 
-  let selectedState: TSelected
-
-  try {
-    selectedState = selector(getModuleState())
-  } catch (err) {
-    const errorMessage = `An error occured while selecting the store state: ${
-      err.message
-    }.`
-
-    throw new Error(errorMessage)
-  }
-
+  const selectedState = selector(getModuleState())
   const latestSelectedState = useRef(selectedState)
 
   getEffectHook()(() => {
