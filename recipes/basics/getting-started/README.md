@@ -34,7 +34,7 @@ const counterModule = createSimpluxModule({
 console.log('initial state:', counterModule.getState())
 ```
 
-The most interesting thing you can do with state is to change it. In **simplux** that is done with mutations. A mutation is a pure function that takes the current module state - and optionally some additional arguments - and returns a new updated state. So, in contrast to their name, mutations do not really mutate the state but create a modified copy.
+The most interesting thing you can do with state is to change it. In **simplux** that is done with mutations. A mutation is a pure function that takes the current module state - and optionally some additional arguments - and returns a new updated state.
 
 ```ts
 // to change the state, we can define mutations
@@ -62,7 +62,7 @@ console.log('incremented counter by 5:', counterModule.getState())
 console.log('final state:', increment())
 ```
 
-> If you find this style of writing mutations a bit cumbersome, you are not alone. The recipe for [changing state](../changing-state#readme) will show you an alternative simpler way of writing mutations.
+> In contrast to their name, mutations do not really mutate the state but instead create a modified copy. However, conceptually they _do_ mutate the state, which is why we call them mutations instead of the traditional name _reducers_, since we believe that it is more important to name things for what they are supposed to do instead of for how they are implemented. And don't worry, if you find this copy-and-update style of writing mutations a bit cumbersome, you are not alone. The recipe for [changing state](../changing-state#readme) shows you an alternative simpler way of writing mutations that feels more natural.
 
 And that is all you need to start using **simplux**. You may have noticed that in all of this code, there is only a single type annotation (for the `amount` parameter of the `incrementBy` mutation). This is intentional, since **simplux** is designed to require the absolute minimal amount of type annotations by leveraging type inference wherever possible while still being perfectly type-safe.
 
