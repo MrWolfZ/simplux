@@ -30,7 +30,7 @@ const counterModule = createSimpluxModule({
   },
 })
 
-// the simplest thing a module offers is to get its state
+// the simplest operation of a module is to get its state
 console.log('initial state:', counterModule.getState())
 ```
 
