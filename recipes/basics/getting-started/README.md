@@ -10,22 +10,9 @@ For this recipe, you need to have **simplux**'s _core_ package installed. In add
 npm i @simplux/core redux -S
 ```
 
-**simplux** is built to work with [redux](https://redux.js.org/). Therefore, we need a redux store to start using **simplux**. For this recipe, we create our own simple redux store that only contains **simplux**'s state. If you are not yet using redux, that is all you need to know about it. However, if you are working on an existing application, you may already have a redux store. In that case, once you have finished this recipe, the recipe for [using **simplux** with an application that already uses redux](../using-simplux-with-application-already-using-redux#readme) will show you how to achieve that.
+**simplux** is built to work with [redux](https://redux.js.org/). If you are not yet using redux, **simplux** will take care of everything for you. However, if you are working on an existing application, you may already have a redux store. In that case, once you have finished this recipe, the recipe for [using **simplux** with an application that already uses redux](../using-simplux-with-application-already-using-redux#readme) will show you how to achieve that.
 
-```ts
-import { getSimpluxReducer, setReduxStoreForSimplux } from '@simplux/core'
-import { createStore } from 'redux'
-
-// first, we create a redux store that only contains simplux's state
-const store = createStore(getSimpluxReducer())
-
-// then, we tell simplux to use our store; the second argument
-// exists to tell simplux where it can find its state on the
-// root state, which in this simple case is the root state itself
-setReduxStoreForSimplux(store, s => s)
-```
-
-Now we are ready to start using **simplux**.
+Now let's start using **simplux**.
 
 In **simplux** all state is contained in _modules_. Your application will consist of many such modules, but for now we will only create a simple one that contains a counter. Once you have finished this recipe, you can head over to the recipe for [organizing your application state](../organizing-my-application-state#readme) to get more insights into how to do that effectively.
 

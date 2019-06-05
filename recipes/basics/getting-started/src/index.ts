@@ -1,21 +1,8 @@
-import {
-  createSimpluxModule,
-  getSimpluxReducer,
-  setReduxStoreForSimplux,
-} from '@simplux/core'
-import { createStore } from 'redux'
+import { createSimpluxModule } from '@simplux/core'
 
 // this code is part of the recipe for getting started with
 // simplux, which you can find here:
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/getting-started
-
-// first, we create a redux store that only contains simplux state
-const store = createStore(getSimpluxReducer())
-
-// then, we tell simplux to use our store; the second argument
-// exists to tell simplux where it can find its state on the
-// root state, which in this case is the root state itself
-setReduxStoreForSimplux(store, s => s)
 
 // state in simplux is organized into modules; here we create
 // our first simple counter module
