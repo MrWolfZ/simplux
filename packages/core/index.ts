@@ -1,4 +1,4 @@
-import { Store } from 'redux'
+import { createStore, Store } from 'redux'
 import {
   createModule,
   registerModuleExtension,
@@ -10,6 +10,9 @@ import { mutationsModuleExtension } from './src/mutations'
 import { setReduxStore, simpluxStore } from './src/store'
 
 registerModuleExtension(mutationsModuleExtension)
+
+// we create and set a default redux store for simple scenarios
+setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
 
 export {
   SimpluxModule,
