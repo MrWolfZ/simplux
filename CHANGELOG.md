@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-alpha.2](https://github.com/MrWolfZ/simplux/compare/v0.3.0-alpha.1...v0.3.0-alpha.2) (2019-06-05)
+
+
+### Bug Fixes
+
+* **core:** ensure mutation type inference works with TypeScript 3.3.3 ([4da619a](https://github.com/MrWolfZ/simplux/commit/4da619a))
+
+
+### Features
+
+* **core:** automatically create redux store for simple scenarios ([0d2ac13](https://github.com/MrWolfZ/simplux/commit/0d2ac13))
+* **recipes:** add text version of "getting started" recipe ([24f21dc](https://github.com/MrWolfZ/simplux/commit/24f21dc))
+* **recipes:** simplify "getting started" recipe ([aed2ca4](https://github.com/MrWolfZ/simplux/commit/aed2ca4))
+
+
+
+
+
 # [0.3.0-alpha.1](https://github.com/MrWolfZ/simplux/compare/v0.3.0-alpha.0...v0.3.0-alpha.1) (2019-06-02)
 
 
