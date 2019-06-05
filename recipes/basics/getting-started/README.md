@@ -2,7 +2,7 @@
 
 This recipe shows how simple it is to get started using **simplux**.
 
-You can also see this recipe in action as a [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
+> You can try out this recipe through this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
 
 For this recipe, you need to have **simplux**'s _core_ package installed. In addition, we need to install [redux](https://redux.js.org/).
 
@@ -75,7 +75,7 @@ console.log('incremented counter by 5:', counterModule.getState())
 console.log('final state:', increment())
 ```
 
-If you find this style of writing mutations a bit cumbersome, you are not alone. The recipe for [changing state](../changing-state#readme) will show you an alternative simpler way of writing mutations.
+> If you find this style of writing mutations a bit cumbersome, you are not alone. The recipe for [changing state](../changing-state#readme) will show you an alternative simpler way of writing mutations.
 
 And that is all you need to start using **simplux**. You may have noticed that in all of this code, there is only a single type annotation (for the `amount` parameter of the `incrementBy` mutation). This is intentional, since **simplux** is designed to require the absolute minimal amount of type annotations by leveraging type inference wherever possible while still being perfectly type-safe.
 
