@@ -13,7 +13,17 @@ export type MutationReturnType<TState> = MutationReturnTypeOverride<
 
 export type MutationBase<TState> = (
   state: TState,
-  ...args: any[]
+  // optimally, we would use ...args: any[] but that does not work correctly with
+  // TypeScript 3.3.3 so we use this workaround
+  arg1?: any,
+  arg2?: any,
+  arg3?: any,
+  arg4?: any,
+  arg5?: any,
+  arg6?: any,
+  arg7?: any,
+  arg8?: any,
+  arg9?: any,
 ) => MutationReturnType<TState>
 
 export interface MutationsBase<TState> {
@@ -142,7 +152,7 @@ export function createMutationsFactory<TState>(
           return result || state
         }
 
-        acc[mutationName].asActionCreator = createAction
+        acc[mutationName].asActionCreator = createAction as any
 
         return acc
       },
