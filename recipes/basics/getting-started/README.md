@@ -4,13 +4,13 @@ This recipe shows how simple it is to get started using **simplux**.
 
 You can also see this recipe in action as a [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
 
-For this recipe, you need to have **simplux**'s core package installed.
+For this recipe, you need to have **simplux**'s _core_ package installed. In addition, we need to install [redux](https://redux.js.org/).
 
 ```sh
-npm i @simplux/core -S
+npm i @simplux/core redux -S
 ```
 
-**simplux** is built to compose with [redux](https://redux.js.org/) by exposing a reducer that enables all of its functionality. Therefore, we need a redux store to start using **simplux**. For this recipe, we create our own simple redux store that only contains **simplux**'s state. However, if you are working on an existing application, you probably already have a redux store. Once you have finished this recipe, the recipe for [using **simplux** with an existing redux store](../using-simplux-with-existing-redux-store#readme) will show you how to achieve that.
+**simplux** is built to work with [redux](https://redux.js.org/). Therefore, we need a redux store to start using **simplux**. For this recipe, we create our own simple redux store that only contains **simplux**'s state. If you are not yet using redux, that is all you need to know about it. However, if you are working on an existing application, you may already have a redux store. In that case, once you have finished this recipe, the recipe for [using **simplux** with an application that already uses redux](../using-simplux-with-application-already-using-redux#readme) will show you how to achieve that.
 
 ```ts
 import { getSimpluxReducer, setReduxStoreForSimplux } from '@simplux/core'
@@ -27,7 +27,7 @@ setReduxStoreForSimplux(store, s => s)
 
 Now we are ready to start using **simplux**.
 
-In **simplux** all state is contained in _modules_. Your application will consist of many such modules, but for now we will only create a simple one that contains a counter. Once you have finished this recipe, you can head over to the recipe for [organizing your state](../organizing-your-state#readme) to get more insights into how to do that effectively.
+In **simplux** all state is contained in _modules_. Your application will consist of many such modules, but for now we will only create a simple one that contains a counter. Once you have finished this recipe, you can head over to the recipe for [organizing my application state](../organizing-my-application-state#readme) to get more insights into how to do that effectively.
 
 ```ts
 import { createSimpluxModule } from '@simplux/core'
