@@ -12,7 +12,7 @@ Here you can find some recipes that will make it simple to learn how to use **si
 
 - [getting started](recipes/basics/getting-started#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started))
 - [testing mutations](recipes/basics/testing-mutations#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/testing-mutations))
-- [derived state](recipes/basics/derived-state#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/derived-state))
+- [using derived state](recipes/basics/using-derived-state#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/using-derived-state))
 
 ## Open points
 
