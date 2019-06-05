@@ -2,9 +2,9 @@
 
 This recipe shows how simple it is to get started using **simplux**.
 
-> You can try out this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
+> You can play with the code in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
 
-For this recipe, you need to have **simplux**'s _core_ package installed. In addition, we need to install [redux](https://redux.js.org/).
+Before we start let's install all the packages we need.
 
 ```sh
 npm i @simplux/core redux -S
