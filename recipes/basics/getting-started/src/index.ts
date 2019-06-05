@@ -34,8 +34,7 @@ const { increment, incrementBy } = counterModule.createMutations({
   }),
 })
 
-// to update the module's state, simply call a mutation (this
-// dispatches a redux action internally)
+// to update the module's state, simply call a mutation
 increment()
 console.log('incremented counter:', counterModule.getState())
 
