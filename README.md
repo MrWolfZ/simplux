@@ -1,12 +1,12 @@
 # simplux - redux made simple
 
-**simplux** is a collection of libaries for frontend state management that require little to no boilerplate and are built with TypeScript in mind, all while giving you the full power of redux.
+**simplux** is state management as it should be: simple to use, no boilerplate, type-safe but not verbose - all while giving you the full power of redux.
 
 This repository is a work-in-progress and is not suitable for use in production.
 
 ## Recipes
 
-Here you can find some recipes that will make it simple to learn how to use **simplux**.
+Here are some recipes that will help you in getting to know **simplux**.
 
 ### Basics
 
