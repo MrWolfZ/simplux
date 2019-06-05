@@ -16,6 +16,8 @@ Here are some recipes that will help you in getting to know **simplux**.
 
 ## Open points
 
+- recipes: update readmes
+- recipes: rename "testing mutations" to "testing state changes"
 - core: merge modules if defined multiple times, but print a warning during DEV mode
 - core: add testing package that allows mocking mutations
 - core: freeze module state in DEV mode
@@ -32,20 +34,21 @@ Here are some recipes that will help you in getting to know **simplux**.
 - observable: create package for getting an observable of module state changes
 - observable: add support for observable epics
 - observable: add test to verify store is not eagerly accessed
+- observable: add way to get observable of actions
 - docs: create website
 - docs: write docs for each package
 - docs: explain how to use with and without existing store
-- add dtslint tests
+- add dtslint tests (and add TypeScript peer dependencies to packages)
 - add travis builds
 - add code coverage builds
 - add tests that verify HMR works
 - add tests that verify server-side rendering works
 - angular: create package for angular service
-- presets: create preset packages that only contain package.json files that pull in all recommended packages
-- update recipe readmes
+- core: add way to susbcribe to mutations (if a use case exists for this)
+- core: add type to mutation extras
 - add recipes:
-  - composing mutations
-  - derived state
+  - reacting to state changes
+  - debugging
   - testing selectors
   - composing selectors
   - writing mutations with less boilerplate
