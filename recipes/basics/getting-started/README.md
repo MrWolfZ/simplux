@@ -10,7 +10,7 @@ Before we start let's install all the packages we need.
 npm i @simplux/core redux -S
 ```
 
-**simplux** is built to work with [redux](https://redux.js.org/). If you are not yet using redux, **simplux** will take care of everything for you. However, if you are working on an existing application, you may already have a redux store. In that case, once you have finished this recipe, the recipe for [using **simplux** with an application that already uses redux](../using-simplux-with-application-already-using-redux#readme) will show you how to achieve that.
+**simplux** is built to work with [redux](https://redux.js.org/). If you are not yet using redux, **simplux** will take care of everything for you. However, if you are working on an existing application, you may already have a redux store. In that case, once you have finished this recipe, the recipe for [using **simplux** in an application that already uses redux](../using-simplux-in-application-already-using-redux#readme) will show you how to achieve that.
 
 Now let's start using **simplux**.
 
