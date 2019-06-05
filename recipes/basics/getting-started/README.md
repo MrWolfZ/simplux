@@ -27,7 +27,7 @@ setReduxStoreForSimplux(store, s => s)
 
 Now we are ready to start using **simplux**.
 
-In **simplux** all state is contained in _modules_. Your application will consist of many such modules, but for now we will only create a simple one that contains a counter. Once you have finished this recipe, you can head over to the recipe for [organizing my application state](../organizing-my-application-state#readme) to get more insights into how to do that effectively.
+In **simplux** all state is contained in _modules_. Your application will consist of many such modules, but for now we will only create a simple one that contains a counter. Once you have finished this recipe, you can head over to the recipe for [organizing your application state](../organizing-my-application-state#readme) to get more insights into how to do that effectively.
 
 ```ts
 import { createSimpluxModule } from '@simplux/core'
