@@ -29,7 +29,7 @@ const counterModule = createSimpluxModule({
   },
 })
 
-// you can get the current state of the module via getState
+// the simplest thing you can do with a module is to get its state
 console.log('initial state:', counterModule.getState())
 
 // to change the state, we can define mutations; a mutation

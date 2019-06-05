@@ -27,7 +27,7 @@ setReduxStoreForSimplux(store, s => s)
 
 Now we are ready to start using **simplux**.
 
-In **simplux** all state is contained in _modules_. Your application will consist of many such modules, but for now we will only create a simple one that contains a counter. Once you have finished this recipe, you can head over to the recipe for [organizing your state](../organizing-your-state#readme) to get more insights on how to do that.
+In **simplux** all state is contained in _modules_. Your application will consist of many such modules, but for now we will only create a simple one that contains a counter. Once you have finished this recipe, you can head over to the recipe for [organizing your state](../organizing-your-state#readme) to get more insights into how to do that effectively.
 
 ```ts
 import { createSimpluxModule } from '@simplux/core'
@@ -43,11 +43,11 @@ const counterModule = createSimpluxModule({
   },
 })
 
-// the simplest thing you can do with a module is to get its state.
+// the simplest thing a module offers is to get its state
 console.log('initial state:', counterModule.getState())
 ```
 
-The most interesting thing you can do with state is to update it. In **simplux** that is done with mutations. A mutation is a pure function that takes the current module state and optionally some additional arguments and returns a new updated state. So, in contrast to their name, mutations do not really mutate the state but create a modified copy.
+The most interesting thing you can do with state is to change it. In **simplux** that is done with mutations. A mutation is a pure function that takes the current module state - and optionally some additional arguments - and returns a new updated state. So, in contrast to their name, mutations do not really mutate the state but create a modified copy.
 
 ```ts
 // to change the state, we can define mutations
@@ -79,4 +79,4 @@ If you find this style of writing mutations a bit cumbersome, you are not alone.
 
 And that is all you need to start using **simplux**. You may have noticed that in all of this code, there is only a single type annotation (for the `amount` parameter of the `incrementBy` mutation). This is intentional, since **simplux** is designed to require the absolute minimal amount of type annotations by leveraging type inference wherever possible while still being perfectly type-safe.
 
-By now you are certainly curious how **simplux** can help you in more complex scenarios. Our [other recipes](../../..#recipes) are an excellent way to get support for doing this.
+By now you are certainly curious how **simplux** can help you in more complex scenarios. Our [other recipes](../../../../..#recipes) are an excellent way to get support for doing this.
