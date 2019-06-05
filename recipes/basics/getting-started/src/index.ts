@@ -27,7 +27,7 @@ const { increment, incrementBy } = counterModule.createMutations({
   // we can have mutations that only use the state
   increment: state => ({ ...state, counter: state.counter + 1 }),
 
-  // our mutations can also have arguments
+  // but they can also have arguments
   incrementBy: (state, amount: number) => ({
     ...state,
     counter: state.counter + amount,
