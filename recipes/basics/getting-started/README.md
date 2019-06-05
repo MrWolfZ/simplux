@@ -14,7 +14,7 @@ npm i @simplux/core redux -S
 
 ```ts
 import { getSimpluxReducer, setReduxStoreForSimplux } from '@simplux/core'
-import { combineReducers, createStore } from 'redux'
+import { createStore } from 'redux'
 
 // first, we create a redux store that only contains simplux's state
 const store = createStore(getSimpluxReducer())
