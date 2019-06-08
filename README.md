@@ -2,7 +2,11 @@
 
 **simplux** is state management as it should be: simple to use, no boilerplate, type-safe but not verbose - all while giving you the full power of redux.
 
-This repository is a work-in-progress and is not suitable for use in production.
+[![npm version](https://badge.fury.io/js/%40simplux%2Fcore.svg)](https://www.npmjs.com/package/@simplux/core)
+[![Build Status](https://travis-ci.org/MrWolfZ/simplux.svg?branch=master)](https://travis-ci.org/MrWolfZ/simplux)
+[![license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+This repository is a work-in-progress and is not suitable for use in production just yet.
 
 ## Recipes
 
