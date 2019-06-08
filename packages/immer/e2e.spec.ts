@@ -83,4 +83,26 @@ describe(`@simplux/immer`, () => {
 
     cleanup()
   })
+
+  it('does not mutate the state when calling a mutation with a state', () => {
+    const initialState = {
+      test: 'test',
+    }
+
+    const { createMutations } = createSimpluxModule({
+      name: 'test',
+      initialState,
+    })
+
+    const { update } = createMutations({
+      update(state, value: string) {
+        state.test = value
+      },
+    })
+
+    const updatedState = update.withState(initialState)('updated')
+
+    expect(updatedState).not.toBe(initialState)
+    expect(initialState.test).toBe('test')
+  })
 })
