@@ -1,0 +1,43 @@
+{
+  "name": "@simplux/recipes.basics.testing-derived-state",
+  "version": "0.3.0-alpha.3",
+  "description": "This recipe shows how simple it is to test your derived state with simplux",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "webpack-dev-server --mode development --progress --color",
+    "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --runInBand --config=./jest.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrWolfZ/simplux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/simplux/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/testing-derived-state#readme",
+  "keywords": [
+    "recipe",
+    "redux",
+    "simplux",
+    "typescript"
+  ],
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@simplux/core": "0.3.0-alpha.3",
+    "@simplux/selectors": "0.3.0-alpha.3",
+    "redux": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "html-webpack-plugin": "^3.2.0",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "ts-loader": "^6.0.2",
+    "typescript": "^3.5.1",
+    "webpack": "^4.32.2",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.5.1"
+  }
+}
