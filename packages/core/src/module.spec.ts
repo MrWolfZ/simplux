@@ -6,132 +6,177 @@ import {
   SimpluxModule,
   Unsubscribe,
 } from './module'
-import { setReduxStore, simpluxStore } from './store'
+import {
+  createReduxStoreProxy,
+  createSimpluxStore,
+  SimpluxStore,
+} from './store'
 
-describe('registering extension', () => {
-  it('stores the extension', () => {
-    const unregister = registerModuleExtension(() => ({}))
-    expect(moduleExtensions.length).toBe(1)
-    unregister()
-  })
-
-  it('returns unregister function', () => {
-    const unregister = registerModuleExtension(() => ({}))
-    unregister()
-    expect(moduleExtensions.length).toBe(0)
-  })
-
-  it('does not throw when unregistering multiple times', () => {
-    const unregister = registerModuleExtension(() => ({}))
-    expect(() => {
+describe('module', () => {
+  describe('registering extension', () => {
+    it('stores the extension', () => {
+      const unregister = registerModuleExtension(() => ({}))
+      expect(moduleExtensions.length).toBe(1)
       unregister()
+    })
+
+    it('returns unregister function', () => {
+      const unregister = registerModuleExtension(() => ({}))
       unregister()
-    }).not.toThrow()
-  })
-})
+      expect(moduleExtensions.length).toBe(0)
+    })
 
-describe('created module', () => {
-  let subscribeSpy: jest.SpyInstance
-  let undo: () => void
-
-  beforeEach(() => {
-    const reduxStore = createStore(simpluxStore.rootReducer)
-    undo = setReduxStore(reduxStore, s => s)
-    subscribeSpy = jest.spyOn(reduxStore, 'subscribe')
+    it('does not throw when unregistering multiple times', () => {
+      const unregister = registerModuleExtension(() => ({}))
+      expect(() => {
+        unregister()
+        unregister()
+      }).not.toThrow()
+    })
   })
 
-  afterEach(() => {
-    undo()
-  })
+  describe('creating module', () => {
+    let setReducerSpy: jest.SpyInstance
+    let simpluxStore: SimpluxStore
 
-  describe(`getState`, () => {
-    it('returns initial state', () => {
+    beforeEach(() => {
+      const getReduxStoreProxy = () =>
+        createReduxStoreProxy(reduxStore, s => s, 1, [])
+      simpluxStore = createSimpluxStore(getReduxStoreProxy)
+      const reduxStore = createStore(simpluxStore.rootReducer)
+      setReducerSpy = jest.spyOn(simpluxStore, 'setReducer')
+    })
+
+    it('sets the reducer', () => {
       const initialState = { prop: 'value' }
-      const { getState } = createModule(simpluxStore, {
+      createModule(simpluxStore, {
         name: 'test',
         initialState,
       })
 
-      expect(getState()).toBe(initialState)
+      expect(setReducerSpy).toHaveBeenCalledWith('test', expect.any(Function))
     })
-  })
 
-  describe(`setState`, () => {
-    it('replaces the whole state', () => {
-      const replacedState = { prop: 'updated' }
-      const { getState, setState } = createModule(simpluxStore, {
-        name: 'test',
-        initialState: { prop: 'value' },
-      })
+    it('overrides modules with the same name', () => {
+      const initialState = { prop: 'value' }
 
-      setState(replacedState)
-      expect(getState()).toBe(replacedState)
-    })
-  })
-
-  describe(`subscribeToStateChanges`, () => {
-    let unsubscribe: Unsubscribe
-    let handlerSpy: jest.Mock
-    const initialState = {
-      prop: 'value',
-    }
-    type Module = SimpluxModule<typeof initialState>
-    let setState: Module['setState']
-    let subscribeToStateChanges: Module['subscribeToStateChanges']
-
-    beforeEach(() => {
-      const module = createModule(simpluxStore, {
+      createModule(simpluxStore, {
         name: 'test',
         initialState,
       })
 
-      setState = module.setState
-      subscribeToStateChanges = module.subscribeToStateChanges
+      expect(() => {
+        createModule(simpluxStore, {
+          name: 'test',
+          initialState,
+        })
+      }).not.toThrow()
+
+      expect(setReducerSpy).toHaveBeenCalledTimes(2)
     })
+  })
+
+  describe('created module', () => {
+    let subscribeSpy: jest.SpyInstance
+    let simpluxStore: SimpluxStore
 
     beforeEach(() => {
-      setState(initialState)
-      handlerSpy = jest.fn()
-      unsubscribe = subscribeToStateChanges(handlerSpy)
+      const getReduxStoreProxy = () =>
+        createReduxStoreProxy(reduxStore, s => s, 1, [])
+      simpluxStore = createSimpluxStore(getReduxStoreProxy)
+      const reduxStore = createStore(simpluxStore.rootReducer)
+      subscribeSpy = jest.spyOn(reduxStore, 'subscribe')
     })
 
-    afterEach(() => {
-      unsubscribe()
+    describe(`getState`, () => {
+      it('returns initial state', () => {
+        const initialState = { prop: 'value' }
+        const { getState } = createModule(simpluxStore, {
+          name: 'test',
+          initialState,
+        })
+
+        expect(getState()).toBe(initialState)
+      })
     })
 
-    it('calls handler whenever the module state changes', () => {
-      const replacedState = {
-        prop: 'updated',
+    describe(`setState`, () => {
+      it('replaces the whole state', () => {
+        const replacedState = { prop: 'updated' }
+        const { getState, setState } = createModule(simpluxStore, {
+          name: 'test',
+          initialState: { prop: 'value' },
+        })
+
+        setState(replacedState)
+        expect(getState()).toBe(replacedState)
+      })
+    })
+
+    describe(`subscribeToStateChanges`, () => {
+      let unsubscribe: Unsubscribe
+      let handlerSpy: jest.Mock
+      const initialState = {
+        prop: 'value',
       }
+      type Module = SimpluxModule<typeof initialState>
+      let setState: Module['setState']
+      let subscribeToStateChanges: Module['subscribeToStateChanges']
 
-      setState(replacedState)
+      beforeEach(() => {
+        const module = createModule(simpluxStore, {
+          name: 'test',
+          initialState,
+        })
 
-      expect(handlerSpy).toHaveBeenCalledWith(replacedState)
-    })
+        setState = module.setState
+        subscribeToStateChanges = module.subscribeToStateChanges
+      })
 
-    it('does not call the handler if the state did not change', () => {
-      const replacedState = {
-        prop: 'updated',
-      }
+      beforeEach(() => {
+        setState(initialState)
+        handlerSpy = jest.fn()
+        unsubscribe = subscribeToStateChanges(handlerSpy)
+      })
 
-      setState(replacedState)
-      setState(replacedState)
+      afterEach(() => {
+        unsubscribe()
+      })
 
-      expect(handlerSpy).toHaveBeenCalledTimes(1)
-    })
+      it('calls handler whenever the module state changes', () => {
+        const replacedState = {
+          prop: 'updated',
+        }
 
-    it('subscribes to the store only once even if multiple handlers are subscribed', () => {
-      subscribeToStateChanges(handlerSpy)
+        setState(replacedState)
 
-      expect(subscribeSpy).toHaveBeenCalledTimes(1)
-    })
+        expect(handlerSpy).toHaveBeenCalledWith(replacedState)
+      })
 
-    it('unsubscribes the handler when returned callback is called', () => {
-      setState({ prop: 'updated' })
-      unsubscribe()
-      setState({ prop: 'updated' })
+      it('does not call the handler if the state did not change', () => {
+        const replacedState = {
+          prop: 'updated',
+        }
 
-      expect(handlerSpy).toHaveBeenCalledTimes(1)
+        setState(replacedState)
+        setState(replacedState)
+
+        expect(handlerSpy).toHaveBeenCalledTimes(1)
+      })
+
+      it('subscribes to the store only once even if multiple handlers are subscribed', () => {
+        subscribeToStateChanges(handlerSpy)
+
+        expect(subscribeSpy).toHaveBeenCalledTimes(1)
+      })
+
+      it('unsubscribes the handler when returned callback is called', () => {
+        setState({ prop: 'updated' })
+        unsubscribe()
+        setState({ prop: 'updated' })
+
+        expect(handlerSpy).toHaveBeenCalledTimes(1)
+      })
     })
   })
 })
