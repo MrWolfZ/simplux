@@ -11,20 +11,41 @@ This repository is a work-in-progress and is not suitable for use in production 
 
 ## Recipes
 
-Here are some recipes that will show you how **simplux** can make your life easier.
+Here are some recipes that will show you how **simplux** can make life simple for you.
+
+> For every "How do I do X?" you have ever asked yourself, there should be a recipe here. If you find one that is missing, please let us know by creating an issue or even better, provide the recipe as a pull request.
 
 ### Basics
 
 - [getting started](recipes/basics/getting-started#readme)
 - [testing state changes](recipes/basics/testing-state-changes#readme)
-- [computing derived state](recipes/basics/computing-derived-state#readme)
-- [testing derived state](recipes/basics/testing-derived-state#readme)
-- [simplifying state changes](recipes/basics/simplifying-state-changes#readme)
+- [computing derived state](recipes/basics/computing-derived-state#readme) (work-in-progress)
+- [testing derived state](recipes/basics/testing-derived-state#readme) (work-in-progress)
+- [simplifying state changes](recipes/basics/simplifying-state-changes#readme) (work-in-progress)
 
 ### Advanced
 
-- [using **simplux** in my application that already uses redux](recipes/advanced/using-in-redux-application#readme)
-- [organizing my application state](recipes/advanced/organizing-application-state#readme)
+- [using **simplux** in my application that already uses Redux](recipes/advanced/using-in-redux-application#readme) (work-in-progress)
+- [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme) (work-in-progress)
+- [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme) (work-in-progress)
+- [organizing my application state](recipes/advanced/organizing-application-state#readme) (work-in-progress)
+- [composing mutations](recipes/advanced/composing-mutations#readme) (work-in-progress)
+- [composing selectors](recipes/advanced/composing-selectors#readme) (work-in-progress)
+- [using Reselect for my selectors](recipes/advanced/using-reselect-for-selectors#readme) (work-in-progress)
+
+### React
+
+- [using **simplux** in my React application](recipes/react/using-in-react-application#readme) (work-in-progress)
+- [testing my components that read and change state](recipes/react/testing-components-basic#readme) (work-in-progress)
+- [using **simplux** with React Redux](recipes/react/using-with-react-redux#readme) (work-in-progress)
+- [using lazy loading/code splitting](recipes/react/using-lazy-loading-code-splitting#readme) (work-in-progress)
+- [using hot module reloading (HMR)](recipes/react/using-hot-module-reloading#readme) (work-in-progress)
+- [using server-side rendering (SSR)](recipes/react/using-server-side-rendering#readme) (work-in-progress)
+- [using **simplux** in my React Native application](recipes/react/using-in-react-native-application#readme) (work-in-progress)
+
+### Angular
+
+- [using **simplux** in my Angular application](recipes/angular/using-in-angular-application#readme) (work-in-progress)
 
 ## Open points
 
