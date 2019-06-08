@@ -12,7 +12,7 @@
     "lint": "tslint -c ../../tslint.json -p ./tsconfig.json --fix",
     "lint-ci": "npm run lint -- --fix=false",
     "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --config=./jest.config.js",
-    "test-ci": "npm run test -- --runInBand --ci",
+    "test-ci": "npm run test -- --runInBand --ci --coverage",
     "report-coverage": "codecov ./coverage/lcov.info --disable=gcov -F core",
     "publish:custom": "npm publish ./dist --access public"
   },
