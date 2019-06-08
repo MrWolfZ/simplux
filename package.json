@@ -1,12 +1,12 @@
 {
   "name": "@simplux/platform",
   "scripts": {
-    "build": "lerna run build --stream --no-bail",
-    "build-ci": "lerna run build-ci --no-bail",
-    "lint": "lerna run lint --stream --no-bail --parallel",
-    "test": "lerna run test --stream --no-bail --parallel",
-    "test-ci": "lerna run test-ci --no-bail --parallel",
-    "report-coverage": "lerna run report-coverage --no-bail --parallel=false",
+    "build": "lerna run build --stream --no-bail --ignore @simplux/recipes.*",
+    "build-ci": "lerna run build-ci --no-bail --ignore @simplux/recipes.*",
+    "lint": "lerna run lint --stream --no-bail --parallel --ignore @simplux/recipes.*",
+    "test": "lerna run test --stream --no-bail --parallel --ignore @simplux/recipes.*",
+    "test-ci": "lerna run test-ci --no-bail --parallel --ignore @simplux/recipes.*",
+    "report-coverage": "lerna run report-coverage --no-bail --parallel=false --ignore @simplux/recipes.*",
     "publish": "npm run build && npm run test && lerna version --conventional-commits --conventional-graduate --yes --exact",
     "postpublish": "npm run build && lerna run publish:custom --stream --no-bail --parallel",
     "publish-prerelease": "npm run build && npm run test && lerna version --conventional-commits --conventional-prerelease --yes --exact",
