@@ -154,8 +154,12 @@ describe('store', () => {
   })
 
   it(`throws if store is not set when accessing state`, () => {
+    const cleanup = setReduxStore(undefined!, s => s)
+
     expect(() => simpluxStore.getState()).toThrowError(
       'simplux must be initialized with a redux store',
     )
+
+    cleanup()
   })
 })

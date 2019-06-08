@@ -25,12 +25,19 @@ export function setReduxStore<TState>(
   storeToUse: ReduxStore<TState>,
   simpluxStateGetter: (rootState: TState) => any,
 ) {
+  const previousStoreProxy = reduxStoreProxy
+
+  if (!storeToUse) {
+    reduxStoreProxy = undefined
+    return () => {
+      reduxStoreProxy = previousStoreProxy
+    }
+  }
+
   const id = latestReduxStoreId
   latestReduxStoreId += 1
 
   const subscribers: ReduxStoreProxy['subscribers'] = []
-
-  const previousStoreProxy = reduxStoreProxy
 
   reduxStoreProxy = createReduxStoreProxy(
     storeToUse,
@@ -55,7 +62,7 @@ export function setReduxStore<TState>(
       throw new Error('cannot cleanup store since another store has been set')
     }
 
-    reduxStoreProxy = undefined
+    reduxStoreProxy = previousStoreProxy
   }
 }
 

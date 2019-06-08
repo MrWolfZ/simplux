@@ -3,6 +3,7 @@
 import {
   createSimpluxModule,
   getSimpluxReducer,
+  registerSimpluxModuleExtension,
   setReduxStoreForSimplux,
 } from '@simplux/core'
 import { createStore } from 'redux'
@@ -109,6 +110,19 @@ describe(`@simplux/core`, () => {
     cleanup()
   })
 
+  it('works without setting a redux store', () => {
+    const { createMutations } = createSimpluxModule({
+      name: 'test',
+      initialState: 0,
+    })
+
+    const { increment } = createMutations({
+      increment: c => c + 1,
+    })
+
+    expect(increment()).toBe(1)
+  })
+
   it('does not access the store before any mutation is executed', () => {
     const undo = setReduxStoreForSimplux(undefined!, s => s)
 
@@ -132,5 +146,20 @@ describe(`@simplux/core`, () => {
     }).not.toThrow()
 
     undo()
+  })
+
+  it('allows registering a module extension', () => {
+    const unregister = registerSimpluxModuleExtension(() => ({
+      testExtension: {},
+    }))
+
+    const module = createSimpluxModule({
+      name: 'test',
+      initialState: 0,
+    })
+
+    expect((module as any).testExtension).toBeDefined()
+
+    unregister()
   })
 })
