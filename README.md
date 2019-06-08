@@ -47,6 +47,22 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 
 - [using **simplux** in my Angular application](recipes/angular/using-in-angular-application#readme) (work-in-progress)
 
+## Motivation
+
+When discovering this library your first thought may be: "Are you kidding me, yet another state management library?" That is an absolutely valid thought to have. There are many existing options for managing your state in JavaScript applications. If you already using one of those and it works for you, then you should probably stick with it. However, **simplux** brings some unique points to the table that make it a worthwhile addition to the state management ecosystem:
+
+- **excellent use-case driven documentation:** a lot of effort went into writing our [recipes](#recipes). While most other libraries have documentation that is centered around explaining _what_ they do, our use-case driven documentation is focused on showing you _how_ to solve your concrete tasks. We also provide code sandboxes for every recipe that allow you to interact with the code while reading the recipe, which helps greatly with the learning experience.
+
+- **optimized for TypeScript**: **simplux** is built with and for TypeScript. Sometimes TypeScript code can be a bit verbose. We put a lot of effort into ensuring that the amount of type annotations in your code is minimized by leveraging type inference wherever possible. That said **simplux** can also be used with plain JavaScript, in which case your IDE may still show TypeScript documentation due to our bundled typings.
+
+- **out of the box solutions for many common yet complex use-cases**: Have you ever tried setting up hot module reloading or code splitting with React and Redux? It can be quite tricky. **simplux** aims to solve as many of these complex use-cases by providing zero-configuration out of the box solutions.
+
+- **modular and extensible architecture**: Our core package only contains the bare minimum that is required to use **simplux**. All other advanced functionality is added via extension packages. On one hand this allows you to pick and choose what functionality you want to use without paying for anything that you don't. On the other hand it allows adding new extension packages without risk of breaking any existing functionality.
+
+## Prior Art
+
+This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/rematch) and shares a lot of ideas with it.
+
 ## Open points
 
 - core: merge modules if defined multiple times, but print a warning during DEV mode
