@@ -21,7 +21,7 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 - [testing state changes](recipes/basics/testing-state-changes#readme)
 - [computing derived state](recipes/basics/computing-derived-state#readme)
 - [testing derived state](recipes/basics/testing-derived-state#readme)
-- [simplifying state changes](recipes/basics/simplifying-state-changes#readme) (work-in-progress)
+- [simplifying state changes](recipes/basics/simplifying-state-changes#readme)
 
 ### Advanced
 
