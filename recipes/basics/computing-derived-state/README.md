@@ -12,7 +12,7 @@ Before we start let's install all the packages we need.
 npm i @simplux/core @simplux/selectors redux -S
 ```
 
-We also need to activate the selectors extension by importing the package.
+We also need to activate the selectors extension by importing the package. It is recommended to place this import in the root file of your application.
 
 ```ts
 // this import registers the simplux selectors extension
