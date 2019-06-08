@@ -59,7 +59,7 @@ console.log('incremented counter by 5:', counterModule.getState())
 console.log('final state:', increment())
 ```
 
-> In contrast to their name, mutations do not really mutate the state but instead create a modified copy. However, conceptually they _do_ mutate the state, which is why we call them mutations instead of the traditional redux name _reducers_. We believe that it is more important to name things for what they do instead of for how they are implemented. And don't worry, if you find this copy-and-update style of writing mutations a bit cumbersome, you are not alone. The recipe for [changing state](../changing-state#readme) shows you an alternative simpler way of writing mutations that feels more natural.
+> In contrast to their name, mutations do not really mutate the state but instead create a modified copy. However, conceptually they _do_ mutate the state, which is why we call them mutations instead of the traditional redux name _reducers_. We believe that it is more important to name things for what they do instead of for how they are implemented. And don't worry, if you find this copy-and-update style of writing mutations a bit cumbersome, you are not alone. The recipe for [simplifying state changes](../simplifying-state-changes#readme) shows you an alternative simpler way of writing mutations that feels more natural.
 
 And that is all you need to start using **simplux**. You may have noticed that in all of this code, there is only a single type annotation (for the `amount` parameter of the `incrementBy` mutation). This is intentional, since **simplux** is designed to require the absolute minimal amount of type annotations by leveraging type inference wherever possible while still being perfectly type-safe.
 
