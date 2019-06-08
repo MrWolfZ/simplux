@@ -91,7 +91,7 @@ const { addTodoSimpler } = createMutations({
 This looks much nicer already, doesn't it? Things get even better when we try to update a nested object.
 
 ```ts
-const { addTodoSimpler } = createMutations({
+const { markTodoAsDoneSimpler } = createMutations({
   markTodoAsDoneSimpler({ todosById }, todoId: string) {
     todosById[todoId].isDone = true
   },
