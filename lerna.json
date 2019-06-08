@@ -3,14 +3,9 @@
   "npmClient": "npm",
   "command": {
     "publish": {
-      "ignoreChanges": [
-        "*.md"
-      ],
+      "ignoreChanges": ["*.md"],
       "message": "chore(release): publish"
     }
   },
-  "packages": [
-    "packages/*",
-    "recipes/*"
-  ]
+  "packages": ["packages/*", "recipes/*/*"]
 }
