@@ -6,7 +6,7 @@
     "lint": "lerna run lint --stream --no-bail --parallel",
     "test": "lerna run test --stream --no-bail --parallel",
     "test-ci": "lerna run test-ci --no-bail --parallel",
-    "report-coverage": "lerna run report-coverage --no-bail --parallel",
+    "report-coverage": "lerna run report-coverage --no-bail --parallel=false",
     "publish": "npm run build && npm run test && lerna version --conventional-commits --conventional-graduate --yes --exact",
     "postpublish": "npm run build && lerna run publish:custom --stream --no-bail --parallel",
     "publish-prerelease": "npm run build && npm run test && lerna version --conventional-commits --conventional-prerelease --yes --exact",
