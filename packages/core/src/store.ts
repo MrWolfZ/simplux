@@ -32,26 +32,12 @@ export function setReduxStore<TState>(
 
   const previousStoreProxy = reduxStoreProxy
 
-  reduxStoreProxy = {
+  reduxStoreProxy = createReduxStoreProxy(
+    storeToUse,
+    simpluxStateGetter,
     id,
     subscribers,
-    ...storeToUse,
-    getState: () => simpluxStateGetter(storeToUse.getState()),
-    subscribe: handler => {
-      const unsubscribe = storeToUse.subscribe(handler)
-      const subscriber = { handler, unsubscribe }
-      subscribers.push(subscriber)
-
-      return () => {
-        unsubscribe()
-
-        const idx = subscribers.indexOf(subscriber)
-        if (idx >= 0) {
-          subscribers.splice(idx, 1)
-        }
-      }
-    },
-  }
+  )
 
   if (previousStoreProxy) {
     for (const subscriber of previousStoreProxy.subscribers) {
@@ -70,6 +56,34 @@ export function setReduxStore<TState>(
     }
 
     reduxStoreProxy = undefined
+  }
+}
+
+export function createReduxStoreProxy<TState>(
+  storeToUse: ReduxStore<TState>,
+  simpluxStateGetter: (rootState: TState) => any,
+  id: number,
+  subscribers: ReduxStoreProxy['subscribers'],
+): ReduxStoreProxy {
+  return {
+    id,
+    subscribers,
+    ...storeToUse,
+    getState: () => simpluxStateGetter(storeToUse.getState()),
+    subscribe: handler => {
+      const unsubscribe = storeToUse.subscribe(handler)
+      const subscriber = { handler, unsubscribe }
+      subscribers.push(subscriber)
+
+      return () => {
+        unsubscribe()
+
+        const idx = subscribers.indexOf(subscriber)
+        if (idx >= 0) {
+          subscribers.splice(idx, 1)
+        }
+      }
+    },
   }
 }
 
