@@ -1,11 +1,16 @@
 {
-  "version": "0.3.0-alpha.2",
+  "version": "0.3.0-alpha.3",
   "npmClient": "npm",
   "command": {
     "publish": {
-      "ignoreChanges": ["*.md"],
+      "ignoreChanges": [
+        "*.md"
+      ],
       "message": "chore(release): publish"
     }
   },
-  "packages": ["packages/*", "recipes/*"]
+  "packages": [
+    "packages/*",
+    "recipes/*"
+  ]
 }

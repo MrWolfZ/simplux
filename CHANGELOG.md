@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-alpha.3](https://github.com/MrWolfZ/simplux/compare/v0.3.0-alpha.2...v0.3.0-alpha.3) (2019-06-08)
+
+
+### Features
+
+* **recipes:** add text version of "computing derived state" recipe ([8866d53](https://github.com/MrWolfZ/simplux/commit/8866d53))
+* **recipes:** make "testing state changes" recipe simpler and add text version ([d3b7029](https://github.com/MrWolfZ/simplux/commit/d3b7029))
+* **selectors:** ensure compatibility with TypeScript 3.3 ([e920de9](https://github.com/MrWolfZ/simplux/commit/e920de9))
+
+
+
+
+
 # [0.3.0-alpha.2](https://github.com/MrWolfZ/simplux/compare/v0.3.0-alpha.1...v0.3.0-alpha.2) (2019-06-05)
 
 
