@@ -3,10 +3,8 @@ dist: trusty
 language: node_js
 node_js:
   - 10
-before_install:
-  - npm i npm@^6 -g
 install:
-  - npm install
+  - npm ci
 script:
   - npm run build-ci
   - npm run test-ci
