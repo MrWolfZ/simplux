@@ -1,4 +1,4 @@
-import { Action, Dispatch } from 'redux'
+import { Action, Dispatch, Reducer } from 'redux'
 import { SimpluxModuleExtension } from './module'
 
 // this interface exists purely to allow plugins to overwrite the return type of mutations
@@ -116,6 +116,7 @@ export function createMutationsFactory<TState>(
   getModuleState: () => TState,
   dispatch: Dispatch,
   moduleMutations: MutationsBase<TState>,
+  getModuleReducer: () => Reducer<TState>,
 ): MutationsFactory<TState> {
   return <TMutations extends MutationsBase<TState>>(
     mutations: TMutations,
@@ -148,8 +149,7 @@ export function createMutationsFactory<TState>(
         acc[mutationName] = mutation
 
         acc[mutationName].withState = (state: TState) => (...args: any[]) => {
-          const result = mutations[mutationName](state, ...args)
-          return result || state
+          return getModuleReducer()(state, createAction(...args))
         }
 
         acc[mutationName].asActionCreator = createAction as any
@@ -186,7 +186,7 @@ export const mutationsModuleExtension: SimpluxModuleExtension<
   SimpluxModuleMutationExtensions<any>
 > = (
   { name, initialState },
-  { dispatch, setReducer },
+  { dispatch, setReducer, getReducer },
   { getState },
   extensionState,
 ) => {
@@ -206,6 +206,7 @@ export const mutationsModuleExtension: SimpluxModuleExtension<
       getState,
       dispatch,
       extensionState.mutations[name],
+      () => getReducer(name),
     ),
   }
 }

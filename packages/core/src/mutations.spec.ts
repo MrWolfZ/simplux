@@ -89,14 +89,26 @@ describe('mutations', () => {
   describe(`factory`, () => {
     let moduleMutations: MutationsBase<number>
     let createMutations: MutationsFactory<number>
+    let moduleReducerSpy: jest.Mock<
+      number,
+      [number | undefined, { type: string }]
+    >
 
     beforeEach(() => {
       moduleMutations = {}
+      const moduleReducer = createModuleReducer(
+        'test',
+        moduleState as any,
+        moduleMutations,
+      )
+
+      moduleReducerSpy = jest.fn().mockImplementation(moduleReducer)
       createMutations = createMutationsFactory<number>(
         'test',
         getModuleStateMock,
         dispatchMock,
         moduleMutations,
+        () => moduleReducerSpy,
       )
     })
 
@@ -169,20 +181,18 @@ describe('mutations', () => {
         expect(mutationSpy).toHaveBeenCalledWith(10, 'foo', { nestedArg: true })
       })
 
-      it('returns the state when called with state and not mutation does not return state', () => {
-        const mutatingCreateMutations = createMutationsFactory<{
-          test: string;
-        }>('test', getModuleStateMock, dispatchMock, {})
-
-        const { update } = mutatingCreateMutations({
-          update: state => {
-            state.test = 'updated'
-            return undefined!
-          },
+      it('calls the reducer when called with state', () => {
+        const { increment } = createMutations({
+          // tslint:disable-next-line: no-unnecessary-callback-wrapper variable-name
+          increment: (c, _arg1: string, _arg2: { nestedArg: boolean }) => c + 1,
         })
 
-        const result = update.withState({ test: 'test' })()
-        expect(result).toEqual({ test: 'updated' })
+        increment.withState(10)('foo', { nestedArg: true })
+
+        expect(moduleReducerSpy).toHaveBeenCalledWith(10, {
+          type: '@simplux/test/mutation/increment',
+          args: ['foo', { nestedArg: true }],
+        })
       })
 
       it('returns the action if called as action creator', () => {
