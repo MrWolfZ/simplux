@@ -1,6 +1,7 @@
 // this code is part of the simplux recipe "testing state changes":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/testing-state-changes
 
+import '@simplux/selectors'
 import { plus, plusOne, setCounterState } from './counter.module'
 
 describe('counter module', () => {

@@ -12,19 +12,10 @@ Before we start let's install all the packages we need.
 npm i @simplux/core @simplux/selectors redux -S
 ```
 
-We also need to activate the selectors extension by importing the package. You can either add this import to every test file or do it once globally with the mechanism your test framework provides. This recipe uses [Jest](https://jestjs.io/) which allows us to specify a global setup file.
+We also need to activate the selectors extension by importing the package. You can either add this import to every test file or do it once globally with the mechanism your test framework provides (e.g. [Jest](https://jestjs.io/) allows you to configure `setupFiles` where you can place this import).
 
 ```ts
-// in jest.setup.ts
 import '@simplux/selectors'
-```
-
-```js
-// in jest.config.js
-module.exports = {
-  setupFiles: ['<rootDir>/jest.setup.ts'],
-  // + any other config you need
-}
 ```
 
 Now we're ready to go.
