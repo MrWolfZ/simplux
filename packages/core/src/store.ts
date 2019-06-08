@@ -19,7 +19,7 @@ export const simpluxStore = createSimpluxStore(() => {
   }
 
   return reduxStoreProxy
-})
+}, getDefaultFeatureFlags())
 
 export function setReduxStore<TState>(
   storeToUse: ReduxStore<TState>,
@@ -94,6 +94,10 @@ export function createReduxStoreProxy<TState>(
   }
 }
 
+export interface FeatureFlags {
+  freezeStateDuringMutations: () => boolean
+}
+
 export interface SimpluxStore {
   rootReducer: Reducer
   getState: () => any
@@ -101,10 +105,12 @@ export interface SimpluxStore {
   subscribe: ReduxStore['subscribe']
   setReducer: <T = any>(name: string, reducer: Reducer<T>) => void
   getReducer: <T = any>(name: string) => Reducer<T>
+  featureFlags: FeatureFlags
 }
 
 export function createSimpluxStore(
   getReduxStoreProxy: () => ReduxStoreProxy,
+  featureFlags: FeatureFlags,
 ): SimpluxStore {
   const reducers: { [name: string]: Reducer } = {}
   let reducer: Reducer | undefined
@@ -124,5 +130,14 @@ export function createSimpluxStore(
     },
 
     getReducer: name => reducers[name],
+
+    featureFlags,
+  }
+}
+
+export function getDefaultFeatureFlags(): FeatureFlags {
+  return {
+    freezeStateDuringMutations: () =>
+      process.env && process.env.NODE_ENV === 'development',
   }
 }

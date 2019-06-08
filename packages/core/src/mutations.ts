@@ -73,6 +73,7 @@ export function createModuleReducer<TState>(
   moduleName: string,
   initialState: TState,
   moduleMutations: MutationsBase<TState>,
+  getStoreShouldBeFrozen: () => boolean,
 ) {
   return <TAction extends Action<string>>(
     state = initialState,
@@ -86,6 +87,10 @@ export function createModuleReducer<TState>(
         throw new Error(
           `mutation '${mutationName}' does not exist in module '${moduleName}'`,
         )
+      }
+
+      if (getStoreShouldBeFrozen()) {
+        state = Object.freeze(state)
       }
 
       return mutation(state, ...(action as any).args) || state
@@ -186,7 +191,7 @@ export const mutationsModuleExtension: SimpluxModuleExtension<
   SimpluxModuleMutationExtensions<any>
 > = (
   { name, initialState },
-  { dispatch, setReducer, getReducer },
+  { dispatch, setReducer, getReducer, featureFlags },
   { getState },
   extensionState,
 ) => {
@@ -196,6 +201,7 @@ export const mutationsModuleExtension: SimpluxModuleExtension<
     name,
     initialState,
     extensionState.mutations[name],
+    featureFlags.freezeStateDuringMutations,
   )
 
   setReducer(name, reducer)

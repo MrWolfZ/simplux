@@ -6,7 +6,7 @@ import {
   MutationsFactory,
   mutationsModuleExtension,
 } from './mutations'
-import { SimpluxStore } from './store'
+import { getDefaultFeatureFlags, SimpluxStore } from './store'
 
 describe('mutations', () => {
   const dispatchMock = jest.fn().mockImplementation(a => a)
@@ -28,6 +28,7 @@ describe('mutations', () => {
     subscribe: jest.fn(),
     setReducer: setReducerMock,
     getReducer: getReducerMock,
+    featureFlags: getDefaultFeatureFlags(),
   }
 
   const moduleMock: SimpluxModuleCore<any> = {
@@ -100,6 +101,7 @@ describe('mutations', () => {
         'test',
         moduleState as any,
         moduleMutations,
+        () => false,
       )
 
       moduleReducerSpy = jest.fn().mockImplementation(moduleReducer)
@@ -224,9 +226,14 @@ describe('mutations', () => {
   })
 
   describe(`reducer`, () => {
-    const reducer = createModuleReducer('test', 10, {
-      increment: c => c + 1,
-    })
+    const reducer = createModuleReducer(
+      'test',
+      10,
+      {
+        increment: c => c + 1,
+      },
+      () => false,
+    )
 
     it('updates the state', () => {
       const result = reducer(undefined, {
@@ -260,6 +267,7 @@ describe('mutations', () => {
             return undefined!
           },
         },
+        () => false,
       )
 
       const result = mutatingReducer(undefined, {
@@ -267,6 +275,29 @@ describe('mutations', () => {
         args: [],
       })
       expect(result).toEqual({ test: 'updated' })
+    })
+
+    it('freezes the state if feature flag is set', () => {
+      const freezingReducer = createModuleReducer(
+        'test',
+        {
+          test: 'test',
+        },
+        {
+          update: state => {
+            state.test = 'updated'
+            return state
+          },
+        },
+        () => true,
+      )
+
+      expect(() =>
+        freezingReducer(undefined, {
+          type: '@simplux/test/mutation/update',
+          args: [],
+        }),
+      ).toThrowError(/Cannot assign to read only property/)
     })
   })
 })

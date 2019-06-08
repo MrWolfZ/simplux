@@ -1,5 +1,10 @@
 import { createStore } from 'redux'
-import { createSimpluxStore, setReduxStore, simpluxStore } from './store'
+import {
+  createSimpluxStore,
+  getDefaultFeatureFlags,
+  setReduxStore,
+  simpluxStore,
+} from './store'
 
 describe('store', () => {
   let cleanup: (() => void) | undefined
@@ -46,13 +51,19 @@ describe('store', () => {
   })
 
   it(`exports a root reducer`, () => {
-    const { rootReducer } = createSimpluxStore(() => undefined!)
+    const { rootReducer } = createSimpluxStore(
+      () => undefined!,
+      getDefaultFeatureFlags(),
+    )
     const state = {}
     expect(rootReducer(state, { type: '' })).toBe(state)
   })
 
   it(`allows setting and getting a reducer`, () => {
-    const { setReducer, getReducer } = createSimpluxStore(() => undefined!)
+    const { setReducer, getReducer } = createSimpluxStore(
+      () => undefined!,
+      getDefaultFeatureFlags(),
+    )
     const reducer = (s = {}) => s
     setReducer('test', reducer)
     expect(getReducer('test')).toBe(reducer)

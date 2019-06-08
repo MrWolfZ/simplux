@@ -39,8 +39,9 @@ export function createImmerReducer<TState>(
 
 export const immerModuleExtension: SimpluxModuleExtension<any> = (
   { name },
-  { getReducer, setReducer },
+  { getReducer, setReducer, featureFlags },
 ) => {
   setReducer(name, createImmerReducer<any>(getReducer(name)))
+  featureFlags.freezeStateDuringMutations = () => false
   return {}
 }

@@ -162,4 +162,27 @@ describe(`@simplux/core`, () => {
 
     unregister()
   })
+
+  it('freezes the state in development mode', () => {
+    const { createMutations } = createSimpluxModule({
+      name: 'freezeTest',
+      initialState: {
+        test: 'test',
+      },
+    })
+
+    const { update } = createMutations({
+      update: state => {
+        state.test = 'updated'
+        return state
+      },
+    })
+
+    const nodeEnv = process.env.NODE_ENV
+    process.env.NODE_ENV = 'development'
+
+    expect(update).toThrowError(/Cannot assign to read only property/)
+
+    process.env.NODE_ENV = nodeEnv
+  })
 })

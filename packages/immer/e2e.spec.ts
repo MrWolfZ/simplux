@@ -105,4 +105,26 @@ describe(`@simplux/immer`, () => {
     expect(updatedState).not.toBe(initialState)
     expect(initialState.test).toBe('test')
   })
+
+  it('does not freeze the state in development mode', () => {
+    const { createMutations } = createSimpluxModule({
+      name: 'freezeTest',
+      initialState: {
+        test: 'test',
+      },
+    })
+
+    const { update } = createMutations({
+      update: state => {
+        state.test = 'updated'
+      },
+    })
+
+    const nodeEnv = process.env.NODE_ENV
+    process.env.NODE_ENV = 'development'
+
+    expect(update).not.toThrow()
+
+    process.env.NODE_ENV = nodeEnv
+  })
 })
