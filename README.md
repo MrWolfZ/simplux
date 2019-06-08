@@ -23,8 +23,8 @@ Here are some recipes that will help you in getting to know how to use **simplux
 
 ### Advanced
 
-- [organizing my application state](recipes/advanced/organizing-application-state#readme)
 - [using **simplux** in my application that already uses redux](recipes/advanced/using-in-redux-application#readme)
+- [organizing my application state](recipes/advanced/organizing-application-state#readme)
 
 ## Open points
 
