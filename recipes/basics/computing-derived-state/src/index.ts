@@ -13,9 +13,9 @@ const counterModule = createSimpluxModule({
 })
 
 // to compute derived state we can define selectors; a selector
-// is a pure function that takes the current module state and
+// is a pure function that takes the module's current state and
 // optionally some additional arguments and returns some derived
-// state
+// value
 const { plusOne, plus } = counterModule.createSelectors({
   // we can have selectors that only use the state
   plusOne: ({ counter }) => counter + 1,
@@ -28,13 +28,14 @@ const { plusOne, plus } = counterModule.createSelectors({
 // any additional arguments it requires
 console.log(`20 + 1:`, plusOne({ counter: 20 }))
 console.log(`20 + 5:`, plus({ counter: 20 }, 5))
+console.log(`state + 10:`, plus(counterModule.getState(), 10))
 
-// but you can also call it bound to the latest state
+// but you can also call it bound to the module's latest state
 console.log(`state + 1:`, plusOne.withLatestModuleState())
 console.log(`state + 5:`, plus.withLatestModuleState(5))
 
-// when the store is updated, the selector will get called
-// with the updated state
+// when the module's state is changed, the selector will get
+// called with the changed state
 const plusLatest = plus.withLatestModuleState
 counterModule.setState({ counter: 50 })
-console.log(`updated state + 5:`, plusLatest(5))
+console.log(`changed state + 5:`, plusLatest(5))
