@@ -4,6 +4,6 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "lib": ["dom"]
+    "lib": ["dom", "es2015"]
   }
 }

@@ -4,7 +4,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "lib": ["esnext", "dom"],
+    "lib": ["dom", "es2015"],
     "types": ["jest"]
   }
 }
