@@ -1,3 +1,6 @@
+// this code is part of the simplux recipe "testing state changes":
+// https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/testing-state-changes
+
 import { increment, incrementBy, setCounterState } from './counter.module'
 
 describe('counter module', () => {

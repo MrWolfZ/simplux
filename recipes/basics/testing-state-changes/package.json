@@ -1,7 +1,7 @@
 {
-  "name": "@simplux/recipes.basics.testing-mutations",
-  "version": "0.1.0",
-  "description": "This is a recipe that shows how simple it is to test simplux mutations.",
+  "name": "@simplux/recipes.basics.testing-state-changes",
+  "version": "0.3.0-alpha.2",
+  "description": "This recipe shows how simple it is to test your state changes with simplux",
   "main": "src/index.ts",
   "scripts": {
     "start": "webpack-dev-server --mode development --progress --color",
@@ -14,7 +14,7 @@
   "bugs": {
     "url": "https://github.com/MrWolfZ/simplux/issues"
   },
-  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/testing-mutations#readme",
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/testing-state-changes#readme",
   "keywords": [
     "recipe",
     "redux",
@@ -25,7 +25,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "^0.3.0-alpha.2",
+    "@simplux/core": "0.3.0-alpha.2",
     "redux": "^4.0.1"
   },
   "devDependencies": {
