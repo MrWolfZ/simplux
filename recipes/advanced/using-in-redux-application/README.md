@@ -1,6 +1,6 @@
-# Recipe: using **simplux** in my application that already uses redux
+# Recipe: using **simplux** in my application that already uses Redux
 
-This recipe shows you how simple it is to integrate **simplux** into your application that is already using redux.
+This recipe shows you how simple it is to integrate **simplux** into your application that is already using [Redux](https://redux.js.org/).
 
 If you are new to **simplux** there is [a recipe](../../basics/getting-started#readme) that will help you get started before you follow this recipe.
 

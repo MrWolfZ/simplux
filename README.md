@@ -31,14 +31,16 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 - [organizing my application state](recipes/advanced/organizing-application-state#readme) (work-in-progress)
 - [composing mutations](recipes/advanced/composing-mutations#readme) (work-in-progress)
 - [composing selectors](recipes/advanced/composing-selectors#readme) (work-in-progress)
+- [communicating between modules](recipes/advanced/communicating-between-modules#readme) (work-in-progress)
 - [using Reselect for my selectors](recipes/advanced/using-reselect-for-selectors#readme) (work-in-progress)
 
 ### React
 
 - [using **simplux** in my React application](recipes/react/using-in-react-application#readme) (work-in-progress)
-- [testing my components that read and change state](recipes/react/testing-components-basic#readme) (work-in-progress)
+- [testing my components that read and change state](recipes/react/testing-components-using-state#readme) (work-in-progress)
+- [testing my components that trigger async work](recipes/react/testing-components-using-async#readme) (work-in-progress)
 - [using **simplux** with React Redux](recipes/react/using-with-react-redux#readme) (work-in-progress)
-- [using lazy loading/code splitting](recipes/react/using-lazy-loading-code-splitting#readme) (work-in-progress)
+- [using lazy loaded components/code splitting](recipes/react/using-lazy-loading-code-splitting#readme) (work-in-progress)
 - [using hot module reloading (HMR)](recipes/react/using-hot-module-reloading#readme) (work-in-progress)
 - [using server-side rendering (SSR)](recipes/react/using-server-side-rendering#readme) (work-in-progress)
 - [using **simplux** in my React Native application](recipes/react/using-in-react-native-application#readme) (work-in-progress)
