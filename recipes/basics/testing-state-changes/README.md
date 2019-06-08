@@ -74,3 +74,5 @@ describe('incrementBy', () => {
 ```
 
 And that is all you need for testing your state changes with **simplux**.
+
+By now you are certainly curious how **simplux** can help you in more complex scenarios. Our [other recipes](../../../../..#recipes) are an excellent starting point for this.
