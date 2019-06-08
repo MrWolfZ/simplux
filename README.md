@@ -4,6 +4,7 @@
 
 [![npm version](https://badge.fury.io/js/%40simplux%2Fcore.svg)](https://www.npmjs.com/package/@simplux/core)
 [![Build Status](https://travis-ci.org/MrWolfZ/simplux.svg?branch=master)](https://travis-ci.org/MrWolfZ/simplux)
+[![codecov](https://codecov.io/gh/MrWolfZ/simplux/branch/master/graph/badge.svg)](https://codecov.io/gh/MrWolfZ/simplux)
 [![license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 This repository is a work-in-progress and is not suitable for use in production just yet.
