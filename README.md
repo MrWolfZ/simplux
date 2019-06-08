@@ -84,26 +84,12 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - observable: add way to get observable of actions
 - docs: create website
 - docs: write docs for each package
-- docs: explain how to use with and without existing store
 - add dtslint tests (and add TypeScript peer dependencies to packages)
-- add travis builds
-- add code coverage builds
 - add tests that verify HMR works
 - add tests that verify server-side rendering works
 - angular: create package for angular service
 - core: add way to susbcribe to mutations (if a use case exists for this)
 - core: add type to mutation extras
-- add recipes:
-  - reacting to state changes
-  - debugging
-  - testing selectors
-  - composing selectors
-  - writing mutations with less boilerplate
-  - usage with reselect
-  - using with react and simplux extension
-  - using with react and react-redux
-  - testing react-component that selects state
-  - testing react-component that mutates state
 
 ## Contributing
 
