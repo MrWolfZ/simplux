@@ -1,32 +1,26 @@
-import {
-  createSimpluxModule,
-  getSimpluxReducer,
-  setReduxStoreForSimplux,
-} from '@simplux/core'
+// this code is part of the simplux recipe "computing derived state":
+// https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/computing-derived-state
+
+import { createSimpluxModule } from '@simplux/core'
 // this import registers the simplux selectors extension
 import '@simplux/selectors'
-import { combineReducers, createStore } from 'redux'
 
-// we start by creating the store and configuring simplux
-const rootReducer = combineReducers({
-  simplux: getSimpluxReducer(),
-})
-
-const store = createStore(rootReducer)
-setReduxStoreForSimplux(store, rootState => rootState.simplux)
-
-// we create our module and destructure it into all
-// the functions we are going to use
-const { setState, createSelectors } = createSimpluxModule({
+const counterModule = createSimpluxModule({
   name: 'counter',
   initialState: {
     counter: 10,
   },
 })
 
-// now we can define our selectors
-const { plusOne, plus } = createSelectors({
+// to compute derived state we can define selectors; a selector
+// is a pure function that takes the current module state and
+// optionally some additional arguments and returns some derived
+// state
+const { plusOne, plus } = counterModule.createSelectors({
+  // we can have selectors that only use the state
   plusOne: ({ counter }) => counter + 1,
+
+  // but they can also have arguments
   plus: ({ counter }, amount: number) => counter + amount,
 })
 
@@ -39,17 +33,8 @@ console.log(`20 + 5:`, plus({ counter: 20 }, 5))
 console.log(`state + 1:`, plusOne.withLatestModuleState())
 console.log(`state + 5:`, plus.withLatestModuleState(5))
 
-// and when the store is updated, the selector will get called
-// with the update state
+// when the store is updated, the selector will get called
+// with the updated state
 const plusLatest = plus.withLatestModuleState
-setState({ counter: 50 })
+counterModule.setState({ counter: 50 })
 console.log(`updated state + 5:`, plusLatest(5))
-
-// you can define new selectors at any time (but you cannot
-// overwrite an existing selector)
-const { minusOne } = createSelectors({
-  minusOne: ({ counter }) => counter - 1,
-})
-
-console.log(`20 - 1:`, minusOne({ counter: 20 }))
-console.log(`state - 1:`, minusOne.withLatestModuleState())
