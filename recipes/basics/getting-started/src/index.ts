@@ -1,8 +1,7 @@
-import { createSimpluxModule } from '@simplux/core'
-
-// this code is part of the recipe for getting started with
-// simplux, which you can find here:
+// this code is part of the simplux recipe "getting started":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/getting-started
+
+import { createSimpluxModule } from '@simplux/core'
 
 // state in simplux is organized into modules; here we create
 // our first simple counter module
@@ -19,7 +18,7 @@ const counterModule = createSimpluxModule({
 // the simplest thing you can do with a module is to get its state
 console.log('initial state:', counterModule.getState())
 
-// to change the state, we can define mutations; a mutation
+// to change the state we can define mutations; a mutation
 // is a pure function that takes the current module state and
 // optionally some additional arguments and returns a new
 // updated state

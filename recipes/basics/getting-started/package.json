@@ -1,7 +1,7 @@
 {
   "name": "@simplux/recipes.basics.getting-started",
-  "version": "0.1.0",
-  "description": "This is a recipe that shows how simple it is to get started using simplux with modules and mutations.",
+  "version": "0.3.0-alpha.2",
+  "description": "This recipe shows how simple it is to get started using simplux",
   "main": "src/index.ts",
   "scripts": {
     "start": "webpack-dev-server --mode development --progress --color"
@@ -24,7 +24,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "^0.3.0-alpha.2",
+    "@simplux/core": "0.3.0-alpha.2",
     "redux": "^4.0.1"
   },
   "devDependencies": {
