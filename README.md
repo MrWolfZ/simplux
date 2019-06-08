@@ -28,8 +28,6 @@ Here are some recipes that will help you in getting to know how to use **simplux
 
 ## Open points
 
-- recipes: update readmes
-- recipes: rename "testing mutations" to "testing state changes"
 - core: merge modules if defined multiple times, but print a warning during DEV mode
 - core: add testing package that allows mocking mutations
 - core: freeze module state in DEV mode
