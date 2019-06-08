@@ -95,21 +95,9 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Contributing
 
-#### Commit Types
+If you want to help with the development of this library please have a look at the [contributing guidelines](CONTRIBUTING.md).
 
-Must be one of the following:
-
-- build: Changes that affect the build system or external dependencies (example scopes: rollup, npm)
-- ci: Changes to our CI configuration files and scripts (example scopes: Travis)
-- docs: Documentation only changes
-- feat: A new feature
-- fix: A bug fix
-- perf: A code change that improves performance
-- refactor: A code change that neither fixes a bug nor adds a feature
-- style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
-- test: Adding missing tests or correcting existing tests
-
-#### License
+## License
 
 Everything in this repository is [licensed under the MIT License](LICENSE) unless otherwise specified.
 
