@@ -12,6 +12,13 @@ Before we start let's install all the packages we need.
 npm i @simplux/core @simplux/selectors redux -S
 ```
 
+We also need to activate the selectors extension by importing the package.
+
+```ts
+// this import registers the simplux selectors extension
+import '@simplux/selectors'
+```
+
 Now we're ready to go.
 
 In **simplux** all state is contained in _modules_, so let's create one.
