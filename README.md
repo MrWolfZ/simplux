@@ -11,7 +11,7 @@ This repository is a work-in-progress and is not suitable for use in production 
 
 ## Recipes
 
-Here are some recipes that will help you in getting to know how to use **simplux** to make your life easier.
+Here are some recipes that will show you how **simplux** can make your life easier.
 
 ### Basics
 
