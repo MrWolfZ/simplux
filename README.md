@@ -55,7 +55,7 @@ When discovering this library your first thought may have been: "Are you kidding
 
 - **excellent use-case driven documentation:** a lot of effort went into writing our [recipes](#recipes). While most other libraries have documentation that is centered around explaining _what_ they do, our use-case driven documentation is focused on showing you _how_ **simplux** helps you to solve your concrete tasks. We also provide code sandboxes for every recipe that allow you to interact with the code while reading the recipe, which greatly improves the learning experience.
 
-- **optimized for TypeScript**: **simplux** is built with and for TypeScript. Sometimes TypeScript code can be a bit verbose. We put a lot of effort into ensuring that the amount of type annotations in your code is minimized by leveraging type inference wherever possible. That said **simplux** can also be used with plain JavaScript, in which case your IDE may still show TypeScript documentation due to our bundled typings.
+- **optimized for TypeScript**: **simplux** is built with and for TypeScript. Sometimes TypeScript code can be a bit verbose. We put a lot of effort into ensuring that the amount of type annotations in your code is minimized by leveraging type inference wherever possible. That said **simplux** can also be used with plain JavaScript, in which case your IDE may still use the TypeScript information to help you due to our bundled typings.
 
 - **out of the box solutions for many common yet complex use-cases**: Have you ever tried setting up hot module reloading or code splitting with React and Redux? It can be quite tricky. **simplux** aims to solve as many of these complex use-cases by providing zero-configuration out of the box solutions.
 
