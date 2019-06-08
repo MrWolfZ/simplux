@@ -6,13 +6,20 @@ This repository is a work-in-progress and is not suitable for use in production.
 
 ## Recipes
 
-Here are some recipes that will help you in getting to know **simplux**.
+Here are some recipes that will help you in getting to know how to use **simplux** to make your life easier.
 
 ### Basics
 
-- [getting started](recipes/basics/getting-started#readme): this recipe shows how simple it is to get started using **simplux** (see it in action in a [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started))
-- [testing mutations](recipes/basics/testing-mutations#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/testing-mutations))
-- [using derived state](recipes/basics/using-derived-state#readme) ([code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/using-derived-state))
+- [getting started](recipes/basics/getting-started#readme)
+- [testing state changes](recipes/basics/testing-state-changes#readme)
+- [computing derived state](recipes/basics/computing-derived-state#readme)
+- [testing derived state](recipes/basics/testing-derived-state#readme)
+- [simplifying state changes](recipes/basics/simplifying-state-changes#readme)
+
+### Advanced
+
+- [organizing my application state](recipes/advanced/organizing-application-state#readme)
+- [using **simplux** in my application that already uses redux](recipes/advanced/using-in-redux-application#readme)
 
 ## Open points
 

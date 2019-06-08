@@ -2,7 +2,7 @@
 
 This recipe shows how simple it is to get started using **simplux**.
 
-> You can play with the code in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
+> You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
 
 Before we start let's install all the packages we need.
 
