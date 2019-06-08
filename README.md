@@ -51,7 +51,7 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 
 ## Motivation
 
-When discovering this library your first thought may be: "Are you kidding me, yet another state management library?" That is an absolutely valid thought to have. There are many existing options for managing your state in JavaScript applications. If you already using one of those and it works for you, then you should probably stick with it. However, **simplux** brings some unique points to the table that make it a worthwhile addition to the state management ecosystem:
+When discovering this library your first thought may have been: "Are you kidding me, yet another state management library?" That is an absolutely valid thought to have. There are many existing options for managing your state in JavaScript applications. If you are already using one of those and it works for you, then you should probably stick with it. However, **simplux** brings some unique points to the table that make it a worthwhile addition to the state management ecosystem:
 
 - **excellent use-case driven documentation:** a lot of effort went into writing our [recipes](#recipes). While most other libraries have documentation that is centered around explaining _what_ they do, our use-case driven documentation is focused on showing you _how_ to solve your concrete tasks. We also provide code sandboxes for every recipe that allow you to interact with the code while reading the recipe, which helps greatly with the learning experience.
 
