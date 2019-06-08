@@ -59,18 +59,18 @@ const { addTodo, markTodoAsDone } = createMutations({
 // now let's see how the immer extension helps us to simplify these
 // mutations
 
-const { addTodoSimpler, markTodoAsDoneSimpler } = createMutations({
+const { addTodoSimple, markTodoAsDoneSimple } = createMutations({
   // this mutation uses a new mutable style that allows us to write
   // normal JavaScript assignments and perform mutating function calls
   // (like the push function for arrays) while still not changing the
   // module's state directly, thereby keeping the benefits of immutability
-  addTodoSimpler({ todosById, todoIds }, todo: Todo) {
+  addTodoSimple({ todosById, todoIds }, todo: Todo) {
     todosById[todo.id] = todo
     todoIds.push(todo.id)
   },
 
   // we can even change properties in nested objects
-  markTodoAsDoneSimpler({ todosById }, todoId: string) {
+  markTodoAsDoneSimple({ todosById }, todoId: string) {
     todosById[todoId].isDone = true
   },
 })
@@ -82,11 +82,11 @@ console.log(
 
 console.log(
   'added Todo item with mutable style:',
-  addTodoSimpler({ id: '2', description: 'clean house', isDone: false }),
+  addTodoSimple({ id: '2', description: 'clean house', isDone: false }),
 )
 
 console.log('mark Todo item as done:', markTodoAsDone('2'))
 
-console.log('mark Todo item as done:', markTodoAsDoneSimpler('1'))
+console.log('mark Todo item as done:', markTodoAsDoneSimple('1'))
 
 console.log('unchanged initial state:', initialState)

@@ -80,8 +80,8 @@ We do all of this to ensure that our state updates are immutable, which helps pr
 Let's see how adding an item this way works.
 
 ```ts
-const { addTodoSimpler } = createMutations({
-  addTodoSimpler({ todosById, todoIds }, todo: Todo) {
+const { addTodoSimple } = createMutations({
+  addTodoSimple({ todosById, todoIds }, todo: Todo) {
     todosById[todo.id] = todo
     todoIds.push(todo.id)
   },
@@ -91,8 +91,8 @@ const { addTodoSimpler } = createMutations({
 This looks much nicer already, doesn't it? Things get even better when we try to update a nested object.
 
 ```ts
-const { markTodoAsDoneSimpler } = createMutations({
-  markTodoAsDoneSimpler({ todosById }, todoId: string) {
+const { markTodoAsDoneSimple } = createMutations({
+  markTodoAsDoneSimple({ todosById }, todoId: string) {
     todosById[todoId].isDone = true
   },
 })
@@ -103,10 +103,10 @@ If we call these mutations, the initial state still remains unchanged.
 ```ts
 console.log(
   'added Todo item:',
-  addTodoSimpler({ id: '1', description: 'go shopping', isDone: false }),
+  addTodoSimple({ id: '1', description: 'go shopping', isDone: false }),
 )
 
-console.log('mark Todo item as done:', markTodoAsDoneSimpler('1'))
+console.log('mark Todo item as done:', markTodoAsDoneSimple('1'))
 
 console.log('unchanged initial state:', initialState)
 ```
