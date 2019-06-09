@@ -1,0 +1,42 @@
+{
+  "name": "@simplux/recipes.advanced.composing-selectors",
+  "version": "0.3.0",
+  "description": "This recipe shows you how simple it is to compose/re-use your simplux selectors",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "webpack-dev-server --mode development --progress --color"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrWolfZ/simplux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/simplux/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/composing-selectors#readme",
+  "keywords": [
+    "recipe",
+    "redux",
+    "simplux",
+    "selectors",
+    "functional",
+    "composition",
+    "typescript"
+  ],
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@simplux/core": "0.3.0",
+    "@simplux/selectors": "0.3.0",
+    "redux": "^4.0.1"
+  },
+  "devDependencies": {
+    "html-webpack-plugin": "^3.2.0",
+    "ts-loader": "^6.0.2",
+    "typescript": "^3.5.1",
+    "webpack": "^4.32.2",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.5.1"
+  }
+}
