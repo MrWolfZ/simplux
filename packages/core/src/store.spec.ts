@@ -1,9 +1,11 @@
-import { createStore } from 'redux'
+import { combineReducers, createStore } from 'redux'
 import {
+  createReduxStoreProxy,
   createSimpluxStore,
   getDefaultFeatureFlags,
   setReduxStore,
   simpluxStore,
+  transferConfigurationToNewStore,
 } from './store'
 
 describe('store', () => {
@@ -60,8 +62,15 @@ describe('store', () => {
   })
 
   it(`allows setting and getting a reducer`, () => {
+    const storeProxy = createReduxStoreProxy(
+      createStore(simpluxStore.rootReducer),
+      s => s,
+      1,
+      [],
+    )
+
     const { setReducer, getReducer } = createSimpluxStore(
-      () => undefined!,
+      () => storeProxy,
       getDefaultFeatureFlags(),
     )
     const reducer = (s = {}) => s
@@ -162,6 +171,35 @@ describe('store', () => {
     expect(handler).toHaveBeenCalledTimes(1)
 
     unsubscribe()
+  })
+
+  it(`initializes simplux state on store change`, () => {
+    const storeProxy = createReduxStoreProxy(
+      createStore(simpluxStore.rootReducer),
+      s => s,
+      1,
+      [],
+    )
+
+    const store = createSimpluxStore(() => storeProxy, getDefaultFeatureFlags())
+    const initialState = { prop: 'value' }
+
+    store.setReducer('test', (s = initialState) => s)
+
+    const rootReducer = combineReducers({
+      simplux: store.rootReducer,
+    })
+
+    const newStoreProxy = createReduxStoreProxy(
+      createStore(rootReducer),
+      (s: any) => s.simplux,
+      2,
+      [],
+    )
+
+    transferConfigurationToNewStore(storeProxy, newStoreProxy)
+
+    expect(newStoreProxy.getState().test).toBe(initialState)
   })
 
   it(`throws if store is not set when accessing state`, () => {

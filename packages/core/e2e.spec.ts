@@ -6,7 +6,7 @@ import {
   registerSimpluxModuleExtension,
   setReduxStoreForSimplux,
 } from '@simplux/core'
-import { createStore } from 'redux'
+import { combineReducers, createStore } from 'redux'
 
 describe(`@simplux/core`, () => {
   interface Todo {
@@ -121,6 +121,50 @@ describe(`@simplux/core`, () => {
     })
 
     expect(increment()).toBe(1)
+  })
+
+  it('sets initial module states when switching to a new store', () => {
+    const initialState = { prop: 'value' }
+
+    const { setState } = createSimpluxModule({
+      name: 'switchToNewStore',
+      initialState,
+    })
+
+    setState({ prop: 'updated' })
+
+    const store = createStore(
+      combineReducers({
+        simplux: getSimpluxReducer(),
+      }),
+    )
+
+    const cleanup = setReduxStoreForSimplux(store, (s: any) => s.simplux)
+
+    expect(store.getState().simplux.switchToNewStore).toBe(initialState)
+
+    cleanup()
+  })
+
+  it('sets initial module states when created after switching to a new store', () => {
+    const store = createStore(
+      combineReducers({
+        simplux: getSimpluxReducer(),
+      }),
+    )
+
+    const cleanup = setReduxStoreForSimplux(store, (s: any) => s.simplux)
+
+    const initialState = { prop: 'value' }
+
+    createSimpluxModule({
+      name: 'switchToNewStoreAfter',
+      initialState,
+    })
+
+    expect(store.getState().simplux.switchToNewStoreAfter).toBe(initialState)
+
+    cleanup()
   })
 
   it('allows registering a module extension', () => {

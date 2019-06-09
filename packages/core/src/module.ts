@@ -125,7 +125,5 @@ export function createModule<TState>(
     result,
   ) as SimpluxModule<TState>
 
-  dispatch({ type: `@simplux/${config.name}/init` })
-
   return finalModule
 }

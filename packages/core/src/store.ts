@@ -47,10 +47,7 @@ export function setReduxStore<TState>(
   )
 
   if (previousStoreProxy) {
-    for (const subscriber of previousStoreProxy.subscribers) {
-      subscriber.unsubscribe()
-      reduxStoreProxy.subscribe(subscriber.handler)
-    }
+    transferConfigurationToNewStore(previousStoreProxy, reduxStoreProxy)
   }
 
   return () => {
@@ -63,6 +60,16 @@ export function setReduxStore<TState>(
     }
 
     reduxStoreProxy = previousStoreProxy
+  }
+}
+
+export function transferConfigurationToNewStore(
+  previousStoreProxy: ReduxStoreProxy,
+  newReduxStoreProxy: ReduxStoreProxy,
+) {
+  for (const subscriber of previousStoreProxy.subscribers) {
+    subscriber.unsubscribe()
+    newReduxStoreProxy.subscribe(subscriber.handler)
   }
 }
 
@@ -127,6 +134,8 @@ export function createSimpluxStore(
     setReducer: (name, reducerToAdd) => {
       reducers[name] = reducerToAdd
       reducer = combineReducers(reducers)
+
+      getReduxStoreProxy().dispatch({ type: `@simplux/setReducer/${name}` })
     },
 
     getReducer: name => reducers[name],
