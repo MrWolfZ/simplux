@@ -82,6 +82,8 @@ const Counter = () => {
 
 And that is all you need to use **simplux** in your React application.
 
+We encourage you to also learn about [how to test](../testing-components-using-state#readme) the component that we have just created.
+
 If your application also uses Redux we recommend you take a look at [our recipe](../../advanced/using-in-redux-application#readme) for using **simplux** with a custom Redux store.
 
-We also encourage you to learn about [how to test](../testing-components-using-state#readme) the component that we have just created.
+If you prefer to use class components instead of functional cmoponents, and therefore cannot use hooks, there is [a recipe](../using-with-react-redux#readme) that shows you how to use **simplux** with React Redux.
