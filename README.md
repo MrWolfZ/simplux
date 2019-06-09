@@ -28,7 +28,7 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 ### Advanced
 
 - [using **simplux** in my application that already uses Redux](recipes/advanced/using-in-redux-application#readme)
-- [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme) (work-in-progress)
+- [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme)
 - [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme) (work-in-progress)
 - [organizing my application state](recipes/advanced/organizing-application-state#readme) (work-in-progress)
 - [composing mutations](recipes/advanced/composing-mutations#readme)
