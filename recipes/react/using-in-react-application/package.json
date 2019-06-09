@@ -1,5 +1,5 @@
 {
-  "name": "@simplux/recipes.advanced.using-in-react-application",
+  "name": "@simplux/recipes.react.using-in-react-application",
   "version": "0.3.0",
   "description": "This recipe shows you how simple it is to integrate simplux into your React application",
   "scripts": {
@@ -12,7 +12,7 @@
   "bugs": {
     "url": "https://github.com/MrWolfZ/simplux/issues"
   },
-  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/using-in-react-application#readme",
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/react/using-in-react-application#readme",
   "keywords": [
     "recipe",
     "redux",
