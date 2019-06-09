@@ -46,12 +46,20 @@ export type SimpluxModuleExtension<TReturn = object> = <TState>(
   moduleExtensionStateContainer: any,
 ) => TReturn
 
-export const moduleExtensions: SimpluxModuleExtension[] = []
+export const moduleExtensions: {
+  extension: SimpluxModuleExtension;
+  order: number;
+}[] = []
 
-export function registerModuleExtension(extension: SimpluxModuleExtension) {
-  moduleExtensions.push(extension)
+export function registerModuleExtension(
+  extension: SimpluxModuleExtension,
+  order = 1,
+) {
+  const ext = { extension, order }
+
+  moduleExtensions.push(ext)
   return () => {
-    const idx = moduleExtensions.indexOf(extension)
+    const idx = moduleExtensions.indexOf(ext)
     if (idx >= 0) {
       moduleExtensions.splice(idx, 1)
     }
@@ -117,13 +125,16 @@ export function createModule<TState>(
   }
 
   const moduleExtensionStateContainer = {}
-  const finalModule = moduleExtensions.reduce(
-    (acc, ext) => ({
-      ...acc,
-      ...ext(config, store, acc, moduleExtensionStateContainer),
-    }),
-    result,
-  ) as SimpluxModule<TState>
+  const finalModule = moduleExtensions
+    .sort((l, r) => l.order - r.order)
+    .map(({ extension }) => extension)
+    .reduce(
+      (acc, ext) => ({
+        ...acc,
+        ...ext(config, store, acc, moduleExtensionStateContainer),
+      }),
+      result,
+    ) as SimpluxModule<TState>
 
   return finalModule
 }

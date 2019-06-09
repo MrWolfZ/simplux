@@ -102,6 +102,47 @@ describe('module', () => {
 
       expect(setReducerSpy).toHaveBeenCalledTimes(2)
     })
+
+    it('applies registered extension', () => {
+      const unregister = registerModuleExtension(() => ({
+        testExtension: 'testExtension',
+      }))
+
+      const module = createModule(simpluxStore, {
+        name: 'test',
+        initialState: { prop: 'value' },
+      })
+
+      expect((module as any).testExtension).toBeDefined()
+
+      unregister()
+    })
+
+    it('applies registered extensions in order', () => {
+      const unregister1 = registerModuleExtension(
+        () => ({
+          testExtension: 'testExtension1',
+        }),
+        20,
+      )
+
+      const unregister2 = registerModuleExtension(
+        () => ({
+          testExtension: 'testExtension2',
+        }),
+        10,
+      )
+
+      const module = createModule(simpluxStore, {
+        name: 'test',
+        initialState: { prop: 'value' },
+      })
+
+      expect((module as any).testExtension).toBe('testExtension1')
+
+      unregister1()
+      unregister2()
+    })
   })
 
   describe('created module', () => {

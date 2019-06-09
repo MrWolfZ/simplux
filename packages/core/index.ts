@@ -9,7 +9,7 @@ import {
 import { mutationsModuleExtension } from './src/mutations'
 import { setReduxStore, simpluxStore } from './src/store'
 
-registerModuleExtension(mutationsModuleExtension)
+registerModuleExtension(mutationsModuleExtension, 100)
 
 // we create and set a default redux store for simple scenarios
 setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
@@ -106,6 +106,8 @@ export function setReduxStoreForSimplux<TState>(
  * Register a new module extension for simplux.
  *
  * @param extension the extension to register
+ * @param [order] a number that determines the order in which the extensions
+ * are applied (i.e. in ascending order)
  *
  * @returns a cleanup function that when called unregisters the extension
  * (however, all modules that have been created while the extension was
@@ -113,6 +115,7 @@ export function setReduxStoreForSimplux<TState>(
  */
 export function registerSimpluxModuleExtension(
   extension: SimpluxModuleExtension,
+  order?: number,
 ) {
-  return registerModuleExtension(extension)
+  return registerModuleExtension(extension, order)
 }
