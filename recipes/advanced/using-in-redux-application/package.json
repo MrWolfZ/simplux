@@ -1,7 +1,7 @@
 {
   "name": "@simplux/recipes.advanced.using-in-redux-application",
   "version": "0.3.0-alpha.4",
-  "description": "This recipe shows how simple it is to get started using simplux",
+  "description": "This recipe shows you how simple it is to integrate simplux into your application that is already using Redux",
   "main": "src/index.ts",
   "scripts": {
     "start": "webpack-dev-server --mode development --progress --color"
