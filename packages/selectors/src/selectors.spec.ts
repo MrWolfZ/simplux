@@ -118,6 +118,26 @@ describe('selectors', () => {
         expect(plus.withLatestModuleState(5)).toBe(25)
       })
 
+      it('can be composed', () => {
+        const { plusOne, plus } = createSelectors({
+          plusOne: c => c + 1,
+          plus: (c, amount: number) => {
+            for (let i = 0; i < amount; i += 1) {
+              c = plusOne(c)
+            }
+
+            return c
+          },
+        })
+
+        const { plusTwo } = createSelectors({
+          plusTwo: c => plusOne(plusOne(c)),
+        })
+
+        expect(plusTwo(10)).toBe(12)
+        expect(plus(10, 5)).toBe(15)
+      })
+
       it('has the same name as the selector', () => {
         const { plus } = createSelectors({
           plus: (c, amount: number) => c + amount,
