@@ -22,6 +22,7 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 - [computing derived state](recipes/basics/computing-derived-state#readme)
 - [testing derived state](recipes/basics/testing-derived-state#readme)
 - [simplifying state changes](recipes/basics/simplifying-state-changes#readme)
+- [performing asynchronous tasks](recipes/basics/performing-async-tasks#readme) (work-in-progress)
 
 ### Advanced
 
@@ -33,6 +34,7 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 - [composing selectors](recipes/advanced/composing-selectors#readme) (work-in-progress)
 - [communicating between modules](recipes/advanced/communicating-between-modules#readme) (work-in-progress)
 - [using Reselect for my selectors](recipes/advanced/using-reselect-for-selectors#readme) (work-in-progress)
+- [coordinating complex asynchronous workflows](recipes/advanced/coordinating-complex-asynchronous-workflows#readme) (work-in-progress)
 
 ### React
 
