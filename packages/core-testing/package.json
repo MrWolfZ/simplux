@@ -1,0 +1,41 @@
+{
+  "name": "@simplux/core-testing",
+  "version": "0.3.0",
+  "description": "The testing package for simplux's core functionality. Contains various testing utilities (e.g. for mocking mutations).",
+  "module": "./bundles/bundle.es5.js",
+  "es2015": "./bundles/bundle.js",
+  "main": "./bundles/bundle.umd.js",
+  "typings": "./index.d.ts",
+  "scripts": {
+    "build": "node ../../scripts/build.package.js --forceEnableColors=true",
+    "build-ci": "npm run build -- --forceEnableColors=false",
+    "lint": "tslint -c ../../tslint.json -p ./tsconfig.json --fix",
+    "lint-ci": "npm run lint -- --fix=false",
+    "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --config=./jest.config.js",
+    "test-ci": "npm run test -- --runInBand --ci --coverage",
+    "report-coverage": "codecov -f ./coverage/lcov.info --disable=gcov -F core",
+    "publish:custom": "npm publish ./dist --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrWolfZ/simplux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/simplux/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/packages/core-testing#readme",
+  "keywords": [
+    "redux",
+    "simplux",
+    "state",
+    "typescript",
+    "testing",
+    "mocking"
+  ],
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@simplux/core": "0.3.0"
+  }
+}
