@@ -6,7 +6,7 @@ import {
   MutationsFactory,
   mutationsModuleExtension,
 } from './mutations'
-import { getDefaultFeatureFlags, SimpluxStore } from './store'
+import { SimpluxStore } from './store'
 
 describe('mutations', () => {
   const dispatchMock = jest.fn().mockImplementation(a => a)
@@ -28,7 +28,6 @@ describe('mutations', () => {
     subscribe: jest.fn(),
     setReducer: setReducerMock,
     getReducer: getReducerMock,
-    featureFlags: getDefaultFeatureFlags(),
   }
 
   const moduleMock: SimpluxModuleCore<any> = {
@@ -101,7 +100,6 @@ describe('mutations', () => {
         'test',
         moduleState as any,
         moduleMutations,
-        () => false,
       )
 
       moduleReducerSpy = jest.fn().mockImplementation(moduleReducer)
@@ -226,14 +224,9 @@ describe('mutations', () => {
   })
 
   describe(`reducer`, () => {
-    const reducer = createModuleReducer(
-      'test',
-      10,
-      {
-        increment: c => c + 1,
-      },
-      () => false,
-    )
+    const reducer = createModuleReducer('test', 10, {
+      increment: c => c + 1,
+    })
 
     it('updates the state', () => {
       const result = reducer(undefined, {
@@ -267,7 +260,6 @@ describe('mutations', () => {
             return undefined!
           },
         },
-        () => false,
       )
 
       const result = mutatingReducer(undefined, {
@@ -289,14 +281,17 @@ describe('mutations', () => {
             return state
           },
         },
-        () => true,
       )
 
       expect(() =>
-        freezingReducer(undefined, {
-          type: '@simplux/test/mutation/update',
-          args: [],
-        }),
+        freezingReducer(
+          undefined,
+          {
+            type: '@simplux/test/mutation/update',
+            args: [],
+          },
+          () => true,
+        ),
       ).toThrowError(/Cannot assign to read only property/)
     })
   })

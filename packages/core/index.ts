@@ -34,7 +34,7 @@ export {
   ResolvedMutations,
   SimpluxModuleMutationExtensions,
 } from './src/mutations'
-export { FeatureFlags, SimpluxStore } from './src/store'
+export { SimpluxStore } from './src/store'
 
 // tslint:disable: max-line-length (cannot line break the links)
 

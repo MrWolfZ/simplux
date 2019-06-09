@@ -26,9 +26,6 @@ describe('selectors', () => {
     subscribe: jest.fn(),
     setReducer: setReducerMock,
     getReducer: getReducerMock,
-    featureFlags: {
-      freezeStateDuringMutations: () => false,
-    },
   }
 
   const moduleMock: SimpluxModuleCore<any> = {

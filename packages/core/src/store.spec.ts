@@ -2,7 +2,6 @@ import { combineReducers, createStore } from 'redux'
 import {
   createReduxStoreProxy,
   createSimpluxStore,
-  getDefaultFeatureFlags,
   setReduxStore,
   simpluxStore,
   transferConfigurationToNewStore,
@@ -53,10 +52,7 @@ describe('store', () => {
   })
 
   it(`exports a root reducer`, () => {
-    const { rootReducer } = createSimpluxStore(
-      () => undefined!,
-      getDefaultFeatureFlags(),
-    )
+    const { rootReducer } = createSimpluxStore(() => undefined!)
     const state = {}
     expect(rootReducer(state, { type: '' })).toBe(state)
   })
@@ -69,10 +65,7 @@ describe('store', () => {
       [],
     )
 
-    const { setReducer, getReducer } = createSimpluxStore(
-      () => storeProxy,
-      getDefaultFeatureFlags(),
-    )
+    const { setReducer, getReducer } = createSimpluxStore(() => storeProxy)
     const reducer = (s = {}) => s
     setReducer('test', reducer)
     expect(getReducer('test')).toBe(reducer)
@@ -181,7 +174,7 @@ describe('store', () => {
       [],
     )
 
-    const store = createSimpluxStore(() => storeProxy, getDefaultFeatureFlags())
+    const store = createSimpluxStore(() => storeProxy)
     const initialState = { prop: 'value' }
 
     store.setReducer('test', (s = initialState) => s)

@@ -9,7 +9,6 @@ import {
 import {
   createReduxStoreProxy,
   createSimpluxStore,
-  getDefaultFeatureFlags,
   SimpluxStore,
 } from './store'
 
@@ -44,10 +43,7 @@ describe('module', () => {
     beforeEach(() => {
       const getReduxStoreProxy = () =>
         createReduxStoreProxy(reduxStore, s => s, 1, [])
-      simpluxStore = createSimpluxStore(
-        getReduxStoreProxy,
-        getDefaultFeatureFlags(),
-      )
+      simpluxStore = createSimpluxStore(getReduxStoreProxy)
       reduxStore = createStore(simpluxStore.rootReducer)
       setReducerSpy = jest.spyOn(simpluxStore, 'setReducer')
     })
@@ -115,10 +111,7 @@ describe('module', () => {
     beforeEach(() => {
       const getReduxStoreProxy = () =>
         createReduxStoreProxy(reduxStore, s => s, 1, [])
-      simpluxStore = createSimpluxStore(
-        getReduxStoreProxy,
-        getDefaultFeatureFlags(),
-      )
+      simpluxStore = createSimpluxStore(getReduxStoreProxy)
       const reduxStore = createStore(simpluxStore.rootReducer)
       subscribeSpy = jest.spyOn(reduxStore, 'subscribe')
     })

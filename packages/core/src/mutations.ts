@@ -69,15 +69,23 @@ export type MutationsFactory<TState> = <
 const mutationPrefix = (moduleName: string) =>
   `@simplux/${moduleName}/mutation/`
 
+const getIsDevelopmentMode = () =>
+  process.env && process.env.NODE_ENV === 'development'
+
 export function createModuleReducer<TState>(
   moduleName: string,
   initialState: TState,
   moduleMutations: MutationsBase<TState>,
-  getStoreShouldBeFrozen: () => boolean,
 ) {
   return <TAction extends Action<string>>(
     state = initialState,
     action: TAction,
+
+    // this third non-standard argument only exists to allow the immer extension
+    // to override the freezing behaviour; it is a getter function instead of a
+    // boolean to allow testing the different behaviours during testing by
+    // changing the environment
+    storeShouldBeFrozenDuringMutations = getIsDevelopmentMode,
   ): TState => {
     if (action.type.startsWith(mutationPrefix(moduleName))) {
       const mutationName = action.type.replace(mutationPrefix(moduleName), '')
@@ -89,7 +97,7 @@ export function createModuleReducer<TState>(
         )
       }
 
-      if (getStoreShouldBeFrozen()) {
+      if (storeShouldBeFrozenDuringMutations()) {
         state = Object.freeze(state)
       }
 
@@ -191,7 +199,7 @@ export const mutationsModuleExtension: SimpluxModuleExtension<
   SimpluxModuleMutationExtensions<any>
 > = (
   { name, initialState },
-  { dispatch, setReducer, getReducer, featureFlags },
+  { dispatch, setReducer, getReducer },
   { getState },
   extensionState,
 ) => {
@@ -201,7 +209,6 @@ export const mutationsModuleExtension: SimpluxModuleExtension<
     name,
     initialState,
     extensionState.mutations[name],
-    featureFlags.freezeStateDuringMutations,
   )
 
   setReducer(name, reducer)
