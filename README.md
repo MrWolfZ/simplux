@@ -67,13 +67,12 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- core: merge modules if defined multiple times, but print a warning during DEV mode
 - core: add testing package that allows mocking mutations
-- core: freeze module state in DEV mode
 - selectors: add extension for creating factory selectors
 - selectors: add testing package that allows mocking selectors
 - selectors: add test to verify store is not eagerly accessed
 - selectors: add basic memoization (also update derived state recipe with example of this)
+- react: allow passing parameterless selector factories directly to `useSelector`
 - react: verify package works with react-native
 - react: add test to verify store is not eagerly accessed
 - async: create package for performing async work for a module
@@ -84,6 +83,10 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - observable: add support for observable epics
 - observable: add test to verify store is not eagerly accessed
 - observable: add way to get observable of actions
+- entities: create package for managing collections of entities
+- entities: create default set of entity management mutations
+- entities: allow creating custom mutations that act on one entity
+- entities: create default set of selectors for entities
 - docs: create website
 - docs: write docs for each package
 - add dtslint tests (and add TypeScript peer dependencies to packages)
