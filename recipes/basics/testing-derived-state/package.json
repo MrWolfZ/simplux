@@ -14,7 +14,7 @@
   "bugs": {
     "url": "https://github.com/MrWolfZ/simplux/issues"
   },
-  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/testing-derived-state#readme",
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/testing-derived-state#readme",
   "keywords": [
     "recipe",
     "redux",

@@ -13,7 +13,7 @@
   "bugs": {
     "url": "https://github.com/MrWolfZ/simplux/issues"
   },
-  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/simplifying-state-changes#readme",
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/simplifying-state-changes#readme",
   "keywords": [
     "recipe",
     "redux",
