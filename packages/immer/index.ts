@@ -3,4 +3,4 @@ import { immerModuleExtension } from './src/immer'
 
 export { ImmerMutationReturnTypeOverride } from './src/immer'
 
-registerSimpluxModuleExtension(immerModuleExtension)
+registerSimpluxModuleExtension(immerModuleExtension, 110)

@@ -11,4 +11,4 @@ export {
   SimpluxModuleSelectorExtensions,
 } from './src/selectors'
 
-registerSimpluxModuleExtension(selectorsModuleExtension)
+registerSimpluxModuleExtension(selectorsModuleExtension, 120)

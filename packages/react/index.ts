@@ -6,4 +6,4 @@ export {
   SimpluxModuleSelectorHook,
 } from './src/hooks'
 
-registerSimpluxModuleExtension(reactModuleExtension)
+registerSimpluxModuleExtension(reactModuleExtension, 130)
