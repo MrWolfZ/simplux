@@ -19,10 +19,11 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 
 - [getting started](recipes/basics/getting-started#readme)
 - [testing state changes](recipes/basics/testing-state-changes#readme)
+- [simplifying state changes](recipes/basics/simplifying-state-changes#readme)
 - [computing derived state](recipes/basics/computing-derived-state#readme)
 - [testing derived state](recipes/basics/testing-derived-state#readme)
-- [simplifying state changes](recipes/basics/simplifying-state-changes#readme)
 - [performing asynchronous tasks](recipes/basics/performing-async-tasks#readme) (work-in-progress)
+- [testing asynchronous tasks](recipes/basics/testing-async-tasks#readme) (work-in-progress)
 
 ### Advanced
 
