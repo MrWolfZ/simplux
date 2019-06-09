@@ -71,7 +71,6 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 ## Open points
 
 - core: add testing package that allows mocking mutations
-- selectors: add test to verify store is not eagerly accessed
 - selectors: add memoization (also mention this briefly in the "derived state" recipe)
 - react: add testing package that allows mocking the module state for `useSelector`
 - react: verify package works with react-native
