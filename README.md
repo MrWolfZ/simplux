@@ -39,7 +39,7 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 
 ### React
 
-- [using **simplux** in my React application](recipes/react/using-in-react-application#readme) (work-in-progress)
+- [using **simplux** in my React application](recipes/react/using-in-react-application#readme)
 - [testing my components that read and change state](recipes/react/testing-components-using-state#readme) (work-in-progress)
 - [testing my components that trigger async work](recipes/react/testing-components-using-async#readme) (work-in-progress)
 - [using **simplux** with React Redux](recipes/react/using-with-react-redux#readme) (work-in-progress)
