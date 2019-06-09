@@ -36,7 +36,9 @@ const { getState, createSelectors } = createSimpluxModule({
 
 const { selectItemsWithIsDoneValue, selectDoneItems } = createSelectors({
   selectItemsWithIsDoneValue: (todos, targetIsDoneValue: boolean) =>
-    Object.values(todos).filter(item => item.isDone === targetIsDoneValue),
+    Object.keys(todos)
+      .map(id => todos[id])
+      .filter(item => item.isDone === targetIsDoneValue),
 
   // instead of repeating the logic for filtering Todo items we want to
   // re-use the logic we already have, that is we want to compose our

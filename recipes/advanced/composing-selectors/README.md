@@ -51,7 +51,9 @@ However, instead of duplicating the logic for filtering Todo items we want to re
 ```ts
 const { selectItemsWithIsDoneValue, selectDoneItems } = createSelectors({
   selectItemsWithIsDoneValue: (todos, targetIsDoneValue: boolean) =>
-    Object.values(todos).filter(item => item.isDone === targetIsDoneValue),
+    Object.keys(todos)
+      .map(id => todos[id])
+      .filter(item => item.isDone === targetIsDoneValue),
 
   // sadly, TypeScript cannot infer the return type of the
   // selector, so we need to specify it ourselves
