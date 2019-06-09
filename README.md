@@ -31,7 +31,7 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 - [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme) (work-in-progress)
 - [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme) (work-in-progress)
 - [organizing my application state](recipes/advanced/organizing-application-state#readme) (work-in-progress)
-- [composing mutations](recipes/advanced/composing-mutations#readme) (work-in-progress)
+- [composing mutations](recipes/advanced/composing-mutations#readme)
 - [composing selectors](recipes/advanced/composing-selectors#readme) (work-in-progress)
 - [communicating between modules](recipes/advanced/communicating-between-modules#readme) (work-in-progress)
 - [using Reselect for my selectors](recipes/advanced/using-reselect-for-selectors#readme) (work-in-progress)
