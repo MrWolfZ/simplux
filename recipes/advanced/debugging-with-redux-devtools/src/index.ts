@@ -28,8 +28,10 @@ const { createMutations } = createSimpluxModule({
   initialState: 0,
 })
 
-const { increment } = createMutations({
+const { increment, incrementBy } = createMutations({
   increment: c => c + 1,
+  incrementBy: (c, amount: number) => c + amount,
 })
 
-console.log('incremented counter:', increment())
+increment()
+incrementBy(5)

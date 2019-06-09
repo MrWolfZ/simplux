@@ -9,8 +9,7 @@ Setting up the Redux DevTools with **simplux** is done exactly the same way as f
 Before we start let's install all the packages we need.
 
 ```sh
-npm i @simplux/core redux -S
-npm i redux-devtools-extension -D
+npm i @simplux/core redux redux-devtools-extension -S
 ```
 
 Now we're ready to go.
@@ -41,11 +40,13 @@ const { createMutations } = createSimpluxModule({
   initialState: 0,
 })
 
-const { increment } = createMutations({
+const { increment, incrementBy } = createMutations({
   increment: c => c + 1,
+  incrementBy: (c, amount: number) => c + amount,
 })
 
-console.log('incremented counter:', increment())
+increment()
+incrementBy(5)
 ```
 
 ![alt text](DevTools.png 'DevTools')
