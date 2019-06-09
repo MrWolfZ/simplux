@@ -71,31 +71,24 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 ## Open points
 
 - core: add testing package that allows mocking mutations
-- selectors: add extension for creating factory selectors
-- selectors: add testing package that allows mocking selectors
 - selectors: add test to verify store is not eagerly accessed
-- selectors: add basic memoization (also update derived state recipe with example of this)
-- react: allow passing parameterless selector factories directly to `useSelector`
+- selectors: add memoization (also mention this briefly in the "derived state" recipe)
+- react: add testing package that allows mocking the module state for `useSelector`
 - react: verify package works with react-native
-- async: create package for performing async work for a module
-- async: add testing package that allows mocking async work
-- async: support cancelling work
+- async: create package for performing async tasks for a module
+- async: add testing package that allows mocking async tasks
+- async: support cancelling tasks
 - observable: create package for getting an observable of module state changes
 - observable: add support for observable epics
-- observable: add test to verify store is not eagerly accessed
-- observable: add way to get observable of actions
 - entities: create package for managing collections of entities
 - entities: create default set of entity management mutations
 - entities: allow creating custom mutations that act on one entity
 - entities: create default set of selectors for entities
 - docs: create website
-- docs: write docs for each package
-- add dtslint tests (and add TypeScript peer dependencies to packages)
-- add tests that verify HMR works
-- add tests that verify server-side rendering works
+- add dtslint tests
+- add tests that verify HMR works with React
+- add tests that verify server-side rendering works with React
 - angular: create package for angular service
-- core: add way to susbcribe to mutations (if a use case exists for this)
-- core: add type to mutation extras
 
 ## Contributing
 
