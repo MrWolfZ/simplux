@@ -12,6 +12,12 @@ Before we start let's install all the packages we need.
 npm i @simplux/core @simplux/selectors redux -S
 ```
 
+We also register the selectors extension package.
+
+```ts
+import '@simplux/selectors'
+```
+
 Now we're ready to go.
 
 For this recipe we use a simple scenario: managing a collection of Todo items. Let's create a module for this.
