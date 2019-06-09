@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-alpha.4](https://github.com/MrWolfZ/simplux/compare/v0.3.0-alpha.3...v0.3.0-alpha.4) (2019-06-09)
+
+
+### Bug Fixes
+
+* **core:** ensure module state is set in redux store when module is created ([cd53ac9](https://github.com/MrWolfZ/simplux/commit/cd53ac9))
+* **immer:** ensure composing mutations works correctly ([ecff6a0](https://github.com/MrWolfZ/simplux/commit/ecff6a0))
+* **recipes:** add missing dependency to "simplifying state changes" recipe ([8931146](https://github.com/MrWolfZ/simplux/commit/8931146))
+* **recipes:** fix "testing derived state" not working correctly in code sandbox ([97fc902](https://github.com/MrWolfZ/simplux/commit/97fc902))
+
+
+### Features
+
+* **core:** freeze state during mutations in development mode ([6fc9786](https://github.com/MrWolfZ/simplux/commit/6fc9786))
+* **recipes:** add recipe for "simplifying state changes" ([7c77384](https://github.com/MrWolfZ/simplux/commit/7c77384))
+* **recipes:** add recipe for "testing derived state" ([61418c3](https://github.com/MrWolfZ/simplux/commit/61418c3))
+* **recipes:** add recipe for "using simplux in my application that already uses Redux" ([eb9e1f7](https://github.com/MrWolfZ/simplux/commit/eb9e1f7))
+
+
+
+
+
 # [0.3.0-alpha.3](https://github.com/MrWolfZ/simplux/compare/v0.3.0-alpha.2...v0.3.0-alpha.3) (2019-06-08)
 
 

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0-alpha.4](https://github.com/MrWolfZ/simplux/compare/v0.3.0-alpha.3...v0.3.0-alpha.4) (2019-06-09)
+
+
+### Bug Fixes
+
+* **core:** ensure module state is set in redux store when module is created ([cd53ac9](https://github.com/MrWolfZ/simplux/commit/cd53ac9))
+
+
+### Features
+
+* **core:** freeze state during mutations in development mode ([6fc9786](https://github.com/MrWolfZ/simplux/commit/6fc9786))
+
+
+
+
+
 # [0.3.0-alpha.3](https://github.com/MrWolfZ/simplux/compare/v0.3.0-alpha.2...v0.3.0-alpha.3) (2019-06-08)
 
 **Note:** Version bump only for package @simplux/core
