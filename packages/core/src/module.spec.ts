@@ -1,4 +1,4 @@
-import { createStore } from 'redux'
+import { combineReducers, createStore, Store } from 'redux'
 import {
   createModule,
   moduleExtensions,
@@ -39,6 +39,7 @@ describe('module', () => {
   describe('creating module', () => {
     let setReducerSpy: jest.SpyInstance
     let simpluxStore: SimpluxStore
+    let reduxStore: Store
 
     beforeEach(() => {
       const getReduxStoreProxy = () =>
@@ -47,7 +48,7 @@ describe('module', () => {
         getReduxStoreProxy,
         getDefaultFeatureFlags(),
       )
-      const reduxStore = createStore(simpluxStore.rootReducer)
+      reduxStore = createStore(simpluxStore.rootReducer)
       setReducerSpy = jest.spyOn(simpluxStore, 'setReducer')
     })
 
@@ -59,6 +60,33 @@ describe('module', () => {
       })
 
       expect(setReducerSpy).toHaveBeenCalledWith('test', expect.any(Function))
+    })
+
+    it('immediately adds the module state to the overall state', () => {
+      const initialState = { prop: 'value' }
+      const { getState } = createModule(simpluxStore, {
+        name: 'test',
+        initialState,
+      })
+
+      expect(getState()).toBe(initialState)
+      expect(reduxStore.getState().test).toBe(initialState)
+    })
+
+    it('immediately adds the module state to the redux state if reducer is nested', () => {
+      reduxStore = createStore(
+        combineReducers({
+          simplux: simpluxStore.rootReducer,
+        }),
+      )
+
+      const initialState = { prop: 'value' }
+      createModule(simpluxStore, {
+        name: 'test',
+        initialState,
+      })
+
+      expect(reduxStore.getState().simplux.test).toBe(initialState)
     })
 
     it('overrides modules with the same name', () => {

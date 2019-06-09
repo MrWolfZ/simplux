@@ -123,31 +123,6 @@ describe(`@simplux/core`, () => {
     expect(increment()).toBe(1)
   })
 
-  it('does not access the store before any mutation is executed', () => {
-    const undo = setReduxStoreForSimplux(undefined!, s => s)
-
-    expect(() => {
-      const { createMutations } = createSimpluxModule({
-        name: 'todos',
-        initialState: initialTodoState,
-      })
-
-      createMutations({
-        addTodo({ todosById, todoIds }, todo: Todo) {
-          return {
-            todosById: {
-              ...todosById,
-              [todo.id]: todo,
-            },
-            todoIds: [...todoIds, todo.id],
-          }
-        },
-      })
-    }).not.toThrow()
-
-    undo()
-  })
-
   it('allows registering a module extension', () => {
     const unregister = registerSimpluxModuleExtension(() => ({
       testExtension: {},
