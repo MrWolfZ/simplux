@@ -56,7 +56,7 @@ describe(`@simplux/selectors`, () => {
       },
     })
 
-    const addTodoSpy = addTodo.setMock(
+    const addTodoSpy = addTodo.mock(
       jest.fn().mockReturnValue(todoStoreWithTodo1),
     )
 

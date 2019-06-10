@@ -105,8 +105,8 @@ describe('mutations', () => {
           incrementBy: (c, amount: number) => c + amount,
         })
 
-        const incrementSpy = increment.setMock(jest.fn().mockReturnValue(10))
-        incrementBySpy = incrementBy.setMock(jest.fn().mockReturnValue(20))
+        const incrementSpy = increment.mock(jest.fn().mockReturnValue(10))
+        incrementBySpy = incrementBy.mock(jest.fn().mockReturnValue(20))
 
         const incrementReturnValue = increment()
         expect(incrementSpy).toHaveBeenCalled()
@@ -123,7 +123,7 @@ describe('mutations', () => {
             incrementBy: (c, amount: number) => c + amount,
           })
 
-          const spy = incrementBy.setMock(jest.fn())
+          const spy = incrementBy.mock(jest.fn())
 
           incrementBy.removeMock()
 

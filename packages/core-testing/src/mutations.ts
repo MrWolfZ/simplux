@@ -36,7 +36,7 @@ export function createMutationsFactoryWithTestingExtras<TState>(
         ] = originalMutation[mutationExtra as keyof typeof originalMutation]
       }
 
-      resolvedMutations[mutationName].setMock = mockFn => {
+      resolvedMutations[mutationName].mock = mockFn => {
         mutationsMocks[mutationName] = mockFn
         return mockFn
       }
@@ -59,7 +59,7 @@ export interface ResolvedMutationTestingExtras<TState, TArgs extends any[]> {
    *
    * @returns the mock function
    */
-  setMock<TMock extends (...args: TArgs) => TState>(mock: TMock): TMock
+  mock<TMock extends (...args: TArgs) => TState>(mock: TMock): TMock
 
   /**
    * Remove any mock that may currently be set. Does nothing if no mock
