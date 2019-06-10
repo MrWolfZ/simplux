@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/MrWolfZ/simplux/compare/v0.4.0...v0.4.1) (2019-06-10)
+
+
+### Bug Fixes
+
+* **core:** ignore "accidental" mutation args that are HTML events ([6776d7a](https://github.com/MrWolfZ/simplux/commit/6776d7a))
+* **core-testing:** add missing API exports ([af4bbd8](https://github.com/MrWolfZ/simplux/commit/af4bbd8))
+
+
+
+
+
 # [0.4.0](https://github.com/MrWolfZ/simplux/compare/v0.3.0...v0.4.0) (2019-06-09)
 
 
