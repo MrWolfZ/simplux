@@ -73,7 +73,6 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- core: ensure only expected arguments are contained in action payloads
 - selectors: add memoization (also mention this briefly in the "derived state" recipe)
 - react: add testing package that allows mocking the module state for `useSelector`
 - react: verify package works with react-native
