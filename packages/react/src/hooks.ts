@@ -46,6 +46,11 @@ export type SimpluxModuleSelectorHook<TState> = <TResult>(
   selector: (state: TState) => TResult,
 ) => TResult
 
+// this interface only exists to allow other extensions to add
+// functionality to the selector hook
+// @ts-ignore
+export interface SimpluxModuleSelectorHookExtras<TState> {}
+
 export function createSelectorHook<TState>(
   getModuleState: () => TState,
   subscribeToModuleStateChanges: SubscribeToStateChanges<TState>,
@@ -75,7 +80,8 @@ export interface SimpluxModuleReactExtensions<TState> {
        *
        * @returns the selected value
        */
-      useSelector: SimpluxModuleSelectorHook<TState>;
+      useSelector: SimpluxModuleSelectorHook<TState> &
+        SimpluxModuleSelectorHookExtras<TState>;
     };
   }
 }
