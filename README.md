@@ -29,7 +29,7 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 
 - [using **simplux** in my application that already uses Redux](recipes/advanced/using-in-redux-application#readme)
 - [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme)
-- [testing my code that uses mutations](recipes/advanced/testing-code-using-mutations#readme) (work-in-progress)
+- [testing my code that uses mutations](recipes/advanced/testing-code-using-mutations#readme)
 - [testing my code that uses async tasks](recipes/advanced/testing-code-using-async#readme) (work-in-progress)
 - [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme) (work-in-progress)
 - [organizing my application state](recipes/advanced/organizing-application-state#readme) (work-in-progress)
