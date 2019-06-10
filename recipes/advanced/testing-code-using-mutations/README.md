@@ -95,7 +95,7 @@ afterEach(() => {
 })
 ```
 
-Since this a bit cumbersome to do for every test and mutation, the `mock` function allows specifying the number of times the mutation should be mocked before the mock is automatically removed. Since it such a common scenario to mock a mutation just once there is also an explicit `mockOnce` function that only mocks the next invocation of the mutation.
+Since this a bit cumbersome to do for every test and mutation, the `mock` function allows specifying the number of times the mutation should be mocked before the mock is automatically removed. Since it is such a common scenario to mock a mutation just once there is also an explicit `mockOnce` function that only mocks the next invocation of the mutation.
 
 ```ts
 it('uses the value as description (mocked once)', () => {
