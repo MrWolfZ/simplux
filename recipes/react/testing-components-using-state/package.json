@@ -1,0 +1,62 @@
+{
+  "name": "@simplux/recipes.react.testing-components-using-state",
+  "version": "0.5.0",
+  "description": "This recipe shows you how simple it is to test your React components that read and change state with simplux",
+  "scripts": {
+    "start": "react-scripts start",
+    "test": "react-scripts test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrWolfZ/simplux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/simplux/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-components-using-state#readme",
+  "keywords": [
+    "recipe",
+    "react",
+    "redux",
+    "simplux",
+    "typescript"
+  ],
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@simplux/core": "0.5.0",
+    "@simplux/core-testing": "0.5.0",
+    "@simplux/immer": "0.5.0",
+    "@simplux/react": "0.5.0",
+    "@simplux/react-testing": "0.5.0",
+    "@simplux/selectors": "0.5.0",
+    "@testing-library/react": "^8.0.1",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
+    "immer": "^3.1.3",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
+    "redux": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/enzyme": "^3.9.3",
+    "@types/jest": "^24.0.13",
+    "@types/react": "^16.8.0",
+    "@types/react-dom": "^16.8.0",
+    "react-scripts": "^3.0.1",
+    "typescript": "^3.5.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
