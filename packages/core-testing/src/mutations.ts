@@ -5,7 +5,10 @@ import {
 } from '@simplux/core'
 
 export interface MutationsMocks {
-  [name: string]: Function
+  [name: string]: {
+    mockFn: Function;
+    remainingCallCount?: number;
+  }
 }
 
 export function createMutationsFactoryWithTestingExtras<TState>(
@@ -19,8 +22,19 @@ export function createMutationsFactoryWithTestingExtras<TState>(
       const originalMutation = resolvedMutations[mutationName]
 
       const mutation = (...args: any[]) => {
-        if (mutationsMocks[mutationName]) {
-          return mutationsMocks[mutationName](...args)
+        const mock = mutationsMocks[mutationName]
+        if (mock) {
+          const result = mutationsMocks[mutationName].mockFn(...args)
+
+          if (typeof mock.remainingCallCount === 'number') {
+            mock.remainingCallCount -= 1
+
+            if (mock.remainingCallCount === 0) {
+              delete mutationsMocks[mutationName]
+            }
+          }
+
+          return result
         }
 
         return originalMutation(...args)
@@ -36,8 +50,13 @@ export function createMutationsFactoryWithTestingExtras<TState>(
         ] = originalMutation[mutationExtra as keyof typeof originalMutation]
       }
 
-      resolvedMutations[mutationName].mock = mockFn => {
-        mutationsMocks[mutationName] = mockFn
+      resolvedMutations[mutationName].mock = (mockFn, nrOfCalls) => {
+        mutationsMocks[mutationName] = { mockFn, remainingCallCount: nrOfCalls }
+        return mockFn
+      }
+
+      resolvedMutations[mutationName].mockOnce = mockFn => {
+        mutationsMocks[mutationName] = { mockFn, remainingCallCount: 1 }
         return mockFn
       }
 
@@ -53,13 +72,30 @@ export function createMutationsFactoryWithTestingExtras<TState>(
 export interface ResolvedMutationTestingExtras<TState, TArgs extends any[]> {
   /**
    * Specify a mock function that should be called instead of the real
-   * mutation.
+   * mutation. Takes an optional second parameter that specifies for how
+   * many invocations of the mutation the mock should be used before it
+   * is removed. By default the mutation will stay mocked indefinitely
+   * or until `removeMock` is called.
+   *
+   * @param mock the mock function to use
+   * @param mock the mock function to use
+   *
+   * @returns the mock function
+   */
+  mock<TMock extends (...args: TArgs) => TState>(
+    mock: TMock,
+    nrOfCalls?: number,
+  ): TMock
+
+  /**
+   * Specify a mock function that should be called instead of the real
+   * mutation for the next invocation of the mutation.
    *
    * @param mock the mock function to use
    *
    * @returns the mock function
    */
-  mock<TMock extends (...args: TArgs) => TState>(mock: TMock): TMock
+  mockOnce<TMock extends (...args: TArgs) => TState>(mock: TMock): TMock
 
   /**
    * Remove any mock that may currently be set. Does nothing if no mock

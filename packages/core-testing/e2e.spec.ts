@@ -56,17 +56,22 @@ describe(`@simplux/selectors`, () => {
       },
     })
 
-    const addTodoSpy = addTodo.mock(
-      jest.fn().mockReturnValue(todoStoreWithTodo1),
-    )
+    let addTodoSpy = addTodo.mock(jest.fn().mockReturnValue(todoStoreWithTodo1))
 
-    const mockedReturnValue = addTodo(todo2)
+    let mockedReturnValue = addTodo(todo2)
     expect(addTodoSpy).toHaveBeenCalled()
     expect(mockedReturnValue).toBe(todoStoreWithTodo1)
 
     addTodo.removeMock()
 
-    expect(addTodo(todo2)).toEqual(todoStoreWithTodo2)
+    addTodoSpy = addTodo.mockOnce(jest.fn().mockReturnValue(todoStoreWithTodo2))
+
+    mockedReturnValue = addTodo(todo1)
+    expect(addTodoSpy).toHaveBeenCalled()
+    expect(mockedReturnValue).toBe(todoStoreWithTodo2)
+
+    expect(addTodo(todo1)).toEqual(todoStoreWithTodo1)
+    expect(addTodo(todo2)).toEqual(todoStoreWithBothTodos)
 
     expect(addTodo.withState).toBeDefined()
     expect(addTodo.withState(todoStoreWithTodo1)(todo2)).toEqual(

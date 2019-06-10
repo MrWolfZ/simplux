@@ -117,6 +117,36 @@ describe('mutations', () => {
         expect(incrementByReturnValue).toBe(20)
       })
 
+      it('can be mocked once', () => {
+        const { incrementBy } = createMutations({
+          incrementBy: (c, amount: number) => c + amount,
+        })
+
+        const spy = incrementBy.mockOnce(jest.fn())
+
+        incrementBy(10)
+        incrementBy(5)
+
+        expect(spy).toHaveBeenCalledWith(10)
+        expect(incrementBySpy).toHaveBeenCalledWith(5)
+      })
+
+      it('can be mocked twice', () => {
+        const { incrementBy } = createMutations({
+          incrementBy: (c, amount: number) => c + amount,
+        })
+
+        const spy = incrementBy.mock(jest.fn(), 2)
+
+        incrementBy(10)
+        incrementBy(20)
+        incrementBy(5)
+
+        expect(spy).toHaveBeenCalledWith(10)
+        expect(spy).toHaveBeenCalledWith(20)
+        expect(incrementBySpy).toHaveBeenCalledWith(5)
+      })
+
       describe('mocks', () => {
         it('can be removed', () => {
           const { incrementBy } = createMutations({
