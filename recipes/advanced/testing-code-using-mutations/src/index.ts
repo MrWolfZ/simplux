@@ -3,7 +3,11 @@
 
 import { addTodo } from './todos'
 
-document.addEventListener('DOMContentLoaded', setupEventHandler)
+if (document.getElementById('addItemBtn')) {
+  setupEventHandler()
+} else {
+  document.addEventListener('DOMContentLoaded', setupEventHandler)
+}
 
 export function setupEventHandler() {
   document.getElementById('addItemBtn')!.addEventListener('click', () => {
