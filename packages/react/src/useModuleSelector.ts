@@ -12,10 +12,14 @@ export type SimpluxModuleSelectorHook<TState> = <TResult>(
 // @ts-ignore
 export interface SimpluxModuleSelectorHookExtras<TState> {}
 
+export type SimpluxModuleSelectorHookWithExtras<
+  TState
+> = SimpluxModuleSelectorHook<TState> & SimpluxModuleSelectorHookExtras<TState>
+
 export function createSelectorHook<TState>(
   getModuleState: () => TState,
   subscribeToModuleStateChanges: SubscribeToStateChanges<TState>,
-): SimpluxModuleSelectorHook<TState> & SimpluxModuleSelectorHookExtras<TState> {
+): SimpluxModuleSelectorHookWithExtras<TState> {
   const subscribe = createBatchedSubscribeFunction(
     subscribeToModuleStateChanges,
   )

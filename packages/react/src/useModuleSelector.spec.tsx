@@ -1,7 +1,7 @@
 import { default as React, useCallback, useReducer } from 'react'
 import { act as actHook, renderHook } from 'react-hooks-testing-library'
 import { act, render } from 'react-testing-library'
-import { useModuleSelector } from './useModuleSelector'
+import { createSelectorHook, useModuleSelector } from './useModuleSelector'
 import { getWindow } from './window'
 
 jest.mock('./window', () => ({
@@ -249,6 +249,21 @@ describe(useModuleSelector.name, () => {
       expect(() =>
         renderHook(() => useSelector(s => s.count)),
       ).not.toThrowError()
+    })
+  })
+
+  describe('hook factory', () => {
+    it('works', () => {
+      moduleState = { count: 10 }
+
+      const useSelector = createSelectorHook(
+        getModuleStateMock,
+        subscribeToModuleStateChangesMock,
+      )
+
+      const { result } = renderHook(() => useSelector(s => s.count))
+
+      expect(result.current).toBe(10)
     })
   })
 })
