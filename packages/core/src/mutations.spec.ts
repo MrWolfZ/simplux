@@ -241,6 +241,24 @@ describe('mutations', () => {
         })
       })
 
+      it('ignores event-like arg in first position', () => {
+        const { increment } = createMutations({
+          increment: c => c + 1,
+        })
+
+        const incrementAny = increment as any
+        incrementAny({
+          target: null,
+          defaultPrevented: null,
+          currentTarget: null,
+        })
+
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: '@simplux/test/mutation/increment',
+          args: [],
+        })
+      })
+
       it('works in environments where Event is not defined', () => {
         const { increment } = createMutations({
           increment: c => c + 1,

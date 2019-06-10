@@ -180,8 +180,6 @@ export function createMutationsFactory<TState>(
   }
 }
 
-declare class Event {}
-
 // a very common use case for mutations in frontend applications is to
 // use them as event handlers for HTML elements like buttons; if the
 // mutation has no arguments and is passed directly as an event handler
@@ -194,20 +192,39 @@ declare class Event {}
 // it is such an edge case and we can just tell people about the work-
 // around when they create a bug report
 function filterEventArgs(args: any[]) {
-  // tslint:disable-next-line: strict-type-predicates
-  if (typeof Event === 'undefined') {
-    return args
-  }
-
   if (args.length === 0) {
     return args
   }
 
-  if (args[0] instanceof Event) {
+  if (isEvent(args[0])) {
     return args.slice(1)
   }
 
   return args
+}
+
+declare class Event {}
+
+function isEvent(arg: any) {
+  // tslint:disable-next-line: strict-type-predicates
+  if (typeof Event !== 'undefined' && arg instanceof Event) {
+    return true
+  }
+
+  // check if it looks like an event
+  if (
+    hasProp(arg, 'target') &&
+    hasProp(arg, 'currentTarget') &&
+    hasProp(arg, 'defaultPrevented')
+  ) {
+    return true
+  }
+
+  return !arg
+}
+
+function hasProp(arg: any, name: string) {
+  return Object.prototype.hasOwnProperty.call(arg, name)
 }
 
 export interface SimpluxModuleMutationExtensions<TState> {
