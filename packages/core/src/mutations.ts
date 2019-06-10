@@ -146,10 +146,14 @@ export function createMutationsFactory<TState>(
 
     const resolvedMutations = Object.keys(mutations).reduce(
       (acc, mutationName: keyof TMutations) => {
-        const createAction = (...args: any[]) => ({
-          type: `${mutationPrefix(moduleName)}${mutationName}`,
-          args,
-        })
+        const createAction = (...allArgs: any[]) => {
+          const args = filterEventArgs(allArgs)
+
+          return {
+            type: `${mutationPrefix(moduleName)}${mutationName}`,
+            args,
+          }
+        }
 
         const mutation = nameFunction(
           mutationName as string,
@@ -174,6 +178,36 @@ export function createMutationsFactory<TState>(
 
     return resolvedMutations
   }
+}
+
+declare class Event {}
+
+// a very common use case for mutations in frontend applications is to
+// use them as event handlers for HTML elements like buttons; if the
+// mutation has no arguments and is passed directly as an event handler
+// (e.g. in React applications: onClick={myMutation}) it will get the
+// HTML event passed as an argument; we believe that in 99.99999% of
+// all cases where this happens we do not want that arg; therefore, we
+// filter any argument here that looks like an HTML event; if someone
+// needs an event as an arg, they can just wrap it in an object or
+// tuple as a workaround; we are not mentioning this in the docs, since
+// it is such an edge case and we can just tell people about the work-
+// around when they create a bug report
+function filterEventArgs(args: any[]) {
+  // tslint:disable-next-line: strict-type-predicates
+  if (typeof Event === 'undefined') {
+    return args
+  }
+
+  if (args.length === 0) {
+    return args
+  }
+
+  if (args[0] instanceof Event) {
+    return args.slice(1)
+  }
+
+  return args
 }
 
 export interface SimpluxModuleMutationExtensions<TState> {

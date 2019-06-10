@@ -8,6 +8,12 @@ import {
 } from './mutations'
 import { SimpluxStore } from './store'
 
+declare class Event {
+  constructor(arg: any)
+}
+
+declare const window: any
+
 describe('mutations', () => {
   const dispatchMock = jest.fn().mockImplementation(a => a)
   const getStoreStateMock = jest.fn()
@@ -219,6 +225,36 @@ describe('mutations', () => {
         })
 
         expect(increment.name).toBe('increment')
+      })
+
+      it('ignores event arg in first position', () => {
+        const { increment } = createMutations({
+          increment: c => c + 1,
+        })
+
+        const incrementAny = increment as any
+        incrementAny(new Event('my event'))
+
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: '@simplux/test/mutation/increment',
+          args: [],
+        })
+      })
+
+      it('works in environments where Event is not defined', () => {
+        const { increment } = createMutations({
+          increment: c => c + 1,
+        })
+
+        const Evt = window.Event
+        delete window.Event
+        increment()
+        window.Event = Evt
+
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: '@simplux/test/mutation/increment',
+          args: [],
+        })
       })
     })
   })
