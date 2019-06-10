@@ -99,6 +99,18 @@ describe('mutations', () => {
         moduleState = 0
       })
 
+      it('call the original mutation', () => {
+        const { incrementBy } = createMutations({
+          incrementBy: (c, amount: number) => c + amount,
+        })
+
+        incrementBySpy.mockReturnValueOnce(200)
+
+        const incrementByReturnValue = incrementBy(5)
+        expect(incrementBySpy).toHaveBeenCalledWith(5)
+        expect(incrementByReturnValue).toBe(200)
+      })
+
       it('can be mocked', () => {
         const { increment, incrementBy } = createMutations({
           increment: c => c + 1,
