@@ -1,4 +1,4 @@
-# Recipe: composing mutations
+# Recipe: composing my mutations
 
 This recipe shows you how simple it is to compose/re-use your **simplux** mutations.
 
