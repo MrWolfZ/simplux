@@ -22,8 +22,9 @@ async function testChangedFiles() {
     let code = 0;
     for (const packageName of packageNames) {
         const changedFiles = stagedFilePaths
-            .filter(f => f.startsWith(`packages/${packageName}`))
-            .filter(f => !f.endsWith('.md') && !f.endsWith('package.json'));
+            .filter(f => f.startsWith(`packages/${packageName}/`))
+            .filter(f => !f.endsWith('.md') && !f.endsWith('package.json'))
+            .map(f => f.replace(`packages/${packageName}/`, ''));
         code += await runTestsForPackage(packageName, changedFiles);
     }
     process.exit(code);
@@ -33,5 +34,5 @@ async function runTestsForPackage(packageName, changedFiles) {
         return 0;
     }
     shelljs_1.default.echo(`Running tests for ${chalk_1.default.yellow(`${changedFiles.length}`)} changed file(s) of package '${chalk_1.default.cyan(packageName)}'...`);
-    return await util_2.execAsync(`npm run test`, false, `--`, `--scope @simplux/${packageName} --stream=false`, `--`, `--`, `--findRelatedTests --passWithNoTests`, ...changedFiles);
+    return await util_2.execAsync(`npm run test`, false, `--`, `--scope @simplux/${packageName}`, `--stream=false`, `--`, `--`, `--passWithNoTests`, `--findRelatedTests`, ...changedFiles);
 }

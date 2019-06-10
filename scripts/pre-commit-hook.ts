@@ -36,8 +36,9 @@ async function testChangedFiles() {
   let code = 0
   for (const packageName of packageNames) {
     const changedFiles = stagedFilePaths
-      .filter(f => f.startsWith(`packages/${packageName}`))
+      .filter(f => f.startsWith(`packages/${packageName}/`))
       .filter(f => !f.endsWith('.md') && !f.endsWith('package.json'))
+      .map(f => f.replace(`packages/${packageName}/`, ''))
 
     code += await runTestsForPackage(packageName, changedFiles)
   }
@@ -60,10 +61,12 @@ async function runTestsForPackage(packageName: string, changedFiles: string[]) {
     `npm run test`,
     false,
     `--`,
-    `--scope @simplux/${packageName} --stream=false`,
+    `--scope @simplux/${packageName}`,
+    `--stream=false`,
     `--`,
     `--`,
-    `--findRelatedTests --passWithNoTests`,
+    `--passWithNoTests`,
+    `--findRelatedTests`,
     ...changedFiles,
   )
 }
