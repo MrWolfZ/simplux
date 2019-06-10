@@ -55,10 +55,8 @@ export function createMutationsFactoryWithTestingExtras<TState>(
         return mockFn
       }
 
-      resolvedMutations[mutationName].mockOnce = mockFn => {
-        mutationsMocks[mutationName] = { mockFn, remainingCallCount: 1 }
-        return mockFn
-      }
+      resolvedMutations[mutationName].mockOnce = mockFn =>
+        resolvedMutations[mutationName].mock(mockFn, 1)
 
       resolvedMutations[mutationName].removeMock = () => {
         delete mutationsMocks[mutationName]
@@ -78,7 +76,8 @@ export interface ResolvedMutationTestingExtras<TState, TArgs extends any[]> {
    * or until `removeMock` is called.
    *
    * @param mock the mock function to use
-   * @param mock the mock function to use
+   * @param nrOfCalls the nr of times the mutation should be mocked
+   * before the mock is automatically removed
    *
    * @returns the mock function
    */
