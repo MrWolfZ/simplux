@@ -9,7 +9,7 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 Before we start let's install all the packages we need (we assume you already have all packages required for React installed).
 
 ```sh
-npm i @simplux/core @simplux/immer @simplux/react @simplux/selectors redux -S
+npm i @simplux/core @simplux/immer @simplux/react @simplux/selectors redux immer -S
 ```
 
 We also register all extension packages.

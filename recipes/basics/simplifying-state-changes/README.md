@@ -9,7 +9,7 @@ If you are new to **simplux** there is [a recipe](../getting-started#readme) tha
 Before we start let's install all the packages we need.
 
 ```sh
-npm i @simplux/core @simplux/immer redux -S
+npm i @simplux/core @simplux/immer redux immer -S
 ```
 
 We also need to activate the immer extension by importing the package. The immer extension allows us to write our mutations in a "mutable" style (we'll see what that means in a second). It is recommended to place this import in the root file of your application.

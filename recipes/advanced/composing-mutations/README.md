@@ -9,7 +9,7 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 Before we start let's install all the packages we need.
 
 ```sh
-npm i @simplux/core @simplux/immer redux -S
+npm i @simplux/core @simplux/immer redux immer -S
 ```
 
 We are going to use the immer extension for this recipe to make our mutations simpler. If you are unfamiliar with it, the recipe for [simplifying state changes](../../basics/simplifying-state-changes#readme) will tell you everything you need to know.
