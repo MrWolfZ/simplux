@@ -1,5 +1,5 @@
 // this code is part of the simplux recipe "using simplux in my React application":
-// https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/using-in-react-application
+// https://github.com/MrWolfZ/simplux/tree/master/recipes/react/using-in-react-application
 
 import { createSimpluxModule } from '@simplux/core'
 // we import all the simplux extension packages we are going to use
