@@ -4,9 +4,11 @@ import { createSimpluxModule } from '@simplux/core'
 import '@simplux/react'
 import React from 'react'
 import { act as actHook, renderHook } from 'react-hooks-testing-library'
-import { act, fireEvent, render } from 'react-testing-library'
+import { act, cleanup, fireEvent, render } from 'react-testing-library'
 
 describe(`@simplux/react`, () => {
+  afterEach(cleanup)
+
   interface Todo {
     id: string
     description: string

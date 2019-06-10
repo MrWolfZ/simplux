@@ -1,6 +1,6 @@
 import { default as React, useCallback, useReducer } from 'react'
 import { act as actHook, renderHook } from 'react-hooks-testing-library'
-import { act, render } from 'react-testing-library'
+import { act, cleanup, render } from 'react-testing-library'
 import { createSelectorHook, useModuleSelector } from './useModuleSelector'
 import { getWindow } from './window'
 
@@ -36,6 +36,8 @@ describe(useModuleSelector.name, () => {
         selector,
       )
   })
+
+  afterEach(cleanup)
 
   describe('core subscription behavior', () => {
     it('selects the module state on initial render', () => {
