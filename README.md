@@ -30,6 +30,7 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 - [using **simplux** in my application that already uses Redux](recipes/advanced/using-in-redux-application#readme)
 - [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme)
 - [testing my code that uses mutations](recipes/advanced/testing-code-using-mutations#readme) (work-in-progress)
+- [testing my code that uses async tasks](recipes/advanced/testing-code-using-async#readme) (work-in-progress)
 - [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme) (work-in-progress)
 - [organizing my application state](recipes/advanced/organizing-application-state#readme) (work-in-progress)
 - [composing mutations](recipes/advanced/composing-mutations#readme)
@@ -42,7 +43,7 @@ Here are some recipes that will show you how **simplux** can make life simple fo
 
 - [using **simplux** in my React application](recipes/react/using-in-react-application#readme)
 - [testing my components that read and change state](recipes/react/testing-components-using-state#readme) (work-in-progress)
-- [testing my components that trigger async work](recipes/react/testing-components-using-async#readme) (work-in-progress)
+- [testing my components that trigger async tasks](recipes/react/testing-components-using-async#readme) (work-in-progress)
 - [using **simplux** with React Redux](recipes/react/using-with-react-redux#readme) (work-in-progress)
 - [using lazy loaded components/code splitting](recipes/react/using-lazy-loading-code-splitting#readme) (work-in-progress)
 - [using hot module reloading (HMR)](recipes/react/using-hot-module-reloading#readme) (work-in-progress)
