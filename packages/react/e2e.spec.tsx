@@ -1,15 +1,10 @@
 // this file contains an end-to-end test for the public API
 
-import {
-  createSimpluxModule,
-  getSimpluxReducer,
-  setReduxStoreForSimplux,
-} from '@simplux/core'
+import { createSimpluxModule } from '@simplux/core'
 import '@simplux/react'
 import React from 'react'
 import { act as actHook, renderHook } from 'react-hooks-testing-library'
-import { act, render } from 'react-testing-library'
-import { createStore } from 'redux'
+import { act, fireEvent, render } from 'react-testing-library'
 
 describe(`@simplux/react`, () => {
   interface Todo {
@@ -72,11 +67,6 @@ describe(`@simplux/react`, () => {
       },
     })
 
-    const cleanup = setReduxStoreForSimplux(
-      createStore(getSimpluxReducer()),
-      s => s,
-    )
-
     // tslint:disable-next-line: no-unnecessary-callback-wrapper
     const { result: state } = renderHook(() => useSelector(s => s))
     const { result: todoIds } = renderHook(() =>
@@ -105,8 +95,6 @@ describe(`@simplux/react`, () => {
     expect(state.current).toEqual(todoStoreWithOneTodo)
     expect(todoIds.current).toEqual(todoStoreWithOneTodo.todoIds)
     expect(nrOfTodos.current).toBe(1)
-
-    cleanup()
   })
 
   it('uses batching for notifying subscribers', () => {
@@ -138,11 +126,6 @@ describe(`@simplux/react`, () => {
       return <div>{result}</div>
     }
 
-    const cleanup = setReduxStoreForSimplux(
-      createStore(getSimpluxReducer()),
-      s => s,
-    )
-
     render(<Parent />)
 
     act(() => {
@@ -161,8 +144,38 @@ describe(`@simplux/react`, () => {
     increment()
 
     spy.mockRestore()
-    cleanup()
 
     expect(renderedItems).toEqual([10, 20, 12, 22, 13, 23, 14, 24])
+  })
+
+  it('ignores event arg for mutation', () => {
+    const { createMutations } = createSimpluxModule({
+      name: 'ignoreEventArg',
+      initialState: 0,
+    })
+
+    const incrementSpy = jest.fn()
+
+    const { increment } = createMutations({
+      increment: incrementSpy,
+    })
+
+    const Comp = () => {
+      return (
+        <div>
+          <button id='btn' onClick={increment} />
+        </div>
+      )
+    }
+
+    const { container } = render(<Comp />)
+
+    const button = container.querySelector('#btn')!
+
+    act(() => {
+      fireEvent.click(button)
+    })
+
+    expect(incrementSpy).toHaveBeenCalledWith(0)
   })
 })
