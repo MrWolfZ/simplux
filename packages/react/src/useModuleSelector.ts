@@ -1,15 +1,32 @@
 import { SubscribeToStateChanges } from '@simplux/core'
 import { useEffect, useLayoutEffect, useReducer, useRef } from 'react'
+import { createBatchedSubscribeFunction } from './subscriptions'
 import { getWindow } from './window'
 
-function getEffectHook() {
-  // React currently throws a warning when using useLayoutEffect on the server.
-  // To get around it, we can conditionally useEffect on the server (no-op) and
-  // useLayoutEffect in the browser. We need useLayoutEffect to ensure the store
-  // subscription callback always has the selector from the latest render commit
-  // available, otherwise a store update may happen between render and the effect,
-  // which may cause missed updates
-  return typeof getWindow() !== 'undefined' ? useLayoutEffect : useEffect
+export type SimpluxModuleSelectorHook<TState> = <TResult>(
+  selector: (state: TState) => TResult,
+) => TResult
+
+// this interface only exists to allow other extensions to add
+// functionality to the selector hook
+// @ts-ignore
+export interface SimpluxModuleSelectorHookExtras<TState> {}
+
+export function createSelectorHook<TState>(
+  getModuleState: () => TState,
+  subscribeToModuleStateChanges: SubscribeToStateChanges<TState>,
+): SimpluxModuleSelectorHook<TState> & SimpluxModuleSelectorHookExtras<TState> {
+  const subscribe = createBatchedSubscribeFunction(
+    subscribeToModuleStateChanges,
+  )
+
+  return <TResult = TState>(selector: (state: TState) => TResult) => {
+    return useModuleSelector<TState, TResult>(
+      getModuleState,
+      subscribe,
+      selector,
+    )
+  }
 }
 
 export function useModuleSelector<TState, TSelected>(
@@ -56,4 +73,14 @@ export function useModuleSelector<TState, TSelected>(
   }, [])
 
   return selectedState
+}
+
+function getEffectHook() {
+  // React currently throws a warning when using useLayoutEffect on the server.
+  // To get around it, we can conditionally useEffect on the server (no-op) and
+  // useLayoutEffect in the browser. We need useLayoutEffect to ensure the store
+  // subscription callback always has the selector from the latest render commit
+  // available, otherwise a store update may happen between render and the effect,
+  // which may cause missed updates
+  return typeof getWindow() !== 'undefined' ? useLayoutEffect : useEffect
 }
