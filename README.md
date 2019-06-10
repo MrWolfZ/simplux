@@ -75,8 +75,10 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 ## Open points
 
 - selectors: add memoization (also mention this briefly in the "derived state" recipe)
-- react: add testing package that allows mocking the module state for `useSelector`
 - react: verify package works with react-native
+- react: add tests that verify HMR works
+- react: add tests that verify server-side rendering works
+- angular: create package for using in Angular application
 - async: create package for performing async tasks for a module
 - async: add testing package that allows mocking async tasks
 - async: support cancelling tasks
@@ -87,10 +89,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - entities: allow creating custom mutations that act on one entity
 - entities: create default set of selectors for entities
 - docs: create website
-- add dtslint tests
-- add tests that verify HMR works with React
-- add tests that verify server-side rendering works with React
-- angular: create package for angular service
+- add dtslint tests for all packages
 
 ## Contributing
 
