@@ -1,10 +1,12 @@
-// this code is part of the simplux recipe "testing state changes":
-// https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/testing-state-changes
+// this code is part of the simplux recipe "testing my code that uses mutations":
+// https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/testing-code-using-mutations
 
-// usually importing the core-testing extension once globally in
-// your test setup code is sufficient; this import is just here
-// since code sandbox does not use our custom setup file
-import '@simplux/core-testing'
+import {
+  mockMutation,
+  mockMutationOnce,
+  removeAllMutationMocks,
+  removeMutationMock,
+} from '@simplux/core-testing'
 import { addNewTodoItem } from './index'
 import { addTodo, getTodos, Todo } from './todos'
 
@@ -22,7 +24,7 @@ describe('adding new todo items', () => {
   // executing the mutation; this is where the core-testing
   // extension comes into play; it allows us to mock a mutation
   it('generates a 4 character ID', () => {
-    const addTodoSpy = addTodo.mock(jest.fn())
+    const addTodoSpy = mockMutation(addTodo, jest.fn())
 
     addNewTodoItem('test item')
 
@@ -33,7 +35,11 @@ describe('adding new todo items', () => {
   // if we mock our mutations indefinitely, we need to make sure that
   // we remove them after each test
   afterEach(() => {
-    addTodo.removeMock()
+    // we can remove the mock for a single mutation
+    removeMutationMock(addTodo)
+
+    // alternatively we can also just remove all mocks
+    removeAllMutationMocks()
   })
 
   // for your convenience it is also possible to mock a mutation
@@ -43,7 +49,7 @@ describe('adding new todo items', () => {
     // invocation (the mock function also allows specifying a
     // number of times the mutation should be mocked if you need
     // it more than once)
-    const addTodoSpy = addTodo.mockOnce(jest.fn())
+    const addTodoSpy = mockMutationOnce(addTodo, jest.fn())
 
     const description = 'test item (mocked)'
     addNewTodoItem(description)

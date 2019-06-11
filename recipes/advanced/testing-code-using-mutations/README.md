@@ -77,8 +77,10 @@ it('uses the value as description', () => {
 However, usually it is better to test only your code without executing the mutation. This is where the core-testing extension comes into play. It allows us to mock a mutation.
 
 ```ts
+import { mockMutation } from '@simplux/core-testing'
+
 it('generates a 4 character ID', () => {
-  const addTodoSpy = addTodo.mock(jest.fn())
+  const addTodoSpy = mockMutation(addTodo, jest.fn())
 
   addNewTodoItem('test item')
 
@@ -90,17 +92,28 @@ it('generates a 4 character ID', () => {
 The code above indefinitely mocks the mutation. It is recommended to remove the mock after each test and create a new mock in each test.
 
 ```ts
+import {
+  removeMutationMock,
+  removeAllMutationMocks,
+} from '@simplux/core-testing'
+
 afterEach(() => {
-  addTodo.removeMock()
+  // we can remove the mock for a single mutation
+  removeMutationMock(addTodo)
+
+  // alternatively we can also just remove all mocks
+  removeAllMutationMocks()
 })
 ```
 
 Since this a bit cumbersome to do for every test and mutation, the `mock` function allows specifying the number of times the mutation should be mocked before the mock is automatically removed. Since it is such a common scenario to mock a mutation just once there is also an explicit `mockOnce` function that only mocks the next invocation of the mutation.
 
 ```ts
+import { mockMutationOnce } from '@simplux/core-testing'
+
 it('uses the value as description (mocked once)', () => {
-  // alternatively, addTodo.mock(jest.fn(), 1)
-  const addTodoSpy = addTodo.mockOnce(jest.fn())
+  const addTodoSpy = mockMutationOnce(addTodo, jest.fn())
+  // alternatively, mockMutation(addTodo, jest.fn(), 1)
 
   const description = 'test item (mocked)'
   addNewTodoItem(description)
@@ -109,7 +122,7 @@ it('uses the value as description (mocked once)', () => {
     expect.objectContaining({ description }),
   )
 
-  // all calls afterwards will use the original mutation
+  // all calls after the first will use the original mutation
   const id = addNewTodoItem('test item')
   expect(getTodos()[id].description).toBe('test item')
 })
