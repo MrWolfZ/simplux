@@ -19,24 +19,24 @@ describe(Counter.name, () => {
     expect(getByText(/value:\s*10/g)).toBeDefined()
   })
 
-  it('displays the value (mocked)', () => {
+  it('displays the value times two (mocked)', () => {
     useCounter.mockState({ value: 20 })
 
     const { getByText } = render(<Counter />)
 
-    expect(getByText(/value:\s*20/g)).toBeDefined()
+    expect(getByText(/value \* 2:\s*40/g)).toBeDefined()
   })
 
   afterEach(() => {
     useCounter.removeMockState()
   })
 
-  it('displays the value times two (mocked during render)', () => {
-    useCounter.mockStateForNextRender({ value: 33 })
+  it('displays the value times five (mocked during render)', () => {
+    useCounter.mockStateForNextRender({ value: 30 })
 
     const { getByText } = render(<Counter />)
 
-    expect(getByText(/value \* 2:\s*66/g)).toBeDefined()
+    expect(getByText(/value \* 5:\s*150/g)).toBeDefined()
   })
 
   it('triggers an increment when the "Increment" button is clicked', () => {

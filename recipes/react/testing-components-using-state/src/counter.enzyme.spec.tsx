@@ -18,11 +18,11 @@ describe(Counter.name, () => {
     expect(wrapper.contains(expected)).toBe(true)
   })
 
-  it('displays the value (mocked)', () => {
+  it('displays the value times two (mocked)', () => {
     useCounter.mockState({ value: 20 })
 
     const wrapper = shallow(<Counter />)
-    const expected = <span>value: 20</span>
+    const expected = <span>value * 2: 40</span>
 
     expect(wrapper.contains(expected)).toBe(true)
   })
@@ -31,11 +31,11 @@ describe(Counter.name, () => {
     useCounter.removeMockState()
   })
 
-  it('displays the value times two (mocked during render)', () => {
-    useCounter.mockStateForNextRender({ value: 33 })
+  it('displays the value times five (mocked during render)', () => {
+    useCounter.mockStateForNextRender({ value: 30 })
 
     const wrapper = shallow(<Counter />)
-    const expected = <span>value * 2: 66</span>
+    const expected = <span>value * 5: 150</span>
 
     expect(wrapper.contains(expected)).toBe(true)
   })

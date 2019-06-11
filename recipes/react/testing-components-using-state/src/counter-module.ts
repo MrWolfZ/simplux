@@ -29,6 +29,9 @@ export const { increment, incrementBy } = createMutations({
   },
 })
 
-export const { selectCounterValue } = createSelectors({
+export const { selectCounterValue, selectCounterValueTimes } = createSelectors({
   selectCounterValue: ({ value }) => value,
+
+  selectCounterValueTimes: ({ value }, multiplier: number) =>
+    value * multiplier,
 })
