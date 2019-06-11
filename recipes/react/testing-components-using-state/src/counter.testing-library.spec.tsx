@@ -1,3 +1,9 @@
+import { mockMutationOnce } from '@simplux/core-testing'
+import {
+  mockSelectorHookState,
+  mockSelectorHookStateForNextRender,
+  removeSelectorHookMockState,
+} from '@simplux/react-testing'
 import { cleanup, fireEvent, render } from '@testing-library/react'
 import React from 'react'
 import { Counter } from './counter'
@@ -20,7 +26,7 @@ describe(Counter.name, () => {
   })
 
   it('displays the value times two (mocked)', () => {
-    useCounter.mockState({ value: 20 })
+    mockSelectorHookState(useCounter, { value: 20 })
 
     const { getByText } = render(<Counter />)
 
@@ -28,11 +34,11 @@ describe(Counter.name, () => {
   })
 
   afterEach(() => {
-    useCounter.removeMockState()
+    removeSelectorHookMockState(useCounter)
   })
 
   it('displays the value times five (mocked during render)', () => {
-    useCounter.mockStateForNextRender({ value: 30 })
+    mockSelectorHookStateForNextRender(useCounter, { value: 30 })
 
     const { getByText } = render(<Counter />)
 
@@ -50,8 +56,8 @@ describe(Counter.name, () => {
   })
 
   it('triggers an increment by 5 when the "Increment by 5" button is clicked', () => {
-    useCounter.mockStateForNextRender({ value: 10 })
-    const incrementBySpy = incrementBy.mockOnce(jest.fn())
+    mockSelectorHookStateForNextRender(useCounter, { value: 10 })
+    const incrementBySpy = mockMutationOnce(incrementBy, jest.fn())
 
     const { getByText } = render(<Counter />)
 
