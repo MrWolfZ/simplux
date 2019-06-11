@@ -25,14 +25,20 @@ export interface ResolvedSelectorExtras<TState, TArgs extends any[], TReturn> {
    * However, sometimes it is useful to automatically bind the selector to the
    * module's latest state and only provide the additional arguments. This function
    * will do just that.
+   *
+   * @param args the additional arguments for the selector
+   *
+   * @returns the selected value
    */
   withLatestModuleState: (...args: TArgs) => TReturn
 
   /**
-   * By default a selector needs to be provided the module's state and arguments.
-   * However, sometimes it is useful to automatically bind the selector to the
-   * module's latest state and only provide the additional arguments. This function
-   * will do just that.
+   * This function takes only the additional arguments for a selector and returns
+   * a new selector that takes only the state itself as an argument.
+   *
+   * @param args the additional arguments for the selector
+   *
+   * @returns a new selector that takes only the state as an argument
    */
   asFactory: (...args: TArgs) => (state: TState) => TReturn
 }
