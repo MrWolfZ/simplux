@@ -1,7 +1,11 @@
+// this code is part of the simplux recipe "testing my React components that read and change state":
+// https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-components-using-state
+
 import { mockMutationOnce } from '@simplux/core-testing'
 import {
   mockSelectorHookState,
   mockSelectorHookStateForNextRender,
+  removeAllSelectorHookMockStates,
   removeSelectorHookMockState,
 } from '@simplux/react-testing'
 import { shallow } from 'enzyme'
@@ -35,6 +39,8 @@ describe(Counter.name, () => {
 
   afterEach(() => {
     removeSelectorHookMockState(useCounter)
+
+    removeAllSelectorHookMockStates()
   })
 
   it('displays the value times five (mocked during render)', () => {
