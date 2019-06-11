@@ -37,8 +37,11 @@ const { increment, incrementBy } = createMutations({
   },
 })
 
-const { selectCounterValue } = createSelectors({
+const { selectCounterValue, selectCounterValueTimes } = createSelectors({
   selectCounterValue: ({ value }) => value,
+
+  selectCounterValueTimes: ({ value }, multiplier: number) =>
+    value * multiplier,
 })
 
 // now we can start using our module in our React components
@@ -49,17 +52,24 @@ const Counter = () => {
   // the component is updated whenever the selected value changes
   const value = useSelector(selectCounterValue)
 
-  // we can also use an inline selector
+  // the selector can be defined inline
   const valueTimesTwo = useSelector(s => s.value * 2)
+
+  // and for selectors that take additional arguments we can call it
+  // as a factory to create a new selector for only the state
+  const valueTimesFive = useSelector(selectCounterValueTimes.asFactory(5))
 
   return (
     <>
-      value: {value}
+      <span>value: {value}</span>
       <br />
-      value * 2: {valueTimesTwo}
+      <span>value * 2: {valueTimesTwo}</span>
+      <br />
+      <span>value * 5: {valueTimesFive}</span>
       <br />
       {/* we can use mutations directly as event handlers */}
       <button onClick={increment}>Increment</button>
+      <br />
       {/* we can also use mutations with arguments */}
       <button onClick={() => incrementBy(5)}>Increment by 5</button>
     </>
