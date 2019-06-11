@@ -1,6 +1,6 @@
 {
   "name": "@simplux/react-testing",
-  "version": "0.6.0-alpha.0",
+  "version": "0.6.0-alpha.1",
   "description": "The testing package for simplux's react extension package. Contains various testing utilities.",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
@@ -35,8 +35,8 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/core": "0.6.0-alpha.0",
-    "@simplux/react": "0.6.0-alpha.0"
+    "@simplux/core": "0.6.0-alpha.1",
+    "@simplux/react": "0.6.0-alpha.1"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
