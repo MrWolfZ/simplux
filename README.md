@@ -11,9 +11,9 @@ This repository is a work-in-progress and is not suitable for use in production 
 
 ## Recipes
 
-Here are some recipes that will show you how **simplux** can make life simple for you.
+Instead of traditional documentation **simplux** has these recipes that will show you how it can make life simple for you.
 
-> For every "How do I do X?" you have ever asked yourself, there should be a recipe here. If you find one that is missing, please let us know by creating an issue or even better, provide the recipe as a pull request.
+> For every "How do I do X?" you have ever asked yourself, there should be a recipe here. If you find one that is missing, please let us know by [creating an issue](https://github.com/MrWolfZ/simplux/issues/new) or even better, provide the recipe as a pull request.
 
 ### Basics
 
