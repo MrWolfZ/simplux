@@ -19,7 +19,7 @@ export interface SelectorsBase<TState> {
   [name: string]: SelectorBase<TState, any>
 }
 
-export interface ResolvedSelectorExtras<TArgs extends any[], TReturn> {
+export interface ResolvedSelectorExtras<TState, TArgs extends any[], TReturn> {
   /**
    * By default a selector needs to be provided the module's state and arguments.
    * However, sometimes it is useful to automatically bind the selector to the
@@ -27,6 +27,14 @@ export interface ResolvedSelectorExtras<TArgs extends any[], TReturn> {
    * will do just that.
    */
   withLatestModuleState: (...args: TArgs) => TReturn
+
+  /**
+   * By default a selector needs to be provided the module's state and arguments.
+   * However, sometimes it is useful to automatically bind the selector to the
+   * module's latest state and only provide the additional arguments. This function
+   * will do just that.
+   */
+  asFactory: (...args: TArgs) => (state: TState) => TReturn
 }
 
 export type ResolvedSelector<
@@ -34,7 +42,7 @@ export type ResolvedSelector<
   TSelector extends SelectorBase<TState, ReturnType<TSelector>>
 > = TSelector extends (state: TState, ...args: infer TArgs) => infer TReturn
   ? ((state: TState, ...args: TArgs) => TReturn) &
-      ResolvedSelectorExtras<TArgs, TReturn>
+      ResolvedSelectorExtras<TState, TArgs, TReturn>
   : never
 
 export type ResolvedSelectors<
@@ -91,9 +99,13 @@ export function createSelectorsFactory<TState>(
 
         acc[selectorName] = namedSelector
 
-        acc[selectorName].withLatestModuleState = ((...args: any[]) => {
+        acc[selectorName].withLatestModuleState = (...args: any[]) => {
           return selector(getModuleState(), ...args)
-        }) as ResolvedSelector<TState, TSelectors[typeof selectorName]>
+        }
+
+        acc[selectorName].asFactory = (...args: any[]) => (state: TState) => {
+          return selector(state, ...args)
+        }
 
         return acc
       },

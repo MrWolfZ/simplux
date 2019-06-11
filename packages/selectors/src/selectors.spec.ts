@@ -101,21 +101,38 @@ describe('selectors', () => {
       })
 
       it('selects the state', () => {
-        const { plus, minusOne } = createSelectors({
+        const { plus, plus2, minusOne } = createSelectors({
           plus: (c, amount: number) => c + amount,
+          plus2: (c, arg1: number, arg2: number) => c + arg1 + arg2,
           minusOne: c => c - 1,
         })
 
         expect(plus(10, 5)).toBe(15)
+        expect(plus2(10, 5, 7)).toBe(22)
         expect(minusOne(10)).toBe(9)
       })
 
       it('can be called with bound state', () => {
-        const { plus } = createSelectors({
+        const { plus, plus2 } = createSelectors({
           plus: (c, amount: number) => c + amount,
+          plus2: (c, arg1: number, arg2: number) => c + arg1 + arg2,
         })
 
         expect(plus.withLatestModuleState(5)).toBe(25)
+        expect(plus2.withLatestModuleState(5, 7)).toBe(32)
+      })
+
+      it('can be called as a factory', () => {
+        const { plus, plus2 } = createSelectors({
+          plus: (c, amount: number) => c + amount,
+          plus2: (c, arg1: number, arg2: number) => c + arg1 + arg2,
+        })
+
+        expect(plus.asFactory(5)).toBeInstanceOf(Function)
+        expect(plus.asFactory(5)(20)).toBe(25)
+
+        expect(plus2.asFactory(5, 7)).toBeInstanceOf(Function)
+        expect(plus2.asFactory(5, 7)(20)).toBe(32)
       })
 
       it('can be composed', () => {
