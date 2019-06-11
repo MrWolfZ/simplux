@@ -55,7 +55,7 @@ export function createSelectorHookWithTestingExtras<TState>(
  * Specify a mock state value that should be passed to the selector
  * for a given hook instead of the real module's state value.
  *
- * @param selectorHook the hook to make the state value for
+ * @param selectorHook the hook to mock the state value for
  * @param mockStateValue the mock state value to use
  */
 export function mockSelectorHookState<TState>(
@@ -74,7 +74,7 @@ export function mockSelectorHookState<TState>(
  * The mocked state is automatically removed once the next render
  * in which the hook is used has completed.
  *
- * @param selectorHook the hook to make the state value for
+ * @param selectorHook the hook to mock the state value for
  * @param mockStateValue the mock state value to use
  */
 export function mockSelectorHookStateForNextRender<TState>(
@@ -89,6 +89,8 @@ export function mockSelectorHookStateForNextRender<TState>(
 /**
  * Remove any mock state that may currently be set for a given
  * selector hook. Does nothing if no mock state is set.
+ *
+ * @param selectorHook the hook to remove any mocked state value for
  */
 export function removeSelectorHookMockState<TState>(
   selectorHook: SimpluxModuleSelectorHookWithExtras<TState>,
