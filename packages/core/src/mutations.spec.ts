@@ -227,6 +227,14 @@ describe('mutations', () => {
         expect(increment.name).toBe('increment')
       })
 
+      it('has the type of the mutation', () => {
+        const { increment } = createMutations({
+          increment: c => c,
+        })
+
+        expect(increment.type).toBe('@simplux/test/mutation/increment')
+      })
+
       it('ignores event arg in first position', () => {
         const { increment } = createMutations({
           increment: c => c + 1,

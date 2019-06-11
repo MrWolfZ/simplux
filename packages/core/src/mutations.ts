@@ -32,6 +32,11 @@ export interface MutationsBase<TState> {
 
 export interface ResolvedMutationExtras<TState, TArgs extends any[]> {
   /**
+   * A unique identifier for this type of mutation.
+   */
+  type: string
+
+  /**
    * When a mutation is called directly it updates the module's state.
    * Sometimes (e.g. for testing) it is useful to call the mutation
    * with a given state. In this case no changes are made to the module.
@@ -146,13 +151,11 @@ export function createMutationsFactory<TState>(
 
     const resolvedMutations = Object.keys(mutations).reduce(
       (acc, mutationName: keyof TMutations) => {
+        const type = `${mutationPrefix(moduleName)}${mutationName}`
+
         const createAction = (...allArgs: any[]) => {
           const args = filterEventArgs(allArgs)
-
-          return {
-            type: `${mutationPrefix(moduleName)}${mutationName}`,
-            args,
-          }
+          return { type, args }
         }
 
         const mutation = nameFunction(
@@ -170,6 +173,8 @@ export function createMutationsFactory<TState>(
         }
 
         acc[mutationName].asActionCreator = createAction as any
+
+        acc[mutationName].type = type
 
         return acc
       },
