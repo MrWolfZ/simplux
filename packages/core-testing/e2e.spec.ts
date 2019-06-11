@@ -1,7 +1,12 @@
 // this file contains an end-to-end test for the public API
 
 import { createSimpluxModule } from '@simplux/core'
-import '@simplux/core-testing'
+import {
+  mockMutation,
+  mockMutationOnce,
+  removeAllMutationMocks,
+  removeMutationMock,
+} from '@simplux/core-testing'
 
 describe(`@simplux/selectors`, () => {
   interface Todo {
@@ -44,8 +49,18 @@ describe(`@simplux/selectors`, () => {
       initialState,
     })
 
-    const { addTodo } = createMutations({
+    const { addTodo, addTodo2 } = createMutations({
       addTodo({ todosById, todoIds }, todo: Todo) {
+        return {
+          todosById: {
+            ...todosById,
+            [todo.id]: todo,
+          },
+          todoIds: [...todoIds, todo.id],
+        }
+      },
+
+      addTodo2({ todosById, todoIds }, todo: Todo) {
         return {
           todosById: {
             ...todosById,
@@ -56,19 +71,42 @@ describe(`@simplux/selectors`, () => {
       },
     })
 
-    let addTodoSpy = addTodo.mock(jest.fn().mockReturnValue(todoStoreWithTodo1))
+    let addTodoSpy = mockMutation(
+      addTodo,
+      jest.fn().mockReturnValue(todoStoreWithTodo1),
+    )
 
     let mockedReturnValue = addTodo(todo2)
     expect(addTodoSpy).toHaveBeenCalled()
     expect(mockedReturnValue).toBe(todoStoreWithTodo1)
 
-    addTodo.removeMock()
+    removeMutationMock(addTodo)
 
-    addTodoSpy = addTodo.mockOnce(jest.fn().mockReturnValue(todoStoreWithTodo2))
+    addTodoSpy = mockMutationOnce(
+      addTodo,
+      jest.fn().mockReturnValue(todoStoreWithTodo2),
+    )
 
     mockedReturnValue = addTodo(todo1)
     expect(addTodoSpy).toHaveBeenCalled()
     expect(mockedReturnValue).toBe(todoStoreWithTodo2)
+
+    addTodoSpy = mockMutation(
+      addTodo,
+      jest.fn().mockReturnValue(todoStoreWithTodo1),
+    )
+
+    const addTodo2Spy = mockMutation(
+      addTodo2,
+      jest.fn().mockReturnValue(todoStoreWithTodo2),
+    )
+
+    addTodo(todo2)
+    addTodo2(todo1)
+    expect(addTodoSpy).toHaveBeenCalled()
+    expect(addTodo2Spy).toHaveBeenCalled()
+
+    removeAllMutationMocks()
 
     expect(addTodo(todo1)).toEqual(todoStoreWithTodo1)
     expect(addTodo(todo2)).toEqual(todoStoreWithBothTodos)

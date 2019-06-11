@@ -5,8 +5,11 @@ import {
 } from '@simplux/core'
 import {
   createMutationsFactoryWithTestingExtras,
-  MutationsMocks,
+  mockMutation,
+  mockMutationOnce,
   mutationsTestingModuleExtension,
+  removeAllMutationMocks,
+  removeMutationMock,
 } from './mutations'
 
 describe('mutations', () => {
@@ -44,21 +47,6 @@ describe('mutations', () => {
   })
 
   describe(`module extension`, () => {
-    it('adds the mutation state container', () => {
-      const c: any = {}
-      mutationsTestingModuleExtension<number>(
-        {
-          name: 'test',
-          initialState: 0,
-        },
-        storeMock,
-        moduleMock,
-        c,
-      )
-
-      expect(c.mutationsMocks.test).toEqual({})
-    })
-
     it('returns an object with the factory function', () => {
       const value = mutationsTestingModuleExtension<number>(
         {
@@ -75,24 +63,29 @@ describe('mutations', () => {
   })
 
   describe(`factory`, () => {
-    let moduleMutationsMocks: MutationsMocks
     let createMutations: MutationsFactory<number>
+    let incrementSpy: jest.Mock
     let incrementBySpy: jest.Mock
 
     beforeEach(() => {
-      moduleMutationsMocks = {}
-
+      incrementSpy = jest.fn()
       incrementBySpy = jest.fn()
+
+      {
+        (incrementSpy as any).type = 'incrementSpy'
+        ; (incrementBySpy as any).type = 'incrementBySpy'
+      }
 
       createMutations = createMutationsFactoryWithTestingExtras<number>(
         () =>
           ({
-            increment: () => 100,
+            increment: incrementSpy,
             incrementBy: incrementBySpy,
           } as any),
-        moduleMutationsMocks,
       )
     })
+
+    afterEach(removeAllMutationMocks)
 
     describe(`returned mutations`, () => {
       beforeEach(() => {
@@ -117,8 +110,12 @@ describe('mutations', () => {
           incrementBy: (c, amount: number) => c + amount,
         })
 
-        const incrementSpy = increment.mock(jest.fn().mockReturnValue(10))
-        incrementBySpy = incrementBy.mock(jest.fn().mockReturnValue(20))
+        incrementSpy = mockMutation(increment, jest.fn().mockReturnValue(10))
+
+        incrementBySpy = mockMutation(
+          incrementBy,
+          jest.fn().mockReturnValue(20),
+        )
 
         const incrementReturnValue = increment()
         expect(incrementSpy).toHaveBeenCalled()
@@ -134,7 +131,7 @@ describe('mutations', () => {
           incrementBy: (c, amount: number) => c + amount,
         })
 
-        const spy = incrementBy.mockOnce(jest.fn())
+        const spy = mockMutationOnce(incrementBy, jest.fn())
 
         incrementBy(10)
         incrementBy(5)
@@ -148,7 +145,7 @@ describe('mutations', () => {
           incrementBy: (c, amount: number) => c + amount,
         })
 
-        const spy = incrementBy.mock(jest.fn(), 2)
+        const spy = mockMutation(incrementBy, jest.fn(), 2)
 
         incrementBy(10)
         incrementBy(20)
@@ -165,13 +162,38 @@ describe('mutations', () => {
             incrementBy: (c, amount: number) => c + amount,
           })
 
-          const spy = incrementBy.mock(jest.fn())
+          const spy = mockMutation(incrementBy, jest.fn())
 
-          incrementBy.removeMock()
+          incrementBy(10)
+
+          removeMutationMock(incrementBy)
 
           incrementBy(5)
           expect(incrementBySpy).toHaveBeenCalledWith(5)
-          expect(spy).not.toHaveBeenCalled()
+          expect(spy).toHaveBeenCalledTimes(1)
+        })
+
+        it('can be removed all at once', () => {
+          const { increment, incrementBy } = createMutations({
+            increment: c => c + 1,
+            incrementBy: (c, amount: number) => c + amount,
+          })
+
+          const spy1 = mockMutation(increment, jest.fn())
+          const spy2 = mockMutation(incrementBy, jest.fn())
+
+          increment()
+          incrementBy(10)
+
+          removeAllMutationMocks()
+
+          increment()
+          incrementBy(5)
+
+          expect(incrementSpy).toHaveBeenCalled()
+          expect(incrementBySpy).toHaveBeenCalledWith(5)
+          expect(spy1).toHaveBeenCalledTimes(1)
+          expect(spy2).toHaveBeenCalledTimes(1)
         })
       })
     })
