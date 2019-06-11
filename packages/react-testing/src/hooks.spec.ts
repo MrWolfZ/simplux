@@ -54,21 +54,7 @@ describe('hooks', () => {
       expect(value.react).toBeDefined()
       expect(value.react.hooks).toBeDefined()
       expect(value.react.hooks.useSelector).toBeDefined()
-    })
-
-    it('adds the mutation state container', () => {
-      const c: any = {}
-      reactHooksTestingModuleExtension<number>(
-        {
-          name: 'test',
-          initialState: 0,
-        },
-        storeMock,
-        moduleMock,
-        c,
-      )
-
-      expect(c.reactHooksMocks.test).toEqual({ selectorHook: {} })
+      expect(value.react.hooks.useSelector).toBeInstanceOf(Function)
     })
   })
 })

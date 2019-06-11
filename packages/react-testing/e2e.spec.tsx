@@ -2,7 +2,12 @@
 
 import { createSimpluxModule } from '@simplux/core'
 import '@simplux/react'
-import '@simplux/react-testing'
+import {
+  mockSelectorHookState,
+  mockSelectorHookStateForNextRender,
+  removeAllSelectorHookMockStates,
+  removeSelectorHookMockState,
+} from '@simplux/react-testing'
 import { default as React, useCallback } from 'react'
 import { cleanup, render } from 'react-testing-library'
 
@@ -33,19 +38,64 @@ describe(`@simplux/selectors`, () => {
       return <div />
     }
 
-    useSelector.mockState({ count: 10 })
+    mockSelectorHookState(useSelector, { count: 10 })
 
     render(<Comp />)
     render(<Comp />)
 
-    useSelector.removeMockState()
+    removeSelectorHookMockState(useSelector)
 
-    useSelector.mockStateForNextRender({ count: 20 })
+    mockSelectorHookStateForNextRender(useSelector, { count: 20 })
 
     render(<Comp />)
 
     render(<Comp />)
 
     expect(renderedItems).toEqual([11, 11, 21, 1])
+  })
+
+  it('works for multiple hooks', () => {
+    const {
+      react: {
+        hooks: { useSelector },
+      },
+    } = createSimpluxModule({
+      name: 'todos',
+      initialState: moduleState,
+    })
+
+    const {
+      react: {
+        hooks: { useSelector: useSelector2 },
+      },
+    } = createSimpluxModule({
+      name: 'todos2',
+      initialState: moduleState,
+    })
+
+    const renderedItems: number[] = []
+
+    const Comp = () => {
+      const selector = useCallback(
+        ({ count }: typeof moduleState) => count + 1,
+        [],
+      )
+      const value = useSelector(selector)
+      const value2 = useSelector2(selector)
+      renderedItems.push(value, value2)
+      return <div />
+    }
+
+    mockSelectorHookState(useSelector, { count: 10 })
+    mockSelectorHookState(useSelector2, { count: 20 })
+
+    render(<Comp />)
+    render(<Comp />)
+
+    removeAllSelectorHookMockStates()
+
+    render(<Comp />)
+
+    expect(renderedItems).toEqual([11, 21, 11, 21, 1, 1])
   })
 })

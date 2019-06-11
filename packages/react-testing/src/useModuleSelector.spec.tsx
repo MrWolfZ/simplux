@@ -1,7 +1,13 @@
 import { SimpluxModuleSelectorHookWithExtras } from '@simplux/react'
 import { default as React, useCallback } from 'react'
 import { cleanup, render } from 'react-testing-library'
-import { createSelectorHookWithTestingExtras } from './useModuleSelector'
+import {
+  createSelectorHookWithTestingExtras,
+  mockSelectorHookState,
+  mockSelectorHookStateForNextRender,
+  removeAllSelectorHookMockStates,
+  removeSelectorHookMockState,
+} from './useModuleSelector'
 
 describe(createSelectorHookWithTestingExtras.name, () => {
   const moduleState = { count: 0 }
@@ -15,12 +21,17 @@ describe(createSelectorHookWithTestingExtras.name, () => {
       .mockImplementation(selector => selector(moduleState))
 
     useSelector = createSelectorHookWithTestingExtras(
+      'testingModule',
       originalSelectorHookMock as any,
-      {},
     )
+
+    useSelector.moduleName = 'testingModule'
   })
 
-  afterEach(cleanup)
+  afterEach(() => {
+    cleanup()
+    removeAllSelectorHookMockStates()
+  })
 
   describe('returned selector hook', () => {
     it('calls the original hook', () => {
@@ -55,7 +66,7 @@ describe(createSelectorHookWithTestingExtras.name, () => {
         return <div />
       }
 
-      useSelector.mockState({ count: 10 })
+      mockSelectorHookState(useSelector, { count: 10 })
 
       render(<Comp />)
       render(<Comp />)
@@ -77,7 +88,7 @@ describe(createSelectorHookWithTestingExtras.name, () => {
         return <div />
       }
 
-      useSelector.mockStateForNextRender({ count: 10 })
+      mockSelectorHookStateForNextRender(useSelector, { count: 10 })
 
       render(<Comp />)
 
@@ -109,7 +120,7 @@ describe(createSelectorHookWithTestingExtras.name, () => {
         return <div />
       }
 
-      useSelector.mockStateForNextRender({ count: 10 })
+      mockSelectorHookStateForNextRender(useSelector, { count: 10 })
 
       render(<Parent />)
 
@@ -132,16 +143,53 @@ describe(createSelectorHookWithTestingExtras.name, () => {
           return <div />
         }
 
-        useSelector.mockState({ count: 10 })
+        mockSelectorHookState(useSelector, { count: 10 })
 
         render(<Comp />)
         render(<Comp />)
 
-        useSelector.removeMockState()
+        removeSelectorHookMockState(useSelector)
 
         render(<Comp />)
 
         expect(renderedItems).toEqual([11, 11, 1])
+      })
+
+      it('can be removed all at once', () => {
+        const originalSelectorHookMock2 = jest
+          .fn()
+          .mockImplementation(selector => selector(moduleState))
+
+        const useSelector2 = createSelectorHookWithTestingExtras<
+          typeof moduleState
+        >('testingModule2', originalSelectorHookMock2 as any)
+
+        useSelector2.moduleName = 'testingModule2'
+
+        const renderedItems: number[] = []
+
+        const Comp = () => {
+          const selector = useCallback(
+            ({ count }: typeof moduleState) => count + 1,
+            [],
+          )
+          const value = useSelector(selector)
+          const value2 = useSelector2(selector)
+          renderedItems.push(value, value2)
+          return <div />
+        }
+
+        mockSelectorHookState(useSelector, { count: 10 })
+        mockSelectorHookState(useSelector2, { count: 20 })
+
+        render(<Comp />)
+        render(<Comp />)
+
+        removeAllSelectorHookMockStates()
+
+        render(<Comp />)
+
+        expect(renderedItems).toEqual([11, 21, 11, 21, 1, 1])
       })
     })
   })
