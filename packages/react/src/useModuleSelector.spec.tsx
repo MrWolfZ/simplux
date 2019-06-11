@@ -259,6 +259,7 @@ describe(useModuleSelector.name, () => {
       moduleState = { count: 10 }
 
       const useSelector = createSelectorHook(
+        'testModule',
         getModuleStateMock,
         subscribeToModuleStateChangesMock,
       )
@@ -266,6 +267,18 @@ describe(useModuleSelector.name, () => {
       const { result } = renderHook(() => useSelector(s => s.count))
 
       expect(result.current).toBe(10)
+    })
+
+    it('adds the module name to the hook', () => {
+      const moduleName = 'testModule'
+
+      const useSelector = createSelectorHook(
+        moduleName,
+        getModuleStateMock,
+        subscribeToModuleStateChangesMock,
+      )
+
+      expect(useSelector.moduleName).toBe(moduleName)
     })
   })
 })

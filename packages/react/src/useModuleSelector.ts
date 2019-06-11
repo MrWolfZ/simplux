@@ -7,16 +7,19 @@ export type SimpluxModuleSelectorHook<TState> = <TResult>(
   selector: (state: TState) => TResult,
 ) => TResult
 
-// this interface only exists to allow other extensions to add
-// functionality to the selector hook
-// @ts-ignore
-export interface SimpluxModuleSelectorHookExtras<TState> {}
+export interface SimpluxModuleSelectorHookExtras {
+  /**
+   * The name of the module this hook belongs to
+   */
+  moduleName: string
+}
 
 export type SimpluxModuleSelectorHookWithExtras<
   TState
-> = SimpluxModuleSelectorHook<TState> & SimpluxModuleSelectorHookExtras<TState>
+> = SimpluxModuleSelectorHook<TState> & SimpluxModuleSelectorHookExtras
 
 export function createSelectorHook<TState>(
+  moduleName: string,
   getModuleState: () => TState,
   subscribeToModuleStateChanges: SubscribeToStateChanges<TState>,
 ): SimpluxModuleSelectorHookWithExtras<TState> {
@@ -24,13 +27,21 @@ export function createSelectorHook<TState>(
     subscribeToModuleStateChanges,
   )
 
-  return <TResult = TState>(selector: (state: TState) => TResult) => {
+  const hook = <TResult = TState>(selector: (state: TState) => TResult) => {
     return useModuleSelector<TState, TResult>(
       getModuleState,
       subscribe,
       selector,
     )
   }
+
+  const hookWithExtras = (hook as unknown) as SimpluxModuleSelectorHookWithExtras<
+    TState
+  >
+
+  hookWithExtras.moduleName = moduleName
+
+  return hookWithExtras
 }
 
 export function useModuleSelector<TState, TSelected>(
