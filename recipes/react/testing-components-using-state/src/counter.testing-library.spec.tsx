@@ -38,7 +38,7 @@ describe(Counter.name, () => {
   })
 
   // however, usually it is better to test your component in
-  // isolation without interacting with with the real module;
+  // isolation without interacting with the real module;
   // this is where the react-testing extension comes into play;
   // if you are using the module's selector hook it allows you
   // to mock the state that the hook will use; instead of using

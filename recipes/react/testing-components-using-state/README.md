@@ -102,7 +102,7 @@ it('displays the value', () => {
 })
 ```
 
-However, usually it is better to test your component in isolation without interacting with with the real module. This is where the react-testing extension comes into play. If you are using the module's selector hook (from the react extension) it allows you to mock the state that the hook will use. Instead of using the real module's state the hook will call the selector with the provided mock state.
+However, usually it is better to test your component in isolation without interacting with the real module. This is where the react-testing extension comes into play. If you are using the module's selector hook (from the react extension) it allows you to mock the state that the hook will use. Instead of using the real module's state the hook will call the selector with the provided mock state.
 
 ```tsx
 import { mockSelectorHookState } from '@simplux/react-testing'
@@ -151,7 +151,9 @@ it('displays the value times five (mocked during render)', () => {
 })
 ```
 
-This covers testing components that read a module's state with a selector hook. Now let's look at how we can test components that change the state. Changing the state in **simplux** is done through mutations. There is [a dedicated recipe](../../advanced/testing-code-using-mutations#readme) that shows you how to test your code that uses mutations. However, we will still fully test our `Counter` component here.
+This covers testing components that read a module's state with a selector hook. As you can see it is quite simple.
+
+Now let's look at how we can test components that change the state. Changing the state in **simplux** is done through mutations. There is [a dedicated recipe](../../advanced/testing-code-using-mutations#readme) that shows you how to test your code that uses mutations. However, we will still fully test our `Counter` component here.
 
 As in our first test above, testing your components that change state can be done with the real module by setting the module's state before rendering the component, then triggering the state change, and finally checking the module's state. This is once again more of an integration style of testing that verifies everything works together.
 
