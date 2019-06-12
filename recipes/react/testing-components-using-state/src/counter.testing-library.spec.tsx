@@ -26,8 +26,8 @@ describe(Counter.name, () => {
   afterEach(cleanup)
 
   // one possible way to test your component that reads state
-  // is to test it with the real module by setting its state
-  // before rendering the component; this is more of an
+  // is to test it with the real module by setting the module's
+  // state before rendering the component; this is more of an
   // integration style of testing
   it('displays the value', () => {
     setCounterValue(10)
@@ -42,8 +42,8 @@ describe(Counter.name, () => {
   // this is where the react-testing extension comes into play;
   // if you are using the module's selector hook it allows you
   // to mock the state that the hook will use; instead of using
-  // the real module's state it will call the selector with the
-  // provided mock state
+  // the real module's state the hook will call the selector
+  // with the provided mock state
   it('displays the value times two (mocked)', () => {
     mockSelectorHookState(useCounter, {
       value: 20,
@@ -79,12 +79,12 @@ describe(Counter.name, () => {
     expect(getByText(/value \* 5:\s*150/g)).toBeDefined()
   })
 
-  // testing your components that trigger mutations can also be
+  // testing your components that perform state changes can also be
   // done with the real module by setting the module's state before
-  // rendering, then triggering the mutation, and finally checking
+  // rendering, then triggering the state change, and finally checking
   // the module's state; this is once again more of an integration
   // style of testing
-  it('triggers an increment when the "Increment" button is clicked', () => {
+  it('increments the counter when the "Increment" button is clicked', () => {
     setCounterValue(10)
 
     const { getByText } = render(<Counter />)
@@ -94,11 +94,11 @@ describe(Counter.name, () => {
     expect(getCounterValue()).toBe(11)
   })
 
-  // however, the recommended way to test these components is to mock
-  // the selector hooks state (as we saw above) and to also mock the
+  // however, the recommended way to test these components is to mock the
   // mutation (see the recipe for "testing my code that uses mutations"
   // for more details about this)
   it('triggers an increment by 5 when the "Increment by 5" button is clicked', () => {
+    // it is also a good idea to always mock the module's state
     mockSelectorHookStateForNextRender(useCounter, { value: 10 })
     const incrementBySpy = mockMutationOnce(incrementBy, jest.fn())
 
