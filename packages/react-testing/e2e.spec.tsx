@@ -8,8 +8,8 @@ import {
   removeAllSelectorHookMockStates,
   removeSelectorHookMockState,
 } from '@simplux/react-testing'
+import { cleanup, render } from '@testing-library/react'
 import { default as React, useCallback } from 'react'
-import { cleanup, render } from 'react-testing-library'
 
 describe(`@simplux/selectors`, () => {
   const moduleState = { count: 0 }

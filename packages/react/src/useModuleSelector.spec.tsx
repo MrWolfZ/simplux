@@ -1,6 +1,6 @@
+import { act, cleanup, render } from '@testing-library/react'
 import { default as React, useCallback, useReducer } from 'react'
 import { act as actHook, renderHook } from 'react-hooks-testing-library'
-import { act, cleanup, render } from 'react-testing-library'
 import { createSelectorHook, useModuleSelector } from './useModuleSelector'
 import { getWindow } from './window'
 

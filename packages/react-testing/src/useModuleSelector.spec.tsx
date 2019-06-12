@@ -1,6 +1,6 @@
 import { SimpluxModuleSelectorHookWithExtras } from '@simplux/react'
+import { cleanup, render } from '@testing-library/react'
 import { default as React, useCallback } from 'react'
-import { cleanup, render } from 'react-testing-library'
 import {
   createSelectorHookWithTestingExtras,
   mockSelectorHookState,
