@@ -32,8 +32,9 @@ describe('adding new todo items', () => {
     expect((addTodoSpy.mock.calls[0][0] as Todo).id.length).toBe(4)
   })
 
-  // if we mock our mutations indefinitely, we need to make sure that
-  // we remove them after each test
+  // the mockMutation call above mocks our mutation indefinitely;
+  // therefore we need to make sure that we remove the mock after
+  // each test
   afterEach(() => {
     // we can remove the mock for a single mutation
     removeMutationMock(addTodo)
