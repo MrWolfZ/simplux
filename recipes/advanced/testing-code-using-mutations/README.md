@@ -113,7 +113,6 @@ import { mockMutationOnce } from '@simplux/core-testing'
 
 it('uses the value as description (mocked once)', () => {
   const addTodoSpy = mockMutationOnce(addTodo, jest.fn())
-  // alternatively, mockMutation(addTodo, jest.fn(), 1)
 
   const description = 'test item (mocked)'
   addNewTodoItem(description)

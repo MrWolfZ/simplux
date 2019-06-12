@@ -46,8 +46,8 @@ describe('adding new todo items', () => {
   // just once so that you do not need to actively remove it
   it('uses the value as description (mocked once)', () => {
     // this will only mock the addTodo mutation for the next
-    // invocation (the mock function also allows specifying a
-    // number of times the mutation should be mocked if you need
+    // invocation (the mockMutation function also allows specifying
+    // a number of times the mutation should be mocked if you need
     // it more than once)
     const addTodoSpy = mockMutationOnce(addTodo, jest.fn())
 
