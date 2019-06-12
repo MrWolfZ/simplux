@@ -89,7 +89,7 @@ it('generates a 4 character ID', () => {
 })
 ```
 
-The code above indefinitely mocks the mutation. It is recommended to remove the mock after each test and create a new mock in each test.
+The `mockMutation` call above indefinitely mocks the mutation. It is recommended to remove the mock after each test and create a new mock in each test.
 
 ```ts
 import {
@@ -106,7 +106,7 @@ afterEach(() => {
 })
 ```
 
-Since this a bit cumbersome to do for every test and mutation, the `mockMutation` function allows specifying the number of times the mutation should be mocked before the mock is automatically removed. Since it is such a common scenario to mock a mutation just once there is also an explicit `mockMutationOnce` function that only mocks the next invocation of the mutation.
+Since removing the mocks is a bit cumbersome to do for every test and mutation, the `mockMutation` function allows specifying the number of times the mutation should be mocked before the mock is automatically removed. Since it is such a common scenario to mock a mutation just once there is also an explicit `mockMutationOnce` function that only mocks the next invocation of the mutation.
 
 ```ts
 import { mockMutationOnce } from '@simplux/core-testing'
