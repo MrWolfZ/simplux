@@ -42,7 +42,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 ### React
 
 - [using **simplux** in my React application](recipes/react/using-in-react-application#readme)
-- [testing my components that read and change state](recipes/react/testing-components-using-state#readme) (work-in-progress)
+- [testing my components that read and change state](recipes/react/testing-components-using-state#readme)
 - [testing my components that trigger async tasks](recipes/react/testing-components-using-async#readme) (work-in-progress)
 - [using **simplux** with React Redux](recipes/react/using-with-react-redux#readme) (work-in-progress)
 - [using lazy loaded components/code splitting](recipes/react/using-lazy-loading-code-splitting#readme) (work-in-progress)
