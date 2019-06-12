@@ -106,7 +106,7 @@ afterEach(() => {
 })
 ```
 
-Since this a bit cumbersome to do for every test and mutation, the `mock` function allows specifying the number of times the mutation should be mocked before the mock is automatically removed. Since it is such a common scenario to mock a mutation just once there is also an explicit `mockOnce` function that only mocks the next invocation of the mutation.
+Since this a bit cumbersome to do for every test and mutation, the `mockMutation` function allows specifying the number of times the mutation should be mocked before the mock is automatically removed. Since it is such a common scenario to mock a mutation just once there is also an explicit `mockMutationOnce` function that only mocks the next invocation of the mutation.
 
 ```ts
 import { mockMutationOnce } from '@simplux/core-testing'
