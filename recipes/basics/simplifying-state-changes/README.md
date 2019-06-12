@@ -1,4 +1,4 @@
-# Recipe: simplifying state changes
+# Recipe: simplifying my state changes
 
 This recipe shows you how you can make your state changes simpler with less boilerplate while keeping the benefits of immutability.
 

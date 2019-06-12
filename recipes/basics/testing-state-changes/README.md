@@ -1,4 +1,4 @@
-# Recipe: testing state changes
+# Recipe: testing my state changes
 
 This recipe shows how simple it is to test your state changes with **simplux**.
 

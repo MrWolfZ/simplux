@@ -11,15 +11,15 @@ This repository is a work-in-progress and is not suitable for use in production 
 
 ## Recipes
 
-Instead of traditional documentation **simplux** has these recipes that will show you how it can make life simple for you.
+Instead of traditional documentation **simplux** has these recipes that will show you how it can make life simple for you. Each recipe will help you solve one particular task that you will typically face during development.
 
 > For every "How do I do X?" you have ever asked yourself, there should be a recipe here. If you find one that is missing, please let us know by [creating an issue](https://github.com/MrWolfZ/simplux/issues/new) or even better, provide the recipe as a pull request.
 
 ### Basics
 
 - [getting started](recipes/basics/getting-started#readme)
-- [testing state changes](recipes/basics/testing-state-changes#readme)
-- [simplifying state changes](recipes/basics/simplifying-state-changes#readme)
+- [testing my state changes](recipes/basics/testing-state-changes#readme)
+- [simplifying my state changes](recipes/basics/simplifying-state-changes#readme)
 - [computing derived state](recipes/basics/computing-derived-state#readme)
 - [testing derived state](recipes/basics/testing-derived-state#readme)
 - [performing asynchronous tasks](recipes/basics/performing-async-tasks#readme) (work-in-progress)
@@ -60,13 +60,15 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 
 When discovering this library your first thought may have been: "Are you kidding me, yet another state management library?" That is an absolutely valid thought to have. There are many existing options for managing your state in JavaScript applications. If you are already using one of those and it works for you, then you should probably stick with it. However, **simplux** brings some unique points to the table that make it a worthwhile addition to the state management ecosystem:
 
-- **excellent use-case driven documentation:** a lot of effort went into writing our [recipes](#recipes). While most other libraries have documentation that is centered around explaining _what_ they do, our use-case driven documentation is focused on showing you _how_ **simplux** helps you to solve your concrete tasks. We also provide code sandboxes for every recipe that allow you to interact with the code while reading the recipe, which greatly improves the learning experience.
+- **excellent task-driven documentation:** a lot of effort went into writing our [recipes](#recipes). While most other libraries have documentation that is centered around explaining _what_ they do, our task-driven documentation is focused on showing you _how_ **simplux** helps you to solve your concrete tasks. We also provide code sandboxes for every recipe that allow you to interact with the code while reading the recipe, which greatly improves the learning experience.
 
-- **optimized for TypeScript**: **simplux** is built with and for TypeScript. Sometimes TypeScript code can be a bit verbose. We put a lot of effort into ensuring that the amount of type annotations in your code is minimized by leveraging type inference wherever possible. That said **simplux** can also be used with plain JavaScript, in which case your IDE may still use the TypeScript information to help you due to our bundled typings.
+- **strong focus on testability:** testing is a very important topic that is sadly often neglected. **simplux** takes testability very seriously and makes sure that you know how you can test the code you have written using it (you may have noticed that the recipe immediately after [getting started](recipes/basics/getting-started#readme) already shows you how you can [test the code](recipes/basics/testing-state-changes#readme) from the first recipe).
 
-- **out of the box solutions for many common yet complex use-cases**: Have you ever tried setting up hot module reloading or code splitting with React and Redux? It can be quite tricky. **simplux** aims to solve as many of these complex use-cases by providing zero-configuration out of the box solutions.
+- **optimized for TypeScript:** **simplux** is built with and for TypeScript. Sometimes TypeScript code can be a bit verbose. We put a lot of effort into ensuring that the amount of type annotations in your code is minimized by leveraging type inference wherever possible. That said **simplux** can also be used with plain JavaScript, in which case your IDE may still use the TypeScript information to help you due to our bundled typings.
 
-- **modular and extensible architecture**: Our core package only contains the bare minimum that is required to use **simplux**. All other advanced functionality is added via extension packages. On one hand this allows you to pick and choose what functionality you want to use without paying for anything that you don't. On the other hand it allows adding new extension packages without risk of breaking any existing functionality.
+- **out of the box solutions for many common yet complex use-cases:** Have you ever tried setting up hot module reloading or code splitting with React and Redux? It can be quite tricky. **simplux** aims to solve as many of these complex use-cases by providing zero-configuration out of the box solutions.
+
+- **modular and extensible architecture:** Our core package only contains the bare minimum that is required to use **simplux**. All other advanced functionality is added via extension packages. On one hand this allows you to pick and choose what functionality you want to use without paying for anything that you don't. On the other hand it allows adding new extension packages without risk of breaking any existing functionality.
 
 ## Prior Art
 
