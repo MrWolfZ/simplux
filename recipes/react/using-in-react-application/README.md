@@ -90,10 +90,48 @@ const Counter = () => {
 }
 ```
 
+Finally, if you do want or need your component to be a class component (and therefore cannot use hooks) we recommend that you build a functional wrapper component that uses module selector hooks to select the state your component requires and passes it to your class component as props. Note that mutations can be used directly in class components. Let's have a look at how our counter component would look like as a class component.
+
+```tsx
+interface CounterProps {
+  value: number
+  valueTimesTwo: number
+  valueTimesFive: number
+}
+
+class CounterComponent extends React.Component<CounterProps> {
+  render() {
+    const { value, valueTimesTwo, valueTimesFive } = this.props
+
+    return (
+      <>
+        <span>value: {value}</span>
+        <br />
+        <span>value * 2: {valueTimesTwo}</span>
+        <br />
+        <span>value * 5: {valueTimesFive}</span>
+        <br />
+        {/* mutations can still be used directly */}
+        <button onClick={increment}>Increment</button>
+        <br />
+        <button onClick={() => incrementBy(5)}>Increment by 5</button>
+      </>
+    )
+  }
+}
+
+const CounterWrapper = () => {
+  const value = useSelector(selectCounterValue)
+  const valueTimesTwo = useSelector(s => s.value * 2)
+  const valueTimesFive = useSelector(selectCounterValueTimes.asFactory(5))
+
+  const props = { value, valueTimesTwo, valueTimesFive }
+  return <CounterComponent {...props} />
+}
+```
+
 And that is all you need to use **simplux** in your React application.
 
 We encourage you to also learn about [how to test](../testing-components-using-state#readme) the component that we have just created.
 
 If your application also uses Redux we recommend you take a look at [our recipe](../../advanced/using-in-redux-application#readme) for using **simplux** with a custom Redux store.
-
-If you prefer to use class components instead of functional components, and therefore cannot use hooks, there is [a recipe](../using-with-react-redux#readme) that shows you how to use **simplux** with React Redux.

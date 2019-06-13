@@ -77,3 +77,47 @@ const Counter = () => {
 }
 
 render(<Counter />, document.getElementById('root'))
+
+// finally, if you do want or need your component to be a class
+// component (and therefore cannot use hooks) we recommend that
+// you build a functional wrapper component that uses module
+// selector hooks to select the state your component requires and
+// passes it to your class component as props; note that mutations
+// can be used directly in class components; let's have a look at
+// how our counter component would look like as a class component
+
+interface CounterProps {
+  value: number
+  valueTimesTwo: number
+  valueTimesFive: number
+}
+
+class CounterComponent extends React.Component<CounterProps> {
+  render() {
+    const { value, valueTimesTwo, valueTimesFive } = this.props
+
+    return (
+      <>
+        <span>value: {value}</span>
+        <br />
+        <span>value * 2: {valueTimesTwo}</span>
+        <br />
+        <span>value * 5: {valueTimesFive}</span>
+        <br />
+        {/* mutations can still be used directly */}
+        <button onClick={increment}>Increment</button>
+        <br />
+        <button onClick={() => incrementBy(5)}>Increment by 5</button>
+      </>
+    )
+  }
+}
+
+const CounterWrapper = () => {
+  const value = useSelector(selectCounterValue)
+  const valueTimesTwo = useSelector(s => s.value * 2)
+  const valueTimesFive = useSelector(selectCounterValueTimes.asFactory(5))
+
+  const props = { value, valueTimesTwo, valueTimesFive }
+  return <CounterComponent {...props} />
+}
