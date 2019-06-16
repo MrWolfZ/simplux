@@ -5,7 +5,7 @@ import {
   getSimpluxReducer,
   setReduxStoreForSimplux,
 } from '@simplux/core'
-import '@simplux/selectors'
+import { createSelectors } from '@simplux/selectors'
 import { createStore } from 'redux'
 
 describe(`@simplux/selectors`, () => {
@@ -29,19 +29,19 @@ describe(`@simplux/selectors`, () => {
   }
 
   it('works', () => {
-    const { createSelectors } = createSimpluxModule({
+    const todosModule = createSimpluxModule({
       name: 'todos',
       initialState: todoStoreWithTwoTodos,
     })
 
-    const { nrOfTodos, getTodosWithDoneState } = createSelectors({
+    const { nrOfTodos, getTodosWithDoneState } = createSelectors(todosModule, {
       nrOfTodos: ({ todoIds }) => todoIds.length,
       getTodosWithDoneState({ todoIds, todosById }, isDone: boolean) {
         return todoIds.map(id => todosById[id]).filter(t => t.isDone === isDone)
       },
     })
 
-    const { nrOfTodosTimes2 } = createSelectors({
+    const { nrOfTodosTimes2 } = createSelectors(todosModule, {
       nrOfTodosTimes2: s => nrOfTodos(s) * 2,
     })
 

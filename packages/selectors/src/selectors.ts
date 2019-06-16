@@ -1,4 +1,4 @@
-import { SimpluxModuleExtension } from '@simplux/core'
+import { SimpluxModule, SimpluxModuleInternals } from '@simplux/core'
 
 export type SelectorBase<TState, TReturn> = (
   state: TState,
@@ -56,12 +56,6 @@ export type ResolvedSelectors<
   TSelectors extends SelectorsBase<TState>
 > = { [name in keyof TSelectors]: ResolvedSelector<TState, TSelectors[name]> }
 
-export type SelectorsFactory<TState> = <
-  TSelectors extends SelectorsBase<TState>
->(
-  selectors: TSelectors,
-) => ResolvedSelectors<TState, TSelectors>
-
 // this helper function allows creating a function with a dynamic name
 function nameFunction<T extends (...args: any[]) => any>(
   name: string,
@@ -74,86 +68,79 @@ function nameFunction<T extends (...args: any[]) => any>(
   }[name] as T
 }
 
-export function createSelectorsFactory<TState>(
-  moduleName: string,
-  getModuleState: () => TState,
-  moduleSelectors: SelectorsBase<TState>,
-): SelectorsFactory<TState> {
-  return <TSelectors extends SelectorsBase<TState>>(
-    selectors: TSelectors,
-  ): ResolvedSelectors<TState, TSelectors> => {
-    for (const selectorName of Object.keys(selectors)) {
-      if (moduleSelectors[selectorName]) {
-        throw new Error(
-          `selector '${selectorName}' is already defined for module '${moduleName}'`,
-        )
-      }
+export interface SelectorsExtensionStateContainer<TState> {
+  [moduleName: string]: SelectorsBase<TState>
+}
+
+/**
+ * Create new selectors for the module. A selector is a function
+ * that takes the module state and optionally additional parameters
+ * and returns some selected value.
+ *
+ * The selector must be a pure function. It's result is memoized
+ * by simplux for the latest state and parameters.
+ *
+ * @param simpluxModule the module to create selectors for
+ * @param selectors the selectors to create
+ *
+ * @returns an object that contains a function for each provided
+ * selector which can be called to select the value
+ */
+export function createSelectors<
+  TState,
+  TSelectors extends SelectorsBase<TState>
+>(
+  simpluxModule: SimpluxModule<TState>,
+  selectors: TSelectors,
+): ResolvedSelectors<TState, TSelectors> {
+  const moduleName = simpluxModule.name
+  const {
+    extensionStateContainer,
+  } = (simpluxModule as any) as SimpluxModuleInternals
+
+  const selectorsContainer = (extensionStateContainer.selectors ||
+    {}) as SelectorsExtensionStateContainer<TState>
+
+  extensionStateContainer.selectors = selectorsContainer
+
+  const moduleSelectors = (selectorsContainer[moduleName] =
+    selectorsContainer[moduleName] || {})
+
+  for (const selectorName of Object.keys(selectors)) {
+    if (moduleSelectors[selectorName]) {
+      throw new Error(
+        `selector '${selectorName}' is already defined for module '${moduleName}'`,
+      )
     }
-
-    Object.assign(moduleSelectors, selectors)
-
-    const resolvedSelectors = Object.keys(selectors).reduce(
-      (acc, selectorName: keyof TSelectors) => {
-        const selector = moduleSelectors[selectorName as string]
-
-        const namedSelector = nameFunction(
-          selectorName as string,
-          (state: TState, ...args: any[]) => {
-            return selector(state, ...args)
-          },
-        ) as ResolvedSelector<TState, TSelectors[typeof selectorName]>
-
-        acc[selectorName] = namedSelector
-
-        acc[selectorName].withLatestModuleState = (...args: any[]) => {
-          return selector(getModuleState(), ...args)
-        }
-
-        acc[selectorName].asFactory = (...args: any[]) => (state: TState) => {
-          return selector(state, ...args)
-        }
-
-        return acc
-      },
-      {} as ResolvedSelectors<TState, TSelectors>,
-    )
-
-    return resolvedSelectors
   }
-}
 
-export interface SimpluxModuleSelectorExtensions<TState> {
-  /**
-   * Create new selectors for the module. A selector is a function
-   * that takes the module state and optionally additional parameters
-   * and returns some selected value.
-   *
-   * The selector must be a pure function. It's result is memoized
-   * by simplux for the latest state and parameters.
-   *
-   * @param selectors the selectors to create
-   *
-   * @returns an object that contains a function for each provided
-   * selector which can be called to select the value
-   */
-  createSelectors: SelectorsFactory<TState>
-}
+  Object.assign(moduleSelectors, selectors)
 
-declare module '@simplux/core' {
-  export interface SimpluxModule<TState>
-    extends SimpluxModuleSelectorExtensions<TState> {}
-}
+  const resolvedSelectors = Object.keys(selectors).reduce(
+    (acc, selectorName: keyof TSelectors) => {
+      const getSelector = () => moduleSelectors[selectorName as string]
 
-export const selectorsModuleExtension: SimpluxModuleExtension<
-  SimpluxModuleSelectorExtensions<any>
-> = ({ name }, _, { getState }, moduleExtensionStateContainer) => {
-  moduleExtensionStateContainer.selectors =
-    moduleExtensionStateContainer.selectors || {}
-  const moduleSelectors: SelectorsBase<
-    unknown
-  > = (moduleExtensionStateContainer.selectors[name] =
-    moduleExtensionStateContainer.selectors[name] || {})
-  return {
-    createSelectors: createSelectorsFactory(name, getState, moduleSelectors),
-  }
+      const namedSelector = nameFunction(
+        selectorName as string,
+        (state: TState, ...args: any[]) => {
+          return getSelector()(state, ...args)
+        },
+      ) as ResolvedSelector<TState, TSelectors[typeof selectorName]>
+
+      acc[selectorName] = namedSelector
+
+      acc[selectorName].withLatestModuleState = (...args: any[]) => {
+        return getSelector()(simpluxModule.getState(), ...args)
+      }
+
+      acc[selectorName].asFactory = (...args: any[]) => (state: TState) => {
+        return getSelector()(state, ...args)
+      }
+
+      return acc
+    },
+    {} as ResolvedSelectors<TState, TSelectors>,
+  )
+
+  return resolvedSelectors
 }
