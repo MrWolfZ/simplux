@@ -78,10 +78,12 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 ## Open points
 
 - observe: create package for getting an observable of module state changes
-- core: throw when calling mutation from inside another mutation
+- core-testing: add way to mock `getState`
+- selectors-testing: create testing package to allow mocking state for selectors
 - async: create package for performing async tasks for a module
 - async: add testing package that allows mocking async tasks
 - async: support cancelling tasks
+- core: throw when calling mutation from inside another mutation
 - selectors: add memoization (also mention this briefly in the "derived state" recipe)
 - react: add tests that verify HMR works
 - react: add tests that verify server-side rendering works
