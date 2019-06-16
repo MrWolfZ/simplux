@@ -78,9 +78,10 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- observe: create package for getting an observable of module state changes
 - core-testing: add way to mock `getState`
+- core-testing: add way to mock `subscribeToModuleStateChanges`
 - selectors-testing: create testing package to allow mocking state for selectors
+- observe-testing: create testing package to allow mocking state for observers
 - async: create package for performing async tasks for a module
 - async: add testing package that allows mocking async tasks
 - async: support cancelling tasks
