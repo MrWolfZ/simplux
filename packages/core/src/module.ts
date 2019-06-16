@@ -28,7 +28,8 @@ export interface SimpluxModuleCore<TState> {
 
   /**
    * Register a handler to be called whenever the module's state
-   * changes.
+   * changes. The handler will be called immediately with the module's
+   * current state when subscribing.
    *
    * @param handler the function to call whenever the module's state changes
    *
@@ -88,6 +89,7 @@ export function createModule<TState>(
     handlers.push(handler)
 
     if (handlers.length === 1) {
+      latestModuleState = getModuleState()
       unsubscribe = subscribe(() => {
         const moduleState = getModuleState()
 
@@ -100,6 +102,8 @@ export function createModule<TState>(
         }
       })
     }
+
+    handler(latestModuleState)
 
     return () => {
       const idx = handlers.indexOf(handler)

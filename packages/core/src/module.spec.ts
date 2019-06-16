@@ -212,6 +212,10 @@ describe('module', () => {
         unsubscribe()
       })
 
+      it('calls handler immediately with state', () => {
+        expect(handlerSpy).toHaveBeenCalledWith(initialState)
+      })
+
       it('calls handler whenever the module state changes', () => {
         const replacedState = {
           prop: 'updated',
@@ -227,6 +231,8 @@ describe('module', () => {
           prop: 'updated',
         }
 
+        handlerSpy.mockClear()
+
         setState(replacedState)
         setState(replacedState)
 
@@ -240,11 +246,44 @@ describe('module', () => {
       })
 
       it('unsubscribes the handler when returned callback is called', () => {
+        handlerSpy.mockClear()
+
         setState({ prop: 'updated' })
         unsubscribe()
         setState({ prop: 'updated' })
 
         expect(handlerSpy).toHaveBeenCalledTimes(1)
+      })
+
+      it('calls handler with latest state if subscribing after state has changed', () => {
+        unsubscribe()
+        handlerSpy.mockClear()
+
+        const replacedState = {
+          prop: 'updated',
+        }
+
+        setState(replacedState)
+        unsubscribe = subscribeToStateChanges(handlerSpy)
+
+        expect(handlerSpy).toHaveBeenCalledWith(replacedState)
+      })
+
+      it('calls handler with updated state if subscribing after state has changed', () => {
+        unsubscribe()
+        handlerSpy.mockClear()
+
+        const replacedState = {
+          prop: 'updated',
+        }
+
+        setState(replacedState)
+        unsubscribe = subscribeToStateChanges(handlerSpy)
+        handlerSpy.mockClear()
+
+        setState(initialState)
+
+        expect(handlerSpy).toHaveBeenCalledWith(initialState)
       })
     })
   })
