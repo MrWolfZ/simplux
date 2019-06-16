@@ -71,7 +71,7 @@ export type MutationsFactory<TState> = <
   mutations: TMutations,
 ) => ResolvedMutations<TState, TMutations>
 
-const mutationPrefix = (moduleName: string) =>
+const createMutationPrefix = (moduleName: string) =>
   `@simplux/${moduleName}/mutation/`
 
 const getIsDevelopmentMode = () =>
@@ -82,6 +82,8 @@ export function createModuleReducer<TState>(
   initialState: TState,
   moduleMutations: MutationsBase<TState>,
 ) {
+  const mutationPrefix = createMutationPrefix(moduleName)
+
   return <TAction extends Action<string>>(
     state = initialState,
     action: TAction,
@@ -92,8 +94,8 @@ export function createModuleReducer<TState>(
     // changing the environment
     storeShouldBeFrozenDuringMutations = getIsDevelopmentMode,
   ): TState => {
-    if (action.type.startsWith(mutationPrefix(moduleName))) {
-      const mutationName = action.type.replace(mutationPrefix(moduleName), '')
+    if (action.type.startsWith(mutationPrefix)) {
+      const { mutationName, args } = action as any
       const mutation = moduleMutations[mutationName]
 
       if (!mutation) {
@@ -106,7 +108,7 @@ export function createModuleReducer<TState>(
         state = Object.freeze(state)
       }
 
-      return mutation(state, ...(action as any).args) || state
+      return mutation(state, ...args) || state
     }
 
     if (action.type === `@simplux/${moduleName}/setState`) {
@@ -136,6 +138,8 @@ export function createMutationsFactory<TState>(
   moduleMutations: MutationsBase<TState>,
   getModuleReducer: () => Reducer<TState>,
 ): MutationsFactory<TState> {
+  const mutationPrefix = createMutationPrefix(moduleName)
+
   return <TMutations extends MutationsBase<TState>>(
     mutations: TMutations,
   ): ResolvedMutations<TState, TMutations> => {
@@ -151,11 +155,11 @@ export function createMutationsFactory<TState>(
 
     const resolvedMutations = Object.keys(mutations).reduce(
       (acc, mutationName: keyof TMutations) => {
-        const type = `${mutationPrefix(moduleName)}${mutationName}`
+        const type = `${mutationPrefix}${mutationName}`
 
         const createAction = (...allArgs: any[]) => {
           const args = filterEventArgs(allArgs)
-          return { type, args }
+          return { type, mutationName, args }
         }
 
         const mutation = nameFunction(

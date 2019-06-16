@@ -146,6 +146,7 @@ describe('mutations', () => {
 
         expect(dispatchMock).toHaveBeenCalledWith({
           type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
           args: [],
         })
       })
@@ -159,6 +160,7 @@ describe('mutations', () => {
 
         expect(dispatchMock).toHaveBeenCalledWith({
           type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
           args: ['foo', { nestedArg: true }],
         })
       })
@@ -197,6 +199,7 @@ describe('mutations', () => {
 
         expect(moduleReducerSpy).toHaveBeenCalledWith(10, {
           type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
           args: ['foo', { nestedArg: true }],
         })
       })
@@ -215,6 +218,7 @@ describe('mutations', () => {
         expect(mutationSpy).not.toHaveBeenCalled()
         expect(action).toEqual({
           type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
           args: ['foo', { nestedArg: true }],
         })
       })
@@ -247,6 +251,7 @@ describe('mutations', () => {
 
         expect(dispatchMock).toHaveBeenCalledWith({
           type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
           args: [],
         })
       })
@@ -265,6 +270,7 @@ describe('mutations', () => {
 
         expect(dispatchMock).toHaveBeenCalledWith({
           type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
           args: [],
         })
       })
@@ -281,6 +287,7 @@ describe('mutations', () => {
 
         expect(dispatchMock).toHaveBeenCalledWith({
           type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
           args: [],
         })
       })
@@ -295,6 +302,7 @@ describe('mutations', () => {
     it('updates the state', () => {
       const result = reducer(undefined, {
         type: '@simplux/test/mutation/increment',
+        mutationName: 'increment',
         args: [],
       })
       expect(result).toBe(11)
@@ -304,6 +312,7 @@ describe('mutations', () => {
       expect(() =>
         reducer(undefined, {
           type: '@simplux/test/mutation/doesNotExist',
+          mutationName: 'doesNotExist',
           args: [],
         }),
       ).toThrowError(/does not exist/)
@@ -328,6 +337,7 @@ describe('mutations', () => {
 
       const result = mutatingReducer(undefined, {
         type: '@simplux/test/mutation/update',
+        mutationName: 'update',
         args: [],
       })
       expect(result).toEqual({ test: 'updated' })
@@ -352,6 +362,7 @@ describe('mutations', () => {
           undefined,
           {
             type: '@simplux/test/mutation/update',
+            mutationName: 'update',
             args: [],
           },
           () => true,
