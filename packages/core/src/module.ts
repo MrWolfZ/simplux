@@ -1,4 +1,9 @@
-import { SimpluxStore } from './store'
+import { AnyAction, Reducer } from 'redux'
+import {
+  createModuleReducer,
+  MutationsExtensionStateContainer,
+} from './mutations'
+import { SimpluxStore, simpluxStore } from './store'
 
 export interface SimpluxModuleConfig<TState> {
   name: string
@@ -11,20 +16,59 @@ export type SubscribeToStateChanges<TState> = (
   handler: StateChangeHandler<TState>,
 ) => Unsubscribe
 
-export interface SimpluxModuleCore<TState> {
+/**
+ * @private
+ */
+export interface SimpluxModuleExtensionStateContainer {
+  [extensionName: string]: unknown
+}
+
+/**
+ * @private
+ */
+export interface SimpluxModuleInternals {
+  /**
+   * This object contains the state for all extensions to this module.
+   * This is part of the simplux internal API and should not be accessed
+   * except by simplux extensions.
+   *
+   * @private
+   */
+  readonly extensionStateContainer: SimpluxModuleExtensionStateContainer
+
+  /**
+   * A proxy to the Redux store's dispatch function. This is part of the
+   * simplux internal API and should not be accessed except by simplux
+   * extensions.
+   *
+   * @private
+   */
+  readonly dispatch: (action: AnyAction) => void
+
+  /**
+   * A proxy to the Redux store's dispatch function. This is part of the
+   * simplux internal API and should not be accessed except by simplux
+   * extensions.
+   *
+   * @private
+   */
+  readonly getReducer: () => Reducer
+}
+
+export interface SimpluxModule<TState> {
   /**
    * Get the current module state.
    *
    * @returns the module state
    */
-  getState(): TState
+  readonly getState: () => TState
 
   /**
    * Replace the whole module state.
    *
    * @param state the state to set for the module
    */
-  setState(state: TState): void
+  readonly setState: (state: TState) => void
 
   /**
    * Register a handler to be called whenever the module's state
@@ -35,43 +79,19 @@ export interface SimpluxModuleCore<TState> {
    *
    * @returns an unsubscribe function that will remove the handler
    */
-  subscribeToStateChanges: SubscribeToStateChanges<TState>
-}
+  readonly subscribeToStateChanges: SubscribeToStateChanges<TState>
 
-export interface SimpluxModule<TState> extends SimpluxModuleCore<TState> {}
-
-export type SimpluxModuleExtension<TReturn = object> = <TState>(
-  config: SimpluxModuleConfig<TState>,
-  store: SimpluxStore,
-  moduleCore: SimpluxModuleCore<TState>,
-  moduleExtensionStateContainer: any,
-) => TReturn
-
-export const moduleExtensions: {
-  extension: SimpluxModuleExtension;
-  order: number;
-}[] = []
-
-export function registerModuleExtension(
-  extension: SimpluxModuleExtension,
-  order = 1,
-) {
-  const ext = { extension, order }
-
-  moduleExtensions.push(ext)
-  return () => {
-    const idx = moduleExtensions.indexOf(ext)
-    if (idx >= 0) {
-      moduleExtensions.splice(idx, 1)
-    }
-  }
+  /**
+   * The unique name of the module.
+   */
+  readonly name: string
 }
 
 export function createModule<TState>(
   store: SimpluxStore,
   config: SimpluxModuleConfig<TState>,
 ): SimpluxModule<TState> {
-  const { getState, dispatch, subscribe, setReducer: addReducer } = store
+  const { getState, dispatch, subscribe, setReducer } = store
 
   const getModuleState = () => getState()[config.name]
   const setModuleState = (state: TState) => {
@@ -118,27 +138,31 @@ export function createModule<TState>(
     }
   }
 
-  addReducer(config.name, (s = config.initialState, { type, state }) =>
-    type === `@simplux/${config.name}/setState` ? state : s,
+  const extensionStateContainer: SimpluxModuleExtensionStateContainer = {}
+
+  const mutationsContainer = (extensionStateContainer.mutations ||
+    {}) as MutationsExtensionStateContainer<TState>
+
+  extensionStateContainer.mutations = mutationsContainer
+  mutationsContainer[config.name] = mutationsContainer[config.name] || {}
+
+  const moduleReducer = createModuleReducer(
+    config.name,
+    config.initialState,
+    mutationsContainer[config.name],
   )
 
-  const result: SimpluxModuleCore<TState> = {
+  setReducer(config.name, moduleReducer)
+
+  const result: SimpluxModule<TState> & SimpluxModuleInternals = {
     getState: getModuleState,
     setState: setModuleState,
     subscribeToStateChanges,
+    name: config.name,
+    extensionStateContainer,
+    dispatch,
+    getReducer: () => simpluxStore.getReducer(config.name),
   }
 
-  const moduleExtensionStateContainer = {}
-  const finalModule = moduleExtensions
-    .sort((l, r) => l.order - r.order)
-    .map(({ extension }) => extension)
-    .reduce(
-      (acc, ext) => ({
-        ...acc,
-        ...ext(config, store, acc, moduleExtensionStateContainer),
-      }),
-      result,
-    ) as SimpluxModule<TState>
-
-  return finalModule
+  return result
 }

@@ -1,5 +1,5 @@
-import { Action, Dispatch, Reducer } from 'redux'
-import { SimpluxModuleExtension } from './module'
+import { Action } from 'redux'
+import { SimpluxModule, SimpluxModuleInternals } from './module'
 
 // this interface exists purely to allow plugins to overwrite the return type of mutations
 // @ts-ignore
@@ -63,7 +63,22 @@ export type ResolvedMutation<
 export type ResolvedMutations<
   TState,
   TMutations extends MutationsBase<TState>
-> = { [name in keyof TMutations]: ResolvedMutation<TState, TMutations[name]> }
+> = {
+  readonly [name in keyof TMutations]: ResolvedMutation<
+    TState,
+    TMutations[name]
+  >
+}
+
+type MutableResolvedMutations<
+  TState,
+  TMutations extends MutationsBase<TState>
+> = {
+  -readonly [name in keyof ResolvedMutations<
+    TState,
+    TMutations
+  >]: ResolvedMutations<TState, TMutations>[name]
+}
 
 export type MutationsFactory<TState> = <
   TMutations extends MutationsBase<TState>
@@ -131,62 +146,84 @@ function nameFunction<T extends (...args: any[]) => any>(
   }[name] as T
 }
 
-export function createMutationsFactory<TState>(
-  moduleName: string,
-  getModuleState: () => TState,
-  dispatch: Dispatch,
-  moduleMutations: MutationsBase<TState>,
-  getModuleReducer: () => Reducer<TState>,
-): MutationsFactory<TState> {
+export interface MutationsExtensionStateContainer<TState> {
+  [moduleName: string]: MutationsBase<TState>
+}
+
+/**
+ * Create new mutations for the module. A mutation is a function
+ * that takes the module state and optionally additional parameters
+ * and returns an updated version of the state.
+ *
+ * @param simpluxModule the module to create mutations for
+ * @param mutations the mutations to create
+ *
+ * @returns an object that contains a function for each provided
+ * mutation which when called will execute the mutation on the module
+ */
+export function createMutations<
+  TState,
+  TMutations extends MutationsBase<TState>
+>(
+  simpluxModule: SimpluxModule<TState>,
+  mutations: TMutations,
+): ResolvedMutations<TState, TMutations> {
+  const moduleName = simpluxModule.name
+  const {
+    extensionStateContainer,
+    dispatch,
+    getReducer,
+  } = (simpluxModule as unknown) as SimpluxModuleInternals
+
+  const moduleMutations = (extensionStateContainer.mutations as MutationsExtensionStateContainer<
+    TState
+  >)[moduleName]
+
   const mutationPrefix = createMutationPrefix(moduleName)
 
-  return <TMutations extends MutationsBase<TState>>(
-    mutations: TMutations,
-  ): ResolvedMutations<TState, TMutations> => {
-    for (const mutationName of Object.keys(mutations)) {
-      if (moduleMutations[mutationName]) {
-        throw new Error(
-          `mutation '${mutationName}' is already defined for module '${moduleName}'`,
-        )
-      }
+  for (const mutationName of Object.keys(mutations)) {
+    if (moduleMutations[mutationName]) {
+      throw new Error(
+        `mutation '${mutationName}' is already defined for module '${moduleName}'`,
+      )
     }
-
-    Object.assign(moduleMutations, mutations)
-
-    const resolvedMutations = Object.keys(mutations).reduce(
-      (acc, mutationName: keyof TMutations) => {
-        const type = `${mutationPrefix}${mutationName}`
-
-        const createAction = (...allArgs: any[]) => {
-          const args = filterEventArgs(allArgs)
-          return { type, mutationName, args }
-        }
-
-        const mutation = nameFunction(
-          mutationName as string,
-          (...args: any[]) => {
-            dispatch(createAction(...args))
-            return getModuleState()
-          },
-        ) as ResolvedMutation<TState, TMutations[typeof mutationName]>
-
-        acc[mutationName] = mutation
-
-        acc[mutationName].withState = (state: TState) => (...args: any[]) => {
-          return getModuleReducer()(state, createAction(...args))
-        }
-
-        acc[mutationName].asActionCreator = createAction as any
-
-        acc[mutationName].type = type
-
-        return acc
-      },
-      {} as ResolvedMutations<TState, TMutations>,
-    )
-
-    return resolvedMutations
   }
+
+  Object.assign(moduleMutations, mutations)
+
+  const resolvedMutations = Object.keys(mutations).reduce(
+    (acc, mutationName: keyof TMutations) => {
+      const type = `${mutationPrefix}${mutationName}`
+
+      const createAction = (...allArgs: any[]) => {
+        const args = filterEventArgs(allArgs)
+        return { type, mutationName, args }
+      }
+
+      const mutation = nameFunction(
+        mutationName as string,
+        (...args: any[]) => {
+          dispatch(createAction(...args))
+          return simpluxModule.getState()
+        },
+      ) as ResolvedMutation<TState, TMutations[typeof mutationName]>
+
+      acc[mutationName] = mutation
+
+      acc[mutationName].withState = (state: TState) => (...args: any[]) => {
+        return getReducer()(state, createAction(...args))
+      }
+
+      acc[mutationName].asActionCreator = createAction as any
+
+      acc[mutationName].type = type
+
+      return acc
+    },
+    {} as MutableResolvedMutations<TState, TMutations>,
+  )
+
+  return resolvedMutations
 }
 
 // a very common use case for mutations in frontend applications is to
@@ -234,52 +271,4 @@ function isEvent(arg: any) {
 
 function hasProp(arg: any, name: string) {
   return Object.prototype.hasOwnProperty.call(arg, name)
-}
-
-export interface SimpluxModuleMutationExtensions<TState> {
-  /**
-   * Create new mutations for the module. A mutation is a function
-   * that takes the module state and optionally additional parameters
-   * and returns an updated version of the state.
-   *
-   * @param mutations the mutations to create
-   *
-   * @returns an object that contains a function for each provided
-   * mutation which when called will execute the mutation on the module
-   */
-  createMutations: MutationsFactory<TState>
-}
-
-declare module './module' {
-  interface SimpluxModule<TState>
-    extends SimpluxModuleMutationExtensions<TState> {}
-}
-
-export const mutationsModuleExtension: SimpluxModuleExtension<
-  SimpluxModuleMutationExtensions<any>
-> = (
-  { name, initialState },
-  { dispatch, setReducer, getReducer },
-  { getState },
-  extensionState,
-) => {
-  extensionState.mutations = extensionState.mutations || {}
-  extensionState.mutations[name] = extensionState.mutations[name] || {}
-  const reducer = createModuleReducer(
-    name,
-    initialState,
-    extensionState.mutations[name],
-  )
-
-  setReducer(name, reducer)
-
-  return {
-    createMutations: createMutationsFactory(
-      name,
-      getState,
-      dispatch,
-      extensionState.mutations[name],
-      () => getReducer(name),
-    ),
-  }
 }

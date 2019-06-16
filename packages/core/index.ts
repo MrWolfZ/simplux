@@ -1,15 +1,6 @@
 import { createStore, Store } from 'redux'
-import {
-  createModule,
-  registerModuleExtension,
-  SimpluxModule,
-  SimpluxModuleConfig,
-  SimpluxModuleExtension,
-} from './src/module'
-import { mutationsModuleExtension } from './src/mutations'
+import { createModule, SimpluxModule, SimpluxModuleConfig } from './src/module'
 import { setReduxStore, simpluxStore } from './src/store'
-
-registerModuleExtension(mutationsModuleExtension, 100)
 
 // we create and set a default redux store for simple scenarios
 setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
@@ -17,22 +8,23 @@ setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
 export {
   SimpluxModule,
   SimpluxModuleConfig,
-  SimpluxModuleCore,
-  SimpluxModuleExtension,
+  SimpluxModuleExtensionStateContainer,
+  SimpluxModuleInternals,
   StateChangeHandler,
   SubscribeToStateChanges,
   Unsubscribe,
 } from './src/module'
 export {
+  createMutations,
   MutationBase,
   MutationReturnType,
   MutationReturnTypeOverride,
   MutationsBase,
+  MutationsExtensionStateContainer,
   MutationsFactory,
   ResolvedMutation,
   ResolvedMutationExtras,
   ResolvedMutations,
-  SimpluxModuleMutationExtensions,
 } from './src/mutations'
 export { SimpluxStore } from './src/store'
 
@@ -100,22 +92,4 @@ export function setReduxStoreForSimplux<TState>(
   simpluxStateGetter: (rootState: TState) => any,
 ) {
   return setReduxStore(storeToUse, simpluxStateGetter)
-}
-
-/**
- * Register a new module extension for simplux.
- *
- * @param extension the extension to register
- * @param [order] a number that determines the order in which the extensions
- * are applied (i.e. in ascending order)
- *
- * @returns a cleanup function that when called unregisters the extension
- * (however, all modules that have been created while the extension was
- * registered will still have access to the extension)
- */
-export function registerSimpluxModuleExtension(
-  extension: SimpluxModuleExtension,
-  order?: number,
-) {
-  return registerModuleExtension(extension, order)
 }

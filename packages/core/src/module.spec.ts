@@ -1,9 +1,8 @@
 import { combineReducers, createStore, Store } from 'redux'
 import {
   createModule,
-  moduleExtensions,
-  registerModuleExtension,
   SimpluxModule,
+  SimpluxModuleInternals,
   Unsubscribe,
 } from './module'
 import {
@@ -13,28 +12,6 @@ import {
 } from './store'
 
 describe('module', () => {
-  describe('registering extension', () => {
-    it('stores the extension', () => {
-      const unregister = registerModuleExtension(() => ({}))
-      expect(moduleExtensions.length).toBe(1)
-      unregister()
-    })
-
-    it('returns unregister function', () => {
-      const unregister = registerModuleExtension(() => ({}))
-      unregister()
-      expect(moduleExtensions.length).toBe(0)
-    })
-
-    it('does not throw when unregistering multiple times', () => {
-      const unregister = registerModuleExtension(() => ({}))
-      expect(() => {
-        unregister()
-        unregister()
-      }).not.toThrow()
-    })
-  })
-
   describe('creating module', () => {
     let setReducerSpy: jest.SpyInstance
     let simpluxStore: SimpluxStore
@@ -56,6 +33,16 @@ describe('module', () => {
       })
 
       expect(setReducerSpy).toHaveBeenCalledWith('test', expect.any(Function))
+    })
+
+    it('creates the mutation extension state container', () => {
+      const initialState = { prop: 'value' }
+      const m = (createModule(simpluxStore, {
+        name: 'test',
+        initialState,
+      }) as any) as SimpluxModuleInternals
+
+      expect(m.extensionStateContainer.mutations).toBeDefined()
     })
 
     it('immediately adds the module state to the overall state', () => {
@@ -102,47 +89,6 @@ describe('module', () => {
 
       expect(setReducerSpy).toHaveBeenCalledTimes(2)
     })
-
-    it('applies registered extension', () => {
-      const unregister = registerModuleExtension(() => ({
-        testExtension: 'testExtension',
-      }))
-
-      const module = createModule(simpluxStore, {
-        name: 'test',
-        initialState: { prop: 'value' },
-      })
-
-      expect((module as any).testExtension).toBeDefined()
-
-      unregister()
-    })
-
-    it('applies registered extensions in order', () => {
-      const unregister1 = registerModuleExtension(
-        () => ({
-          testExtension: 'testExtension1',
-        }),
-        20,
-      )
-
-      const unregister2 = registerModuleExtension(
-        () => ({
-          testExtension: 'testExtension2',
-        }),
-        10,
-      )
-
-      const module = createModule(simpluxStore, {
-        name: 'test',
-        initialState: { prop: 'value' },
-      })
-
-      expect((module as any).testExtension).toBe('testExtension1')
-
-      unregister1()
-      unregister2()
-    })
   })
 
   describe('created module', () => {
@@ -155,6 +101,16 @@ describe('module', () => {
       simpluxStore = createSimpluxStore(getReduxStoreProxy)
       const reduxStore = createStore(simpluxStore.rootReducer)
       subscribeSpy = jest.spyOn(reduxStore, 'subscribe')
+    })
+
+    it('has a name', () => {
+      const initialState = { prop: 'value' }
+      const { name } = createModule(simpluxStore, {
+        name: 'test',
+        initialState,
+      })
+
+      expect(name).toBe('test')
     })
 
     describe(`getState`, () => {

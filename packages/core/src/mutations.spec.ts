@@ -1,12 +1,9 @@
-import { SimpluxModuleCore } from './module'
+import { SimpluxModule, SimpluxModuleInternals } from './module'
 import {
   createModuleReducer,
-  createMutationsFactory,
+  createMutations,
   MutationsBase,
-  MutationsFactory,
-  mutationsModuleExtension,
 } from './mutations'
-import { SimpluxStore } from './store'
 
 declare class Event {
   constructor(arg: any)
@@ -16,115 +13,58 @@ declare const window: any
 
 describe('mutations', () => {
   const dispatchMock = jest.fn().mockImplementation(a => a)
-  const getStoreStateMock = jest.fn()
-  const setReducerMock = jest.fn()
   const getReducerMock = jest.fn()
 
-  let moduleState = {}
+  let moduleState = 0
   const getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
   const setModuleStateMock = jest.fn()
   const subscribeToModuleStateChangesMock = jest
     .fn()
     .mockImplementation(() => () => void 0)
 
-  const storeMock: SimpluxStore = {
-    rootReducer: s => s,
-    getState: getStoreStateMock,
-    dispatch: dispatchMock,
-    subscribe: jest.fn(),
-    setReducer: setReducerMock,
-    getReducer: getReducerMock,
-  }
-
-  const moduleMock: SimpluxModuleCore<any> = {
-    getState: getModuleStateMock,
-    setState: setModuleStateMock,
-    subscribeToStateChanges: subscribeToModuleStateChangesMock,
-  }
+  let moduleMock: SimpluxModule<number> & SimpluxModuleInternals
 
   beforeEach(() => {
-    moduleState = {}
+    moduleState = 0
+    moduleMock = {
+      getState: getModuleStateMock,
+      setState: setModuleStateMock,
+      subscribeToStateChanges: subscribeToModuleStateChangesMock,
+      name: 'test',
+      extensionStateContainer: { mutations: { test: {} } },
+      dispatch: dispatchMock,
+      getReducer: getReducerMock,
+    }
     jest.clearAllMocks()
-  })
-
-  describe(`module extension`, () => {
-    it('creates and sets the module reducer', () => {
-      mutationsModuleExtension<number>(
-        {
-          name: 'test',
-          initialState: 0,
-        },
-        storeMock,
-        moduleMock,
-        {},
-      )
-
-      expect(setReducerMock).toHaveBeenCalledWith('test', expect.any(Function))
-    })
-
-    it('adds the mutation state container', () => {
-      const c: any = {}
-      mutationsModuleExtension<number>(
-        {
-          name: 'test',
-          initialState: 0,
-        },
-        storeMock,
-        moduleMock,
-        c,
-      )
-
-      expect(c.mutations.test).toEqual({})
-    })
-
-    it('returns an object with the factory function', () => {
-      const value = mutationsModuleExtension<number>(
-        {
-          name: 'test',
-          initialState: 0,
-        },
-        storeMock,
-        moduleMock,
-        {},
-      )
-
-      expect(value.createMutations).toBeDefined()
-    })
   })
 
   describe(`factory`, () => {
     let moduleMutations: MutationsBase<number>
-    let createMutations: MutationsFactory<number>
     let moduleReducerSpy: jest.Mock<
       number,
       [number | undefined, { type: string }]
     >
 
     beforeEach(() => {
-      moduleMutations = {}
+      moduleMutations = (moduleMock.extensionStateContainer.mutations as any)
+        .test
       const moduleReducer = createModuleReducer(
         'test',
-        moduleState as any,
+        moduleState,
         moduleMutations,
       )
 
       moduleReducerSpy = jest.fn().mockImplementation(moduleReducer)
-      createMutations = createMutationsFactory<number>(
-        'test',
-        getModuleStateMock,
-        dispatchMock,
-        moduleMutations,
-        () => moduleReducerSpy,
-      )
+      getReducerMock.mockImplementation(() => moduleReducerSpy)
     })
 
     it('throws when existing mutation is declared again', () => {
-      createMutations({
+      createMutations(moduleMock, {
         increment: c => c + 1,
       })
 
       expect(() =>
-        createMutations({
+        createMutations(moduleMock, {
           increment: c => c + 2,
         }),
       ).toThrowError(
@@ -133,12 +73,8 @@ describe('mutations', () => {
     })
 
     describe(`returned mutations`, () => {
-      beforeEach(() => {
-        moduleState = 0
-      })
-
       it('dispatch action when called without args', () => {
-        const { increment } = createMutations({
+        const { increment } = createMutations(moduleMock, {
           increment: c => c + 1,
         })
 
@@ -152,7 +88,7 @@ describe('mutations', () => {
       })
 
       it('dispatch action when called with args', () => {
-        const { increment } = createMutations({
+        const { increment } = createMutations(moduleMock, {
           increment: (c, _: string, _2: { nestedArg: boolean }) => c + 1,
         })
 
@@ -166,7 +102,7 @@ describe('mutations', () => {
       })
 
       it('returns the updated store state', () => {
-        const { increment } = createMutations({
+        const { increment } = createMutations(moduleMock, {
           increment: c => c + 1,
         })
 
@@ -178,7 +114,7 @@ describe('mutations', () => {
       it('calls the mutation when called with state', () => {
         const mutationSpy = jest.fn().mockImplementation((c: number) => c + 1)
 
-        const { increment } = createMutations({
+        const { increment } = createMutations(moduleMock, {
           // tslint:disable-next-line: no-unnecessary-callback-wrapper (for type annotations)
           increment: (c, arg1: string, arg2: { nestedArg: boolean }) =>
             mutationSpy(c, arg1, arg2),
@@ -190,7 +126,7 @@ describe('mutations', () => {
       })
 
       it('calls the reducer when called with state', () => {
-        const { increment } = createMutations({
+        const { increment } = createMutations(moduleMock, {
           // tslint:disable-next-line: no-unnecessary-callback-wrapper variable-name
           increment: (c, _arg1: string, _arg2: { nestedArg: boolean }) => c + 1,
         })
@@ -207,7 +143,7 @@ describe('mutations', () => {
       it('returns the action if called as action creator', () => {
         const mutationSpy = jest.fn()
 
-        const { increment } = createMutations({
+        const { increment } = createMutations(moduleMock, {
           // tslint:disable-next-line: no-unnecessary-callback-wrapper (for type annotations)
           increment: (c, arg1: string, arg2: { nestedArg: boolean }) =>
             mutationSpy(c, arg1, arg2),
@@ -224,7 +160,7 @@ describe('mutations', () => {
       })
 
       it('has the same name as the mutation', () => {
-        const { increment } = createMutations({
+        const { increment } = createMutations(moduleMock, {
           increment: c => c,
         })
 
@@ -232,7 +168,7 @@ describe('mutations', () => {
       })
 
       it('has the type of the mutation', () => {
-        const { increment, incrementBy } = createMutations({
+        const { increment, incrementBy } = createMutations(moduleMock, {
           increment: c => c,
           incrementBy: c => c,
         })
@@ -242,7 +178,7 @@ describe('mutations', () => {
       })
 
       it('ignores event arg in first position', () => {
-        const { increment } = createMutations({
+        const { increment } = createMutations(moduleMock, {
           increment: c => c + 1,
         })
 
@@ -257,7 +193,7 @@ describe('mutations', () => {
       })
 
       it('ignores event-like arg in first position', () => {
-        const { increment } = createMutations({
+        const { increment } = createMutations(moduleMock, {
           increment: c => c + 1,
         })
 
@@ -276,7 +212,7 @@ describe('mutations', () => {
       })
 
       it('works in environments where Event is not defined', () => {
-        const { increment } = createMutations({
+        const { increment } = createMutations(moduleMock, {
           increment: c => c + 1,
         })
 

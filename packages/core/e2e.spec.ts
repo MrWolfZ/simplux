@@ -1,9 +1,9 @@
 // this file contains an end-to-end test for the public API
 
 import {
+  createMutations,
   createSimpluxModule,
   getSimpluxReducer,
-  registerSimpluxModuleExtension,
   setReduxStoreForSimplux,
 } from '@simplux/core'
 import { combineReducers, createStore } from 'redux'
@@ -39,17 +39,14 @@ describe(`@simplux/core`, () => {
   }
 
   it('works', () => {
-    const {
-      getState,
-      setState,
-      subscribeToStateChanges,
-      createMutations,
-    } = createSimpluxModule({
+    const todosModule = createSimpluxModule({
       name: 'todos',
       initialState: initialTodoState,
     })
 
-    const { addTodo, addTodos } = createMutations({
+    const { getState, setState, subscribeToStateChanges } = todosModule
+
+    const { addTodo, addTodos } = createMutations(todosModule, {
       addTodo({ todosById, todoIds }, todo: Todo) {
         return {
           todosById: {
@@ -64,7 +61,7 @@ describe(`@simplux/core`, () => {
       },
     })
 
-    const { removeTodo } = createMutations({
+    const { removeTodo } = createMutations(todosModule, {
       removeTodo({ todosById, todoIds }, id: string) {
         const updatedTodosById = { ...todosById }
         delete updatedTodosById[id]
@@ -112,12 +109,12 @@ describe(`@simplux/core`, () => {
   })
 
   it('works without setting a redux store', () => {
-    const { createMutations } = createSimpluxModule({
+    const testModule = createSimpluxModule({
       name: 'test',
       initialState: 0,
     })
 
-    const { increment } = createMutations({
+    const { increment } = createMutations(testModule, {
       increment: c => c + 1,
     })
 
@@ -168,30 +165,15 @@ describe(`@simplux/core`, () => {
     cleanup()
   })
 
-  it('allows registering a module extension', () => {
-    const unregister = registerSimpluxModuleExtension(() => ({
-      testExtension: {},
-    }))
-
-    const module = createSimpluxModule({
-      name: 'test',
-      initialState: 0,
-    })
-
-    expect((module as any).testExtension).toBeDefined()
-
-    unregister()
-  })
-
   it('freezes the state in development mode', () => {
-    const { createMutations } = createSimpluxModule({
+    const freezeTestModule = createSimpluxModule({
       name: 'freezeTest',
       initialState: {
         test: 'test',
       },
     })
 
-    const { update } = createMutations({
+    const { update } = createMutations(freezeTestModule, {
       update: state => {
         state.test = 'updated'
         return state
