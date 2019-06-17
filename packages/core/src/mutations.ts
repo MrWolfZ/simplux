@@ -35,6 +35,14 @@ export interface MutationsBase<TState> {
  */
 export interface ResolvedMutationInternals<TState> {
   /**
+   * The name of this mutation. This is part of the simplux internal API
+   * and should not be accessed except by simplux extensions.
+   *
+   * @private
+   */
+  mutationName: string
+
+  /**
    * The module this mutation belongs to. This is part of the simplux
    * internal API and should not be accessed except by simplux extensions.
    *
@@ -240,6 +248,7 @@ export function createMutations<
         TState
       >
 
+      internals.mutationName = mutationName as string
       internals.owningModule = simpluxModule
 
       return acc

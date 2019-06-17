@@ -177,6 +177,17 @@ describe('mutations', () => {
         expect(incrementBy.type).toBe('@simplux/test/mutation/incrementBy')
       })
 
+      it('has the same mutationName as the mutation', () => {
+        const { increment } = createMutations(moduleMock, {
+          increment: c => c,
+        })
+
+        expect(
+          ((increment as unknown) as ResolvedMutationInternals<number>)
+            .mutationName,
+        ).toBe('increment')
+      })
+
       it('has a reference to the owning module', () => {
         const { increment } = createMutations(moduleMock, {
           increment: c => c,
