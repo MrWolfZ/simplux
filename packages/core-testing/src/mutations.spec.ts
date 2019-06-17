@@ -1,90 +1,44 @@
 import {
-  MutationsFactory,
-  SimpluxModuleCore,
-  SimpluxStore,
+  createMutations,
+  SimpluxModule,
+  SimpluxModuleInternals,
 } from '@simplux/core'
 import {
-  createMutationsFactoryWithTestingExtras,
   mockMutation,
   mockMutationOnce,
-  mutationsTestingModuleExtension,
   removeAllMutationMocks,
   removeMutationMock,
 } from './mutations'
 
 describe('mutations', () => {
-  const dispatchMock = jest.fn().mockImplementation(a => a)
-  const getStoreStateMock = jest.fn()
-  const setReducerMock = jest.fn()
-  const getReducerMock = jest.fn()
-
-  let moduleState = {}
+  let moduleState = 0
   const getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
   const setModuleStateMock = jest.fn()
+  const dispatchMock = jest.fn()
   const subscribeToModuleStateChangesMock = jest
     .fn()
     .mockImplementation(() => () => void 0)
+  let moduleExtensionStateContainer = {} as any
 
-  const storeMock: SimpluxStore = {
-    rootReducer: s => s,
-    getState: getStoreStateMock,
-    dispatch: dispatchMock,
-    subscribe: jest.fn(),
-    setReducer: setReducerMock,
-    getReducer: getReducerMock,
-  }
-
-  const moduleMock: SimpluxModuleCore<any> = {
-    getState: getModuleStateMock,
-    setState: setModuleStateMock,
-    subscribeToStateChanges: subscribeToModuleStateChangesMock,
-  }
-  ; (moduleMock as any).createMutations = () => ({})
+  let moduleMock: SimpluxModule<typeof moduleState> & SimpluxModuleInternals
 
   beforeEach(() => {
-    moduleState = {}
+    moduleState = 0
+    moduleExtensionStateContainer = { mutations: {} } as any
+    moduleMock = {
+      getState: getModuleStateMock,
+      setState: setModuleStateMock,
+      subscribeToStateChanges: subscribeToModuleStateChangesMock,
+      name: 'test',
+      extensionStateContainer: moduleExtensionStateContainer,
+      dispatch: dispatchMock,
+      getReducer: undefined!,
+    }
+
     jest.clearAllMocks()
   })
 
-  describe(`module extension`, () => {
-    it('returns an object with the factory function', () => {
-      const value = mutationsTestingModuleExtension<number>(
-        {
-          name: 'test',
-          initialState: 0,
-        },
-        storeMock,
-        moduleMock,
-        {},
-      )
-
-      expect(value.createMutations).toBeDefined()
-    })
-  })
-
   describe(`factory`, () => {
-    let createMutations: MutationsFactory<number>
-    let incrementSpy: jest.Mock
-    let incrementBySpy: jest.Mock
-
-    beforeEach(() => {
-      incrementSpy = jest.fn()
-      incrementBySpy = jest.fn()
-
-      {
-        (incrementSpy as any).type = 'incrementSpy'
-        ; (incrementBySpy as any).type = 'incrementBySpy'
-      }
-
-      createMutations = createMutationsFactoryWithTestingExtras<number>(
-        () =>
-          ({
-            increment: incrementSpy,
-            incrementBy: incrementBySpy,
-          } as any),
-      )
-    })
-
     afterEach(removeAllMutationMocks)
 
     describe(`returned mutations`, () => {
@@ -93,26 +47,29 @@ describe('mutations', () => {
       })
 
       it('call the original mutation', () => {
-        const { incrementBy } = createMutations({
+        const { incrementBy } = createMutations(moduleMock, {
           incrementBy: (c, amount: number) => c + amount,
         })
 
-        incrementBySpy.mockReturnValueOnce(200)
+        incrementBy(5)
 
-        const incrementByReturnValue = incrementBy(5)
-        expect(incrementBySpy).toHaveBeenCalledWith(5)
-        expect(incrementByReturnValue).toBe(200)
+        expect(dispatchMock).toHaveBeenCalledWith(
+          incrementBy.asActionCreator(5),
+        )
       })
 
       it('can be mocked', () => {
-        const { increment, incrementBy } = createMutations({
+        const { increment, incrementBy } = createMutations(moduleMock, {
           increment: c => c + 1,
           incrementBy: (c, amount: number) => c + amount,
         })
 
-        incrementSpy = mockMutation(increment, jest.fn().mockReturnValue(10))
+        const incrementSpy = mockMutation(
+          increment,
+          jest.fn().mockReturnValue(10),
+        )
 
-        incrementBySpy = mockMutation(
+        const incrementBySpy = mockMutation(
           incrementBy,
           jest.fn().mockReturnValue(20),
         )
@@ -127,7 +84,7 @@ describe('mutations', () => {
       })
 
       it('can be mocked once', () => {
-        const { incrementBy } = createMutations({
+        const { incrementBy } = createMutations(moduleMock, {
           incrementBy: (c, amount: number) => c + amount,
         })
 
@@ -137,11 +94,13 @@ describe('mutations', () => {
         incrementBy(5)
 
         expect(spy).toHaveBeenCalledWith(10)
-        expect(incrementBySpy).toHaveBeenCalledWith(5)
+        expect(dispatchMock).toHaveBeenCalledWith(
+          incrementBy.asActionCreator(5),
+        )
       })
 
       it('can be mocked twice', () => {
-        const { incrementBy } = createMutations({
+        const { incrementBy } = createMutations(moduleMock, {
           incrementBy: (c, amount: number) => c + amount,
         })
 
@@ -153,12 +112,14 @@ describe('mutations', () => {
 
         expect(spy).toHaveBeenCalledWith(10)
         expect(spy).toHaveBeenCalledWith(20)
-        expect(incrementBySpy).toHaveBeenCalledWith(5)
+        expect(dispatchMock).toHaveBeenCalledWith(
+          incrementBy.asActionCreator(5),
+        )
       })
 
       describe('mocks', () => {
         it('can be removed', () => {
-          const { incrementBy } = createMutations({
+          const { incrementBy } = createMutations(moduleMock, {
             incrementBy: (c, amount: number) => c + amount,
           })
 
@@ -169,12 +130,14 @@ describe('mutations', () => {
           removeMutationMock(incrementBy)
 
           incrementBy(5)
-          expect(incrementBySpy).toHaveBeenCalledWith(5)
+          expect(dispatchMock).toHaveBeenCalledWith(
+            incrementBy.asActionCreator(5),
+          )
           expect(spy).toHaveBeenCalledTimes(1)
         })
 
         it('can be removed all at once', () => {
-          const { increment, incrementBy } = createMutations({
+          const { increment, incrementBy } = createMutations(moduleMock, {
             increment: c => c + 1,
             incrementBy: (c, amount: number) => c + amount,
           })
@@ -190,8 +153,10 @@ describe('mutations', () => {
           increment()
           incrementBy(5)
 
-          expect(incrementSpy).toHaveBeenCalled()
-          expect(incrementBySpy).toHaveBeenCalledWith(5)
+          expect(dispatchMock).toHaveBeenCalledWith(increment.asActionCreator())
+          expect(dispatchMock).toHaveBeenCalledWith(
+            incrementBy.asActionCreator(5),
+          )
           expect(spy1).toHaveBeenCalledTimes(1)
           expect(spy2).toHaveBeenCalledTimes(1)
         })

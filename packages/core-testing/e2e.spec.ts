@@ -1,6 +1,6 @@
 // this file contains an end-to-end test for the public API
 
-import { createSimpluxModule } from '@simplux/core'
+import { createMutations, createSimpluxModule } from '@simplux/core'
 import {
   mockMutation,
   mockMutationOnce,
@@ -44,12 +44,12 @@ describe(`@simplux/selectors`, () => {
   }
 
   it('works', () => {
-    const { createMutations } = createSimpluxModule({
+    const todosModule = createSimpluxModule({
       name: 'todos',
       initialState,
     })
 
-    const { addTodo, addTodo2 } = createMutations({
+    const { addTodo, addTodo2 } = createMutations(todosModule, {
       addTodo({ todosById, todoIds }, todo: Todo) {
         return {
           todosById: {

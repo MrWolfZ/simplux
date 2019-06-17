@@ -1,60 +1,52 @@
 import {
-  MutationsFactory,
-  SimpluxModuleExtension,
-  SimpluxModuleMutationExtensions,
+  ResolvedMutationInternals,
+  SimpluxModule,
+  SimpluxModuleInternals,
 } from '@simplux/core'
 
-export interface MutationsMocks {
-  [type: string]: {
-    mockFn: Function;
-    remainingCallCount?: number;
+const mockCleanupFunctions: { [mutationName: string]: () => void } = {}
+
+export function setupMutationMock<
+  TState,
+  TArgs extends any[],
+  TMock extends (...args: TArgs) => TState
+>(
+  owningModule: SimpluxModule<TState>,
+  mutationName: string,
+  mockFn: TMock,
+  nrOfCalls?: number,
+) {
+  const {
+    extensionStateContainer,
+  } = (owningModule as unknown) as SimpluxModuleInternals
+
+  const moduleMutationMocks = extensionStateContainer.mutationMocks as {
+    [mutationName: string]: (...args: TArgs) => TState;
   }
-}
 
-let mutationsMocks: MutationsMocks = {}
+  let nrOfRemainingCalls = nrOfCalls
 
-export function createMutationsFactoryWithTestingExtras<TState>(
-  originalMutationFactory: MutationsFactory<TState>,
-): MutationsFactory<TState> {
-  return mutations => {
-    const resolvedMutations = originalMutationFactory(mutations)
+  const cleanup = () => {
+    delete moduleMutationMocks[mutationName]
+    delete mockCleanupFunctions[mutationName]
+  }
 
-    for (const mutationName of Object.keys(mutations)) {
-      const originalMutation = resolvedMutations[mutationName]
+  const mock = (...args: TArgs) => {
+    const result = mockFn(...args)
 
-      const mutationInterceptor = (...args: any[]) => {
-        const mock = mutationsMocks[originalMutation.type]
+    if (typeof nrOfRemainingCalls === 'number') {
+      nrOfRemainingCalls -= 1
 
-        if (mock) {
-          const result = mock.mockFn(...args)
-
-          if (typeof mock.remainingCallCount === 'number') {
-            mock.remainingCallCount -= 1
-
-            if (mock.remainingCallCount === 0) {
-              delete mutationsMocks[originalMutation.type]
-            }
-          }
-
-          return result
-        }
-
-        return originalMutation(...args)
-      }
-
-      resolvedMutations[
-        mutationName as keyof typeof resolvedMutations
-      ] = mutationInterceptor as typeof originalMutation
-
-      for (const mutationExtra of Object.keys(originalMutation)) {
-        resolvedMutations[mutationName][
-          mutationExtra as keyof typeof originalMutation
-        ] = originalMutation[mutationExtra as keyof typeof originalMutation]
+      if (nrOfRemainingCalls === 0) {
+        cleanup()
       }
     }
 
-    return resolvedMutations
+    return result
   }
+
+  moduleMutationMocks[mutationName] = mock
+  mockCleanupFunctions[mutationName] = cleanup
 }
 
 /**
@@ -76,11 +68,22 @@ export function mockMutation<
   TArgs extends any[],
   TMock extends (...args: TArgs) => TState
 >(
-  mutation: ((...args: TArgs) => TState) & { type: string },
+  mutation: (...args: TArgs) => TState,
   mockFn: TMock,
   nrOfCalls?: number,
 ): TMock {
-  mutationsMocks[mutation.type] = { mockFn, remainingCallCount: nrOfCalls }
+  const {
+    owningModule,
+    mutationName,
+  } = (mutation as unknown) as ResolvedMutationInternals<TState>
+
+  setupMutationMock<TState, TArgs, TMock>(
+    owningModule,
+    mutationName,
+    mockFn,
+    nrOfCalls,
+  )
+
   return mockFn
 }
 
@@ -98,10 +101,7 @@ export function mockMutationOnce<
   TState,
   TArgs extends any[],
   TMock extends (...args: TArgs) => TState
->(
-  mutation: ((...args: TArgs) => TState) & { type: string },
-  mockFn: TMock,
-): TMock {
+>(mutation: (...args: TArgs) => TState, mockFn: TMock): TMock {
   return mockMutation(mutation, mockFn, 1)
 }
 
@@ -112,27 +112,27 @@ export function mockMutationOnce<
  * @param mutation the mutation to remove the mock for
  */
 export function removeMutationMock<TState, TArgs extends any[]>(
-  mutation: ((...args: TArgs) => TState) & { type: string },
+  mutation: (...args: TArgs) => TState,
 ): void {
-  delete mutationsMocks[mutation.type]
+  const {
+    owningModule,
+    mutationName,
+  } = (mutation as unknown) as ResolvedMutationInternals<TState>
+
+  const {
+    extensionStateContainer,
+  } = (owningModule as unknown) as SimpluxModuleInternals
+
+  const moduleMutationMocks = extensionStateContainer.mutationMocks as {
+    [mutationName: string]: (...args: TArgs) => TState;
+  }
+
+  delete moduleMutationMocks[mutationName]
 }
 
 /**
  * Remove all mocks that are currently set for any mutation.
  */
 export function removeAllMutationMocks(): void {
-  mutationsMocks = {}
-}
-
-export const mutationsTestingModuleExtension: SimpluxModuleExtension<
-  SimpluxModuleMutationExtensions<any>
-> = (_, _2, module: unknown) => {
-  const mutationExtension = module as SimpluxModuleMutationExtensions<any>
-  const originalMutationFactory = mutationExtension.createMutations
-
-  return {
-    createMutations: createMutationsFactoryWithTestingExtras(
-      originalMutationFactory,
-    ),
-  }
+  Object.keys(mockCleanupFunctions).forEach(key => mockCleanupFunctions[key]())
 }
