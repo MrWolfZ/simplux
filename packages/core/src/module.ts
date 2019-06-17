@@ -1,8 +1,5 @@
 import { AnyAction, Reducer } from 'redux'
-import {
-  createModuleReducer,
-  MutationsExtensionStateContainer,
-} from './mutations'
+import { createModuleReducer, MutationsBase } from './mutations'
 import { SimpluxStore, simpluxStore } from './store'
 
 export interface SimpluxModuleConfig<TState> {
@@ -141,15 +138,14 @@ export function createModule<TState>(
   const extensionStateContainer: SimpluxModuleExtensionStateContainer = {}
 
   const mutationsContainer = (extensionStateContainer.mutations ||
-    {}) as MutationsExtensionStateContainer<TState>
+    {}) as MutationsBase<TState>
 
   extensionStateContainer.mutations = mutationsContainer
-  mutationsContainer[config.name] = mutationsContainer[config.name] || {}
 
   const moduleReducer = createModuleReducer(
     config.name,
     config.initialState,
-    mutationsContainer[config.name],
+    mutationsContainer,
   )
 
   setReducer(config.name, moduleReducer)

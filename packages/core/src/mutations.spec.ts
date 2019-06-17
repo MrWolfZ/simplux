@@ -47,8 +47,7 @@ describe('mutations', () => {
     >
 
     beforeEach(() => {
-      moduleMutations = (moduleMock.extensionStateContainer.mutations as any)
-        .test
+      moduleMutations = moduleMock.extensionStateContainer.mutations as any
       const moduleReducer = createModuleReducer(
         'test',
         moduleState,

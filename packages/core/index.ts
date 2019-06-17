@@ -20,7 +20,6 @@ export {
   MutationReturnType,
   MutationReturnTypeOverride,
   MutationsBase,
-  MutationsExtensionStateContainer,
   MutationsFactory,
   ResolvedMutation,
   ResolvedMutationExtras,

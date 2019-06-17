@@ -166,10 +166,6 @@ function nameFunction<T extends (...args: any[]) => any>(
   }[name] as T
 }
 
-export interface MutationsExtensionStateContainer<TState> {
-  [moduleName: string]: MutationsBase<TState>
-}
-
 /**
  * Create new mutations for the module. A mutation is a function
  * that takes the module state and optionally additional parameters
@@ -195,9 +191,9 @@ export function createMutations<
     getReducer,
   } = (simpluxModule as unknown) as SimpluxModuleInternals
 
-  const moduleMutations = (extensionStateContainer.mutations as MutationsExtensionStateContainer<
+  const moduleMutations = extensionStateContainer.mutations as MutationsBase<
     TState
-  >)[moduleName]
+  >
 
   const mutationPrefix = createMutationPrefix(moduleName)
 
