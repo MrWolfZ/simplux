@@ -1,4 +1,8 @@
-import { SimpluxModule, SubscribeToStateChanges } from '@simplux/core'
+import {
+  SimpluxModule,
+  SimpluxModuleInternals,
+  SubscribeToStateChanges,
+} from '@simplux/core'
 import { useEffect, useLayoutEffect, useReducer, useRef } from 'react'
 import { createBatchedSubscribeFunction } from './subscriptions'
 import { getWindow } from './window'
@@ -43,16 +47,25 @@ export type SimpluxModuleSelectorHookWithExtras<
 export function createSelectorHook<TState>(
   simpluxModule: SimpluxModule<TState>,
 ): SimpluxModuleSelectorHookWithExtras<TState> {
+  const {
+    extensionStateContainer,
+  } = (simpluxModule as unknown) as SimpluxModuleInternals
+
   const subscribe = createBatchedSubscribeFunction(
     simpluxModule.subscribeToStateChanges,
   )
 
+  const getState = () => {
+    const mockState = extensionStateContainer.reactSelectorHookStateMock as TState
+    if (mockState) {
+      return mockState
+    }
+
+    return simpluxModule.getState()
+  }
+
   const hook = <TResult = TState>(selector: (state: TState) => TResult) => {
-    return useModuleSelector<TState, TResult>(
-      simpluxModule.getState,
-      subscribe,
-      selector,
-    )
+    return useModuleSelector<TState, TResult>(getState, subscribe, selector)
   }
 
   const hookWithExtras = (hook as unknown) as SimpluxModuleSelectorHookWithExtras<

@@ -31,8 +31,7 @@ describe(useModuleSelector.name, () => {
 
   beforeEach(() => {
     moduleState = { count: 0 }
-    moduleExtensionStateContainer = {} as any
-
+    moduleExtensionStateContainer = {}
     unsubscribeMock = jest.fn()
     subscribeToModuleStateChangesMock = jest.fn().mockImplementation(s => {
       subscriber = s
@@ -175,6 +174,20 @@ describe(useModuleSelector.name, () => {
       })
 
       expect(renderedItems.length).toBe(1)
+    })
+  })
+
+  describe('mocking', () => {
+    it('selects the mocked module state if set', () => {
+      const useSelector = createSelectorHook(moduleMock)
+
+      moduleMock.extensionStateContainer.reactSelectorHookStateMock = {
+        count: 11,
+      }
+
+      const { result } = renderHook(() => useSelector(s => s.count))
+
+      expect(result.current).toEqual(11)
     })
   })
 
