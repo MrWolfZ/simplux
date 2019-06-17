@@ -58,6 +58,14 @@ describe('mutations', () => {
       getReducerMock.mockImplementation(() => moduleReducerSpy)
     })
 
+    it('creates the mutation mocks extension state container', () => {
+      createMutations(moduleMock, {
+        increment: c => c + 1,
+      })
+
+      expect(moduleMock.extensionStateContainer.mutationMocks).toBeDefined()
+    })
+
     it('throws when existing mutation is declared again', () => {
       createMutations(moduleMock, {
         increment: c => c + 1,
@@ -157,6 +165,23 @@ describe('mutations', () => {
           mutationName: 'increment',
           args: ['foo', { nestedArg: true }],
         })
+      })
+
+      it('calls the mock if it is defined', () => {
+        const { increment } = createMutations(moduleMock, {
+          // tslint:disable-next-line: variable-name (extra args for assertions)
+          increment: (c, _arg1: string, _arg2: { nestedArg: boolean }) => c,
+        })
+
+        const mock = jest.fn()
+        ; (moduleMock.extensionStateContainer.mutationMocks as any)[
+          increment.name
+        ] = mock
+
+        increment('foo', { nestedArg: true })
+
+        expect(mock).toHaveBeenCalledWith('foo', { nestedArg: true })
+        expect(dispatchMock).not.toHaveBeenCalled()
       })
 
       it('has the same name as the mutation', () => {

@@ -203,6 +203,11 @@ export function createMutations<
     TState
   >
 
+  const mutationMocksContainer = (extensionStateContainer.mutationMocks ||
+    {}) as { [mutationName: string]: (...args: any[]) => TState }
+
+  extensionStateContainer.mutationMocks = mutationMocksContainer
+
   const mutationPrefix = createMutationPrefix(moduleName)
 
   for (const mutationName of Object.keys(mutations)) {
@@ -227,6 +232,11 @@ export function createMutations<
       const mutation = nameFunction(
         mutationName as string,
         (...args: any[]) => {
+          const mock = mutationMocksContainer[mutationName as string]
+          if (mock) {
+            return mock(...args)
+          }
+
           dispatch(createAction(...args))
           return simpluxModule.getState()
         },
