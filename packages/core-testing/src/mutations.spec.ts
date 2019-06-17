@@ -136,6 +136,16 @@ describe('mutations', () => {
           expect(spy).toHaveBeenCalledTimes(1)
         })
 
+        it('do not throw if trying to remove non-existing mock', () => {
+          const { incrementBy } = createMutations(moduleMock, {
+            incrementBy: (c, amount: number) => c + amount,
+          })
+
+          expect(() => {
+            removeMutationMock(incrementBy)
+          }).not.toThrow()
+        })
+
         it('can be removed all at once', () => {
           const { increment, incrementBy } = createMutations(moduleMock, {
             increment: c => c + 1,
@@ -159,6 +169,65 @@ describe('mutations', () => {
           )
           expect(spy1).toHaveBeenCalledTimes(1)
           expect(spy2).toHaveBeenCalledTimes(1)
+        })
+
+        it('can be removed all at once for multiple modules', () => {
+          const moduleMock2: typeof moduleMock = {
+            getState: getModuleStateMock,
+            setState: setModuleStateMock,
+            subscribeToStateChanges: subscribeToModuleStateChangesMock,
+            name: 'test2',
+            extensionStateContainer: { mutations: {} },
+            dispatch: dispatchMock,
+            getReducer: undefined!,
+          }
+
+          const { increment, incrementBy } = createMutations(moduleMock, {
+            increment: c => c + 1,
+            incrementBy: (c, amount: number) => c + amount,
+          })
+
+          const {
+            increment: increment2,
+            incrementBy: incrementBy2,
+          } = createMutations(moduleMock2, {
+            increment: c => c + 1,
+            incrementBy: (c, amount: number) => c + amount,
+          })
+
+          const spy1 = mockMutation(increment, jest.fn())
+          const spy2 = mockMutation(incrementBy, jest.fn())
+          const spy3 = mockMutation(increment2, jest.fn())
+          const spy4 = mockMutation(incrementBy2, jest.fn())
+
+          increment()
+          incrementBy(10)
+          increment2()
+          incrementBy2(20)
+
+          removeAllMutationMocks()
+
+          increment()
+          incrementBy(5)
+          increment2()
+          incrementBy2(15)
+
+          expect(dispatchMock).toHaveBeenCalledWith(increment.asActionCreator())
+          expect(dispatchMock).toHaveBeenCalledWith(
+            incrementBy.asActionCreator(5),
+          )
+
+          expect(dispatchMock).toHaveBeenCalledWith(
+            increment2.asActionCreator(),
+          )
+          expect(dispatchMock).toHaveBeenCalledWith(
+            incrementBy2.asActionCreator(15),
+          )
+
+          expect(spy1).toHaveBeenCalledTimes(1)
+          expect(spy2).toHaveBeenCalledTimes(1)
+          expect(spy3).toHaveBeenCalledTimes(1)
+          expect(spy4).toHaveBeenCalledTimes(1)
         })
       })
     })
