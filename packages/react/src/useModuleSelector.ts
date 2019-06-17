@@ -1,4 +1,4 @@
-import { SubscribeToStateChanges } from '@simplux/core'
+import { SimpluxModule, SubscribeToStateChanges } from '@simplux/core'
 import { useEffect, useLayoutEffect, useReducer, useRef } from 'react'
 import { createBatchedSubscribeFunction } from './subscriptions'
 import { getWindow } from './window'
@@ -6,6 +6,19 @@ import { getWindow } from './window'
 export type SimpluxModuleSelectorHook<TState> = <TResult>(
   selector: (state: TState) => TResult,
 ) => TResult
+
+/**
+ * @private
+ */
+export interface SimpluxModuleSelectorHookInternals<TState> {
+  /**
+   * The module this hook belongs to. This is part of the simplux
+   * internal API and should not be accessed except by simplux extensions.
+   *
+   * @private
+   */
+  owningModule: SimpluxModule<TState>
+}
 
 export interface SimpluxModuleSelectorHookExtras {
   /**
@@ -18,18 +31,25 @@ export type SimpluxModuleSelectorHookWithExtras<
   TState
 > = SimpluxModuleSelectorHook<TState> & SimpluxModuleSelectorHookExtras
 
+/**
+ * Create a react hook that allows accessing the module's state inside
+ * a component. The hook takes a selector function that selects some
+ * derived state from the module's state.
+ *
+ * @param simpluxModule the module to create the selector hook for
+ *
+ * @returns the selector hook
+ */
 export function createSelectorHook<TState>(
-  moduleName: string,
-  getModuleState: () => TState,
-  subscribeToModuleStateChanges: SubscribeToStateChanges<TState>,
+  simpluxModule: SimpluxModule<TState>,
 ): SimpluxModuleSelectorHookWithExtras<TState> {
   const subscribe = createBatchedSubscribeFunction(
-    subscribeToModuleStateChanges,
+    simpluxModule.subscribeToStateChanges,
   )
 
   const hook = <TResult = TState>(selector: (state: TState) => TResult) => {
     return useModuleSelector<TState, TResult>(
-      getModuleState,
+      simpluxModule.getState,
       subscribe,
       selector,
     )
@@ -39,7 +59,13 @@ export function createSelectorHook<TState>(
     TState
   >
 
-  hookWithExtras.moduleName = moduleName
+  hookWithExtras.moduleName = simpluxModule.name
+
+  const internals = (hookWithExtras as unknown) as SimpluxModuleSelectorHookInternals<
+    TState
+  >
+
+  internals.owningModule = simpluxModule
 
   return hookWithExtras
 }

@@ -1,7 +1,12 @@
+import { SimpluxModule, SimpluxModuleInternals } from '@simplux/core'
 import { act, cleanup, render } from '@testing-library/react'
 import { default as React, useCallback, useReducer } from 'react'
 import { act as actHook, renderHook } from 'react-hooks-testing-library'
-import { createSelectorHook, useModuleSelector } from './useModuleSelector'
+import {
+  createSelectorHook,
+  SimpluxModuleSelectorHookInternals,
+  useModuleSelector,
+} from './useModuleSelector'
 import { getWindow } from './window'
 
 jest.mock('./window', () => ({
@@ -12,6 +17,7 @@ describe(useModuleSelector.name, () => {
   let moduleState = { count: 0 }
   let subscriber: (state: typeof moduleState) => void = () => void 0
   const getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
+  const setModuleStateMock = jest.fn()
 
   let unsubscribeMock: jest.Mock
   let subscribeToModuleStateChangesMock: jest.Mock
@@ -20,8 +26,12 @@ describe(useModuleSelector.name, () => {
     selector: (state: typeof moduleState) => TSelected,
   ) => TSelected
 
+  let moduleExtensionStateContainer = {} as any
+  let moduleMock: SimpluxModule<typeof moduleState> & SimpluxModuleInternals
+
   beforeEach(() => {
     moduleState = { count: 0 }
+    moduleExtensionStateContainer = {} as any
 
     unsubscribeMock = jest.fn()
     subscribeToModuleStateChangesMock = jest.fn().mockImplementation(s => {
@@ -29,6 +39,20 @@ describe(useModuleSelector.name, () => {
       return unsubscribeMock
     })
 
+    moduleMock = {
+      getState: getModuleStateMock,
+      setState: setModuleStateMock,
+      subscribeToStateChanges: subscribeToModuleStateChangesMock,
+      name: 'test',
+      extensionStateContainer: moduleExtensionStateContainer,
+      dispatch: undefined!,
+      getReducer: undefined!,
+    }
+
+    jest.clearAllMocks()
+  })
+
+  beforeEach(() => {
     useSelector = selector =>
       useModuleSelector<typeof moduleState, ReturnType<typeof selector>>(
         getModuleStateMock,
@@ -258,11 +282,7 @@ describe(useModuleSelector.name, () => {
     it('works', () => {
       moduleState = { count: 10 }
 
-      const useSelector = createSelectorHook(
-        'testModule',
-        getModuleStateMock,
-        subscribeToModuleStateChangesMock,
-      )
+      const useSelector = createSelectorHook(moduleMock)
 
       const { result } = renderHook(() => useSelector(s => s.count))
 
@@ -270,15 +290,19 @@ describe(useModuleSelector.name, () => {
     })
 
     it('adds the module name to the hook', () => {
-      const moduleName = 'testModule'
+      const useSelector = createSelectorHook(moduleMock)
 
-      const useSelector = createSelectorHook(
-        moduleName,
-        getModuleStateMock,
-        subscribeToModuleStateChangesMock,
-      )
+      expect(useSelector.moduleName).toBe(moduleMock.name)
+    })
 
-      expect(useSelector.moduleName).toBe(moduleName)
+    it('adds the owning module to the hook', () => {
+      const useSelector = createSelectorHook(moduleMock)
+
+      expect(
+        ((useSelector as unknown) as SimpluxModuleSelectorHookInternals<
+          typeof moduleState
+        >).owningModule,
+      ).toBe(moduleMock)
     })
   })
 })

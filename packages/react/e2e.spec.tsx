@@ -1,7 +1,7 @@
 // this file contains an end-to-end test for the public API
 
-import { createSimpluxModule } from '@simplux/core'
-import '@simplux/react'
+import { createMutations, createSimpluxModule } from '@simplux/core'
+import { createSelectorHook } from '@simplux/react'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import React from 'react'
 import { act as actHook, renderHook } from 'react-hooks-testing-library'
@@ -34,17 +34,14 @@ describe(`@simplux/react`, () => {
   }
 
   it('works', () => {
-    const {
-      createMutations,
-      react: {
-        hooks: { useSelector },
-      },
-    } = createSimpluxModule({
+    const todosModule = createSimpluxModule({
       name: 'todos',
       initialState: todoStoreWithOneTodo,
     })
 
-    const { addTodo } = createMutations({
+    const useSelector = createSelectorHook(todosModule)
+
+    const { addTodo } = createMutations(todosModule, {
       addTodo({ todosById, todoIds }, todo: Todo) {
         return {
           todosById: {
@@ -56,7 +53,7 @@ describe(`@simplux/react`, () => {
       },
     })
 
-    const { removeTodo } = createMutations({
+    const { removeTodo } = createMutations(todosModule, {
       removeTodo({ todosById, todoIds }, id: string) {
         const updatedTodosById = { ...todosById }
         delete updatedTodosById[id]
@@ -100,17 +97,14 @@ describe(`@simplux/react`, () => {
   })
 
   it('uses batching for notifying subscribers', () => {
-    const {
-      createMutations,
-      react: {
-        hooks: { useSelector },
-      },
-    } = createSimpluxModule({
+    const batchingModule = createSimpluxModule({
       name: 'batching',
       initialState: 0,
     })
 
-    const { increment } = createMutations({
+    const useSelector = createSelectorHook(batchingModule)
+
+    const { increment } = createMutations(batchingModule, {
       increment: c => c + 1,
     })
 
@@ -151,14 +145,14 @@ describe(`@simplux/react`, () => {
   })
 
   it('ignores event arg for mutation', () => {
-    const { createMutations } = createSimpluxModule({
+    const ignoreEventArgModule = createSimpluxModule({
       name: 'ignoreEventArg',
       initialState: 0,
     })
 
     const incrementSpy = jest.fn()
 
-    const { increment } = createMutations({
+    const { increment } = createMutations(ignoreEventArgModule, {
       increment: incrementSpy,
     })
 

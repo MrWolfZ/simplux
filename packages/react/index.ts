@@ -1,11 +1,7 @@
-import { registerSimpluxModuleExtension } from '@simplux/core'
-import { reactModuleExtension } from './src/hooks'
-
-export { SimpluxModuleReactExtensions } from './src/hooks'
 export {
+  createSelectorHook,
   SimpluxModuleSelectorHook,
   SimpluxModuleSelectorHookExtras,
+  SimpluxModuleSelectorHookInternals,
   SimpluxModuleSelectorHookWithExtras,
 } from './src/useModuleSelector'
-
-registerSimpluxModuleExtension(reactModuleExtension, 130)
