@@ -24,6 +24,7 @@ export {
   MutationsFactory,
   ResolvedMutation,
   ResolvedMutationExtras,
+  ResolvedMutationInternals,
   ResolvedMutations,
 } from './src/mutations'
 export { SimpluxStore } from './src/store'

@@ -3,6 +3,7 @@ import {
   createModuleReducer,
   createMutations,
   MutationsBase,
+  ResolvedMutationInternals,
 } from './mutations'
 
 declare class Event {
@@ -175,6 +176,17 @@ describe('mutations', () => {
 
         expect(increment.type).toBe('@simplux/test/mutation/increment')
         expect(incrementBy.type).toBe('@simplux/test/mutation/incrementBy')
+      })
+
+      it('has a reference to the owning module', () => {
+        const { increment } = createMutations(moduleMock, {
+          increment: c => c,
+        })
+
+        expect(
+          ((increment as unknown) as ResolvedMutationInternals<number>)
+            .owningModule,
+        ).toBe(moduleMock)
       })
 
       it('ignores event arg in first position', () => {

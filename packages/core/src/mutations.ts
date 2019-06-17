@@ -30,18 +30,31 @@ export interface MutationsBase<TState> {
   [name: string]: MutationBase<TState>
 }
 
+/**
+ * @private
+ */
+export interface ResolvedMutationInternals<TState> {
+  /**
+   * The module this mutation belongs to. This is part of the simplux
+   * internal API and should not be accessed except by simplux extensions.
+   *
+   * @private
+   */
+  owningModule: SimpluxModule<TState>
+}
+
 export interface ResolvedMutationExtras<TState, TArgs extends any[]> {
   /**
    * A unique identifier for this type of mutation.
    */
-  type: string
+  readonly type: string
 
   /**
    * When a mutation is called directly it updates the module's state.
    * Sometimes (e.g. for testing) it is useful to call the mutation
    * with a given state. In this case no changes are made to the module.
    */
-  withState: (state: TState) => (...args: TArgs) => TState
+  readonly withState: (state: TState) => (...args: TArgs) => TState
 
   /**
    * When a mutation is called directly it updates the module's state by
@@ -50,7 +63,14 @@ export interface ResolvedMutationExtras<TState, TArgs extends any[]> {
    * it automatically. This function returns the redux action instead of
    * dispatching it.
    */
-  asActionCreator: (...args: TArgs) => { type: string; args: TArgs }
+  readonly asActionCreator: (...args: TArgs) => { type: string; args: TArgs }
+}
+
+type MutableResolvedMutationExtras<TState, TArgs extends any[]> = {
+  -readonly [prop in keyof ResolvedMutationExtras<
+    TState,
+    TArgs
+  >]: ResolvedMutationExtras<TState, TArgs>[prop]
 }
 
 export type ResolvedMutation<
@@ -210,13 +230,21 @@ export function createMutations<
 
       acc[mutationName] = mutation
 
-      acc[mutationName].withState = (state: TState) => (...args: any[]) => {
+      const extras = mutation as MutableResolvedMutationExtras<TState, any>
+
+      extras.withState = (state: TState) => (...args: any[]) => {
         return getReducer()(state, createAction(...args))
       }
 
-      acc[mutationName].asActionCreator = createAction as any
+      extras.asActionCreator = createAction as any
 
-      acc[mutationName].type = type
+      extras.type = type
+
+      const internals = (mutation as unknown) as ResolvedMutationInternals<
+        TState
+      >
+
+      internals.owningModule = simpluxModule
 
       return acc
     },
