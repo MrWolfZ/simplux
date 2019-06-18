@@ -1,14 +1,9 @@
 // this file contains an end-to-end test for the public API
 
 import { createMutations, createSimpluxModule } from '@simplux/core'
-import {
-  mockMutation,
-  mockMutationOnce,
-  removeAllMutationMocks,
-  removeMutationMock,
-} from '@simplux/core-testing'
+import { clearAllSimpluxMocks, mockMutation } from '@simplux/core-testing'
 
-describe(`@simplux/selectors`, () => {
+describe(`@simplux/core-testing`, () => {
   interface Todo {
     id: string
     description: string
@@ -71,42 +66,34 @@ describe(`@simplux/selectors`, () => {
       },
     })
 
-    let addTodoSpy = mockMutation(
-      addTodo,
-      jest.fn().mockReturnValue(todoStoreWithTodo1),
-    )
+    let addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
+    let clearAddTodoMock = mockMutation(addTodo, addTodoSpy)
 
     let mockedReturnValue = addTodo(todo2)
     expect(addTodoSpy).toHaveBeenCalled()
     expect(mockedReturnValue).toBe(todoStoreWithTodo1)
 
-    removeMutationMock(addTodo)
+    clearAddTodoMock()
 
-    addTodoSpy = mockMutationOnce(
-      addTodo,
-      jest.fn().mockReturnValue(todoStoreWithTodo2),
-    )
+    addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo2)
+    clearAddTodoMock = mockMutation(addTodo, addTodoSpy, 1)
 
     mockedReturnValue = addTodo(todo1)
     expect(addTodoSpy).toHaveBeenCalled()
     expect(mockedReturnValue).toBe(todoStoreWithTodo2)
 
-    addTodoSpy = mockMutation(
-      addTodo,
-      jest.fn().mockReturnValue(todoStoreWithTodo1),
-    )
+    addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
+    clearAddTodoMock = mockMutation(addTodo, addTodoSpy)
 
-    const addTodo2Spy = mockMutation(
-      addTodo2,
-      jest.fn().mockReturnValue(todoStoreWithTodo2),
-    )
+    const addTodoSpy2 = jest.fn().mockReturnValue(todoStoreWithTodo2)
+    mockMutation(addTodo2, addTodoSpy2)
 
     addTodo(todo2)
     addTodo2(todo1)
     expect(addTodoSpy).toHaveBeenCalled()
-    expect(addTodo2Spy).toHaveBeenCalled()
+    expect(addTodoSpy2).toHaveBeenCalled()
 
-    removeAllMutationMocks()
+    clearAllSimpluxMocks()
 
     expect(addTodo(todo1)).toEqual(todoStoreWithTodo1)
     expect(addTodo(todo2)).toEqual(todoStoreWithBothTodos)

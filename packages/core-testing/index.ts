@@ -1,6 +1,5 @@
 export {
-  mockMutation,
-  mockMutationOnce,
-  removeAllMutationMocks,
-  removeMutationMock,
-} from './src/mutations'
+  clearAllSimpluxMocks,
+  registerMockCleanupFunction,
+} from './src/cleanup'
+export { mockMutation } from './src/mutations'

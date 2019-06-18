@@ -3,12 +3,8 @@ import {
   SimpluxModule,
   SimpluxModuleInternals,
 } from '@simplux/core'
-import {
-  mockMutation,
-  mockMutationOnce,
-  removeAllMutationMocks,
-  removeMutationMock,
-} from './mutations'
+import { clearAllSimpluxMocks } from './cleanup'
+import { mockMutation } from './mutations'
 
 describe('mutations', () => {
   let moduleState = 0
@@ -39,7 +35,7 @@ describe('mutations', () => {
   })
 
   describe(`factory`, () => {
-    afterEach(removeAllMutationMocks)
+    afterEach(clearAllSimpluxMocks)
 
     describe(`returned mutations`, () => {
       beforeEach(() => {
@@ -64,15 +60,11 @@ describe('mutations', () => {
           incrementBy: (c, amount: number) => c + amount,
         })
 
-        const incrementSpy = mockMutation(
-          increment,
-          jest.fn().mockReturnValue(10),
-        )
+        const incrementSpy = jest.fn().mockReturnValue(10)
+        mockMutation(increment, incrementSpy)
 
-        const incrementBySpy = mockMutation(
-          incrementBy,
-          jest.fn().mockReturnValue(20),
-        )
+        const incrementBySpy = jest.fn().mockReturnValue(20)
+        mockMutation(incrementBy, incrementBySpy)
 
         const incrementReturnValue = increment()
         expect(incrementSpy).toHaveBeenCalled()
@@ -88,7 +80,8 @@ describe('mutations', () => {
           incrementBy: (c, amount: number) => c + amount,
         })
 
-        const spy = mockMutationOnce(incrementBy, jest.fn())
+        const spy = jest.fn()
+        mockMutation(incrementBy, spy, 1)
 
         incrementBy(10)
         incrementBy(5)
@@ -104,7 +97,8 @@ describe('mutations', () => {
           incrementBy: (c, amount: number) => c + amount,
         })
 
-        const spy = mockMutation(incrementBy, jest.fn(), 2)
+        const spy = jest.fn()
+        mockMutation(incrementBy, spy, 2)
 
         incrementBy(10)
         incrementBy(20)
@@ -118,16 +112,17 @@ describe('mutations', () => {
       })
 
       describe('mocks', () => {
-        it('can be removed', () => {
+        it('can be cleared', () => {
           const { incrementBy } = createMutations(moduleMock, {
             incrementBy: (c, amount: number) => c + amount,
           })
 
-          const spy = mockMutation(incrementBy, jest.fn())
+          const spy = jest.fn()
+          const clear = mockMutation(incrementBy, spy)
 
           incrementBy(10)
 
-          removeMutationMock(incrementBy)
+          clear()
 
           incrementBy(5)
           expect(dispatchMock).toHaveBeenCalledWith(
@@ -136,29 +131,21 @@ describe('mutations', () => {
           expect(spy).toHaveBeenCalledTimes(1)
         })
 
-        it('do not throw if trying to remove non-existing mock', () => {
-          const { incrementBy } = createMutations(moduleMock, {
-            incrementBy: (c, amount: number) => c + amount,
-          })
-
-          expect(() => {
-            removeMutationMock(incrementBy)
-          }).not.toThrow()
-        })
-
         it('can be removed all at once', () => {
           const { increment, incrementBy } = createMutations(moduleMock, {
             increment: c => c + 1,
             incrementBy: (c, amount: number) => c + amount,
           })
 
-          const spy1 = mockMutation(increment, jest.fn())
-          const spy2 = mockMutation(incrementBy, jest.fn())
+          const spy1 = jest.fn()
+          mockMutation(increment, spy1)
+          const spy2 = jest.fn()
+          mockMutation(incrementBy, spy2)
 
           increment()
           incrementBy(10)
 
-          removeAllMutationMocks()
+          clearAllSimpluxMocks()
 
           increment()
           incrementBy(5)
@@ -195,17 +182,21 @@ describe('mutations', () => {
             incrementBy: (c, amount: number) => c + amount,
           })
 
-          const spy1 = mockMutation(increment, jest.fn())
-          const spy2 = mockMutation(incrementBy, jest.fn())
-          const spy3 = mockMutation(increment2, jest.fn())
-          const spy4 = mockMutation(incrementBy2, jest.fn())
+          const spy1 = jest.fn()
+          mockMutation(increment, spy1)
+          const spy2 = jest.fn()
+          mockMutation(incrementBy, spy2)
+          const spy3 = jest.fn()
+          mockMutation(increment2, spy3)
+          const spy4 = jest.fn()
+          mockMutation(incrementBy2, spy4)
 
           increment()
           incrementBy(10)
           increment2()
           incrementBy2(20)
 
-          removeAllMutationMocks()
+          clearAllSimpluxMocks()
 
           increment()
           incrementBy(5)
