@@ -1,6 +1,7 @@
 // this file contains an end-to-end test for the public API
 
 import { createMutations, createSimpluxModule } from '@simplux/core'
+import { clearAllSimpluxMocks, mockModuleState } from '@simplux/core-testing'
 import { createSelectorHook } from '@simplux/react'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import React from 'react'
@@ -8,6 +9,7 @@ import { act as actHook, renderHook } from 'react-hooks-testing-library'
 
 describe(`@simplux/react`, () => {
   afterEach(cleanup)
+  afterEach(clearAllSimpluxMocks)
 
   interface Todo {
     id: string
@@ -75,7 +77,7 @@ describe(`@simplux/react`, () => {
       unmounts.forEach(f => f())
     })
 
-    it('returns the state on initial render', () => {
+    it('renders initially with the module state', () => {
       const useSelector = createSelectorHook(todosModule)
 
       const { result: state, unmount: unmount1 } = renderHook(() =>
@@ -125,6 +127,28 @@ describe(`@simplux/react`, () => {
       expect(state.current).toEqual(todoStoreWithOneTodo)
       expect(todoIds.current).toEqual(todoStoreWithOneTodo.todoIds)
       expect(nrOfTodos.current).toBe(1)
+    })
+
+    it('renders initially with the mocked module state if set', () => {
+      const useSelector = createSelectorHook(todosModule)
+
+      mockModuleState(todosModule, todoStoreWithTwoTodos)
+
+      const { result: state, unmount: unmount1 } = renderHook(() =>
+        useSelector(s => s),
+      )
+      const { result: todoIds, unmount: unmount2 } = renderHook(() =>
+        useSelector(state => state.todoIds),
+      )
+      const { result: nrOfTodos, unmount: unmount3 } = renderHook(() =>
+        useSelector(state => Object.keys(state.todosById).length),
+      )
+
+      unmounts.push(unmount1, unmount2, unmount3)
+
+      expect(state.current).toBe(todoStoreWithTwoTodos)
+      expect(todoIds.current).toBe(todoStoreWithTwoTodos.todoIds)
+      expect(nrOfTodos.current).toBe(2)
     })
 
     it('uses batching for notifying subscribers', () => {
