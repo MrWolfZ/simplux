@@ -108,6 +108,111 @@ describe(`@simplux/core`, () => {
     cleanup()
   })
 
+  describe('mutable/immer-style mutations', () => {
+    it('work', () => {
+      const todosModule = createSimpluxModule({
+        name: 'mutableTodosModule1',
+        initialState: initialTodoState,
+      })
+
+      const { getState, setState, subscribeToStateChanges } = todosModule
+
+      const { addTodo, addTodos } = createMutations(todosModule, {
+        addTodo({ todosById, todoIds }, todo: Todo) {
+          todosById[todo.id] = todo
+          todoIds.push(todo.id)
+        },
+        addTodos(state, ...todos: Todo[]) {
+          todos.forEach(t => addTodo.withState(state)(t))
+        },
+      })
+
+      const { removeTodo } = createMutations(todosModule, {
+        removeTodo({ todosById, todoIds }, id: string) {
+          delete todosById[id]
+          todoIds.splice(todoIds.indexOf(id), 1)
+        },
+      })
+
+      const cleanup = setReduxStoreForSimplux(
+        createStore(getSimpluxReducer()),
+        s => s,
+      )
+
+      const handler = jest.fn()
+      const unsubscribe = subscribeToStateChanges(handler)
+      expect(handler).toHaveBeenCalledWith(initialTodoState)
+
+      let updatedState = addTodo(todo1)
+      expect(updatedState).toEqual(todoStoreWithOneTodo)
+      expect(getState()).toEqual(todoStoreWithOneTodo)
+      expect(handler).toHaveBeenCalledWith(updatedState)
+
+      updatedState = removeTodo(todo1.id)
+      expect(updatedState).toEqual(initialTodoState)
+      expect(handler).toHaveBeenCalledWith(updatedState)
+
+      setState(todoStoreWithOneTodo)
+      expect(getState()).toBe(todoStoreWithOneTodo)
+      expect(handler).toHaveBeenCalledWith(todoStoreWithOneTodo)
+
+      setState(initialTodoState)
+      updatedState = addTodos(todo1, todo2)
+      expect(updatedState).toEqual(todoStoreWithTwoTodos)
+      expect(getState()).toEqual(todoStoreWithTwoTodos)
+      expect(handler).toHaveBeenCalledWith(updatedState)
+
+      expect(handler).toHaveBeenCalledTimes(6)
+
+      unsubscribe()
+      cleanup()
+    })
+
+    it('do not mutate the state when calling a mutation', () => {
+      const initialState = {
+        test: 'test',
+      }
+
+      const testModule = createSimpluxModule({
+        name: 'mutableImmerModule1',
+        initialState,
+      })
+
+      const { update } = createMutations(testModule, {
+        update(state, value: string) {
+          state.test = value
+        },
+      })
+
+      const updatedState = update('updated')
+
+      expect(updatedState).not.toBe(initialState)
+      expect(initialState.test).toBe('test')
+    })
+
+    it('do not mutate the state when calling a mutation with a state', () => {
+      const initialState = {
+        test: 'test',
+      }
+
+      const testModule = createSimpluxModule({
+        name: 'mutableImmerModule2',
+        initialState,
+      })
+
+      const { update } = createMutations(testModule, {
+        update(state, value: string) {
+          state.test = value
+        },
+      })
+
+      const updatedState = update.withState(initialState)('updated')
+
+      expect(updatedState).not.toBe(initialState)
+      expect(initialState.test).toBe('test')
+    })
+  })
+
   it('works without setting a redux store', () => {
     const testModule = createSimpluxModule({
       name: 'test',

@@ -1,15 +1,5 @@
 import { SimpluxModule, SimpluxModuleInternals } from './module'
 
-// this interface exists purely to allow plugins to overwrite the return type of mutations
-// @ts-ignore
-export interface MutationReturnTypeOverride<TState> {}
-
-export type MutationReturnType<TState> = MutationReturnTypeOverride<
-  TState
-> extends { returnType: infer TReturn }
-  ? TReturn
-  : TState
-
 export type MutationBase<TState> = (
   state: TState,
   // optimally, we would use ...args: any[] but that does not work correctly with
@@ -23,7 +13,7 @@ export type MutationBase<TState> = (
   arg7?: any,
   arg8?: any,
   arg9?: any,
-) => MutationReturnType<TState>
+) => TState | void
 
 export interface MutationsBase<TState> {
   [name: string]: MutationBase<TState>

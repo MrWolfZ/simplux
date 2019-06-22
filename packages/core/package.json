@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/MrWolfZ/simplux/tree/master/packages/core#readme",
   "keywords": [
+    "immer",
     "redux",
     "simplux",
     "state",
@@ -33,6 +34,9 @@
   "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
   "license": "MIT",
   "private": false,
+  "dependencies": {
+    "immer": "^3.0.0"
+  },
   "peerDependencies": {
     "redux": ">=4.0.0"
   }

@@ -17,8 +17,6 @@ export {
 export {
   createMutations,
   MutationBase,
-  MutationReturnType,
-  MutationReturnTypeOverride,
   MutationsBase,
   MutationsFactory,
   ResolvedMutation,

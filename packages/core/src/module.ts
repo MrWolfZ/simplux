@@ -1,4 +1,5 @@
 import { AnyAction, Reducer } from 'redux'
+import { createImmerReducer } from './immer'
 import { MutationsBase } from './mutations'
 import { createModuleReducer } from './reducer'
 import { SimpluxStore, simpluxStore } from './store'
@@ -156,7 +157,9 @@ export function createModule<TState>(
     mutationsContainer,
   )
 
-  setReducer(config.name, moduleReducer)
+  const moduleReducerWithImmerSupport = createImmerReducer(moduleReducer)
+
+  setReducer(config.name, moduleReducerWithImmerSupport)
 
   const result: SimpluxModule<TState> & SimpluxModuleInternals = {
     getState: getModuleState,
