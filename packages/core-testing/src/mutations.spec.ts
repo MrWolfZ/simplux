@@ -71,38 +71,6 @@ describe('mutations', () => {
     expect(incrementByReturnValue).toBe(20)
   })
 
-  it('can be mocked once', () => {
-    const { incrementBy } = createMutations(moduleMock, {
-      incrementBy: (c, amount: number) => c + amount,
-    })
-
-    const spy = jest.fn()
-    mockMutation(incrementBy, spy, 1)
-
-    incrementBy(10)
-    incrementBy(5)
-
-    expect(spy).toHaveBeenCalledWith(10)
-    expect(dispatchMock).toHaveBeenCalledWith(incrementBy.asActionCreator(5))
-  })
-
-  it('can be mocked twice', () => {
-    const { incrementBy } = createMutations(moduleMock, {
-      incrementBy: (c, amount: number) => c + amount,
-    })
-
-    const spy = jest.fn()
-    mockMutation(incrementBy, spy, 2)
-
-    incrementBy(10)
-    incrementBy(20)
-    incrementBy(5)
-
-    expect(spy).toHaveBeenCalledWith(10)
-    expect(spy).toHaveBeenCalledWith(20)
-    expect(dispatchMock).toHaveBeenCalledWith(incrementBy.asActionCreator(5))
-  })
-
   describe('mocks', () => {
     it('can be cleared', () => {
       const { incrementBy } = createMutations(moduleMock, {

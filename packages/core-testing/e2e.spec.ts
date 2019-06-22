@@ -38,66 +38,61 @@ describe(`@simplux/core-testing`, () => {
     todoIds: ['1', '2'],
   }
 
+  afterEach(clearAllSimpluxMocks)
+
+
   describe('mutations', () => {
+    const mutationMockTestModule = createSimpluxModule({
+      name: 'mutationMockTest1',
+      initialState,
+    })
+
+    const { addTodo, addTodo2 } = createMutations(mutationMockTestModule, {
+      addTodo({ todosById, todoIds }, todo: Todo) {
+        return {
+          todosById: {
+            ...todosById,
+            [todo.id]: todo,
+          },
+          todoIds: [...todoIds, todo.id],
+        }
+      },
+
+      addTodo2({ todosById, todoIds }, todo: Todo) {
+        return {
+          todosById: {
+            ...todosById,
+            [todo.id]: todo,
+          },
+          todoIds: [...todoIds, todo.id],
+        }
+      },
+    })
+
+    beforeEach(() => {
+      mutationMockTestModule.setState(initialState)
+    })
+
     it('can be mocked', () => {
-      const mutationMockTestModule = createSimpluxModule({
-        name: 'mutationMockTest',
-        initialState,
-      })
-
-      const { addTodo, addTodo2 } = createMutations(mutationMockTestModule, {
-        addTodo({ todosById, todoIds }, todo: Todo) {
-          return {
-            todosById: {
-              ...todosById,
-              [todo.id]: todo,
-            },
-            todoIds: [...todoIds, todo.id],
-          }
-        },
-
-        addTodo2({ todosById, todoIds }, todo: Todo) {
-          return {
-            todosById: {
-              ...todosById,
-              [todo.id]: todo,
-            },
-            todoIds: [...todoIds, todo.id],
-          }
-        },
-      })
-
-      let addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
-      let clearAddTodoMock = mockMutation(addTodo, addTodoSpy)
-
-      let mockedReturnValue = addTodo(todo2)
-      expect(addTodoSpy).toHaveBeenCalled()
-      expect(mockedReturnValue).toBe(todoStoreWithTodo1)
-
-      clearAddTodoMock()
-
-      addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo2)
-      clearAddTodoMock = mockMutation(addTodo, addTodoSpy, 1)
-
-      mockedReturnValue = addTodo(todo1)
-      expect(addTodoSpy).toHaveBeenCalled()
-      expect(mockedReturnValue).toBe(todoStoreWithTodo2)
-
-      addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
-      clearAddTodoMock = mockMutation(addTodo, addTodoSpy)
+      const addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
+      mockMutation(addTodo, addTodoSpy)
 
       const addTodoSpy2 = jest.fn().mockReturnValue(todoStoreWithTodo2)
       mockMutation(addTodo2, addTodoSpy2)
 
-      addTodo(todo2)
-      addTodo2(todo1)
-      expect(addTodoSpy).toHaveBeenCalled()
-      expect(addTodoSpy2).toHaveBeenCalled()
+      const mockedReturnValue = addTodo(todo2)
+      const mockedReturnValue2 = addTodo2(todo1)
 
-      clearAllSimpluxMocks()
+      expect(addTodoSpy).toHaveBeenCalledWith(todo2)
+      expect(mockedReturnValue).toBe(todoStoreWithTodo1)
 
-      expect(addTodo(todo1)).toEqual(todoStoreWithTodo1)
-      expect(addTodo(todo2)).toEqual(todoStoreWithBothTodos)
+      expect(addTodoSpy2).toHaveBeenCalledWith(todo1)
+      expect(mockedReturnValue2).toBe(todoStoreWithTodo2)
+    })
+
+    it('extras can be called as normal when state is mocked', () => {
+      const addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
+      mockMutation(addTodo, addTodoSpy)
 
       expect(addTodo.withState).toBeDefined()
       expect(addTodo.withState(todoStoreWithTodo1)(todo2)).toEqual(
@@ -106,6 +101,83 @@ describe(`@simplux/core-testing`, () => {
 
       expect(addTodo.asActionCreator).toBeDefined()
       expect(addTodo.asActionCreator(todo2).args[0]).toBe(todo2)
+    })
+
+    describe('mocks', () => {
+      it('can be cleared', () => {
+        const addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
+        const clear = mockMutation(addTodo, addTodoSpy)
+
+        addTodo(todo2)
+
+        clear()
+
+        const updatedState = addTodo(todo1)
+
+        expect(addTodoSpy).toHaveBeenCalledWith(todo2)
+        expect(updatedState).toEqual(todoStoreWithTodo1)
+      })
+
+      it('can be removed all at once', () => {
+        const addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
+        mockMutation(addTodo, addTodoSpy)
+
+        const addTodoSpy2 = jest.fn().mockReturnValue(todoStoreWithTodo2)
+        mockMutation(addTodo2, addTodoSpy2)
+
+        addTodo(todo2)
+        addTodo2(todo1)
+
+        clearAllSimpluxMocks()
+
+        const updatedState1 = addTodo(todo1)
+        const updatedState2 = addTodo2(todo2)
+
+        expect(addTodoSpy).toHaveBeenCalledWith(todo2)
+        expect(updatedState1).toEqual(todoStoreWithTodo1)
+
+        expect(addTodoSpy2).toHaveBeenCalledWith(todo1)
+        expect(updatedState2).toEqual(todoStoreWithBothTodos)
+      })
+
+      it('can be removed all at once for multiple modules', () => {
+        const mutationMockTestModule2 = createSimpluxModule({
+          name: 'mutationMockTest2',
+          initialState,
+        })
+
+        const { addTodo3 } = createMutations(mutationMockTestModule2, {
+          addTodo3({ todosById, todoIds }, todo: Todo) {
+            return {
+              todosById: {
+                ...todosById,
+                [todo.id]: todo,
+              },
+              todoIds: [...todoIds, todo.id],
+            }
+          },
+        })
+
+        const addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
+        mockMutation(addTodo, addTodoSpy)
+
+        const addTodoSpy3 = jest.fn().mockReturnValue(todoStoreWithTodo2)
+        mockMutation(addTodo3, addTodoSpy3)
+
+        addTodo(todo2)
+        addTodo3(todo1)
+
+        clearAllSimpluxMocks()
+
+        const updatedState1 = addTodo(todo1)
+        const updatedState3 = addTodo3(todo2)
+
+        expect(addTodoSpy).toHaveBeenCalledWith(todo2)
+        expect(updatedState1).toEqual(todoStoreWithTodo1)
+
+        expect(addTodoSpy3).toHaveBeenCalledWith(todo1)
+        expect(updatedState3).toEqual(todoStoreWithTodo2)
+      })
     })
   })
 })
