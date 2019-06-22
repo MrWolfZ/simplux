@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0-alpha.3](https://github.com/MrWolfZ/simplux/compare/v0.6.0-alpha.2...v0.6.0-alpha.3) (2019-06-22)
+
+**Note:** Version bump only for package @simplux/recipes.basics.testing-derived-state
+
+
+
+
+
 # [0.6.0-alpha.2](https://github.com/MrWolfZ/simplux/compare/v0.6.0-alpha.1...v0.6.0-alpha.2) (2019-06-11)
 
 **Note:** Version bump only for package @simplux/recipes.basics.testing-derived-state

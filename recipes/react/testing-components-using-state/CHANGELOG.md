@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0-alpha.3](https://github.com/MrWolfZ/simplux/compare/v0.6.0-alpha.2...v0.6.0-alpha.3) (2019-06-22)
+
+
+### Features
+
+* **recipes:** add text version of "testing my React components that read and change state" ([13b9b86](https://github.com/MrWolfZ/simplux/commit/13b9b86))
+* **recipes:** use explicit mocking functions instead of members in "test components using state" ([463685b](https://github.com/MrWolfZ/simplux/commit/463685b))
+
+
+
+
+
 # [0.6.0-alpha.2](https://github.com/MrWolfZ/simplux/compare/v0.6.0-alpha.1...v0.6.0-alpha.2) (2019-06-11)
 
 **Note:** Version bump only for package @simplux/recipes.react.testing-components-using-state
