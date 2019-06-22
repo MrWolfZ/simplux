@@ -33,13 +33,11 @@ describe(`@simplux/react`, () => {
     todoIds: ['1', '2'],
   }
 
-  it('works', () => {
+  describe('selector hook', () => {
     const todosModule = createSimpluxModule({
       name: 'todos',
       initialState: todoStoreWithOneTodo,
     })
-
-    const useSelector = createSelectorHook(todosModule)
 
     const { addTodo } = createMutations(todosModule, {
       addTodo({ todosById, todoIds }, todo: Todo) {
@@ -66,112 +64,148 @@ describe(`@simplux/react`, () => {
       },
     })
 
-    // tslint:disable-next-line: no-unnecessary-callback-wrapper
-    const { result: state } = renderHook(() => useSelector(s => s))
-    const { result: todoIds } = renderHook(() =>
-      useSelector(state => state.todoIds),
-    )
-    const { result: nrOfTodos } = renderHook(() =>
-      useSelector(state => Object.keys(state.todosById).length),
-    )
+    let unmounts: (() => void)[] = []
 
-    expect(state.current).toBe(todoStoreWithOneTodo)
-    expect(todoIds.current).toBe(todoStoreWithOneTodo.todoIds)
-    expect(nrOfTodos.current).toBe(1)
-
-    actHook(() => {
-      addTodo(todo2)
+    beforeEach(() => {
+      unmounts = []
+      todosModule.setState(todoStoreWithOneTodo)
     })
 
-    expect(state.current).toEqual(todoStoreWithTwoTodos)
-    expect(todoIds.current).toEqual(todoStoreWithTwoTodos.todoIds)
-    expect(nrOfTodos.current).toBe(2)
-
-    actHook(() => {
-      removeTodo(todo2.id)
+    afterEach(() => {
+      unmounts.forEach(f => f())
     })
 
-    expect(state.current).toEqual(todoStoreWithOneTodo)
-    expect(todoIds.current).toEqual(todoStoreWithOneTodo.todoIds)
-    expect(nrOfTodos.current).toBe(1)
-  })
+    it('returns the state on initial render', () => {
+      const useSelector = createSelectorHook(todosModule)
 
-  it('uses batching for notifying subscribers', () => {
-    const batchingModule = createSimpluxModule({
-      name: 'batching',
-      initialState: 0,
-    })
-
-    const useSelector = createSelectorHook(batchingModule)
-
-    const { increment } = createMutations(batchingModule, {
-      increment: c => c + 1,
-    })
-
-    const renderedItems: number[] = []
-
-    const Parent = () => {
-      const result = useSelector(c => c + 10)
-      renderedItems.push(result)
-      return <Child />
-    }
-
-    const Child = () => {
-      const result = useSelector(c => c + 20)
-      renderedItems.push(result)
-      return <div>{result}</div>
-    }
-
-    render(<Parent />)
-
-    act(() => {
-      increment()
-      increment()
-    })
-
-    // we intentionally perform the calls below outside of an `act` to
-    // simulate a store update outside of the react lifecycle (e.g. due
-    // to asynchronous events); since the testing tools log an error when
-    // this is done, we simply supress the error by mocking out the error
-    // log function
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
-
-    increment()
-    increment()
-
-    spy.mockRestore()
-
-    expect(renderedItems).toEqual([10, 20, 12, 22, 13, 23, 14, 24])
-  })
-
-  it('ignores event arg for mutation', () => {
-    const ignoreEventArgModule = createSimpluxModule({
-      name: 'ignoreEventArg',
-      initialState: 0,
-    })
-
-    const incrementSpy = jest.fn()
-
-    const { increment } = createMutations(ignoreEventArgModule, {
-      increment: incrementSpy,
-    })
-
-    const Comp = () => {
-      return (
-        <div>
-          <button id='btn' onClick={increment} />
-        </div>
+      const { result: state, unmount: unmount1 } = renderHook(() =>
+        useSelector(s => s),
       )
-    }
+      const { result: todoIds, unmount: unmount2 } = renderHook(() =>
+        useSelector(state => state.todoIds),
+      )
+      const { result: nrOfTodos, unmount: unmount3 } = renderHook(() =>
+        useSelector(state => Object.keys(state.todosById).length),
+      )
 
-    const { container } = render(<Comp />)
+      unmounts.push(unmount1, unmount2, unmount3)
 
-    const button = container.querySelector('#btn')!
-
-    act(() => {
-      fireEvent.click(button)
+      expect(state.current).toBe(todoStoreWithOneTodo)
+      expect(todoIds.current).toBe(todoStoreWithOneTodo.todoIds)
+      expect(nrOfTodos.current).toBe(1)
     })
 
-    expect(incrementSpy).toHaveBeenCalledWith(0)
+    it('re-renders when the state changes', () => {
+      const useSelector = createSelectorHook(todosModule)
+
+      const { result: state, unmount: unmount1 } = renderHook(() =>
+        useSelector(s => s),
+      )
+      const { result: todoIds, unmount: unmount2 } = renderHook(() =>
+        useSelector(state => state.todoIds),
+      )
+      const { result: nrOfTodos, unmount: unmount3 } = renderHook(() =>
+        useSelector(state => Object.keys(state.todosById).length),
+      )
+
+      unmounts.push(unmount1, unmount2, unmount3)
+
+      actHook(() => {
+        addTodo(todo2)
+      })
+
+      expect(state.current).toEqual(todoStoreWithTwoTodos)
+      expect(todoIds.current).toEqual(todoStoreWithTwoTodos.todoIds)
+      expect(nrOfTodos.current).toBe(2)
+
+      actHook(() => {
+        removeTodo(todo2.id)
+      })
+
+      expect(state.current).toEqual(todoStoreWithOneTodo)
+      expect(todoIds.current).toEqual(todoStoreWithOneTodo.todoIds)
+      expect(nrOfTodos.current).toBe(1)
+    })
+
+    it('uses batching for notifying subscribers', () => {
+      const batchingModule = createSimpluxModule({
+        name: 'batching',
+        initialState: 0,
+      })
+
+      const useSelector = createSelectorHook(batchingModule)
+
+      const { increment } = createMutations(batchingModule, {
+        increment: c => c + 1,
+      })
+
+      const renderedItems: number[] = []
+
+      const Parent = () => {
+        const result = useSelector(c => c + 10)
+        renderedItems.push(result)
+        return <Child />
+      }
+
+      const Child = () => {
+        const result = useSelector(c => c + 20)
+        renderedItems.push(result)
+        return <div>{result}</div>
+      }
+
+      render(<Parent />)
+
+      act(() => {
+        increment()
+        increment()
+      })
+
+      // we intentionally perform the calls below outside of an `act` to
+      // simulate a store update outside of the react lifecycle (e.g. due
+      // to asynchronous events); since the testing tools log an error when
+      // this is done, we simply supress the error by mocking out the error
+      // log function
+      const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
+
+      increment()
+      increment()
+
+      spy.mockRestore()
+
+      expect(renderedItems).toEqual([10, 20, 12, 22, 13, 23, 14, 24])
+    })
+  })
+
+  describe('mutations', () => {
+    it('ignore event arg', () => {
+      const ignoreEventArgModule = createSimpluxModule({
+        name: 'ignoreEventArg',
+        initialState: 0,
+      })
+
+      const incrementSpy = jest.fn()
+
+      const { increment } = createMutations(ignoreEventArgModule, {
+        increment: incrementSpy,
+      })
+
+      const Comp = () => {
+        return (
+          <div>
+            <button id='btn' onClick={increment} />
+          </div>
+        )
+      }
+
+      const { container } = render(<Comp />)
+
+      const button = container.querySelector('#btn')!
+
+      act(() => {
+        fireEvent.click(button)
+      })
+
+      expect(incrementSpy).toHaveBeenCalledWith(0)
+    })
   })
 })
