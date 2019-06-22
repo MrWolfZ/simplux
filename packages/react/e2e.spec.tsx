@@ -1,8 +1,8 @@
 // this file contains an end-to-end test for the public API
 
 import { createMutations, createSimpluxModule } from '@simplux/core'
-import { clearAllSimpluxMocks, mockModuleState } from '@simplux/core-testing'
 import { createSelectorHook } from '@simplux/react'
+import { clearAllSimpluxMocks, mockModuleState } from '@simplux/testing'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import React from 'react'
 import { act as actHook, renderHook } from 'react-hooks-testing-library'

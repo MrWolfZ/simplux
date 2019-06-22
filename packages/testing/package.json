@@ -1,7 +1,7 @@
 {
-  "name": "@simplux/core-testing",
+  "name": "@simplux/testing",
   "version": "0.6.0-alpha.2",
-  "description": "The testing package for simplux's core functionality. Contains various testing utilities (e.g. for mocking mutations).",
+  "description": "The testing package for simplux. Contains various testing utilities (e.g. for mocking module states and mutations).",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
   "main": "./bundles/bundle.umd.js",
@@ -13,7 +13,7 @@
     "lint-ci": "npm run lint -- --fix=false",
     "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --config=./jest.config.js",
     "test-ci": "npm run test -- --runInBand --ci --coverage",
-    "report-coverage": "codecov -f ./coverage/lcov.info --disable=gcov -F core",
+    "report-coverage": "codecov -f ./coverage/lcov.info --disable=gcov -F testing",
     "publish:custom": "npm publish ./dist --access public"
   },
   "repository": {
@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/MrWolfZ/simplux/issues"
   },
-  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/packages/core-testing#readme",
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/packages/testing#readme",
   "keywords": [
     "redux",
     "simplux",

@@ -5,9 +5,9 @@ import {
   clearAllSimpluxMocks,
   mockModuleState,
   mockMutation,
-} from '@simplux/core-testing'
+} from '@simplux/testing'
 
-describe(`@simplux/core-testing`, () => {
+describe(`@simplux/testing`, () => {
   interface Todo {
     id: string
     description: string

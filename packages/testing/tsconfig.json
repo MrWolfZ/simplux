@@ -6,7 +6,7 @@
     "paths": {
       "@simplux/core": ["../core/dist"],
       "@simplux/core/*": ["../core/dist/*"],
-      "@simplux/core-testing": ["."]
+      "@simplux/testing": ["."]
     }
   },
   "include": ["index.ts", "e2e.spec.ts", "src/**/*.ts"]

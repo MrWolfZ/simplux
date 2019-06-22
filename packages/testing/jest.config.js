@@ -3,7 +3,7 @@ module.exports = {
   moduleFileExtensions: ['js', 'ts'],
   moduleNameMapper: {
     '^@simplux/core$': '<rootDir>/../core/index.ts',
-    '^@simplux/core-testing$': '<rootDir>/index.ts',
+    '^@simplux/testing$': '<rootDir>/index.ts',
   },
   transform: {
     '^.+\\.ts$': 'ts-jest',

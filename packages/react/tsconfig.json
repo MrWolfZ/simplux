@@ -7,8 +7,8 @@
     "paths": {
       "@simplux/core": ["../core/dist"],
       "@simplux/core/*": ["../core/dist/*"],
-      "@simplux/core-testing": ["../core-testing/dist"],
-      "@simplux/core-testing/*": ["../core-testing/dist/*"],
+      "@simplux/testing": ["../testing/dist"],
+      "@simplux/testing/*": ["../testing/dist/*"],
       "@simplux/react": ["."]
     },
     "lib": ["dom", "esnext"]
