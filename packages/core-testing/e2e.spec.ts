@@ -38,72 +38,74 @@ describe(`@simplux/core-testing`, () => {
     todoIds: ['1', '2'],
   }
 
-  it('works', () => {
-    const todosModule = createSimpluxModule({
-      name: 'todos',
-      initialState,
+  describe('mutations', () => {
+    it('can be mocked', () => {
+      const mutationMockTestModule = createSimpluxModule({
+        name: 'mutationMockTest',
+        initialState,
+      })
+
+      const { addTodo, addTodo2 } = createMutations(mutationMockTestModule, {
+        addTodo({ todosById, todoIds }, todo: Todo) {
+          return {
+            todosById: {
+              ...todosById,
+              [todo.id]: todo,
+            },
+            todoIds: [...todoIds, todo.id],
+          }
+        },
+
+        addTodo2({ todosById, todoIds }, todo: Todo) {
+          return {
+            todosById: {
+              ...todosById,
+              [todo.id]: todo,
+            },
+            todoIds: [...todoIds, todo.id],
+          }
+        },
+      })
+
+      let addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
+      let clearAddTodoMock = mockMutation(addTodo, addTodoSpy)
+
+      let mockedReturnValue = addTodo(todo2)
+      expect(addTodoSpy).toHaveBeenCalled()
+      expect(mockedReturnValue).toBe(todoStoreWithTodo1)
+
+      clearAddTodoMock()
+
+      addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo2)
+      clearAddTodoMock = mockMutation(addTodo, addTodoSpy, 1)
+
+      mockedReturnValue = addTodo(todo1)
+      expect(addTodoSpy).toHaveBeenCalled()
+      expect(mockedReturnValue).toBe(todoStoreWithTodo2)
+
+      addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
+      clearAddTodoMock = mockMutation(addTodo, addTodoSpy)
+
+      const addTodoSpy2 = jest.fn().mockReturnValue(todoStoreWithTodo2)
+      mockMutation(addTodo2, addTodoSpy2)
+
+      addTodo(todo2)
+      addTodo2(todo1)
+      expect(addTodoSpy).toHaveBeenCalled()
+      expect(addTodoSpy2).toHaveBeenCalled()
+
+      clearAllSimpluxMocks()
+
+      expect(addTodo(todo1)).toEqual(todoStoreWithTodo1)
+      expect(addTodo(todo2)).toEqual(todoStoreWithBothTodos)
+
+      expect(addTodo.withState).toBeDefined()
+      expect(addTodo.withState(todoStoreWithTodo1)(todo2)).toEqual(
+        todoStoreWithBothTodos,
+      )
+
+      expect(addTodo.asActionCreator).toBeDefined()
+      expect(addTodo.asActionCreator(todo2).args[0]).toBe(todo2)
     })
-
-    const { addTodo, addTodo2 } = createMutations(todosModule, {
-      addTodo({ todosById, todoIds }, todo: Todo) {
-        return {
-          todosById: {
-            ...todosById,
-            [todo.id]: todo,
-          },
-          todoIds: [...todoIds, todo.id],
-        }
-      },
-
-      addTodo2({ todosById, todoIds }, todo: Todo) {
-        return {
-          todosById: {
-            ...todosById,
-            [todo.id]: todo,
-          },
-          todoIds: [...todoIds, todo.id],
-        }
-      },
-    })
-
-    let addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
-    let clearAddTodoMock = mockMutation(addTodo, addTodoSpy)
-
-    let mockedReturnValue = addTodo(todo2)
-    expect(addTodoSpy).toHaveBeenCalled()
-    expect(mockedReturnValue).toBe(todoStoreWithTodo1)
-
-    clearAddTodoMock()
-
-    addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo2)
-    clearAddTodoMock = mockMutation(addTodo, addTodoSpy, 1)
-
-    mockedReturnValue = addTodo(todo1)
-    expect(addTodoSpy).toHaveBeenCalled()
-    expect(mockedReturnValue).toBe(todoStoreWithTodo2)
-
-    addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
-    clearAddTodoMock = mockMutation(addTodo, addTodoSpy)
-
-    const addTodoSpy2 = jest.fn().mockReturnValue(todoStoreWithTodo2)
-    mockMutation(addTodo2, addTodoSpy2)
-
-    addTodo(todo2)
-    addTodo2(todo1)
-    expect(addTodoSpy).toHaveBeenCalled()
-    expect(addTodoSpy2).toHaveBeenCalled()
-
-    clearAllSimpluxMocks()
-
-    expect(addTodo(todo1)).toEqual(todoStoreWithTodo1)
-    expect(addTodo(todo2)).toEqual(todoStoreWithBothTodos)
-
-    expect(addTodo.withState).toBeDefined()
-    expect(addTodo.withState(todoStoreWithTodo1)(todo2)).toEqual(
-      todoStoreWithBothTodos,
-    )
-
-    expect(addTodo.asActionCreator).toBeDefined()
-    expect(addTodo.asActionCreator(todo2).args[0]).toBe(todo2)
   })
 })
