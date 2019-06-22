@@ -1,7 +1,11 @@
 // this file contains an end-to-end test for the public API
 
 import { createMutations, createSimpluxModule } from '@simplux/core'
-import { clearAllSimpluxMocks, mockMutation } from '@simplux/core-testing'
+import {
+  clearAllSimpluxMocks,
+  mockModuleState,
+  mockMutation,
+} from '@simplux/core-testing'
 
 describe(`@simplux/core-testing`, () => {
   interface Todo {
@@ -40,6 +44,56 @@ describe(`@simplux/core-testing`, () => {
 
   afterEach(clearAllSimpluxMocks)
 
+  describe('module', () => {
+    const moduleMockTestModule = createSimpluxModule({
+      name: 'moduleMockTest1',
+      initialState,
+    })
+
+    beforeEach(() => {
+      moduleMockTestModule.setState(initialState)
+    })
+
+    it('state can be mocked', () => {
+      mockModuleState(moduleMockTestModule, todoStoreWithTodo1)
+
+      expect(moduleMockTestModule.getState()).toBe(todoStoreWithTodo1)
+    })
+
+    it('calls subscribers with mocked state on subscribe', () => {
+      const handlerSpy = jest.fn()
+
+      mockModuleState(moduleMockTestModule, todoStoreWithTodo1)
+
+      moduleMockTestModule.subscribeToStateChanges(handlerSpy)
+
+      expect(handlerSpy).toHaveBeenCalledWith(todoStoreWithTodo1)
+    })
+
+    it('does not call existing subscribers with mocked state when it is set', () => {
+      const handlerSpy = jest.fn()
+
+      moduleMockTestModule.subscribeToStateChanges(handlerSpy)
+
+      handlerSpy.mockClear()
+
+      mockModuleState(moduleMockTestModule, todoStoreWithTodo1)
+
+      expect(handlerSpy).not.toHaveBeenCalled()
+    })
+
+    describe('mock state value', () => {
+      it('can be cleared', () => {
+        const clear = mockModuleState(moduleMockTestModule, todoStoreWithTodo1)
+
+        expect(moduleMockTestModule.getState()).toBe(todoStoreWithTodo1)
+
+        clear()
+
+        expect(moduleMockTestModule.getState()).toBe(initialState)
+      })
+    })
+  })
 
   describe('mutations', () => {
     const mutationMockTestModule = createSimpluxModule({
