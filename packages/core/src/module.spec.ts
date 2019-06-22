@@ -116,12 +116,27 @@ describe('module', () => {
     describe(`getState`, () => {
       it('returns initial state', () => {
         const initialState = { prop: 'value' }
-        const { getState } = createModule(simpluxStore, {
-          name: 'test',
+        const testModule = createModule(simpluxStore, {
+          name: 'getStateTest',
           initialState,
         })
 
-        expect(getState()).toBe(initialState)
+        expect(testModule.getState()).toBe(initialState)
+      })
+
+      it('returns mocked state if set', () => {
+        const initialState = { prop: 'value' }
+        const testModule = createModule(simpluxStore, {
+          name: 'getStateTest',
+          initialState,
+        })
+
+        const internals = (testModule as unknown) as SimpluxModuleInternals
+
+        const mockStateValue: typeof initialState = { prop: 'mocked' }
+        internals.extensionStateContainer.mockStateValue = mockStateValue
+
+        expect(testModule.getState()).toBe(mockStateValue)
       })
     })
 
@@ -129,7 +144,7 @@ describe('module', () => {
       it('replaces the whole state', () => {
         const replacedState = { prop: 'updated' }
         const { getState, setState } = createModule(simpluxStore, {
-          name: 'test',
+          name: 'setStateTest',
           initialState: { prop: 'value' },
         })
 
@@ -150,7 +165,7 @@ describe('module', () => {
 
       beforeEach(() => {
         const module = createModule(simpluxStore, {
-          name: 'test',
+          name: 'subscribeToStateChangesTest',
           initialState,
         })
 
@@ -170,6 +185,24 @@ describe('module', () => {
 
       it('calls handler immediately with state', () => {
         expect(handlerSpy).toHaveBeenCalledWith(initialState)
+      })
+
+      it('calls handler immediately with mock state if set', () => {
+        const testModule = createModule(simpluxStore, {
+          name: 'subscribeToStateChangesTest',
+          initialState,
+        })
+
+        const internals = (testModule as unknown) as SimpluxModuleInternals
+
+        const mockStateValue: typeof initialState = { prop: 'mocked' }
+        internals.extensionStateContainer.mockStateValue = mockStateValue
+
+        const unsubscribe2 = testModule.subscribeToStateChanges(handlerSpy)
+
+        expect(handlerSpy).toHaveBeenCalledWith(mockStateValue)
+
+        unsubscribe2()
       })
 
       it('calls handler whenever the module state changes', () => {

@@ -90,7 +90,16 @@ export function createModule<TState>(
 ): SimpluxModule<TState> {
   const { getState, dispatch, subscribe, setReducer } = store
 
-  const getModuleState = () => getState()[config.name]
+  const extensionStateContainer: SimpluxModuleExtensionStateContainer = {}
+
+  const getModuleState = (): TState => {
+    if (extensionStateContainer.mockStateValue) {
+      return extensionStateContainer.mockStateValue as TState
+    }
+
+    return getState()[config.name]
+  }
+
   const setModuleState = (state: TState) => {
     dispatch({
       type: `@simplux/${config.name}/setState`,
@@ -134,8 +143,6 @@ export function createModule<TState>(
       }
     }
   }
-
-  const extensionStateContainer: SimpluxModuleExtensionStateContainer = {}
 
   const mutationsContainer = (extensionStateContainer.mutations ||
     {}) as MutationsBase<TState>
