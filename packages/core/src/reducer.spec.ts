@@ -48,31 +48,4 @@ describe(`reducer`, () => {
     })
     expect(result).toEqual({ test: 'updated' })
   })
-
-  it('freezes the state if feature flag is set', () => {
-    const freezingReducer = createModuleReducer(
-      'test',
-      {
-        test: 'test',
-      },
-      {
-        update: state => {
-          state.test = 'updated'
-          return state
-        },
-      },
-    )
-
-    expect(() =>
-      freezingReducer(
-        undefined,
-        {
-          type: '@simplux/test/mutation/update',
-          mutationName: 'update',
-          args: [],
-        },
-        () => true,
-      ),
-    ).toThrowError(/Cannot assign to read only property/)
-  })
 })
