@@ -1,5 +1,6 @@
 import { AnyAction, Reducer } from 'redux'
-import { createModuleReducer, MutationsBase } from './mutations'
+import { MutationsBase } from './mutations'
+import { createModuleReducer } from './reducer'
 import { SimpluxStore, simpluxStore } from './store'
 
 export interface SimpluxModuleConfig<TState> {

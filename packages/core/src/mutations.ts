@@ -1,4 +1,3 @@
-import { Action } from 'redux'
 import { SimpluxModule, SimpluxModuleInternals } from './module'
 
 // this interface exists purely to allow plugins to overwrite the return type of mutations
@@ -114,53 +113,8 @@ export type MutationsFactory<TState> = <
   mutations: TMutations,
 ) => ResolvedMutations<TState, TMutations>
 
-const createMutationPrefix = (moduleName: string) =>
+export const createMutationPrefix = (moduleName: string) =>
   `@simplux/${moduleName}/mutation/`
-
-const getIsDevelopmentMode = () =>
-  process.env && process.env.NODE_ENV === 'development'
-
-export function createModuleReducer<TState>(
-  moduleName: string,
-  initialState: TState,
-  moduleMutations: MutationsBase<TState>,
-) {
-  const mutationPrefix = createMutationPrefix(moduleName)
-
-  return <TAction extends Action<string>>(
-    state = initialState,
-    action: TAction,
-
-    // this third non-standard argument only exists to allow the immer extension
-    // to override the freezing behaviour; it is a getter function instead of a
-    // boolean to allow testing the different behaviours during testing by
-    // changing the environment
-    storeShouldBeFrozenDuringMutations = getIsDevelopmentMode,
-  ): TState => {
-    if (action.type.startsWith(mutationPrefix)) {
-      const { mutationName, args } = action as any
-      const mutation = moduleMutations[mutationName]
-
-      if (!mutation) {
-        throw new Error(
-          `mutation '${mutationName}' does not exist in module '${moduleName}'`,
-        )
-      }
-
-      if (storeShouldBeFrozenDuringMutations()) {
-        state = Object.freeze(state)
-      }
-
-      return mutation(state, ...args) || state
-    }
-
-    if (action.type === `@simplux/${moduleName}/setState`) {
-      return (action as any).state
-    }
-
-    return state
-  }
-}
 
 // this helper function allows creating a function with a dynamic name
 function nameFunction<T extends (...args: any[]) => any>(
