@@ -228,6 +228,26 @@ describe('module', () => {
         expect(handlerSpy).toHaveBeenCalledTimes(1)
       })
 
+      it('does not call the handler if the mock state is set', () => {
+        const testModule = createModule(simpluxStore, {
+          name: 'subscribeToStateChangesTest',
+          initialState,
+        })
+
+        const unsubscribe2 = testModule.subscribeToStateChanges(handlerSpy)
+
+        handlerSpy.mockClear()
+
+        const internals = (testModule as unknown) as SimpluxModuleInternals
+
+        const mockStateValue: typeof initialState = { prop: 'mocked' }
+        internals.extensionStateContainer.mockStateValue = mockStateValue
+
+        expect(handlerSpy).not.toHaveBeenCalled()
+
+        unsubscribe2()
+      })
+
       it('subscribes to the store only once even if multiple handlers are subscribed', () => {
         subscribeToStateChanges(handlerSpy)
 
