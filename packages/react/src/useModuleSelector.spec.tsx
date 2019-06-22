@@ -35,6 +35,7 @@ describe(useModuleSelector.name, () => {
     unsubscribeMock = jest.fn()
     subscribeToModuleStateChangesMock = jest.fn().mockImplementation(s => {
       subscriber = s
+      subscriber(moduleState)
       return unsubscribeMock
     })
 
@@ -188,6 +189,29 @@ describe(useModuleSelector.name, () => {
       const { result } = renderHook(() => useSelector(s => s.count))
 
       expect(result.current).toEqual(11)
+      expect(getModuleStateMock).not.toHaveBeenCalled()
+    })
+
+    it('selects the mock when subscriber is called', () => {
+      const useSelector = createSelectorHook(moduleMock)
+
+      moduleMock.extensionStateContainer.reactSelectorHookStateMock = {
+        count: 11,
+      }
+
+      const { result } = renderHook(() => useSelector(s => s.count))
+
+      expect(result.current).toEqual(11)
+
+      moduleMock.extensionStateContainer.reactSelectorHookStateMock = {
+        count: 12,
+      }
+
+      actHook(() => {
+        subscriber({ count: 1 })
+      })
+
+      expect(result.current).toEqual(12)
     })
   })
 
