@@ -1,3 +1,4 @@
+import { createImmerReducer } from './immer'
 import { SimpluxModule, SimpluxModuleInternals } from './module'
 import {
   createMutations,
@@ -48,10 +49,8 @@ describe('mutations', () => {
 
     beforeEach(() => {
       moduleMutations = moduleMock.extensionStateContainer.mutations as any
-      const moduleReducer = createModuleReducer(
-        'test',
-        moduleState,
-        moduleMutations,
+      const moduleReducer = createImmerReducer(
+        createModuleReducer('test', moduleState, moduleMutations),
       )
 
       moduleReducerSpy = jest.fn().mockImplementation(moduleReducer)
@@ -146,6 +145,28 @@ describe('mutations', () => {
           mutationName: 'increment',
           args: ['foo', { nestedArg: true }],
         })
+      })
+
+      it('does not mutate the state when called with state', () => {
+        const objectState = { prop: 'value' }
+        moduleState = objectState as any
+
+        const { update } = createMutations(
+          (moduleMock as any) as SimpluxModule<typeof objectState>,
+          {
+            // tslint:disable-next-line: no-unnecessary-callback-wrapper variable-name
+            update: (state, _arg1: string, _arg2: { nestedArg: boolean }) => {
+              state.prop = 'updated'
+            },
+          },
+        )
+
+        const updatedState = update.withState(objectState)('foo', {
+          nestedArg: true,
+        })
+
+        expect(updatedState.prop).toBe('updated')
+        expect(objectState.prop).toBe('value')
       })
 
       it('returns the action if called as action creator', () => {
