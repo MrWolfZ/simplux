@@ -6,6 +6,7 @@
 // provide the store to simplux
 
 import {
+  createMutations,
   createSimpluxModule,
   getSimpluxReducer,
   setReduxStoreForSimplux,
@@ -23,12 +24,12 @@ setReduxStoreForSimplux(store, s => s.simplux)
 
 // now when we create a module and call mutations we will see
 // them in the Redux DevTools
-const { createMutations } = createSimpluxModule({
+const counterModule = createSimpluxModule({
   name: 'counter',
   initialState: 0,
 })
 
-const { increment, incrementBy } = createMutations({
+const { increment, incrementBy } = createMutations(counterModule, {
   increment: c => c + 1,
   incrementBy: (c, amount: number) => c + amount,
 })

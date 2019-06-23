@@ -33,14 +33,14 @@ setReduxStoreForSimplux(store, s => s.simplux)
 Now, when we create a **simplux** module and call its mutations we can see them in the DevTools.
 
 ```ts
-import { createSimpluxModule } from '@simplux/core'
+import { createMutations, createSimpluxModule } from '@simplux/core'
 
-const { createMutations } = createSimpluxModule({
+const counterModule = createSimpluxModule({
   name: 'counter',
   initialState: 0,
 })
 
-const { increment, incrementBy } = createMutations({
+const { increment, incrementBy } = createMutations(counterModule, {
   increment: c => c + 1,
   incrementBy: (c, amount: number) => c + amount,
 })
