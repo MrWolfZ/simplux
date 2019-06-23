@@ -19,6 +19,7 @@
     "recipe",
     "redux",
     "simplux",
+    "testing",
     "typescript"
   ],
   "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
