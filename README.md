@@ -19,7 +19,6 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 
 - [getting started](recipes/basics/getting-started#readme)
 - [testing my state changes](recipes/basics/testing-state-changes#readme)
-- [simplifying my state changes](recipes/basics/simplifying-state-changes#readme)
 - [computing derived state](recipes/basics/computing-derived-state#readme)
 - [testing derived state](recipes/basics/testing-derived-state#readme)
 - [performing asynchronous tasks](recipes/basics/performing-async-tasks#readme) (work-in-progress)
