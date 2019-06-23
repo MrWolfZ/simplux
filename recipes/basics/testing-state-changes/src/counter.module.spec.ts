@@ -1,36 +1,29 @@
 // this code is part of the simplux recipe "testing state changes":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/testing-state-changes
 
-import { increment, incrementBy, setCounterState } from './counter.module'
+import { CounterState, increment, incrementBy } from './counter.module'
 
 describe('counter module', () => {
+  // by default our mutations will update their module's state when
+  // called; however, it is best to test our mutations in isolation
+  // with a specific state value
+  const testState: CounterState = { counter: 10 }
+
   describe('mutations', () => {
     describe('increment', () => {
       it('increments the counter by one', () => {
-        // to test your mutation easily with any state you can use
-        // `withState` to provide a custom module state
-        const result1 = increment.withState({ counter: 10 })()
-        expect(result1.counter).toBe(11)
-
-        // if you prefer, you can also test the mutation by setting
-        // the module state and executing the mutation as usual
-        setCounterState({ counter: 20 })
-        const result2 = increment()
-        expect(result2.counter).toBe(21)
+        // mutations are tested in isolation by providing a custom
+        // state value with `withState`
+        const result = increment.withState(testState)()
+        expect(result.counter).toBe(11)
       })
     })
 
     describe('incrementBy', () => {
       it('increments the counter by the provided amount', () => {
-        // of course you can also provide arguments to your mutations;
-        // either by providing a custom module state directly
-        const result1 = incrementBy.withState({ counter: 10 })(5)
-        expect(result1.counter).toBe(15)
-
-        // or by setting the module state and calling the mutation
-        setCounterState({ counter: 20 })
-        const result2 = incrementBy(5)
-        expect(result2.counter).toBe(25)
+        // of course you can also provide arguments to your mutations
+        const result = incrementBy.withState(testState)(5)
+        expect(result.counter).toBe(15)
       })
     })
   })

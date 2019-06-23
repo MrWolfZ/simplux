@@ -17,58 +17,50 @@ Now we're ready to go.
 State changes in **simplux** are performed through _mutations_. Mutations are very simple to test as you will see. For this recipe we use a simple counter module with two mutations.
 
 ```ts
-const { setState, createMutations } = createSimpluxModule({
+import { createMutations, createSimpluxModule } from '@simplux/core'
+
+interface CounterState {
+  counter: number
+}
+
+const counterModule = createSimpluxModule<CounterState>({
   name: 'counter',
   initialState: {
     counter: 0,
   },
 })
 
-const { increment, incrementBy } = createMutations({
-  increment: state => ({ ...state, counter: state.counter + 1 }),
-  incrementBy: (state, amount: number) => ({
-    ...state,
-    counter: state.counter + amount,
-  }),
+const { increment, incrementBy } = createMutations(counterModule, {
+  increment: state => {
+    state.counter += 1
+  },
+
+  incrementBy: (state, amount: number) => {
+    state.counter += amount
+  },
 })
 ```
 
-Let's start by testing our `increment` mutation. The recommended approach is to test the mutation in isolation by using `withState`.
+Let's start by testing our `increment` mutation. By default mutations will update their module's state when called. However, it is best to test our mutations in isolation with a specific state value. This can be done by using `withState`.
 
 ```ts
+const testState: CounterState = { counter: 10 }
+
 describe('increment', () => {
   it('increments the counter by one', () => {
-    const result = increment.withState({ counter: 10 })()
+    const result = increment.withState(testState)()
     expect(result.counter).toBe(11)
   })
 })
 ```
 
-By default a mutation is applied to the module's current state. `withState` allows you to provide a custom module state for calling the mutation. This way the mutation is tested in perfect isolation since no changes to the module are performed.
-
-However, in certain scenarios it may be useful to test the mutation with the module. To achieve this we can simply set the module's state to the required value before calling the mutation.
-
-```ts
-describe('increment', () => {
-  it('increments the counter by one', () => {
-    setState({ counter: 10 })
-    const result = increment()
-    expect(result.counter).toBe(11)
-  })
-})
-```
-
-Both of these approaches also work with mutations that take arguments.
+We can also use `withState` to test our mutations that take arguments.
 
 ```ts
 describe('incrementBy', () => {
   it('increments the counter by the provided amount', () => {
-    const result1 = incrementBy.withState({ counter: 10 })(5)
-    expect(result1.counter).toBe(15)
-
-    setState({ counter: 20 })
-    const result2 = incrementBy(5)
-    expect(result2.counter).toBe(25)
+    const result = incrementBy.withState(testState)(5)
+    expect(result.counter).toBe(15)
   })
 })
 ```
