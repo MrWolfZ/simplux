@@ -153,4 +153,4 @@ In the [code for this recipe](src/todos) you can see the recommended way of stru
 
 We hope this recipe could give you some pointers for how you can create non-trivial **simplux** modules in your application.
 
-By now you are certainly curious how **simplux** can help you in other scenarios. Our [other recipes](../../../../..#recipes) are an excellent starting point for this.
+Have a look at our [other recipes](../../../../..#recipes) to learn how **simplux** can help you make your life simple in other situations.
