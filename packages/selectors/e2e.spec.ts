@@ -6,9 +6,12 @@ import {
   setReduxStoreForSimplux,
 } from '@simplux/core'
 import { createSelectors } from '@simplux/selectors'
+import { clearAllSimpluxMocks, mockModuleState } from '@simplux/testing'
 import { createStore } from 'redux'
 
 describe(`@simplux/selectors`, () => {
+  afterEach(clearAllSimpluxMocks)
+
   interface Todo {
     id: string
     description: string
@@ -22,6 +25,11 @@ describe(`@simplux/selectors`, () => {
 
   const todo1: Todo = { id: '1', description: 'go shopping', isDone: true }
   const todo2: Todo = { id: '2', description: 'clean house', isDone: false }
+
+  const todoStoreWithOneTodo: TodoState = {
+    todosById: { '1': todo1 },
+    todoIds: ['1'],
+  }
 
   const todoStoreWithTwoTodos: TodoState = {
     todosById: { '1': todo1, '2': todo2 },
@@ -55,5 +63,26 @@ describe(`@simplux/selectors`, () => {
     )
     expect(nrOfTodos.withLatestModuleState()).toBe(2)
     cleanup()
+  })
+
+  describe('mocking', () => {
+    it('works for calling selectors with latest module state', () => {
+      const todosModule = createSimpluxModule({
+        name: 'mockTestTodosModule',
+        initialState: todoStoreWithTwoTodos,
+      })
+
+      const { nrOfTodos } = createSelectors(todosModule, {
+        nrOfTodos: ({ todoIds }) => todoIds.length,
+      })
+
+      expect(nrOfTodos(todoStoreWithTwoTodos)).toBe(2)
+      expect(nrOfTodos.withLatestModuleState()).toBe(2)
+
+      mockModuleState(todosModule, todoStoreWithOneTodo)
+
+      expect(nrOfTodos(todoStoreWithTwoTodos)).toBe(2)
+      expect(nrOfTodos.withLatestModuleState()).toBe(1)
+    })
   })
 })
