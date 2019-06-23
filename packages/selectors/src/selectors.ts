@@ -77,14 +77,14 @@ export interface SelectorsExtensionStateContainer<TState> {
  * that takes the module state and optionally additional parameters
  * and returns some selected value.
  *
- * The selector must be a pure function. It's result is memoized
- * by simplux for the latest state and parameters.
+ * The selector must be a pure function. Its result is memoized
+ * for the latest state and parameters.
  *
  * @param simpluxModule the module to create selectors for
  * @param selectors the selectors to create
  *
  * @returns an object that contains a function for each provided
- * selector which can be called to select the value
+ * selector
  */
 export function createSelectors<
   TState,
