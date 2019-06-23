@@ -12,13 +12,6 @@ Before we start let's install all the packages we need.
 npm i @simplux/core @simplux/selectors redux -S
 ```
 
-We also need to activate the selectors extension by importing the package. It is recommended to place this import in the root file of your application.
-
-```ts
-// this import registers the simplux selectors extension
-import '@simplux/selectors'
-```
-
 Now we're ready to go.
 
 In **simplux** all state is contained in _modules_, so let's create one.
@@ -37,8 +30,10 @@ const counterModule = createSimpluxModule({
 To compute derived state for our module we can define so-called _selectors_. A selector is a pure function that takes the module's current state - and optionally some additional arguments - and returns some derived value.
 
 ```ts
+import { createSelectors } from '@simplux/selectors'
+
 // to compute derived state we can define selectors
-const { plusOne, plus } = counterModule.createSelectors({
+const { plusOne, plus } = createSelectors(counterModule, {
   // we can have selectors that only use the state
   plusOne: ({ counter }) => counter + 1,
 
@@ -48,23 +43,23 @@ const { plusOne, plus } = counterModule.createSelectors({
 
 // a selector needs to be provided with the state and any
 // additional arguments it requires
-console.log(`20 + 1:`, plusOne({ counter: 20 }))
-console.log(`20 + 5:`, plus({ counter: 20 }, 5))
-console.log(`state + 10:`, plus(counterModule.getState(), 10))
+console.log(`20 + 1:`, plusOne({ counter: 20 })) // prints 21
+console.log(`20 + 5:`, plus({ counter: 20 }, 5)) // prints 25
+console.log(`state + 10:`, plus(counterModule.getState(), 10)) // prints 20
 ```
 
 In certain situations it can be useful to have a selector that is always bound to the module's latest state, which `withLatestModuleState` allows you to do.
 
 ```ts
 // you can also call a selector bound to the module's latest state
-console.log(`state + 1:`, plusOne.withLatestModuleState())
-console.log(`state + 5:`, plus.withLatestModuleState(5))
+console.log(`state + 1:`, plusOne.withLatestModuleState()) // prints 11
+console.log(`state + 5:`, plus.withLatestModuleState(5)) // prints 15
 
 // when the module's state is changed, the selector will get
 // called with the changed state
 const plusLatest = plus.withLatestModuleState
 counterModule.setState({ counter: 50 })
-console.log(`changed state + 5:`, plusLatest(5))
+console.log(`changed state + 5:`, plusLatest(5)) // prints 55
 ```
 
 And that is all you need to compute derived state with **simplux**.

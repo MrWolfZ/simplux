@@ -2,8 +2,7 @@
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/computing-derived-state
 
 import { createSimpluxModule } from '@simplux/core'
-// this import registers the simplux selectors extension
-import '@simplux/selectors'
+import { createSelectors } from '@simplux/selectors'
 
 const counterModule = createSimpluxModule({
   name: 'counter',
@@ -16,7 +15,7 @@ const counterModule = createSimpluxModule({
 // is a pure function that takes the module's current state and
 // optionally some additional arguments and returns some derived
 // value
-const { plusOne, plus } = counterModule.createSelectors({
+const { plusOne, plus } = createSelectors(counterModule, {
   // we can have selectors that only use the state
   plusOne: ({ counter }) => counter + 1,
 
