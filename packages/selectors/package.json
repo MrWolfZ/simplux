@@ -35,5 +35,8 @@
   "private": false,
   "dependencies": {
     "@simplux/core": "0.6.0-alpha.3"
+  },
+  "devDependencies": {
+    "@simplux/testing": "0.6.0-alpha.3"
   }
 }
