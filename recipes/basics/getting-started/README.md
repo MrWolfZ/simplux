@@ -12,7 +12,7 @@ npm i @simplux/core redux -S
 
 Now we're ready to go.
 
-In **simplux** all state is contained in _modules_. Your application will consist of many such modules, but for now we will only create a simple one that contains a counter. Once you have finished this recipe, you can head over to the recipe for [organizing your application state](../../advanced/organizing-application-state#readme) to get more insights into how to do that effectively.
+In **simplux** all state is contained in _modules_. Your application will consist of many such modules, but for now we will only create a simple one that contains a counter. Once you have finished this recipe, you can head over to the recipe for [organizing your application state](../../advanced/organizing-application-state#readme) to get more insights into how to organize your application into multiple modules effectively.
 
 ```ts
 import { createSimpluxModule } from '@simplux/core'
@@ -22,7 +22,7 @@ const counterModule = createSimpluxModule({
   // this name uniquely identifies our module
   name: 'counter',
 
-  // this value determines the shape of our state
+  // we use a simple number as the state
   initialState: {
     counter: 0,
   },
@@ -32,19 +32,22 @@ const counterModule = createSimpluxModule({
 console.log('initial state:', counterModule.getState())
 ```
 
-The most interesting thing you can do with state is to change it. In **simplux** that is done with mutations. A mutation is a pure function that takes the current module state - and optionally some additional arguments - and returns a new updated state.
+The most interesting thing you can do with state is to change it. In **simplux** that is done with mutations. A mutation is a pure function that takes the module's current state - and optionally some additional arguments - and updates the state.
 
 ```ts
+import { createMutations } from '@simplux/core'
+
 // to change the state, we can define mutations
-const { increment, incrementBy } = counterModule.createMutations({
+const { increment, incrementBy } = createMutations(counterModule, {
   // we can have mutations that only use the state
-  increment: state => ({ ...state, counter: state.counter + 1 }),
+  increment: state => {
+    state.counter += 1
+  },
 
   // but they can also have arguments
-  incrementBy: (state, amount: number) => ({
-    ...state,
-    counter: state.counter + amount,
-  }),
+  incrementBy: (state, amount: number) => {
+    state.counter += amount
+  },
 })
 
 // to update the module's state, simply call a mutation
@@ -59,7 +62,7 @@ console.log('incremented counter by 5:', counterModule.getState())
 console.log('final state:', increment())
 ```
 
-> In contrast to their name, mutations do not really mutate the state but instead create a modified copy. However, conceptually they _do_ mutate the state, which is why we call them mutations instead of the traditional redux name _reducers_. We believe that it is more important to name things for what they do instead of for how they are implemented. And don't worry, if you find this copy-and-update style of writing mutations a bit cumbersome, you are not alone. The recipe for [simplifying state changes](../simplifying-state-changes#readme) shows you an alternative simpler way of writing mutations that feels more natural.
+> In contrast to their name (and the code above), mutations do not really mutate the state but instead create a modified copy (this is achieved by using [immer](https://github.com/immerjs/immer)). This is important for debugging and for making your code simple to test.
 
 And that is all you need to start using **simplux**. You may have noticed that in all of this code, there is only a single type annotation (for the `amount` parameter of the `incrementBy` mutation). This is intentional, since **simplux** is designed to require the absolute minimal amount of type annotations by leveraging type inference wherever possible while still being perfectly type-safe.
 

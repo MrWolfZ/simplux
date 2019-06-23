@@ -1,7 +1,7 @@
 // this code is part of the simplux recipe "getting started":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/getting-started
 
-import { createSimpluxModule } from '@simplux/core'
+import { createMutations, createSimpluxModule } from '@simplux/core'
 
 // state in simplux is organized into modules; here we create
 // our first simple counter module
@@ -9,28 +9,29 @@ const counterModule = createSimpluxModule({
   // this name uniquely identifies our module
   name: 'counter',
 
-  // this value determines the shape of our state
+  // we use a simple number as the state
   initialState: {
     counter: 0,
   },
 })
 
-// the simplest thing you can do with a module is to get its state
+// you can access the module's current state with getState
 console.log('initial state:', counterModule.getState())
 
 // to change the state we can define mutations; a mutation
 // is a pure function that takes the current module state and
-// optionally some additional arguments and returns a new
-// updated state
-const { increment, incrementBy } = counterModule.createMutations({
+// optionally some additional arguments and modifies the state
+// or returns a new updated state
+const { increment, incrementBy } = createMutations(counterModule, {
   // we can have mutations that only use the state
-  increment: state => ({ ...state, counter: state.counter + 1 }),
+  increment: state => {
+    state.counter += 1
+  },
 
   // but they can also have arguments
-  incrementBy: (state, amount: number) => ({
-    ...state,
-    counter: state.counter + amount,
-  }),
+  incrementBy: (state, amount: number) => {
+    state.counter += amount
+  },
 })
 
 // to update the module's state, simply call a mutation
