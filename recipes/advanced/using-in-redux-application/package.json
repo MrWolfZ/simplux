@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.advanced.using-in-redux-application",
-  "version": "0.6.0-alpha.3",
+  "version": "0.6.0",
   "description": "This recipe shows you how simple it is to integrate simplux into your application that is already using Redux",
   "main": "src/index.ts",
   "scripts": {
@@ -24,7 +24,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.6.0-alpha.3",
+    "@simplux/core": "0.6.0",
     "redux": "^4.0.1"
   },
   "devDependencies": {

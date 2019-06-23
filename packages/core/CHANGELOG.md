@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/MrWolfZ/simplux/compare/v0.6.0-alpha.3...v0.6.0) (2019-06-23)
+
+
+### Features
+
+* **core:** provide previous state as second arg to state change listeners for easier state diffing ([5561e63](https://github.com/MrWolfZ/simplux/commit/5561e63))
+
+
+
+
+
+
 # [0.6.0-alpha.3](https://github.com/MrWolfZ/simplux/compare/v0.6.0-alpha.2...v0.6.0-alpha.3) (2019-06-22)
 
 
