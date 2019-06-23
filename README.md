@@ -28,6 +28,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 
 - [using **simplux** in my application that already uses Redux](recipes/advanced/using-in-redux-application#readme)
 - [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme)
+- [creating non-trivial modules](recipes/advanced/creating-non-trivial-modules#readme)
 - [testing my code that uses mutations](recipes/advanced/testing-code-using-mutations#readme)
 - [testing my code that uses async tasks](recipes/advanced/testing-code-using-async#readme) (work-in-progress)
 - [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme) (work-in-progress)
