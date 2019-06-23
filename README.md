@@ -78,24 +78,21 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- core-testing: add way to mock `getState`
-- core-testing: add way to mock `subscribeToModuleStateChanges`
-- selectors-testing: create testing package to allow mocking state for selectors
-- observe-testing: create testing package to allow mocking state for observers
 - async: create package for performing async tasks for a module
 - async: add testing package that allows mocking async tasks
 - async: support cancelling tasks
-- core: throw when calling mutation from inside another mutation
+- core: throw when function is used as mutation argument
+- core: throw when calling mutation from inside another mutation (i.e. nested dispatch)
 - selectors: add memoization (also mention this briefly in the "derived state" recipe)
 - react: add tests that verify HMR works
 - react: add tests that verify server-side rendering works
 - react: verify package works with react-native
 - angular: create package for using in Angular application
-- workflows: add support for workflows using observables
 - entities: create package for managing collections of entities
 - entities: create default set of entity management mutations
 - entities: allow creating custom mutations that act on one entity
 - entities: create default set of selectors for entities
+- workflows: add support for reactive workflows using observables
 - docs: create website
 - add dtslint tests for all packages
 
