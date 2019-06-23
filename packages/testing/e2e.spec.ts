@@ -1,8 +1,10 @@
 // this file contains an end-to-end test for the public API
 
+import { createAsyncTasks } from '@simplux/async'
 import { createMutations, createSimpluxModule } from '@simplux/core'
 import {
   clearAllSimpluxMocks,
+  mockAsyncTask,
   mockModuleState,
   mockMutation,
 } from '@simplux/testing'
@@ -234,6 +236,108 @@ describe(`@simplux/testing`, () => {
 
         expect(addTodoSpy3).toHaveBeenCalledWith(todo1)
         expect(updatedState3).toEqual(todoStoreWithTodo2)
+      })
+    })
+  })
+
+  describe('async tasks', () => {
+    const asyncTasksMockTestModule = createSimpluxModule({
+      name: 'asyncTasksMockTest1',
+      initialState,
+    })
+
+    const { task1, task2 } = createAsyncTasks(asyncTasksMockTestModule, {
+      task1: () => Promise.resolve(0),
+      task2: async (amount: number) => await Promise.resolve(amount),
+    })
+
+    beforeEach(() => {
+      asyncTasksMockTestModule.setState(initialState)
+    })
+
+    it('can be mocked', async () => {
+      const mock1 = jest.fn().mockReturnValue(Promise.resolve(10))
+      mockAsyncTask(task1, mock1)
+
+      const mock2 = jest.fn().mockReturnValue(Promise.resolve(20))
+      mockAsyncTask(task2, mock2)
+
+      const mockedReturnValue = await task1()
+      const mockedReturnValue2 = await task2(5)
+
+      expect(mock1).toHaveBeenCalled()
+      expect(mockedReturnValue).toBe(10)
+
+      expect(mock2).toHaveBeenCalledWith(5)
+      expect(mockedReturnValue2).toBe(20)
+    })
+
+    describe('mocks', () => {
+      it('can be cleared', async () => {
+        const mock = jest.fn().mockReturnValue(Promise.resolve(20))
+        const clear = mockAsyncTask(task2, mock)
+
+        await task2(5)
+
+        clear()
+
+        const returnValue = await task2(10)
+
+        expect(mock).toHaveBeenCalledWith(5)
+        expect(returnValue).toBe(10)
+      })
+
+      it('can be removed all at once', async () => {
+        const mock1 = jest.fn().mockReturnValue(Promise.resolve(10))
+        mockAsyncTask(task1, mock1)
+
+        const mock2 = jest.fn().mockReturnValue(Promise.resolve(20))
+        mockAsyncTask(task2, mock2)
+
+        await task1()
+        await task2(5)
+
+        clearAllSimpluxMocks()
+
+        const returnValue = await task1()
+        const returnValue2 = await task2(5)
+
+        expect(mock1).toHaveBeenCalled()
+        expect(returnValue).toBe(0)
+
+        expect(mock2).toHaveBeenCalledWith(5)
+        expect(returnValue2).toBe(5)
+      })
+
+      it('can be removed all at once for multiple modules', async () => {
+        const asyncTasksMockTestModule2 = createSimpluxModule({
+          name: 'asyncTasksMockTest2',
+          initialState,
+        })
+
+        const { task3 } = createAsyncTasks(asyncTasksMockTestModule2, {
+          task3: async (amount: number) => await Promise.resolve(amount),
+        })
+
+        const mock1 = jest.fn().mockReturnValue(Promise.resolve(10))
+        mockAsyncTask(task1, mock1)
+
+        const mock3 = jest.fn().mockReturnValue(Promise.resolve(20))
+        mockAsyncTask(task3, mock3)
+
+        await task1()
+        await task3(5)
+
+        clearAllSimpluxMocks()
+
+        const returnValue = await task1()
+        const returnValue3 = await task3(5)
+
+        expect(mock1).toHaveBeenCalled()
+        expect(returnValue).toBe(0)
+
+        expect(mock3).toHaveBeenCalledWith(5)
+        expect(returnValue3).toBe(5)
       })
     })
   })

@@ -1,3 +1,4 @@
+export { mockAsyncTask } from './src/async-tasks'
 export {
   clearAllSimpluxMocks,
   registerMockCleanupFunction,
