@@ -121,7 +121,7 @@ function nameFunction<T extends (...args: any[]) => any>(
 /**
  * Create new mutations for the module. A mutation is a function
  * that takes the module state and optionally additional parameters
- * and returns an updated version of the state.
+ * and updates the state.
  *
  * @param simpluxModule the module to create mutations for
  * @param mutations the mutations to create
