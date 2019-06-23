@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.lib.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "paths": {
+      "@simplux/core": ["../core/dist"],
+      "@simplux/core/*": ["../core/dist/*"],
+      "@simplux/async": ["."]
+    },
+    "types": ["node", "jest"]
+  },
+  "include": ["index.ts", "e2e.spec.ts", "src/**/*.ts"]
+}
