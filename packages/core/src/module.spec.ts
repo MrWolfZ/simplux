@@ -184,7 +184,7 @@ describe('module', () => {
       })
 
       it('calls handler immediately with state', () => {
-        expect(handlerSpy).toHaveBeenCalledWith(initialState)
+        expect(handlerSpy).toHaveBeenCalledWith(initialState, initialState)
       })
 
       it('calls handler immediately with mock state if set', () => {
@@ -200,7 +200,7 @@ describe('module', () => {
 
         const unsubscribe2 = testModule.subscribeToStateChanges(handlerSpy)
 
-        expect(handlerSpy).toHaveBeenCalledWith(mockStateValue)
+        expect(handlerSpy).toHaveBeenCalledWith(mockStateValue, mockStateValue)
 
         unsubscribe2()
       })
@@ -212,7 +212,7 @@ describe('module', () => {
 
         setState(replacedState)
 
-        expect(handlerSpy).toHaveBeenCalledWith(replacedState)
+        expect(handlerSpy).toHaveBeenCalledWith(replacedState, initialState)
       })
 
       it('does not call the handler if the state did not change', () => {
@@ -275,7 +275,7 @@ describe('module', () => {
         setState(replacedState)
         unsubscribe = subscribeToStateChanges(handlerSpy)
 
-        expect(handlerSpy).toHaveBeenCalledWith(replacedState)
+        expect(handlerSpy).toHaveBeenCalledWith(replacedState, replacedState)
       })
 
       it('calls handler with updated state if subscribing after state has changed', () => {
@@ -292,7 +292,7 @@ describe('module', () => {
 
         setState(initialState)
 
-        expect(handlerSpy).toHaveBeenCalledWith(initialState)
+        expect(handlerSpy).toHaveBeenCalledWith(initialState, replacedState)
       })
     })
   })

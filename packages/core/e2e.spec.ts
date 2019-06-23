@@ -81,26 +81,28 @@ describe(`@simplux/core`, () => {
 
     const handler = jest.fn()
     const unsubscribe = subscribeToStateChanges(handler)
-    expect(handler).toHaveBeenCalledWith(initialTodoState)
+    expect(handler).toHaveBeenCalledWith(initialTodoState, initialTodoState)
 
     let updatedState = addTodo(todo1)
     expect(updatedState).toEqual(todoStoreWithOneTodo)
     expect(getState()).toEqual(todoStoreWithOneTodo)
-    expect(handler).toHaveBeenCalledWith(updatedState)
+    expect(handler).toHaveBeenCalledWith(updatedState, initialTodoState)
 
+    let previousState = updatedState
     updatedState = removeTodo(todo1.id)
     expect(updatedState).toEqual(initialTodoState)
-    expect(handler).toHaveBeenCalledWith(updatedState)
+    expect(handler).toHaveBeenCalledWith(updatedState, previousState)
 
+    previousState = updatedState
     setState(todoStoreWithOneTodo)
     expect(getState()).toBe(todoStoreWithOneTodo)
-    expect(handler).toHaveBeenCalledWith(todoStoreWithOneTodo)
+    expect(handler).toHaveBeenCalledWith(todoStoreWithOneTodo, previousState)
 
     setState(initialTodoState)
     updatedState = addTodos(todo1, todo2)
     expect(updatedState).toEqual(todoStoreWithTwoTodos)
     expect(getState()).toEqual(todoStoreWithTwoTodos)
-    expect(handler).toHaveBeenCalledWith(updatedState)
+    expect(handler).toHaveBeenCalledWith(updatedState, initialTodoState)
 
     expect(handler).toHaveBeenCalledTimes(6)
 
@@ -141,26 +143,28 @@ describe(`@simplux/core`, () => {
 
       const handler = jest.fn()
       const unsubscribe = subscribeToStateChanges(handler)
-      expect(handler).toHaveBeenCalledWith(initialTodoState)
+      expect(handler).toHaveBeenCalledWith(initialTodoState, initialTodoState)
 
       let updatedState = addTodo(todo1)
       expect(updatedState).toEqual(todoStoreWithOneTodo)
       expect(getState()).toEqual(todoStoreWithOneTodo)
-      expect(handler).toHaveBeenCalledWith(updatedState)
+      expect(handler).toHaveBeenCalledWith(updatedState, initialTodoState)
 
+      let previousState = updatedState
       updatedState = removeTodo(todo1.id)
       expect(updatedState).toEqual(initialTodoState)
-      expect(handler).toHaveBeenCalledWith(updatedState)
+      expect(handler).toHaveBeenCalledWith(updatedState, previousState)
 
+      previousState = updatedState
       setState(todoStoreWithOneTodo)
       expect(getState()).toBe(todoStoreWithOneTodo)
-      expect(handler).toHaveBeenCalledWith(todoStoreWithOneTodo)
+      expect(handler).toHaveBeenCalledWith(todoStoreWithOneTodo, previousState)
 
       setState(initialTodoState)
       updatedState = addTodos(todo1, todo2)
       expect(updatedState).toEqual(todoStoreWithTwoTodos)
       expect(getState()).toEqual(todoStoreWithTwoTodos)
-      expect(handler).toHaveBeenCalledWith(updatedState)
+      expect(handler).toHaveBeenCalledWith(updatedState, initialTodoState)
 
       expect(handler).toHaveBeenCalledTimes(6)
 

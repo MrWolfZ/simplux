@@ -9,7 +9,10 @@ export interface SimpluxModuleConfig<TState> {
   initialState: TState
 }
 
-export type StateChangeHandler<TState> = (state: TState) => void
+export type StateChangeHandler<TState> = (
+  state: TState,
+  previousState: TState,
+) => void
 export type Unsubscribe = () => void
 export type SubscribeToStateChanges<TState> = (
   handler: StateChangeHandler<TState>,
@@ -122,16 +125,17 @@ export function createModule<TState>(
         const moduleState = getModuleState()
 
         if (moduleState !== latestModuleState) {
+          const previousModuleState = latestModuleState
           latestModuleState = moduleState
 
           for (const handler of handlers) {
-            handler(moduleState)
+            handler(moduleState, previousModuleState)
           }
         }
       })
     }
 
-    handler(latestModuleState)
+    handler(latestModuleState, latestModuleState)
 
     return () => {
       const idx = handlers.indexOf(handler)
