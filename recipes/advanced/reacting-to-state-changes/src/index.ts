@@ -64,7 +64,14 @@ const unsubscribe = userModule.subscribeToStateChanges(state => {
 // state as the second parameter to the handler; this allows you
 // to compare any nested fields to determine whether the state
 // change is relevant for your handler
-userModule.subscribeToStateChanges(({ isLoggedIn }, previousState) => {
+
+// to make the state change handler testable we create a separate
+// function instead of defining the handler inline; during tests
+// you can simply call this function directly
+const onUserLoggedOut = (
+  { isLoggedIn }: UserState,
+  previousState: UserState,
+) => {
   const isLoggedInChanged = isLoggedIn !== previousState.isLoggedIn
 
   // by checking these two conditions we can react to the specific
@@ -72,7 +79,9 @@ userModule.subscribeToStateChanges(({ isLoggedIn }, previousState) => {
   if (!isLoggedIn && isLoggedInChanged) {
     console.log('User logged out. Redirecting...')
   }
-})
+}
+
+userModule.subscribeToStateChanges(onUserLoggedOut)
 
 // if you are already using RxJS you can also create an observable
 // of state changes
