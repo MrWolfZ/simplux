@@ -31,7 +31,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [creating non-trivial modules](recipes/advanced/creating-non-trivial-modules#readme)
 - [testing my code that uses mutations](recipes/advanced/testing-code-using-mutations#readme)
 - [testing my code that uses async tasks](recipes/advanced/testing-code-using-async#readme) (work-in-progress)
-- [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme) (work-in-progress)
+- [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme)
 - [organizing my application state](recipes/advanced/organizing-application-state#readme)
 - [communicating between modules](recipes/advanced/communicating-between-modules#readme) (work-in-progress)
 - [managing collections of entities](recipes/advanced/managing-entity-collections#readme) (work-in-progress)
