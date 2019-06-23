@@ -1,7 +1,7 @@
 // this code is part of the simplux recipe "testing my code that uses mutations":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/testing-code-using-mutations
 
-import { createSimpluxModule } from '@simplux/core'
+import { createMutations, createSimpluxModule } from '@simplux/core'
 
 // for this recipe we use a simple scenario: managing a collection
 // of Todo items
@@ -16,18 +16,16 @@ export interface TodoState {
 
 const initialState: TodoState = {}
 
-const { createMutations, getState } = createSimpluxModule({
+const todosModule = createSimpluxModule({
   name: 'todos',
   initialState,
 })
 
-export const getTodos = getState
+export const getTodos = todosModule.getState
+export const setTodos = todosModule.setState
 
-export const { addTodo } = createMutations({
+export const { addTodo } = createMutations(todosModule, {
   addTodo(todosById, todo: Todo) {
-    return {
-      ...todosById,
-      [todo.id]: todo,
-    }
+    todosById[todo.id] = todo
   },
 })

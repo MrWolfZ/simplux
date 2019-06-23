@@ -1,66 +1,54 @@
 // this code is part of the simplux recipe "testing my code that uses mutations":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/testing-code-using-mutations
 
-import {
-  mockMutation,
-  mockMutationOnce,
-  removeAllMutationMocks,
-  removeMutationMock,
-} from '@simplux/core-testing'
+import { clearAllSimpluxMocks, mockMutation } from '@simplux/testing'
 import { addNewTodoItem } from './index'
-import { addTodo, getTodos, Todo } from './todos'
+import { addTodo, getTodos, setTodos, Todo } from './todos'
 
 describe('adding new todo items', () => {
-  // one possible way to test your code that uses mutations
-  // is to just let it call the mutation normally and then check
-  // the module's state to see if the mutation was correctly
-  // applied; this is more of an integration style of testing
-  it('uses the value as description', () => {
-    const id = addNewTodoItem('test item')
-    expect(getTodos()[id].description).toBe('test item')
-  })
-
-  // however, usually it is better to test only your code without
-  // executing the mutation; this is where the core-testing
+  // in almost all situations we want to test our code in isolation
+  // from the module, that is we do not want the mutation to be
+  // executed during our test; this is where the simplux testing
   // extension comes into play; it allows us to mock a mutation
   it('generates a 4 character ID', () => {
-    const addTodoSpy = mockMutation(addTodo, jest.fn())
+    const addTodoMock = jest.fn()
+
+    // after this line all invocations of the mutation will be
+    // redirected to the provided mock function
+    mockMutation(addTodo, addTodoMock)
 
     addNewTodoItem('test item')
 
-    expect(addTodoSpy).toHaveBeenCalled()
-    expect((addTodoSpy.mock.calls[0][0] as Todo).id.length).toBe(4)
+    expect(addTodoMock).toHaveBeenCalled()
+    expect((addTodoMock.mock.calls[0][0] as Todo).id.length).toBe(4)
   })
 
   // the mockMutation call above mocks our mutation indefinitely;
-  // therefore we need to make sure that we remove the mock after
-  // each test
-  afterEach(() => {
-    // we can remove the mock for a single mutation
-    removeMutationMock(addTodo)
+  // the testing extension provides a way to clear all simplux mocks
+  // which we can simply do after each test
+  afterEach(clearAllSimpluxMocks)
 
-    // alternatively we can also just remove all mocks
-    removeAllMutationMocks()
-  })
-
-  // for your convenience it is also possible to mock a mutation
-  // just once so that you do not need to actively remove it
-  it('uses the value as description (mocked once)', () => {
-    // this will only mock the addTodo mutation for the next
-    // invocation (the mockMutation function also allows specifying
-    // a number of times the mutation should be mocked if you need
-    // it more than once)
-    const addTodoSpy = mockMutationOnce(addTodo, jest.fn())
+  // in specific rare situations it can be useful to manually clear
+  // a mock during a test; for this the `mockMutation` function
+  // returns a callback function that can be called to clear the mock
+  it('uses the value as description', () => {
+    const addTodoMock = jest.fn()
+    const clearAddTodoMock = mockMutation(addTodo, addTodoMock)
 
     const description = 'test item (mocked)'
     addNewTodoItem(description)
 
-    expect(addTodoSpy).toHaveBeenCalledWith(
+    expect(addTodoMock).toHaveBeenCalledWith(
       expect.objectContaining({ description }),
     )
 
-    // all calls afterwards will use the original mutation
+    clearAddTodoMock()
+
+    // after clearing the mock all calls will use the original mutation;
+    // note that it is usually a bad idea to call the real mutation
+    // during a test like this
     const id = addNewTodoItem('test item')
     expect(getTodos()[id].description).toBe('test item')
+    setTodos({})
   })
 })
