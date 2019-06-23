@@ -18,31 +18,51 @@ import {
 describe('todos module', () => {
   describe('selectors', () => {
     describe('selectTodoIds', () => {
-      const ids = selectTodoIds(todoStateWithTwoTodos)
-      expect(ids).toEqual(['1', '2'])
+      it('returns the array of IDs', () => {
+        const ids = selectTodoIds(todoStateWithTwoTodos)
+        expect(ids).toEqual(['1', '2'])
+      })
     })
 
     describe('selectNumberOfTodos', () => {
-      const numberOfTodos = selectNumberOfTodos(todoStateWithTwoTodos)
-      expect(numberOfTodos).toBe(2)
+      it('returns the number of items', () => {
+        const numberOfTodos = selectNumberOfTodos(todoStateWithTwoTodos)
+        expect(numberOfTodos).toBe(2)
+      })
     })
 
     describe('selectAllTodos', () => {
-      const todos = selectAllTodos(todoStateWithTwoTodos)
-      expect(todos).toEqual([todo1, todo2])
+      it('returns an array of all items', () => {
+        const todos = selectAllTodos(todoStateWithTwoTodos)
+        expect(todos).toEqual([todo1, todo2])
+      })
     })
 
     describe('selectPendingTodos', () => {
-      const todos = selectPendingTodos(todoStateWithTwoPendingAndOneDoneTodo)
-      expect(todos).toEqual([todo1, todo2])
+      it('returns an array of all items that are not done', () => {
+        const todos = selectPendingTodos(todoStateWithTwoPendingAndOneDoneTodo)
+        expect(todos).toEqual([todo1, todo2])
+      })
     })
 
     describe('selectTodoById', () => {
-      const selectedTodo = selectTodoById(
-        todoStateWithTwoPendingAndOneDoneTodo,
-        todo2.id,
-      )
-      expect(selectedTodo).toEqual(todo2)
+      it('returns an item by ID', () => {
+        const selectedTodo = selectTodoById(
+          todoStateWithTwoPendingAndOneDoneTodo,
+          todo2.id,
+        )
+
+        expect(selectedTodo).toEqual(todo2)
+      })
+
+      it('returns undefined if the item does not exist', () => {
+        const selectedTodo = selectTodoById(
+          todoStateWithTwoPendingAndOneDoneTodo,
+          'does-not-exist',
+        )
+
+        expect(selectedTodo).toBeUndefined()
+      })
     })
   })
 })

@@ -16,7 +16,7 @@ export const {
   // optionally we can explicitly annotate the function with a return
   // type that indicates the value is readonly to prevent accidental
   // direct mutations of the returned value
-  selectTodoIds: ({ todoIds }): readonly string[] => todoIds,
+  selectTodoIds: ({ todoIds }): ReadonlyArray<string> => todoIds,
 
   selectNumberOfTodos: ({ todoIds }) => todoIds.length,
 
