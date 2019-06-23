@@ -67,7 +67,10 @@ describe(`@simplux/testing`, () => {
 
       moduleMockTestModule.subscribeToStateChanges(handlerSpy)
 
-      expect(handlerSpy).toHaveBeenCalledWith(todoStoreWithTodo1)
+      expect(handlerSpy).toHaveBeenCalledWith(
+        todoStoreWithTodo1,
+        todoStoreWithTodo1,
+      )
     })
 
     it('does not call existing subscribers with mocked state when it is set', () => {
