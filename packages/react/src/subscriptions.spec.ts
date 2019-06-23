@@ -7,7 +7,7 @@ describe('subscriptions', () => {
   })
 
   describe(createBatchedSubscribeFunction.name, () => {
-    let handler: (state: number) => void
+    let handler: (state: number, previousState: number) => void
     let unsubscribe: Unsubscribe
     let subscribeToStateChanges: SubscribeToStateChanges<number>
 
@@ -57,10 +57,10 @@ describe('subscriptions', () => {
         const handler2 = jest.fn()
         subscribe(handler2)
 
-        handler(10)
+        handler(10, 0)
 
-        expect(handler1).toHaveBeenCalledWith(10)
-        expect(handler2).toHaveBeenCalledWith(10)
+        expect(handler1).toHaveBeenCalledWith(10, 0)
+        expect(handler2).toHaveBeenCalledWith(10, 0)
       })
 
       it('does not cause side-effect when unsubscribing twice', () => {

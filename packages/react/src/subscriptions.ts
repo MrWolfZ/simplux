@@ -12,10 +12,10 @@ export function createBatchedSubscribeFunction<TState>(
     handlers.push(handler)
 
     if (handlers.length === 1) {
-      unsubscribe = subscribeToModuleStateChanges(state => {
+      unsubscribe = subscribeToModuleStateChanges((state, previousState) => {
         unstable_batchedUpdates(() => {
           for (const handler of handlers) {
-            handler(state)
+            handler(state, previousState)
           }
         })
       })
