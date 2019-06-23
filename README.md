@@ -32,9 +32,10 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [testing my code that uses async tasks](recipes/advanced/testing-code-using-async#readme) (work-in-progress)
 - [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme) (work-in-progress)
 - [organizing my application state](recipes/advanced/organizing-application-state#readme)
+- [communicating between modules](recipes/advanced/communicating-between-modules#readme) (work-in-progress)
+- [managing collections of entities](recipes/advanced/managing-entity-collections#readme) (work-in-progress)
 - [composing my mutations](recipes/advanced/composing-mutations#readme)
 - [composing my selectors](recipes/advanced/composing-selectors#readme)
-- [communicating between modules](recipes/advanced/communicating-between-modules#readme) (work-in-progress)
 - [using Reselect for my selectors](recipes/advanced/using-reselect-for-selectors#readme) (work-in-progress)
 - [coordinating complex asynchronous workflows](recipes/advanced/coordinating-complex-asynchronous-workflows#readme) (work-in-progress)
 
