@@ -38,10 +38,10 @@ const userModule = createSimpluxModule({
 // logging out as well as for updating the user's icon
 
 const { logIn, logOut, setIcon } = createMutations(userModule, {
-  logIn(state, authToken: string, iconUrl: string) {
+  logIn(state, authToken: string, icon: string) {
     state.isLoggedIn = true
     state.authToken = authToken
-    state.icon = iconUrl
+    state.icon = icon
   },
 
   logOut(state) {
@@ -50,8 +50,8 @@ const { logIn, logOut, setIcon } = createMutations(userModule, {
     state.icon = undefined
   },
 
-  setIcon(state, iconUrl: string) {
-    state.icon = iconUrl
+  setIcon(state, icon: string) {
+    state.icon = icon
   },
 })
 ```
