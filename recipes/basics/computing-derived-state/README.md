@@ -27,7 +27,7 @@ const counterModule = createSimpluxModule({
 })
 ```
 
-To compute derived state for our module we can define so-called _selectors_. A selector is a pure function that takes the module's current state - and optionally some additional arguments - and returns some derived value.
+To compute derived state for our module we can define so-called _selectors_. A selector is a pure function that takes the module's state - and optionally some additional arguments - and returns some derived value.
 
 ```ts
 import { createSelectors } from '@simplux/selectors'
@@ -51,7 +51,6 @@ console.log(`state + 10:`, plus(counterModule.getState(), 10)) // prints 20
 In certain situations it can be useful to have a selector that is always bound to the module's latest state, which `withLatestModuleState` allows you to do.
 
 ```ts
-// you can also call a selector bound to the module's latest state
 console.log(`state + 1:`, plusOne.withLatestModuleState()) // prints 11
 console.log(`state + 5:`, plus.withLatestModuleState(5)) // prints 15
 
