@@ -1,33 +1,22 @@
 // this code is part of the simplux recipe "using simplux in my React application":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/react/using-in-react-application
 
-import { createSimpluxModule } from '@simplux/core'
-// we import all the simplux extension packages we are going to use
-import '@simplux/immer'
-import '@simplux/react'
-import '@simplux/selectors'
+import { createMutations, createSimpluxModule } from '@simplux/core'
+import { createSelectorHook } from '@simplux/react'
+import { createSelectors } from '@simplux/selectors'
 import React from 'react'
 import { render } from 'react-dom'
 
 // let's create a simple counter module
 
-const {
-  createMutations,
-  createSelectors,
-
-  // the simplux react extension adds a hook for using the module's
-  // state in a component
-  react: {
-    hooks: { useSelector },
-  },
-} = createSimpluxModule({
+const counterModule = createSimpluxModule({
   name: 'counter',
   initialState: {
     value: 0,
   },
 })
 
-const { increment, incrementBy } = createMutations({
+const { increment, incrementBy } = createMutations(counterModule, {
   increment(state) {
     state.value += 1
   },
@@ -37,27 +26,36 @@ const { increment, incrementBy } = createMutations({
   },
 })
 
-const { selectCounterValue, selectCounterValueTimes } = createSelectors({
-  selectCounterValue: ({ value }) => value,
+const { selectCounterValue, selectCounterValueTimes } = createSelectors(
+  counterModule,
+  {
+    selectCounterValue: ({ value }) => value,
 
-  selectCounterValueTimes: ({ value }, multiplier: number) =>
-    value * multiplier,
-})
+    selectCounterValueTimes: ({ value }, multiplier: number) =>
+      value * multiplier,
+  },
+)
+
+// the simplux react extension adds function that creates a React
+// hook which allows using a module's state in a component
+const useCounter = createSelectorHook(counterModule)
 
 // now we can start using our module in our React components
 
 const Counter = () => {
-  // as the name suggests the useSelector hook allows us to use our
-  // module's selectors inside our component; this hook ensures that
-  // the component is updated whenever the selected value changes
-  const value = useSelector(selectCounterValue)
+  // as the name of the createSelectorHook function suggests the created
+  // useCounter hook allows us to use our module's selectors inside our
+  // component; this hook also ensures that the component is updated
+  // whenever the selected value changes
+  const value = useCounter(selectCounterValue)
 
   // the selector can be defined inline
-  const valueTimesTwo = useSelector(s => s.value * 2)
+  const valueTimesTwo = useCounter(s => s.value * 2)
 
-  // and for selectors that take additional arguments we can call it
-  // as a factory to create a new selector for only the state
-  const valueTimesFive = useSelector(selectCounterValueTimes.asFactory(5))
+  // and for selectors that take additional arguments we can call the
+  // selector as a factory to create a new selector for only the state
+  const selectCounterValueTimesFive = selectCounterValueTimes.asFactory(5)
+  const valueTimesFive = useCounter(selectCounterValueTimesFive)
 
   return (
     <>
@@ -113,10 +111,10 @@ class CounterComponent extends React.Component<CounterProps> {
   }
 }
 
-const CounterWrapper = () => {
-  const value = useSelector(selectCounterValue)
-  const valueTimesTwo = useSelector(s => s.value * 2)
-  const valueTimesFive = useSelector(selectCounterValueTimes.asFactory(5))
+export const CounterWrapper = () => {
+  const value = useCounter(selectCounterValue)
+  const valueTimesTwo = useCounter(s => s.value * 2)
+  const valueTimesFive = useCounter(selectCounterValueTimes.asFactory(5))
 
   const props = { value, valueTimesTwo, valueTimesFive }
   return <CounterComponent {...props} />
