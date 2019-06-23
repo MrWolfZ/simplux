@@ -85,6 +85,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - core: throw when function is used as mutation argument
 - core: throw when calling mutation from inside another mutation (i.e. nested dispatch)
 - selectors: add memoization (also mention this briefly in the "derived state" recipe)
+- selectors: add note to "composing my selectors" recipe about interplay with memoization (e.g. due to in-place sorting)
 - react: add tests that verify HMR works
 - react: add tests that verify server-side rendering works
 - react: verify package works with react-native
