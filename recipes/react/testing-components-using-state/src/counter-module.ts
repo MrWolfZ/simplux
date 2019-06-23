@@ -1,28 +1,20 @@
 // this code is part of the simplux recipe "testing my React components that read and change state":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-components-using-state
 
-import { createSimpluxModule } from '@simplux/core'
+import { createMutations, createSimpluxModule } from '@simplux/core'
+import { createSelectorHook } from '@simplux/react'
+import { createSelectors } from '@simplux/selectors'
 
-const {
-  getState,
-  setState,
-  createMutations,
-  createSelectors,
-  react: {
-    hooks: { useSelector },
-  },
-} = createSimpluxModule({
+export const counterModule = createSimpluxModule({
   name: 'counter',
   initialState: {
     value: 0,
   },
 })
 
-export const getCounterValue = () => getState().value
-export const setCounterValue = (value: number) => setState({ value })
-export const useCounter = useSelector
+export const useCounter = createSelectorHook(counterModule)
 
-export const { increment, incrementBy } = createMutations({
+export const { increment, incrementBy } = createMutations(counterModule, {
   increment(state) {
     state.value += 1
   },
@@ -32,9 +24,12 @@ export const { increment, incrementBy } = createMutations({
   },
 })
 
-export const { selectCounterValue, selectCounterValueTimes } = createSelectors({
-  selectCounterValue: ({ value }) => value,
+export const { selectCounterValue, selectCounterValueTimes } = createSelectors(
+  counterModule,
+  {
+    selectCounterValue: ({ value }) => value,
 
-  selectCounterValueTimes: ({ value }, multiplier: number) =>
-    value * multiplier,
-})
+    selectCounterValueTimes: ({ value }, multiplier: number) =>
+      value * multiplier,
+  },
+)

@@ -26,15 +26,12 @@
   "private": true,
   "dependencies": {
     "@simplux/core": "0.6.0-alpha.3",
-    "@simplux/core-testing": "0.6.0-alpha.2",
-    "@simplux/immer": "0.6.0-alpha.2",
+    "@simplux/testing": "0.6.0-alpha.3",
     "@simplux/react": "0.6.0-alpha.3",
-    "@simplux/react-testing": "0.6.0-alpha.2",
     "@simplux/selectors": "0.6.0-alpha.3",
     "@testing-library/react": "^8.0.1",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
-    "immer": "^3.1.3",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "redux": "^4.0.1"

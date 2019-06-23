@@ -13,7 +13,8 @@ import {
 export const Counter = () => {
   const value = useCounter(selectCounterValue)
   const valueTimesTwo = useCounter(s => s.value * 2)
-  const valueTimesFive = useCounter(selectCounterValueTimes.asFactory(5))
+  const selectCounterValueTimesFive = selectCounterValueTimes.asFactory(5)
+  const valueTimesFive = useCounter(selectCounterValueTimesFive)
 
   return (
     <>

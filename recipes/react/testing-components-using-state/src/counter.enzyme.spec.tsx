@@ -1,34 +1,34 @@
 // this code is part of the simplux recipe "testing my React components that read and change state":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-components-using-state
 
-import { mockMutationOnce } from '@simplux/core-testing'
 import {
-  mockSelectorHookState,
-  mockSelectorHookStateForNextRender,
-  removeAllSelectorHookMockStates,
-  removeSelectorHookMockState,
-} from '@simplux/react-testing'
+  clearAllSimpluxMocks,
+  mockModuleState,
+  mockMutation,
+} from '@simplux/testing'
 import { shallow } from 'enzyme'
 import React from 'react'
 import { Counter } from './counter'
-import {
-  getCounterValue,
-  incrementBy,
-  setCounterValue,
-  useCounter,
-} from './counter-module'
+import { counterModule, increment, incrementBy } from './counter-module'
 
 // this file shows you how to test your components that read
 // and change state; here we are using enzyme but any other
 // test renderer would also work
 
 describe(Counter.name, () => {
-  // one possible way to test your component that reads state
-  // is to test it with the real module by setting the module's
-  // state before rendering the component; this is more of an
-  // integration style of testing
+  // let's start by looking at how we can test components that
+  // access a module's state
+
+  // the best way to test our component is to test it in isolation
+  // from the module; that means we do not want the real module's
+  // state to be accessed during the test; this is where the simplux
+  // testing extension comes into play; it allows us to mock a
+  // module's state
   it('displays the value', () => {
-    setCounterValue(10)
+    // all access to the module's state after this call will return
+    // the mocked state instead of the real module's state; this
+    // includes accesses via the module's selector hook
+    mockModuleState(counterModule, { value: 10 })
 
     const wrapper = shallow(<Counter />)
     const expected = <span>value: 10</span>
@@ -36,17 +36,15 @@ describe(Counter.name, () => {
     expect(wrapper.contains(expected)).toBe(true)
   })
 
-  // however, usually it is better to test your component in
-  // isolation without interacting with the real module;
-  // this is where the react-testing extension comes into play;
-  // if you are using the module's selector hook it allows you
-  // to mock the state that the hook will use; instead of using
-  // the real module's state the hook will call the selector
-  // with the provided mock state
-  it('displays the value times two (mocked)', () => {
-    mockSelectorHookState(useCounter, {
-      value: 20,
-    })
+  // the mockModuleState call above mocks the state indefinitely;
+  // therefore we need to make sure that we remove the mocked state
+  // after each test
+  afterEach(clearAllSimpluxMocks)
+
+  // mocking the state works with any kind of selector, including
+  // inline selectors as used by our Counter component
+  it('displays the value times two', () => {
+    mockModuleState(counterModule, { value: 20 })
 
     const wrapper = shallow(<Counter />)
     const expected = <span>value * 2: 40</span>
@@ -54,39 +52,36 @@ describe(Counter.name, () => {
     expect(wrapper.contains(expected)).toBe(true)
   })
 
-  // the mockSelectorHookState call above mocks the state
-  // indefinitely; therefore we need to make sure that we remove
-  // the mocked state after each test
-  afterEach(() => {
-    // we can remove the mock state for a single selector hook
-    removeSelectorHookMockState(useCounter)
-
-    // alternatively we can also just remove all selector hook mocks
-    removeAllSelectorHookMockStates()
-  })
-
-  // for your convenience it is also possible to mock the state
-  // just for the next render in which the selector hook is used
-  // so that you do not need to actively remove it
-  it('displays the value times five (mocked during render)', () => {
+  // in specific rare situations it can be useful to manually clear
+  // a mock state during a test; for this the `mockModuleState` function
+  // returns a callback that can be called to clear the mocked state
+  it('displays the value times five', () => {
     // this will only mock the state for the useCounter hook during
     // the next render; this also works for nested components that
     // use the hook
-    mockSelectorHookStateForNextRender(useCounter, { value: 30 })
+    const clear = mockModuleState(counterModule, { value: 30 })
 
     const wrapper = shallow(<Counter />)
     const expected = <span>value * 5: 150</span>
 
     expect(wrapper.contains(expected)).toBe(true)
+
+    clear()
+
+    // after clearing the mocked state all all access to the module's
+    // state will return the real module's state again; note that it
+    // is usually a bad idea to access the real module during a test
   })
 
-  // testing your components that perform state changes can also be
-  // done with the real module by setting the module's state before
-  // rendering, then triggering the state change, and finally checking
-  // the module's state; this is once again more of an integration
-  // style of testing
+  // testing your components that perform state changes is just as simple;
+  // see the recipe for "testing my code that uses mutations" for more
+  // details about this)
   it('increments the counter when the "Increment" button is clicked', () => {
-    setCounterValue(10)
+    // it is a good idea to always mock the module's state for a test
+    mockModuleState(counterModule, { value: 10 })
+
+    const incrementMock = jest.fn()
+    mockMutation(increment, incrementMock)
 
     const wrapper = shallow(<Counter />)
 
@@ -94,16 +89,15 @@ describe(Counter.name, () => {
       .findWhere(el => el.type() === 'button' && el.text() === 'Increment')
       .simulate('click')
 
-    expect(getCounterValue()).toBe(11)
+    expect(incrementMock).toHaveBeenCalled()
   })
 
-  // however, the recommended way to test these components is to mock the
-  // mutation (see the recipe for "testing my code that uses mutations"
-  // for more details about this)
+  // of course this works as well for mutations that take arguments
   it('triggers an increment by 5 when the "Increment by 5" button is clicked', () => {
-    // it is also a good idea to always mock the module's state
-    mockSelectorHookStateForNextRender(useCounter, { value: 10 })
-    const incrementBySpy = mockMutationOnce(incrementBy, jest.fn())
+    mockModuleState(counterModule, { value: 10 })
+
+    const incrementByMock = jest.fn()
+    mockMutation(incrementBy, incrementByMock)
 
     const wrapper = shallow(<Counter />)
 
@@ -111,6 +105,6 @@ describe(Counter.name, () => {
       .findWhere(el => el.type() === 'button' && el.text() === 'Increment by 5')
       .simulate('click')
 
-    expect(incrementBySpy).toHaveBeenCalledWith(5)
+    expect(incrementByMock).toHaveBeenCalledWith(5)
   })
 })
