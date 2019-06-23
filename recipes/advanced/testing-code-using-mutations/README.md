@@ -57,7 +57,7 @@ This is the code we are going to test.
 
 > You may think that `addNewTodoItem` could be a mutation itself, but it must not be since it is not pure (due the random generation of the id).
 
-In almost all situations we want to test our code in isolation from the module, that is we do not want the mutation to be executed during our test. This is where the **simplux** testing extension comes into play. It allows us to mock a mutation.
+The best way to test our code is to test it in isolation from the module. That means we do not want the mutation to be executed during our test. This is where the **simplux** testing extension comes into play: it allows us to mock a mutation.
 
 > It is also possible to test your code that uses mutations with the module by just letting the test call the mutation normally and then checking the module's state to see if the mutation was correctly applied. However, this is not recommended as it can cause side-effects.
 

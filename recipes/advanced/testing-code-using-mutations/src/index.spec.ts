@@ -6,10 +6,10 @@ import { addNewTodoItem } from './index'
 import { addTodo, getTodos, setTodos, Todo } from './todos'
 
 describe('adding new todo items', () => {
-  // in almost all situations we want to test our code in isolation
-  // from the module, that is we do not want the mutation to be
-  // executed during our test; this is where the simplux testing
-  // extension comes into play; it allows us to mock a mutation
+  // the best way to test our code is to test it in isolation from
+  // the module; that means we do not want the mutation to be executed
+  // during our test; this is where the **simplux** testing extension
+  // comes into play: it allows us to mock a mutation
   it('generates a 4 character ID', () => {
     const addTodoMock = jest.fn()
 
