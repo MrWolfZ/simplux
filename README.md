@@ -79,9 +79,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- async: create package for performing async tasks for a module
-- async: add testing package that allows mocking async tasks
-- async: support cancelling tasks
+- core: add function to listen to other module's mutations
 - core: throw when function is used as mutation argument
 - core: throw when calling mutation from inside another mutation (i.e. nested dispatch)
 - selectors: add memoization (also mention this briefly in the "derived state" recipe)
@@ -95,6 +93,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - entities: allow creating custom mutations that act on one entity
 - entities: create default set of selectors for entities
 - workflows: add support for reactive workflows using observables
+- async: add function to wrap other async functions to allow mocking them
 - docs: create website
 - add dtslint tests for all packages
 
