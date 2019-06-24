@@ -1,6 +1,6 @@
 {
   "name": "@simplux/core",
-  "version": "0.7.0-alpha.0",
+  "version": "0.7.0-alpha.1",
   "description": "The core package of simplux. Contains store and module management as well as mutations logic.",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
