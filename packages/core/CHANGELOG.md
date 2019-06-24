@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.6.0...v0.7.0-alpha.0) (2019-06-24)
+
+
+### Features
+
+* **core:** return handler when subscribing to state changes to make testing simpler ([257f2df](https://github.com/MrWolfZ/simplux/commit/257f2df))
+
+
+
+
+
 # [0.6.0](https://github.com/MrWolfZ/simplux/compare/v0.6.0-alpha.3...v0.6.0) (2019-06-23)
 
 
