@@ -6,6 +6,7 @@ import { setReduxStore, simpluxStore } from './src/store'
 setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
 
 export {
+  ResolvedStateChangeHandler,
   SimpluxModule,
   SimpluxModuleConfig,
   SimpluxModuleExtensionStateContainer,

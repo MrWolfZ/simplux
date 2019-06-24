@@ -154,7 +154,7 @@ describe('module', () => {
     })
 
     describe(`subscribeToStateChanges`, () => {
-      let subscription: Subscription<any>
+      let subscription: Subscription<any, any>
       let handlerSpy: jest.Mock
       const initialState = {
         prop: 'value',
@@ -301,12 +301,12 @@ describe('module', () => {
 
       it('returns a subscription with the handler of the correct type', () => {
         const mock = jest.fn()
-        const subscription = subscribeToStateChanges(state => {
+        const { handler } = subscribeToStateChanges(state => {
           state
           mock()
         })
 
-        subscription.handler(initialState)
+        handler(initialState)
         expect(mock).toHaveBeenCalled()
       })
     })

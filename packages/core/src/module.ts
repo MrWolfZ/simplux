@@ -14,16 +14,27 @@ export type StateChangeHandler<TState> = (
   previousState: TState,
 ) => void
 
-export interface Subscription<THandler extends Function> {
+// this type exists to get the concrete type of the handler, i.e. to return
+// a handler with the correct number or parameters
+export type ResolvedStateChangeHandler<TState, THandler> = THandler extends (
+  state: TState,
+) => void
+  ? (state: TState) => void
+  : StateChangeHandler<TState>
+
+export interface Subscription<
+  TState,
+  THandler extends StateChangeHandler<TState>
+> {
   unsubscribe: () => void
-  handler: THandler
+  handler: ResolvedStateChangeHandler<TState, THandler>
 }
 
 export type SubscribeToStateChanges<TState> = <
   THandler extends StateChangeHandler<TState>
 >(
   handler: THandler,
-) => Subscription<THandler>
+) => Subscription<TState, THandler>
 
 /**
  * @private
@@ -158,7 +169,10 @@ export function createModule<TState>(
 
     return {
       unsubscribe,
-      handler,
+      handler: (handler as unknown) as ResolvedStateChangeHandler<
+        TState,
+        typeof handler
+      >,
     }
   }
 
