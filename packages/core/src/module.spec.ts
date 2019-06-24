@@ -298,6 +298,17 @@ describe('module', () => {
       it('returns a subscription with the handler', () => {
         expect(subscription.handler).toBe(handlerSpy)
       })
+
+      it('returns a subscription with the handler of the correct type', () => {
+        const mock = jest.fn()
+        const subscription = subscribeToStateChanges(state => {
+          state
+          mock()
+        })
+
+        subscription.handler(initialState)
+        expect(mock).toHaveBeenCalled()
+      })
     })
   })
 })
