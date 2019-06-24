@@ -54,7 +54,7 @@ const { logIn, logOut, setIcon } = createMutations(userModule, {
 // be called whenever the module's state changes; the handler will
 // also be called with the module's current state immediately after
 // subscribing
-const unsubscribe = userModule.subscribeToStateChanges(state => {
+const { unsubscribe } = userModule.subscribeToStateChanges(state => {
   console.log('state changed:', state)
 })
 
@@ -64,24 +64,24 @@ const unsubscribe = userModule.subscribeToStateChanges(state => {
 // state as the second parameter to the handler; this allows you
 // to compare any nested fields to determine whether the state
 // change is relevant for your handler
+const { handler } = userModule.subscribeToStateChanges(
+  ({ isLoggedIn }, previousState) => {
+    // we can check for changes of specific properties
+    const isLoggedInChanged = isLoggedIn !== previousState.isLoggedIn
 
-// to make the state change handler testable we create a separate
-// function instead of defining the handler inline; during tests
-// you can simply call this function directly
-const onUserLoggedOut = (
-  { isLoggedIn }: UserState,
-  previousState: UserState,
-) => {
-  const isLoggedInChanged = isLoggedIn !== previousState.isLoggedIn
+    // by checking these two conditions we can react to the specific
+    // change of the user logging out
+    if (!isLoggedIn && isLoggedInChanged) {
+      console.log('User logged out. Redirecting...')
+    }
+  },
+)
 
-  // by checking these two conditions we can react to the specific
-  // change of the user logging out
-  if (!isLoggedIn && isLoggedInChanged) {
-    console.log('User logged out. Redirecting...')
-  }
-}
-
-userModule.subscribeToStateChanges(onUserLoggedOut)
+// to make the state change handler simple to test without needing
+// to create a separate function for it (which would require manual
+// type annotations) simplux returns the handler from the subscribe
+// call; during tests you can then simply call the handler directly
+handler(initialState, initialState)
 
 // if you are already using RxJS you can also create an observable
 // of state changes

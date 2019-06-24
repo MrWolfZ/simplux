@@ -63,9 +63,10 @@ Our typical use case for reacting to state changes is redirecting the user to a 
 A **simplux** module provides a `subscribeToStateChanges` function to register a handler to be called whenever the module's state changes. The handler will also be called with the module's current state immediately after subscribing.
 
 ```ts
-// the subscribeToStateChanges function returns a callback that
-// can be used to unsubscribe from state changes
-const unsubscribe = userModule.subscribeToStateChanges(state => {
+// the subscribeToStateChanges function returns an object with an
+// unsubscribe callback that can be used to unsubscribe from state
+// changes
+const { unsubscribe } = userModule.subscribeToStateChanges(state => {
   console.log('state changed:', state)
 })
 ```
@@ -73,23 +74,22 @@ const unsubscribe = userModule.subscribeToStateChanges(state => {
 This handler will be executed for every state change. However, often you do not want to react to all changes to a module's state, but only to specific changes inside the module. `subscribeToStateChanges` allows this by providing the previous state as the second parameter to the handler. This allows you to compare any nested fields to determine whether the state change is relevant for your handler.
 
 ```ts
-// to make the state change handler testable we create a separate
-// function instead of defining the handler inline; during tests
-// you can simply call this function directly
-const onUserLoggedOut = (
-  { isLoggedIn }: UserState,
-  previousState: UserState,
-) => {
-  const isLoggedInChanged = isLoggedIn !== previousState.isLoggedIn
+// to make the state change handler simple to test without needing
+// to create a separate function for it (which would require manual
+// type annotations) simplux returns the handler from the subscribe
+// call; during tests you can then simply call the handler directly
+const { handler } = userModule.subscribeToStateChanges(
+  ({ isLoggedIn }, previousState) => {
+    // we can check for changes of specific properties
+    const isLoggedInChanged = isLoggedIn !== previousState.isLoggedIn
 
-  // by checking these two conditions we can react to the specific
-  // change of the user logging out
-  if (!isLoggedIn && isLoggedInChanged) {
-    console.log('User logged out. Redirecting...')
-  }
-}
-
-userModule.subscribeToStateChanges(onUserLoggedOut)
+    // by checking these two conditions we can react to the specific
+    // change of the user logging out
+    if (!isLoggedIn && isLoggedInChanged) {
+      console.log('User logged out. Redirecting...')
+    }
+  },
+)
 ```
 
 > If you want to ignore the first invocation of the handler when subscribing, you can simply compare the state value to the previous state value by reference (i.e. `===`) and return from the handler on equality since it will be the same object reference only during that first invocation.
