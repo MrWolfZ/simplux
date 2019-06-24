@@ -80,7 +80,7 @@ describe(`@simplux/core`, () => {
     )
 
     const handler = jest.fn()
-    const unsubscribe = subscribeToStateChanges(handler)
+    const subscription = subscribeToStateChanges(handler)
     expect(handler).toHaveBeenCalledWith(initialTodoState, initialTodoState)
 
     let updatedState = addTodo(todo1)
@@ -106,7 +106,7 @@ describe(`@simplux/core`, () => {
 
     expect(handler).toHaveBeenCalledTimes(6)
 
-    unsubscribe()
+    subscription.unsubscribe()
     cleanup()
   })
 
@@ -142,7 +142,7 @@ describe(`@simplux/core`, () => {
       )
 
       const handler = jest.fn()
-      const unsubscribe = subscribeToStateChanges(handler)
+      const subscription = subscribeToStateChanges(handler)
       expect(handler).toHaveBeenCalledWith(initialTodoState, initialTodoState)
 
       let updatedState = addTodo(todo1)
@@ -168,7 +168,7 @@ describe(`@simplux/core`, () => {
 
       expect(handler).toHaveBeenCalledTimes(6)
 
-      unsubscribe()
+      subscription.unsubscribe()
       cleanup()
     })
 

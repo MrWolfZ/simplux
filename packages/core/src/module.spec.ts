@@ -3,7 +3,7 @@ import {
   createModule,
   SimpluxModule,
   SimpluxModuleInternals,
-  Unsubscribe,
+  Subscription,
 } from './module'
 import {
   createReduxStoreProxy,
@@ -154,7 +154,7 @@ describe('module', () => {
     })
 
     describe(`subscribeToStateChanges`, () => {
-      let unsubscribe: Unsubscribe
+      let subscription: Subscription<any>
       let handlerSpy: jest.Mock
       const initialState = {
         prop: 'value',
@@ -176,11 +176,11 @@ describe('module', () => {
       beforeEach(() => {
         setState(initialState)
         handlerSpy = jest.fn()
-        unsubscribe = subscribeToStateChanges(handlerSpy)
+        subscription = subscribeToStateChanges(handlerSpy)
       })
 
       afterEach(() => {
-        unsubscribe()
+        subscription.unsubscribe()
       })
 
       it('calls handler immediately with state', () => {
@@ -198,11 +198,11 @@ describe('module', () => {
         const mockStateValue: typeof initialState = { prop: 'mocked' }
         internals.extensionStateContainer.mockStateValue = mockStateValue
 
-        const unsubscribe2 = testModule.subscribeToStateChanges(handlerSpy)
+        const { unsubscribe } = testModule.subscribeToStateChanges(handlerSpy)
 
         expect(handlerSpy).toHaveBeenCalledWith(mockStateValue, mockStateValue)
 
-        unsubscribe2()
+        unsubscribe()
       })
 
       it('calls handler whenever the module state changes', () => {
@@ -234,7 +234,7 @@ describe('module', () => {
           initialState,
         })
 
-        const unsubscribe2 = testModule.subscribeToStateChanges(handlerSpy)
+        const { unsubscribe } = testModule.subscribeToStateChanges(handlerSpy)
 
         handlerSpy.mockClear()
 
@@ -245,7 +245,7 @@ describe('module', () => {
 
         expect(handlerSpy).not.toHaveBeenCalled()
 
-        unsubscribe2()
+        unsubscribe()
       })
 
       it('subscribes to the store only once even if multiple handlers are subscribed', () => {
@@ -258,14 +258,14 @@ describe('module', () => {
         handlerSpy.mockClear()
 
         setState({ prop: 'updated' })
-        unsubscribe()
+        subscription.unsubscribe()
         setState({ prop: 'updated' })
 
         expect(handlerSpy).toHaveBeenCalledTimes(1)
       })
 
       it('calls handler with latest state if subscribing after state has changed', () => {
-        unsubscribe()
+        subscription.unsubscribe()
         handlerSpy.mockClear()
 
         const replacedState = {
@@ -273,13 +273,13 @@ describe('module', () => {
         }
 
         setState(replacedState)
-        unsubscribe = subscribeToStateChanges(handlerSpy)
+        subscription = subscribeToStateChanges(handlerSpy)
 
         expect(handlerSpy).toHaveBeenCalledWith(replacedState, replacedState)
       })
 
       it('calls handler with updated state if subscribing after state has changed', () => {
-        unsubscribe()
+        subscription.unsubscribe()
         handlerSpy.mockClear()
 
         const replacedState = {
@@ -287,12 +287,16 @@ describe('module', () => {
         }
 
         setState(replacedState)
-        unsubscribe = subscribeToStateChanges(handlerSpy)
+        subscription = subscribeToStateChanges(handlerSpy)
         handlerSpy.mockClear()
 
         setState(initialState)
 
         expect(handlerSpy).toHaveBeenCalledWith(initialState, replacedState)
+      })
+
+      it('returns a subscription with the handler', () => {
+        expect(subscription.handler).toBe(handlerSpy)
       })
     })
   })

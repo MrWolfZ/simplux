@@ -12,7 +12,7 @@ export {
   SimpluxModuleInternals,
   StateChangeHandler,
   SubscribeToStateChanges,
-  Unsubscribe,
+  Subscription,
 } from './src/module'
 export {
   createMutations,

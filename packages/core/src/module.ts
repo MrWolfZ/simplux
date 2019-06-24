@@ -13,10 +13,17 @@ export type StateChangeHandler<TState> = (
   state: TState,
   previousState: TState,
 ) => void
-export type Unsubscribe = () => void
-export type SubscribeToStateChanges<TState> = (
-  handler: StateChangeHandler<TState>,
-) => Unsubscribe
+
+export interface Subscription<THandler extends Function> {
+  unsubscribe: () => void
+  handler: THandler
+}
+
+export type SubscribeToStateChanges<TState> = <
+  THandler extends StateChangeHandler<TState>
+>(
+  handler: THandler,
+) => Subscription<THandler>
 
 /**
  * @private
@@ -112,16 +119,16 @@ export function createModule<TState>(
     })
   }
 
-  let unsubscribe: (() => void) | undefined
+  let unsubscribeFromStore: (() => void) | undefined
   let latestModuleState = config.initialState
   const handlers: StateChangeHandler<TState>[] = []
 
-  const subscribeToStateChanges = (handler: StateChangeHandler<TState>) => {
+  const subscribeToStateChanges: SubscribeToStateChanges<TState> = handler => {
     handlers.push(handler)
 
     if (handlers.length === 1) {
       latestModuleState = getModuleState()
-      unsubscribe = subscribe(() => {
+      unsubscribeFromStore = subscribe(() => {
         const moduleState = getModuleState()
 
         if (moduleState !== latestModuleState) {
@@ -137,16 +144,21 @@ export function createModule<TState>(
 
     handler(latestModuleState, latestModuleState)
 
-    return () => {
+    const unsubscribe = () => {
       const idx = handlers.indexOf(handler)
       if (idx >= 0) {
         handlers.splice(idx, 1)
       }
 
-      if (handlers.length === 0 && unsubscribe) {
-        unsubscribe()
-        unsubscribe = undefined
+      if (handlers.length === 0 && unsubscribeFromStore) {
+        unsubscribeFromStore()
+        unsubscribeFromStore = undefined
       }
+    }
+
+    return {
+      unsubscribe,
+      handler,
     }
   }
 
