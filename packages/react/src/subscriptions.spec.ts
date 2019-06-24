@@ -1,4 +1,4 @@
-import { SubscribeToStateChanges, Unsubscribe } from '@simplux/core'
+import { SubscribeToStateChanges, Subscription } from '@simplux/core'
 import { createBatchedSubscribeFunction } from './subscriptions'
 
 describe('subscriptions', () => {
@@ -8,15 +8,18 @@ describe('subscriptions', () => {
 
   describe(createBatchedSubscribeFunction.name, () => {
     let handler: (state: number, previousState: number) => void
-    let unsubscribe: Unsubscribe
+    let subscription: Subscription<any>
     let subscribeToStateChanges: SubscribeToStateChanges<number>
 
     beforeEach(() => {
-      unsubscribe = jest.fn()
+      subscription = {
+        unsubscribe: jest.fn(),
+        handler: () => void 0,
+      }
 
       subscribeToStateChanges = jest.fn().mockImplementation(h => {
         handler = h
-        return unsubscribe
+        return subscription
       })
     })
 
@@ -38,13 +41,13 @@ describe('subscriptions', () => {
           subscribeToStateChanges,
         )
 
-        const unsub1 = subscribe(() => void 0)
-        const unsub2 = subscribe(() => void 0)
-        expect(unsubscribe).not.toHaveBeenCalled()
-        unsub1()
-        expect(unsubscribe).not.toHaveBeenCalled()
-        unsub2()
-        expect(unsubscribe).toHaveBeenCalledTimes(1)
+        const sub1 = subscribe(() => void 0)
+        const sub2 = subscribe(() => void 0)
+        expect(subscription.unsubscribe).not.toHaveBeenCalled()
+        sub1.unsubscribe()
+        expect(subscription.unsubscribe).not.toHaveBeenCalled()
+        sub2.unsubscribe()
+        expect(subscription.unsubscribe).toHaveBeenCalledTimes(1)
       })
 
       it('notifies all susbcribers', () => {
@@ -68,13 +71,23 @@ describe('subscriptions', () => {
           subscribeToStateChanges,
         )
 
-        const unsub1 = subscribe(() => void 0)
+        const sub1 = subscribe(() => void 0)
         subscribe(() => void 0)
-        expect(unsubscribe).not.toHaveBeenCalled()
-        unsub1()
-        expect(unsubscribe).not.toHaveBeenCalled()
-        unsub1()
-        expect(unsubscribe).not.toHaveBeenCalled()
+        expect(subscription.unsubscribe).not.toHaveBeenCalled()
+        sub1.unsubscribe()
+        expect(subscription.unsubscribe).not.toHaveBeenCalled()
+        sub1.unsubscribe()
+        expect(subscription.unsubscribe).not.toHaveBeenCalled()
+      })
+
+      it('returns a subscription with the handler', () => {
+        const subscribe = createBatchedSubscribeFunction<number>(
+          subscribeToStateChanges,
+        )
+
+        const handler = () => void 0
+        subscription = subscribe(handler)
+        expect(subscription.handler).toBe(handler)
       })
     })
   })

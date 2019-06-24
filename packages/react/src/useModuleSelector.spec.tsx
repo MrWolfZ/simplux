@@ -1,4 +1,8 @@
-import { SimpluxModule, SimpluxModuleInternals } from '@simplux/core'
+import {
+  SimpluxModule,
+  SimpluxModuleInternals,
+  Subscription,
+} from '@simplux/core'
 import { act, cleanup, render } from '@testing-library/react'
 import { default as React, useCallback, useReducer } from 'react'
 import { act as actHook, renderHook } from 'react-hooks-testing-library'
@@ -19,7 +23,7 @@ describe(useModuleSelector.name, () => {
   const getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
   const setModuleStateMock = jest.fn()
 
-  let unsubscribeMock: jest.Mock
+  let subscriptionMock: Subscription<any>
   let subscribeToModuleStateChangesMock: jest.Mock
 
   let useSelector: <TSelected>(
@@ -32,11 +36,14 @@ describe(useModuleSelector.name, () => {
   beforeEach(() => {
     moduleState = { count: 0 }
     moduleExtensionStateContainer = {}
-    unsubscribeMock = jest.fn()
+    subscriptionMock = {
+      unsubscribe: jest.fn(),
+      handler: () => void 0,
+    }
     subscribeToModuleStateChangesMock = jest.fn().mockImplementation(s => {
       subscriber = s
       subscriber(moduleState)
-      return unsubscribeMock
+      return subscriptionMock
     })
 
     moduleMock = {
@@ -123,14 +130,14 @@ describe(useModuleSelector.name, () => {
 
       render(<Parent />)
 
-      expect(unsubscribeMock).not.toHaveBeenCalled()
+      expect(subscriptionMock.unsubscribe).not.toHaveBeenCalled()
 
       act(() => {
         moduleState = { count: 1 }
         subscriber(moduleState)
       })
 
-      expect(unsubscribeMock).toHaveBeenCalled()
+      expect(subscriptionMock.unsubscribe).toHaveBeenCalled()
     })
 
     it('notices store updates between render and store subscription effect', () => {

@@ -120,7 +120,8 @@ export function useModuleSelector<TState, TSelected>(
       forceRender({})
     }
 
-    return subscribeToModuleStateChanges(checkForUpdates)
+    const { unsubscribe } = subscribeToModuleStateChanges(checkForUpdates)
+    return unsubscribe
   }, [])
 
   return selectedState
