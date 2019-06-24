@@ -23,7 +23,7 @@ describe(useModuleSelector.name, () => {
   const getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
   const setModuleStateMock = jest.fn()
 
-  let subscriptionMock: Subscription<any>
+  let subscriptionMock: Subscription<any, any>
   let subscribeToModuleStateChangesMock: jest.Mock
 
   let useSelector: <TSelected>(

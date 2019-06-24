@@ -8,7 +8,7 @@ describe('subscriptions', () => {
 
   describe(createBatchedSubscribeFunction.name, () => {
     let handler: (state: number, previousState: number) => void
-    let subscription: Subscription<any>
+    let subscription: Subscription<any, any>
     let subscribeToStateChanges: SubscribeToStateChanges<number>
 
     beforeEach(() => {

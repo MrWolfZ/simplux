@@ -1,4 +1,5 @@
 import {
+  ResolvedStateChangeHandler,
   StateChangeHandler,
   SubscribeToStateChanges,
   Subscription,
@@ -10,7 +11,7 @@ export function createBatchedSubscribeFunction<TState>(
 ) {
   const handlers: StateChangeHandler<TState>[] = []
 
-  let subscription: Subscription<any> | undefined
+  let subscription: Subscription<any, any> | undefined
 
   const subscribeWithBatching: SubscribeToStateChanges<TState> = handler => {
     handlers.push(handler)
@@ -41,7 +42,10 @@ export function createBatchedSubscribeFunction<TState>(
 
     return {
       unsubscribe,
-      handler,
+      handler: (handler as unknown) as ResolvedStateChangeHandler<
+        TState,
+        typeof handler
+      >,
     }
   }
 
