@@ -6,6 +6,7 @@ import pretty from 'pretty-time'
 import shell from 'shelljs'
 import { promisify } from 'util'
 import yargs from 'yargs'
+import { GLOBALS } from './globals'
 import { execAsync, ExecReturnValue } from './util'
 
 const argv = yargs
@@ -61,10 +62,18 @@ async function build() {
   )
 
   await executeStep(`Bundling`, async () => {
-    const externals = Object.keys(PACKAGE.dependencies || {})
+    const externalsArr = Object.keys(PACKAGE.dependencies || {})
+      .concat(Object.keys(PACKAGE.devDependencies || {}))
       .concat(Object.keys(PACKAGE.peerDependencies || {}))
-      .join(',')
-    const externalsArg = externals ? ` -e ${externals}` : ''
+
+    // a bit of special handling for rxjs since it has two entry
+    // points that make the dependencies heuristic fail
+    if (externalsArr.includes('rxjs')) {
+      externalsArr.push('rxjs/operators')
+    }
+
+    const externalsCsv = externalsArr.join(',')
+    const externalsArg = externalsCsv ? ` -e ${externalsCsv}` : ''
     const ret = await execAsync(
       `rollup`,
       `-f esm`,
@@ -112,13 +121,22 @@ async function build() {
   })
 
   await executeStep(`Bundling UMD`, async () => {
-    const externals = Object.keys(PACKAGE.dependencies || {}).concat(
-      Object.keys(PACKAGE.peerDependencies || {}),
-    )
-    const externalsArg = externals.length > 0 ? `-e ${externals.join(',')}` : ''
+    const externalsArr = Object.keys(PACKAGE.dependencies || {})
+      .concat(Object.keys(PACKAGE.devDependencies || {}))
+      .concat(Object.keys(PACKAGE.peerDependencies || {}))
+
+    // a bit of special handling for rxjs since it has two entry
+    // points that make the dependencies heuristic fail
+    if (externalsArr.includes('rxjs')) {
+      externalsArr.push('rxjs/operators')
+    }
+
+    const externalsCsv = externalsArr.join(',')
+    const externalsArg = externalsCsv ? ` -e ${externalsCsv}` : ''
+
     const globalsArg =
-      externals.length > 0
-        ? `-g ${externals.map(e => `${e}:${e}`).join(',')}`
+      externalsArr.length > 0
+        ? `-g ${externalsArr.map(e => `${e}:${GLOBALS[e] || e}`).join(',')}`
         : ''
 
     const ret = await execAsync(

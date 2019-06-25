@@ -11,6 +11,7 @@ const pretty_time_1 = __importDefault(require("pretty-time"));
 const shelljs_1 = __importDefault(require("shelljs"));
 const util_1 = require("util");
 const yargs_1 = __importDefault(require("yargs"));
+const globals_1 = require("./globals");
 const util_2 = require("./util");
 const argv = yargs_1.default
     .scriptName('build-pacakge')
@@ -46,10 +47,16 @@ async function build() {
     await executeStep(`Linting`, () => util_2.execAsync(`tslint`, `-c ${path_1.default.join(ROOT_DIR, 'tslint.json')}`, `-t stylish`, `--project ${PACKAGE_DIR} ${PACKAGE_DIR}/**/*.ts`));
     await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`));
     await executeStep(`Bundling`, async () => {
-        const externals = Object.keys(PACKAGE.dependencies || {})
-            .concat(Object.keys(PACKAGE.peerDependencies || {}))
-            .join(',');
-        const externalsArg = externals ? ` -e ${externals}` : '';
+        const externalsArr = Object.keys(PACKAGE.dependencies || {})
+            .concat(Object.keys(PACKAGE.devDependencies || {}))
+            .concat(Object.keys(PACKAGE.peerDependencies || {}));
+        // a bit of special handling for rxjs since it has two entry
+        // points that make the dependencies heuristic fail
+        if (externalsArr.includes('rxjs')) {
+            externalsArr.push('rxjs/operators');
+        }
+        const externalsCsv = externalsArr.join(',');
+        const externalsArg = externalsCsv ? ` -e ${externalsCsv}` : '';
         const ret = await util_2.execAsync(`rollup`, `-f esm`, `-n ${PACKAGE.name}`, `-i ${OUTPUT_DIR}/index.js`, `-o ${BUNDLES_DIR}/bundle.js`, `-m`, externalsArg);
         if (ret.code !== 0) {
             return ret;
@@ -73,10 +80,18 @@ async function build() {
         return code;
     });
     await executeStep(`Bundling UMD`, async () => {
-        const externals = Object.keys(PACKAGE.dependencies || {}).concat(Object.keys(PACKAGE.peerDependencies || {}));
-        const externalsArg = externals.length > 0 ? `-e ${externals.join(',')}` : '';
-        const globalsArg = externals.length > 0
-            ? `-g ${externals.map(e => `${e}:${e}`).join(',')}`
+        const externalsArr = Object.keys(PACKAGE.dependencies || {})
+            .concat(Object.keys(PACKAGE.devDependencies || {}))
+            .concat(Object.keys(PACKAGE.peerDependencies || {}));
+        // a bit of special handling for rxjs since it has two entry
+        // points that make the dependencies heuristic fail
+        if (externalsArr.includes('rxjs')) {
+            externalsArr.push('rxjs/operators');
+        }
+        const externalsCsv = externalsArr.join(',');
+        const externalsArg = externalsCsv ? ` -e ${externalsCsv}` : '';
+        const globalsArg = externalsArr.length > 0
+            ? `-g ${externalsArr.map(e => `${e}:${globals_1.GLOBALS[e] || e}`).join(',')}`
             : '';
         const ret = await util_2.execAsync(`rollup`, `-c ${path_1.default.join(ROOT_DIR, 'rollup.config.js')}`, `-f umd`, `-i ${BUNDLES_DIR}/bundle.es5.js`, `-o ${BUNDLES_DIR}/bundle.umd.js`, `-n ${PACKAGE.name}`, `-m`, `--exports named`, externalsArg, globalsArg);
         if (ret.code !== 0) {
