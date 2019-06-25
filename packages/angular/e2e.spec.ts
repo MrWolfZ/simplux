@@ -24,6 +24,21 @@ describe(`@simplux/angular`, () => {
   const todo1: Todo = { id: '1', description: 'go shopping', isDone: false }
   const todo2: Todo = { id: '2', description: 'clean house', isDone: true }
 
+  const todoStoreWithTodo1: TodoState = {
+    todosById: { '1': todo1 },
+    todoIds: ['1'],
+  }
+
+  const todoStoreWithTodo2: TodoState = {
+    todosById: { '2': todo2 },
+    todoIds: ['2'],
+  }
+
+  const todoStoreWithBothTodos: TodoState = {
+    todosById: { '1': todo1, '2': todo2 },
+    todoIds: ['1', '2'],
+  }
+
   it('works', () => {
     const todosModule = createSimpluxModule({
       name: 'todos',
@@ -70,9 +85,11 @@ describe(`@simplux/angular`, () => {
     class TodosModuleService extends TodosModuleServiceBase {}
     const service: TodosModuleService = new TodosModuleService()
 
+    const subscriber0 = jest.fn()
     const subscriber1 = jest.fn()
     const subscriber2 = jest.fn()
 
+    service.selectState().subscribe(subscriber0)
     service.selectNumberOfTodos().subscribe(subscriber1)
     service.selectTodosWithDoneState(true).subscribe(subscriber2)
 
@@ -81,6 +98,14 @@ describe(`@simplux/angular`, () => {
     service.markAsDone(todo1.id)
     service.removeTodo(todo1.id)
     service.removeTodo(todo1.id)
+
+    expect(service.getCurrentState()).toEqual(todoStoreWithTodo2)
+
+    expect(subscriber0).toHaveBeenCalledTimes(5)
+    expect(subscriber0).toHaveBeenCalledWith(initialTodoState)
+    expect(subscriber0).toHaveBeenCalledWith(todoStoreWithTodo1)
+    expect(subscriber0).toHaveBeenCalledWith(todoStoreWithTodo2)
+    expect(subscriber0).toHaveBeenCalledWith(todoStoreWithBothTodos)
 
     expect(subscriber1).toHaveBeenCalledTimes(4)
     expect(subscriber1).toHaveBeenCalledWith(0)

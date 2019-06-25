@@ -151,7 +151,23 @@ describe('service', () => {
       it('can get the state', () => {
         const service = createService()
 
-        expect(service.getState()).toEqual(moduleState)
+        expect(service.getCurrentState()).toEqual(moduleState)
+      })
+
+      it('can observe the state', () => {
+        const service = createService()
+
+        const subscriber = jest.fn()
+        service.selectState().subscribe(subscriber)
+
+        const updatedState: State = { ...moduleState, count: 20 }
+
+        subscribers.forEach(s => s(updatedState))
+
+        expect(service.selectState()).toBeInstanceOf(Observable)
+        expect(subscriber).toHaveBeenCalledTimes(2)
+        expect(subscriber).toHaveBeenCalledWith(moduleState)
+        expect(subscriber).toHaveBeenCalledWith(updatedState)
       })
 
       it('has a method for each mutation', () => {

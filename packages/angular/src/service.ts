@@ -4,7 +4,8 @@ import { Observable } from 'rxjs'
 import { distinctUntilChanged, map } from 'rxjs/operators'
 
 export interface ModuleServiceState<TState> {
-  getState: () => TState
+  getCurrentState: () => TState
+  selectState: () => Observable<TState>
 }
 
 export type ObservableSelector<TState, TSelector> = TSelector extends (
@@ -53,7 +54,8 @@ export function createModuleServiceBaseClass<
   TResolvedSelectors
 > {
   return class {
-    getState = simpluxModule.getState
+    getCurrentState = simpluxModule.getState
+    selectState = () => observeState(simpluxModule)
 
     constructor() {
       Object.assign(this, mutations)
@@ -76,9 +78,7 @@ function createObservableSelectors<
   simpluxModule: SimpluxModule<TState>,
   selectors: TResolvedSelectors,
 ): ModuleServiceSelectors<TState, TSelectors, TResolvedSelectors> {
-  const stateChanges$ = new Observable<TState>(sub =>
-    simpluxModule.subscribeToStateChanges(state => sub.next(state)),
-  )
+  const stateChanges$ = observeState(simpluxModule)
 
   return Object.keys(selectors).reduce(
     (acc, selectorName: keyof TSelectors) => {
@@ -91,5 +91,11 @@ function createObservableSelectors<
       return acc
     },
     {} as ModuleServiceSelectors<TState, TSelectors, TResolvedSelectors>,
+  )
+}
+
+function observeState<TState>(simpluxModule: SimpluxModule<TState>) {
+  return new Observable<TState>(sub =>
+    simpluxModule.subscribeToStateChanges(state => sub.next(state)),
   )
 }
