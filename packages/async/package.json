@@ -1,6 +1,6 @@
 {
   "name": "@simplux/async",
-  "version": "0.7.0-alpha.1",
+  "version": "0.7.0-alpha.2",
   "description": "The async tasks extension package of simplux. Enhances modules by providing a simple way to execute asynchronous code.",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
@@ -34,6 +34,6 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/core": "0.7.0-alpha.1"
+    "@simplux/core": "0.7.0-alpha.2"
   }
 }
