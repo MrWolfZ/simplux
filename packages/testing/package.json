@@ -1,6 +1,6 @@
 {
   "name": "@simplux/testing",
-  "version": "0.7.0-alpha.2",
+  "version": "0.7.0-alpha.3",
   "description": "The testing package for simplux. Contains various testing utilities (e.g. for mocking module states and mutations).",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
@@ -36,7 +36,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/async": "0.7.0-alpha.2",
-    "@simplux/core": "0.7.0-alpha.2"
+    "@simplux/async": "0.7.0-alpha.3",
+    "@simplux/core": "0.7.0-alpha.3"
   }
 }
