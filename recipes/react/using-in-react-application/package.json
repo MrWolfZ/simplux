@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.react.using-in-react-application",
-  "version": "0.7.0-alpha.3",
+  "version": "0.7.0-alpha.4",
   "description": "This recipe shows you how simple it is to integrate simplux into your React application",
   "scripts": {
     "start": "react-scripts start"
@@ -23,9 +23,9 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.7.0-alpha.3",
-    "@simplux/react": "0.7.0-alpha.3",
-    "@simplux/selectors": "0.7.0-alpha.3",
+    "@simplux/core": "0.7.0-alpha.4",
+    "@simplux/react": "0.7.0-alpha.4",
+    "@simplux/selectors": "0.7.0-alpha.4",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "redux": "^4.0.1"

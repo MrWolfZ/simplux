@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.basics.testing-derived-state",
-  "version": "0.7.0-alpha.3",
+  "version": "0.7.0-alpha.4",
   "description": "This recipe shows how simple it is to test your derived state with simplux",
   "main": "src/index.ts",
   "scripts": {
@@ -26,8 +26,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.7.0-alpha.3",
-    "@simplux/selectors": "0.7.0-alpha.3",
+    "@simplux/core": "0.7.0-alpha.4",
+    "@simplux/selectors": "0.7.0-alpha.4",
     "redux": "^4.0.1"
   },
   "devDependencies": {

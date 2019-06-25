@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0-alpha.4](https://github.com/MrWolfZ/simplux/compare/v0.7.0-alpha.3...v0.7.0-alpha.4) (2019-06-25)
+
+**Note:** Version bump only for package @simplux/recipes.basics.getting-started
+
+
+
+
+
 # [0.7.0-alpha.3](https://github.com/MrWolfZ/simplux/compare/v0.7.0-alpha.2...v0.7.0-alpha.3) (2019-06-25)
 
 **Note:** Version bump only for package @simplux/recipes.basics.getting-started
