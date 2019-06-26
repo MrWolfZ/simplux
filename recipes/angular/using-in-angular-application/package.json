@@ -1,0 +1,49 @@
+{
+  "name": "@simplux/recipes.angular.using-in-angular-application",
+  "version": "0.7.0-alpha.3",
+  "description": "This recipe shows you how simple it is to integrate simplux into your Angular application",
+  "scripts": {
+    "start": "ng serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrWolfZ/simplux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/simplux/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/angular/using-in-angular-application#readme",
+  "keywords": [
+    "recipe",
+    "redux",
+    "simplux",
+    "typescript"
+  ],
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@angular/common": "^7.0.0",
+    "@angular/compiler": "^7.0.0",
+    "@angular/core": "^7.0.0",
+    "@angular/platform-browser": "^7.0.0",
+    "@angular/platform-browser-dynamic": "^7.0.0",
+    "@simplux/angular": "0.7.0-alpha.4",
+    "@simplux/core": "0.7.0-alpha.4",
+    "@simplux/selectors": "0.7.0-alpha.4",
+    "core-js": "^3.1.4",
+    "redux": "^4.0.1",
+    "rxjs": "~6.4.0",
+    "tslib": "^1.9.0",
+    "zone.js": "~0.9.1"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "~0.800.0",
+    "@angular/cli": "^7.0.0",
+    "@angular/compiler-cli": "^7.0.0",
+    "@angular/language-service": "^7.0.0",
+    "@types/node": "~8.9.4",
+    "ts-node": "~7.0.0",
+    "typescript": "~3.4.3"
+  }
+}

@@ -1,0 +1,11 @@
+<span>initial value: {{ initialValue }}</span>
+<br />
+<span>value: {{ value$ | async }}</span>
+<br />
+<span>value * 2: {{ valueTimesTwo$ | async }}</span>
+<br />
+<span>value * 5: {{ valueTimesFive$ | async }}</span>
+<br />
+<button (click)="incrementCounter()">Increment</button>
+<br />
+<button (click)="incrementCounterByFive()">Increment by 5</button>
