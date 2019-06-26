@@ -1,10 +1,10 @@
-# Recipe: testing my React components that read and change state
+# Recipe: testing my React components
 
-This recipe shows you how simple it is to test your React components that read and change state with **simplux**.
+This recipe shows you how simple it is to test your React components with **simplux**.
 
 If you are new to using **simplux** with React there is [a recipe](../using-in-react-application#readme) that will help you get started before you follow this recipe.
 
-> You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/react/testing-components-using-state).
+> You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/react/testing-components).
 
 Before we start let's install all the packages we need (we assume you already have all packages required for React installed).
 
@@ -14,7 +14,7 @@ npm i @simplux/core @simplux/react @simplux/selectors @simplux/testing redux -S
 
 Now we're ready to go.
 
-> The code snippets in this recipe use [enzyme](https://airbnb.io/enzyme/) for rendering and asserting our components. However, any other test renderer (e.g. [react-testing-library](https://github.com/testing-library/react-testing-library)) works just as well (in fact the [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/react/testing-components-using-state) contains tests for both the mentioned renderers).
+> The code snippets in this recipe use [enzyme](https://airbnb.io/enzyme/) for rendering and asserting our components. However, any other test renderer (e.g. [react-testing-library](https://github.com/testing-library/react-testing-library)) works just as well (in fact the [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/react/testing-components) contains tests for both the mentioned renderers).
 
 In this recipe we are going to test a simple counter component. Let's start by creating a module for the counter as well as the `Counter` component (this is the same code as in [this recipe](../using-in-react-application#readme)).
 

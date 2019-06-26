@@ -1,5 +1,5 @@
-// this code is part of the simplux recipe "testing my React components that read and change state":
-// https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-components-using-state
+// this code is part of the simplux recipe "testing my React components":
+// https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-component
 
 import { createMutations, createSimpluxModule } from '@simplux/core'
 import { createSelectorHook } from '@simplux/react'

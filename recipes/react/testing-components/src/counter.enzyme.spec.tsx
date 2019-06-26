@@ -1,12 +1,12 @@
-// this code is part of the simplux recipe "testing my React components that read and change state":
-// https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-components-using-state
+// this code is part of the simplux recipe "testing my React components":
+// https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-component
 
 import {
   clearAllSimpluxMocks,
   mockModuleState,
   mockMutation,
 } from '@simplux/testing'
-import { cleanup, fireEvent, render } from '@testing-library/react'
+import { shallow } from 'enzyme'
 import React from 'react'
 import { Counter } from './counter'
 import { counterModule, increment, incrementBy } from './counter-module'
@@ -16,8 +16,6 @@ import { counterModule, increment, incrementBy } from './counter-module'
 // test renderer would also work
 
 describe(Counter.name, () => {
-  afterEach(cleanup)
-
   // let's start by looking at how we can test components that
   // access a module's state
 
@@ -32,9 +30,10 @@ describe(Counter.name, () => {
     // includes accesses via the module's selector hook
     mockModuleState(counterModule, { value: 10 })
 
-    const { getByText } = render(<Counter />)
+    const wrapper = shallow(<Counter />)
+    const expected = <span>value: 10</span>
 
-    expect(getByText(/value:\s*10/g)).toBeDefined()
+    expect(wrapper.contains(expected)).toBe(true)
   })
 
   // the mockModuleState call above mocks the state indefinitely;
@@ -47,9 +46,10 @@ describe(Counter.name, () => {
   it('displays the value times two', () => {
     mockModuleState(counterModule, { value: 20 })
 
-    const { getByText } = render(<Counter />)
+    const wrapper = shallow(<Counter />)
+    const expected = <span>value * 2: 40</span>
 
-    expect(getByText(/value \* 2:\s*40/g)).toBeDefined()
+    expect(wrapper.contains(expected)).toBe(true)
   })
 
   // in specific rare situations it can be useful to manually clear
@@ -61,9 +61,10 @@ describe(Counter.name, () => {
     // use the hook
     const clear = mockModuleState(counterModule, { value: 30 })
 
-    const { getByText } = render(<Counter />)
+    const wrapper = shallow(<Counter />)
+    const expected = <span>value * 5: 150</span>
 
-    expect(getByText(/value \* 5:\s*150/g)).toBeDefined()
+    expect(wrapper.contains(expected)).toBe(true)
 
     clear()
 
@@ -82,9 +83,11 @@ describe(Counter.name, () => {
     const incrementMock = jest.fn()
     mockMutation(increment, incrementMock)
 
-    const { getByText } = render(<Counter />)
+    const wrapper = shallow(<Counter />)
 
-    fireEvent.click(getByText('Increment'))
+    wrapper
+      .findWhere(el => el.type() === 'button' && el.text() === 'Increment')
+      .simulate('click')
 
     expect(incrementMock).toHaveBeenCalled()
   })
@@ -96,9 +99,11 @@ describe(Counter.name, () => {
     const incrementByMock = jest.fn()
     mockMutation(incrementBy, incrementByMock)
 
-    const { getByText } = render(<Counter />)
+    const wrapper = shallow(<Counter />)
 
-    fireEvent.click(getByText('Increment by 5'))
+    wrapper
+      .findWhere(el => el.type() === 'button' && el.text() === 'Increment by 5')
+      .simulate('click')
 
     expect(incrementByMock).toHaveBeenCalledWith(5)
   })

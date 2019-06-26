@@ -32,19 +32,18 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [organizing my application state](recipes/advanced/organizing-application-state#readme)
 - [communicating between modules](recipes/advanced/communicating-between-modules#readme) (work-in-progress)
 - [managing collections of entities](recipes/advanced/managing-entity-collections#readme) (work-in-progress)
-- [performing asynchronous tasks](recipes/advanced/performing-async-tasks#readme) (work-in-progress)
-- [testing asynchronous tasks](recipes/advanced/testing-async-tasks#readme) (work-in-progress)
-- [testing my code that uses async tasks](recipes/advanced/testing-code-using-async#readme) (work-in-progress)
+- [performing side effects (like loading data from my API)](recipes/advanced/performing-side-effects#readme) (work-in-progress)
+- [testing side effects](recipes/advanced/testing-side-effects#readme) (work-in-progress)
+- [testing my code that triggers side effects](recipes/advanced/testing-code-triggering-side-effects#readme) (work-in-progress)
 - [composing my mutations](recipes/advanced/composing-mutations#readme)
 - [composing my selectors](recipes/advanced/composing-selectors#readme)
 - [using Reselect for my selectors](recipes/advanced/using-reselect-for-selectors#readme) (work-in-progress)
-- [coordinating complex asynchronous workflows](recipes/advanced/coordinating-complex-asynchronous-workflows#readme) (work-in-progress)
+- [handling event streams (like debouncing user input)](recipes/advanced/handling-event-streams#readme) (work-in-progress)
 
 ### React
 
 - [using **simplux** in my React application](recipes/react/using-in-react-application#readme)
-- [testing my components that read and change state](recipes/react/testing-components-using-state#readme)
-- [testing my components that trigger async tasks](recipes/react/testing-components-using-async#readme) (work-in-progress)
+- [testing my React components](recipes/react/testing-components#readme)
 - [building non-trivial React applications](recipes/react/building-non-trivial-applications#readme) (work-in-progress)
 - [using lazy loaded components/code splitting](recipes/react/using-lazy-loading-code-splitting#readme) (work-in-progress)
 - [using hot module reloading (HMR)](recipes/react/using-hot-module-reloading#readme) (work-in-progress)
@@ -55,7 +54,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 ### Angular
 
 - [using **simplux** in my Angular application](recipes/angular/using-in-angular-application#readme)
-- [testing my components](recipes/angular/testing-components#readme) (work-in-progress)
+- [testing my Angular components](recipes/angular/testing-components#readme) (work-in-progress)
 - [building non-trivial Angular applications](recipes/angular/building-non-trivial-applications#readme) (work-in-progress)
 - [using lazy loaded routes/code splitting](recipes/angular/using-lazy-loading-code-splitting#readme) (work-in-progress)
 
@@ -84,16 +83,16 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - core: throw when calling mutation from inside another mutation (i.e. nested dispatch)
 - selectors: add memoization (also mention this briefly in the "derived state" recipe)
 - selectors: add note to "composing my selectors" recipe about interplay with memoization (e.g. due to in-place sorting)
+- effects: rename async package to effects
+- effects: add function to create effect (module-agnostic) to allow mocking them
 - react: add tests that verify HMR works
 - react: add tests that verify server-side rendering works
 - react: verify package works with react-native
-- angular: create package for using in Angular application
 - entities: create package for managing collections of entities
 - entities: create default set of entity management mutations
 - entities: allow creating custom mutations that act on one entity
 - entities: create default set of selectors for entities
-- workflows: add support for reactive workflows using observables
-- async: add function to wrap other async functions to allow mocking them
+- streams: add support for reactive event streams using observables
 - docs: create website
 - add dtslint tests for all packages
 
