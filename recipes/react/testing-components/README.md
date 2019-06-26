@@ -154,6 +154,6 @@ it('triggers an increment by 5 when the "Increment by 5" button is clicked', () 
 })
 ```
 
-And that is all you need to test your React components that read and change state with **simplux**.
+And that is all you need to test your React components with **simplux**.
 
 Have a look at our [other recipes](../../../../..#recipes) to learn how **simplux** can help you make your life simple in other situations.
