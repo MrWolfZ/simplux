@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.basics.getting-started",
-  "version": "0.8.0-alpha.2",
+  "version": "0.8.0",
   "description": "This recipe shows how simple it is to get started using simplux",
   "main": "src/index.ts",
   "scripts": {
@@ -24,7 +24,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.8.0-alpha.2",
+    "@simplux/core": "0.8.0",
     "redux": "^4.0.1"
   },
   "devDependencies": {
