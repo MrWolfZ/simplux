@@ -3,8 +3,27 @@ import { ResolvedSelectors, SelectorsBase } from '@simplux/selectors'
 import { Observable } from 'rxjs'
 import { distinctUntilChanged, map } from 'rxjs/operators'
 
+/**
+ * The basic methods for a module service.
+ */
 export interface ModuleServiceState<TState> {
+  /**
+   * Get a snapshot of the module's current state. The snapshot is
+   * immutable and will therefore not be changed even if the module
+   * is updated.
+   *
+   * @returns a snapshot of the module's current state
+   */
   getCurrentState: () => TState
+
+  /**
+   * Get an observable of state changes of the module. The observable
+   * emits the module's current state immediately when subscribed to.
+   * Afterwards it will emit a new value whenever the module gets
+   * updated.
+   *
+   * @returns an observable of state changes of the module
+   */
   selectState: () => Observable<TState>
 }
 
@@ -36,6 +55,24 @@ export type ModuleService<
   TResolvedMutations &
   ModuleServiceSelectors<TState, TSelectors, TResolvedSelectors>
 
+/**
+ * Create a base which contains methods for interacting with a module.
+ * This base class should be extended from an Angular service.
+ *
+ * For each mutation the service has a method to execute the mutation.
+ *
+ * For each selector the service has a method that returns an observable.
+ * The observable immediately emits the result of the selector applied
+ * to the module's current state when subscribed to. New values are
+ * emitted whenever the state and the selector's result for that state
+ * change.
+ *
+ * @param simpluxModule the module to create the base class for
+ * @param mutations the mutations to add to the class
+ * @param selectors the selectors to add to the class
+ *
+ * @returns a base class that should be extended from an Angular service
+ */
 export function createModuleServiceBaseClass<
   TState,
   TMutations extends MutationsBase<TState>,
