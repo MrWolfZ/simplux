@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.angular.using-in-angular-application",
-  "version": "0.7.0-alpha.3",
+  "version": "0.7.0",
   "description": "This recipe shows you how simple it is to integrate simplux into your Angular application",
   "scripts": {
     "start": "ng serve"
@@ -28,9 +28,9 @@
     "@angular/core": "^7.0.0",
     "@angular/platform-browser": "^7.0.0",
     "@angular/platform-browser-dynamic": "^7.0.0",
-    "@simplux/angular": "0.7.0-alpha.4",
-    "@simplux/core": "0.7.0-alpha.4",
-    "@simplux/selectors": "0.7.0-alpha.4",
+    "@simplux/angular": "0.7.0",
+    "@simplux/core": "0.7.0",
+    "@simplux/selectors": "0.7.0",
     "core-js": "^3.1.4",
     "redux": "^4.0.1",
     "rxjs": "~6.4.0",

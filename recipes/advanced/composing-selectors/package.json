@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.advanced.composing-selectors",
-  "version": "0.7.0-alpha.4",
+  "version": "0.7.0",
   "description": "This recipe shows you how simple it is to compose/re-use your simplux selectors",
   "main": "src/index.ts",
   "scripts": {
@@ -27,8 +27,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.7.0-alpha.4",
-    "@simplux/selectors": "0.7.0-alpha.4",
+    "@simplux/core": "0.7.0",
+    "@simplux/selectors": "0.7.0",
     "redux": "^4.0.1"
   },
   "devDependencies": {
