@@ -6,6 +6,7 @@
   "es2015": "./esm2015/index.js",
   "main": "./bundles/bundle.umd.js",
   "typings": "./index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "node ../../scripts/build.package.js --forceEnableColors=true",
     "build-ci": "npm run build -- --forceEnableColors=false",
