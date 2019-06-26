@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.advanced.testing-code-using-mutations",
-  "version": "0.8.0-alpha.1",
+  "version": "0.8.0-alpha.2",
   "description": "This recipe shows you how simple it is to test your code that uses simplux mutations",
   "main": "src/index.ts",
   "scripts": {
@@ -27,8 +27,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.8.0-alpha.1",
-    "@simplux/testing": "0.8.0-alpha.1",
+    "@simplux/core": "0.8.0-alpha.2",
+    "@simplux/testing": "0.8.0-alpha.2",
     "redux": "^4.0.1"
   },
   "devDependencies": {
