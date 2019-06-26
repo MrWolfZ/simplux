@@ -5,8 +5,6 @@
     "outDir": "./dist",
     "jsx": "react",
     "paths": {
-      "@simplux/async": ["../async/dist"],
-      "@simplux/async/*": ["../async/dist/*"],
       "@simplux/core": ["../core/dist"],
       "@simplux/core/*": ["../core/dist/*"],
       "@simplux/testing": ["../testing/dist"],

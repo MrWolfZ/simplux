@@ -36,7 +36,6 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/async": "0.7.0",
     "@simplux/core": "0.7.0"
   }
 }

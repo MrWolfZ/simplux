@@ -6,8 +6,6 @@
     "paths": {
       "@simplux/core": ["../core/dist"],
       "@simplux/core/*": ["../core/dist/*"],
-      "@simplux/async": ["../async/dist"],
-      "@simplux/async/*": ["../async/dist/*"],
       "@simplux/testing": ["."]
     }
   },
