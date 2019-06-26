@@ -54,7 +54,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 ### Angular
 
 - [using **simplux** in my Angular application](recipes/angular/using-in-angular-application#readme)
-- [testing my Angular components](recipes/angular/testing-components#readme) (work-in-progress)
+- [testing my Angular components](recipes/angular/testing-components#readme)
 - [building non-trivial Angular applications](recipes/angular/building-non-trivial-applications#readme) (work-in-progress)
 - [using lazy loaded routes/code splitting](recipes/angular/using-lazy-loading-code-splitting#readme) (work-in-progress)
 

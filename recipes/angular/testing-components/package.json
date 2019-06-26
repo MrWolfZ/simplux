@@ -1,0 +1,61 @@
+{
+  "name": "@simplux/recipes.angular.testing-components",
+  "version": "0.7.0-alpha.4",
+  "description": "This recipe shows you how simple it is to test your Angular components with simplux",
+  "scripts": {
+    "start": "ng serve",
+    "test": "ng test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrWolfZ/simplux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/simplux/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/angular/testing-components#readme",
+  "keywords": [
+    "angular",
+    "recipe",
+    "redux",
+    "simplux",
+    "testing",
+    "typescript"
+  ],
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@angular/common": "~7.2.0",
+    "@angular/compiler": "~7.2.0",
+    "@angular/core": "~7.2.0",
+    "@angular/platform-browser": "~7.2.0",
+    "@angular/platform-browser-dynamic": "~7.2.0",
+    "@simplux/angular": "0.7.0-alpha.4",
+    "@simplux/core": "0.7.0-alpha.4",
+    "@simplux/selectors": "0.7.0-alpha.4",
+    "core-js": "^3.1.4",
+    "redux": "^4.0.1",
+    "rxjs": "~6.4.0",
+    "tslib": "^1.9.0",
+    "zone.js": "~0.9.1"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "~0.12.0",
+    "@angular/cli": "~7.2.3",
+    "@angular/compiler-cli": "~7.2.0",
+    "@angular/language-service": "~7.2.0",
+    "@types/jasmine": "~3.3.8",
+    "@types/jasminewd2": "~2.0.3",
+    "@types/node": "~8.9.4",
+    "jasmine-core": "~3.4.0",
+    "jasmine-spec-reporter": "~4.2.1",
+    "karma": "~4.1.0",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-coverage-istanbul-reporter": "~2.0.1",
+    "karma-jasmine": "~2.0.1",
+    "karma-jasmine-html-reporter": "^1.4.0",
+    "ts-node": "~7.0.0",
+    "typescript": "~3.2.0"
+  }
+}
