@@ -9,7 +9,7 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 Before we start let's install all the packages we need (we assume you already have all packages required for React installed).
 
 ```sh
-npm i @simplux/core @simplux/react @simplux/selectors redux -S
+npm i @simplux/core @simplux/react redux -S
 ```
 
 Now we're ready to go.
@@ -17,8 +17,11 @@ Now we're ready to go.
 In this recipe we are going to build a simple counter component. Let's start by creating our module with some simple mutations and selectors.
 
 ```ts
-import { createSimpluxModule, createMutations } from '@simplux/core'
-import { createSelectors } from '@simplux/selectors'
+import {
+  createSelectors,
+  createSimpluxModule,
+  createMutations,
+} from '@simplux/core'
 
 const counterModule = createSimpluxModule({
   name: 'counter',

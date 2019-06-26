@@ -9,7 +9,7 @@ If you are new to computing derived state with **simplux** there is [a recipe](.
 Before we start let's install all the packages we need.
 
 ```sh
-npm i @simplux/core @simplux/selectors redux -S
+npm i @simplux/core redux -S
 ```
 
 Now we're ready to go.
@@ -17,8 +17,7 @@ Now we're ready to go.
 Computing derived state for **simplux** modules is done with _selectors_. Selectors are very simple to test as you will see. For this recipe we use a simple counter module with two selectors.
 
 ```ts
-import { createSimpluxModule } from '@simplux/core'
-import { createSelectors } from '@simplux/selectors'
+import { createSelectors, createSimpluxModule } from '@simplux/core'
 
 interface CounterState {
   counter: number

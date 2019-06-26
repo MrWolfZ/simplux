@@ -1,8 +1,11 @@
 // this code is part of the simplux recipe "using simplux in my Angular application":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/angular/using-in-angular-application
 
-import { createMutations, createSimpluxModule } from '@simplux/core'
-import { createSelectors } from '@simplux/selectors'
+import {
+  createMutations,
+  createSelectors,
+  createSimpluxModule,
+} from '@simplux/core'
 
 export const counterModule = createSimpluxModule({
   name: 'counter',

@@ -1,7 +1,7 @@
 // this code is part of the simplux recipe "creating non-trivial modules":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/creating-non-trivial-modules
 
-import { createSelectors } from '@simplux/selectors'
+import { createSelectors } from '@simplux/core'
 import { Todo, todosModule } from './todos.module'
 
 // for using our collection of entities let's create some selectors

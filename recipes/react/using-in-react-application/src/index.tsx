@@ -1,9 +1,12 @@
 // this code is part of the simplux recipe "using simplux in my React application":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/react/using-in-react-application
 
-import { createMutations, createSimpluxModule } from '@simplux/core'
+import {
+  createMutations,
+  createSelectors,
+  createSimpluxModule,
+} from '@simplux/core'
 import { createSelectorHook } from '@simplux/react'
-import { createSelectors } from '@simplux/selectors'
 import React from 'react'
 import { render } from 'react-dom'
 

@@ -1,8 +1,7 @@
 // this code is part of the simplux recipe "composing my selectors":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/composing-selectors
 
-import { createSimpluxModule } from '@simplux/core'
-import { createSelectors } from '@simplux/selectors'
+import { createSelectors, createSimpluxModule } from '@simplux/core'
 
 // for this recipe we use a simple scenario: managing a collection
 // of Todo items

@@ -9,7 +9,7 @@ If you are new to using **simplux** with React there is [a recipe](../using-in-r
 Before we start let's install all the packages we need (we assume you already have all packages required for React installed).
 
 ```sh
-npm i @simplux/core @simplux/react @simplux/selectors @simplux/testing redux -S
+npm i @simplux/core @simplux/react @simplux/testing redux -S
 ```
 
 Now we're ready to go.
@@ -19,7 +19,12 @@ Now we're ready to go.
 In this recipe we are going to test a simple counter component. Let's start by creating a module for the counter as well as the `Counter` component (this is the same code as in [this recipe](../using-in-react-application#readme)).
 
 ```tsx
-import { createSimpluxModule } from '@simplux/core'
+import {
+  createSelectors,
+  createSimpluxModule,
+  createMutations,
+} from '@simplux/core'
+import { createSelectorHook } from '@simplux/react'
 import React from 'react'
 
 const counterModule = createSimpluxModule({

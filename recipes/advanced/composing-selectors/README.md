@@ -9,7 +9,7 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 Before we start let's install all the packages we need.
 
 ```sh
-npm i @simplux/core @simplux/selectors redux -S
+npm i @simplux/core redux -S
 ```
 
 Now we're ready to go.
@@ -51,7 +51,7 @@ We want to select three types of things for this module:
 However, instead of duplicating the logic for filtering Todo items we want to re-use our logic. That means we want to compose our selectors. To do this, we can simply call any other selector we require. Let's see how we can do this to select all items that are done.
 
 ```ts
-import { createSelectors } from '@simplux/selectors'
+import { createSelectors } from '@simplux/core'
 
 const { selectItemsWithIsDoneValue, selectDoneItems } = createSelectors(
   todosModule,

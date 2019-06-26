@@ -9,7 +9,7 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 Before we start let's install all the packages we need.
 
 ```sh
-npm i @simplux/core @simplux/selectors redux -S
+npm i @simplux/core redux -S
 ```
 
 Now we're ready to go.
@@ -91,7 +91,7 @@ const { markTodoAsDone } = createMutations(todosModule, {
 Now that we have a way to update our collection of Todo items we need a way to access the collection in a structured way. For this we create selectors (see [this recipe](../../basics/computing-derived-state#readme) if you are unfamilar with selectors).
 
 ```ts
-import { createSelectors } from '@simplux/selectors'
+import { createSelectors } from '@simplux/core'
 
 const {
   selectTodoIds,

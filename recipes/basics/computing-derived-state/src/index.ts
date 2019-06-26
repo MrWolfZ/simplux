@@ -1,8 +1,7 @@
 // this code is part of the simplux recipe "computing derived state":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/computing-derived-state
 
-import { createSimpluxModule } from '@simplux/core'
-import { createSelectors } from '@simplux/selectors'
+import { createSelectors, createSimpluxModule } from '@simplux/core'
 
 const counterModule = createSimpluxModule({
   name: 'counter',

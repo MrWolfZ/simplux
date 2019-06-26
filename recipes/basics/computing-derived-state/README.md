@@ -9,7 +9,7 @@ If you are new to **simplux** there is [a recipe](../getting-started#readme) tha
 Before we start let's install all the packages we need.
 
 ```sh
-npm i @simplux/core @simplux/selectors redux -S
+npm i @simplux/core redux -S
 ```
 
 Now we're ready to go.
@@ -30,7 +30,7 @@ const counterModule = createSimpluxModule({
 To compute derived state for our module we can define so-called _selectors_. A selector is a pure function that takes the module's state - and optionally some additional arguments - and returns some derived value.
 
 ```ts
-import { createSelectors } from '@simplux/selectors'
+import { createSelectors } from '@simplux/core'
 
 // to compute derived state we can define selectors
 const { plusOne, plus } = createSelectors(counterModule, {

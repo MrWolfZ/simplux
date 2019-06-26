@@ -9,7 +9,7 @@ If you are new to using **simplux** with Angular there is [a recipe](../using-in
 Before we start let's install all the packages we need (we assume you already have all packages required for Angular installed).
 
 ```sh
-npm i @simplux/angular @simplux/core @simplux/selectors redux -S
+npm i @simplux/angular @simplux/core redux -S
 ```
 
 Now we're ready to go.
@@ -21,8 +21,11 @@ In this recipe we are going to test a simple counter component. Let's start by c
 ```ts
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { createModuleServiceBaseClass } from '@simplux/angular'
-import { createSimpluxModule, createMutations } from '@simplux/core'
-import { createSelectors } from '@simplux/selectors'
+import {
+  createSelectors,
+  createSimpluxModule,
+  createMutations,
+} from '@simplux/core'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 

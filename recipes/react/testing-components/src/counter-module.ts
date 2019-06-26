@@ -1,9 +1,12 @@
 // this code is part of the simplux recipe "testing my React components":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-component
 
-import { createMutations, createSimpluxModule } from '@simplux/core'
+import {
+  createMutations,
+  createSelectors,
+  createSimpluxModule,
+} from '@simplux/core'
 import { createSelectorHook } from '@simplux/react'
-import { createSelectors } from '@simplux/selectors'
 
 export const counterModule = createSimpluxModule({
   name: 'counter',
