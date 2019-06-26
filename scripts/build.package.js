@@ -46,6 +46,36 @@ async function build() {
     });
     await executeStep(`Linting`, () => util_2.execAsync(`tslint`, `-c ${path_1.default.join(ROOT_DIR, 'tslint.json')}`, `-t stylish`, `--project ${PACKAGE_DIR} ${PACKAGE_DIR}/**/*.ts`));
     await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`));
+    await executeStep(`Compiling esm5`, async () => {
+        const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es5`, `--module es2015`, `--outDir ${OUTPUT_DIR}/esm5`, `--noLib`, `--sourceMap`);
+        // 2 indicates failure with output still being generated
+        // (this command will usually fail because of the --noLib flag)
+        if (![0, 2].includes(ret.code)) {
+            return ret;
+        }
+        const globPromise = util_1.promisify(glob_1.default);
+        const jsFiles = await globPromise(`${OUTPUT_DIR}/esm5/**/*.js`);
+        let code = 0;
+        for (const file of jsFiles) {
+            code += await mapSources(file, false);
+        }
+        return code;
+    });
+    await executeStep(`Compiling esm2015`, async () => {
+        const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es2015`, `--module es2015`, `--outDir ${OUTPUT_DIR}/esm2015`, `--noLib`, `--sourceMap`);
+        // 2 indicates failure with output still being generated
+        // (this command will usually fail because of the --noLib flag)
+        if (![0, 2].includes(ret.code)) {
+            return ret;
+        }
+        const globPromise = util_1.promisify(glob_1.default);
+        const jsFiles = await globPromise(`${OUTPUT_DIR}/esm2015/**/*.js`);
+        let code = 0;
+        for (const file of jsFiles) {
+            code += await mapSources(file, false);
+        }
+        return code;
+    });
     await executeStep(`Bundling`, async () => {
         const externalsArr = Object.keys(PACKAGE.dependencies || {})
             .concat(Object.keys(PACKAGE.devDependencies || {}))
@@ -112,11 +142,15 @@ async function build() {
     });
     await executeStep(`Adjusting bundle sourcemap sources paths`, async () => {
         const globPromise = util_1.promisify(glob_1.default);
-        const bundleMapFiles = await globPromise(`${BUNDLES_DIR}/*.map`);
+        const bundleMapFiles = await globPromise(`${OUTPUT_DIR}/**/*.map`);
         await Promise.all(bundleMapFiles.map(async (mapFile) => {
             const fileContent = await util_1.promisify(fs_1.default.readFile)(mapFile);
             const fileContentJson = JSON.parse(fileContent);
-            fileContentJson.sources = fileContentJson.sources.map(s => s.replace(/^\.\.\/\.\./, PACKAGE.name));
+            fileContentJson.sources = fileContentJson.sources.map(s => {
+                const sourcePath = path_1.default.resolve(path_1.default.join(path_1.default.dirname(mapFile), s));
+                const packagePrefixSourcePath = sourcePath.replace(PACKAGE_DIR, PACKAGE.name);
+                return packagePrefixSourcePath.replace(/\\/g, '/');
+            });
             await util_1.promisify(fs_1.default.writeFile)(mapFile, JSON.stringify(fileContentJson));
         }));
     });
@@ -170,15 +204,15 @@ async function executeStep(stepName, fn) {
     }
     shelljs_1.default.echo(chalk_1.default.green(`${stepName} successful in ${formattedTime}!`));
 }
-// TODO: ensure the sources path is correct
-// (i.e. @simplux/core/src/... instead of ../../src/...)
-async function mapSources(file) {
+async function mapSources(file, useTwoPasses = true) {
     const sorcery = require('sorcery');
     await sorcery.loadSync(file).write();
-    // another second run of mapping the sources is required for sorcery to
-    // properly map the sources since after the first run the source files
-    // are correctly identified, but their content is not properly added to
-    // the source mapping
-    await sorcery.loadSync(file).write();
+    if (useTwoPasses) {
+        // another second run of mapping the sources is required for sorcery to
+        // properly map the sources since after the first run the source files
+        // are correctly identified, but their content is not properly added to
+        // the source mapping
+        await sorcery.loadSync(file).write();
+    }
     return 0;
 }
