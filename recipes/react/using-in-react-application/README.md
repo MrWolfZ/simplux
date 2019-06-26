@@ -14,7 +14,7 @@ npm i @simplux/core @simplux/react @simplux/selectors redux -S
 
 Now we're ready to go.
 
-In this recipe we are going to build a simple counter component. Let's start by creating our module with some simple mutations and selectors. The React extension package adds a new `react` property to our modules that provides us a with a React hook called `useSelector` for using a module's state in a component.
+In this recipe we are going to build a simple counter component. Let's start by creating our module with some simple mutations and selectors.
 
 ```ts
 import { createSimpluxModule, createMutations } from '@simplux/core'
@@ -55,6 +55,8 @@ import { createSelectorHook } from '@simplux/react'
 
 const useCounter = createSelectorHook(counterModule)
 ```
+
+> Since the react extension uses hooks it requires at least React version 16.8. If you need to use an older version of react the recipe for [using **simplux** with React Redux](../using-with-react-redux#readme) will help you with an alternative integration that works with any React version.
 
 Now we can start using the counter module in our counter component. As the name of the `createSelectorHook` function suggests the created `useCounter` hook allows us to use our module's selectors inside our component ([this recipe](../../basics/computing-derived-state#readme) will help you if you are unfamiliar with selectors). This hook also ensures that the component is updated whenever the selected value changes.
 
