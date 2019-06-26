@@ -2,6 +2,7 @@
 
 import {
   createMutations,
+  createSelectors,
   createSimpluxModule,
   getSimpluxReducer,
   setReduxStoreForSimplux,
@@ -25,7 +26,7 @@ describe(`@simplux/core`, () => {
     todoIds: [],
   }
 
-  const todo1: Todo = { id: '1', description: 'go shopping', isDone: false }
+  const todo1: Todo = { id: '1', description: 'go shopping', isDone: true }
   const todo2: Todo = { id: '2', description: 'clean house', isDone: false }
 
   const todoStoreWithOneTodo: TodoState = {
@@ -272,5 +273,43 @@ describe(`@simplux/core`, () => {
     expect(store.getState().simplux.switchToNewStoreAfter).toBe(initialState)
 
     cleanup()
+  })
+
+  describe('selectors', () => {
+    it('works', () => {
+      const todosModule = createSimpluxModule({
+        name: 'todos',
+        initialState: todoStoreWithTwoTodos,
+      })
+
+      const { nrOfTodos, getTodosWithDoneState } = createSelectors(
+        todosModule,
+        {
+          nrOfTodos: ({ todoIds }) => todoIds.length,
+          getTodosWithDoneState({ todoIds, todosById }, isDone: boolean) {
+            return todoIds
+              .map(id => todosById[id])
+              .filter(t => t.isDone === isDone)
+          },
+        },
+      )
+
+      const { nrOfTodosTimes2 } = createSelectors(todosModule, {
+        nrOfTodosTimes2: s => nrOfTodos(s) * 2,
+      })
+
+      expect(nrOfTodos(todoStoreWithTwoTodos)).toBe(2)
+      expect(nrOfTodosTimes2(todoStoreWithTwoTodos)).toBe(4)
+      expect(getTodosWithDoneState(todoStoreWithTwoTodos, true)).toEqual([
+        todo1,
+      ])
+
+      const cleanup = setReduxStoreForSimplux(
+        createStore(getSimpluxReducer()),
+        s => s,
+      )
+      expect(nrOfTodos.withLatestModuleState()).toBe(2)
+      cleanup()
+    })
   })
 })

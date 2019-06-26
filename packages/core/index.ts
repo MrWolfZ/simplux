@@ -25,6 +25,14 @@ export {
   ResolvedMutationInternals,
   ResolvedMutations,
 } from './src/mutations'
+export {
+  createSelectors,
+  ResolvedSelector,
+  ResolvedSelectorExtras,
+  ResolvedSelectors,
+  SelectorBase,
+  SelectorsBase,
+} from './src/selectors'
 export { SimpluxStore } from './src/store'
 
 // tslint:disable: max-line-length (cannot line break the links)

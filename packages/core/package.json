@@ -1,7 +1,7 @@
 {
   "name": "@simplux/core",
   "version": "0.7.0",
-  "description": "The core package of simplux. Contains store and module management as well as mutations logic.",
+  "description": "The core package of simplux. Contains everything to manage your application state in a simple way.",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
   "main": "./bundles/bundle.umd.js",
@@ -27,6 +27,7 @@
   "keywords": [
     "immer",
     "redux",
+    "selectors",
     "simplux",
     "state",
     "typescript"
