@@ -1,6 +1,6 @@
-# simplux - redux made simple
+# simplux - Redux, but simple
 
-**simplux** is state management as it should be: simple to use, no boilerplate, type-safe but not verbose - all while giving you the full power of redux.
+**simplux** is state management as it should be: simple to use, no boilerplate, type-safe but not verbose - all while giving you the full power of [Redux](https://redux.js.org/).
 
 [![npm version](https://badge.fury.io/js/%40simplux%2Fcore.svg)](https://www.npmjs.com/package/@simplux/core)
 [![Build Status](https://travis-ci.org/MrWolfZ/simplux.svg?branch=master)](https://travis-ci.org/MrWolfZ/simplux)
