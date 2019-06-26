@@ -1,5 +1,9 @@
-import { ResolvedMutations, SimpluxModule, Subscription } from '@simplux/core'
-import { ResolvedSelectors } from '@simplux/selectors'
+import {
+  ResolvedMutations,
+  ResolvedSelectors,
+  SimpluxModule,
+  Subscription,
+} from '@simplux/core'
 import { Observable } from 'rxjs'
 import { createModuleServiceBaseClass } from './service'
 

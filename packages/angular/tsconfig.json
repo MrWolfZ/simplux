@@ -6,8 +6,6 @@
     "paths": {
       "@simplux/core": ["../core/dist"],
       "@simplux/core/*": ["../core/dist/*"],
-      "@simplux/selectors": ["../selectors/dist"],
-      "@simplux/selectors/*": ["../selectors/dist/*"],
       "@simplux/angular": ["."]
     },
     "lib": ["dom", "esnext"]

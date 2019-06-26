@@ -1,5 +1,10 @@
-import { MutationsBase, ResolvedMutations, SimpluxModule } from '@simplux/core'
-import { ResolvedSelectors, SelectorsBase } from '@simplux/selectors'
+import {
+  MutationsBase,
+  ResolvedMutations,
+  ResolvedSelectors,
+  SelectorsBase,
+  SimpluxModule,
+} from '@simplux/core'
 import { Observable } from 'rxjs'
 import { distinctUntilChanged, map } from 'rxjs/operators'
 

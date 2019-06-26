@@ -34,8 +34,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/core": "0.7.0",
-    "@simplux/selectors": "0.7.0"
+    "@simplux/core": "0.7.0"
   },
   "peerDependencies": {
     "rxjs": ">=6.0.0"

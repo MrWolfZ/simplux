@@ -1,8 +1,11 @@
 // this file contains an end-to-end test for the public API
 
 import { createModuleServiceBaseClass } from '@simplux/angular'
-import { createMutations, createSimpluxModule } from '@simplux/core'
-import { createSelectors } from '@simplux/selectors'
+import {
+  createMutations,
+  createSelectors,
+  createSimpluxModule,
+} from '@simplux/core'
 
 describe(`@simplux/angular`, () => {
   interface Todo {
