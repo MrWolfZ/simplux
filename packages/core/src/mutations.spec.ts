@@ -50,7 +50,7 @@ describe('mutations', () => {
     beforeEach(() => {
       moduleMutations = moduleMock.extensionStateContainer.mutations as any
       const moduleReducer = createImmerReducer(
-        createModuleReducer('test', moduleState, moduleMutations),
+        createModuleReducer('test', moduleState, moduleMutations, {}),
       )
 
       moduleReducerSpy = jest.fn().mockImplementation(moduleReducer)

@@ -1,5 +1,6 @@
 import { AnyAction, Reducer } from 'redux'
 import { createImmerReducer } from './immer'
+import { MutationListeners } from './mutation-listener'
 import { MutationsBase } from './mutations'
 import { createModuleReducer } from './reducer'
 import { SimpluxStore, simpluxStore } from './store'
@@ -181,10 +182,16 @@ export function createModule<TState>(
 
   extensionStateContainer.mutations = mutationsContainer
 
+  const mutationListenersContainer = (extensionStateContainer.mutationListeners ||
+    {}) as MutationListeners<TState>
+
+  extensionStateContainer.mutationListeners = mutationListenersContainer
+
   const moduleReducer = createModuleReducer(
     config.name,
     config.initialState,
     mutationsContainer,
+    mutationListenersContainer,
   )
 
   const moduleReducerWithImmerSupport = createImmerReducer(moduleReducer)
