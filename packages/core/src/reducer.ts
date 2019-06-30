@@ -1,12 +1,10 @@
 import { Action } from 'redux'
-import { MutationListeners } from './mutation-listener'
 import { createMutationPrefix, MutationsBase } from './mutations'
 
 export function createModuleReducer<TState>(
   moduleName: string,
   initialState: TState,
   moduleMutations: MutationsBase<TState>,
-  moduleMutationListeners: MutationListeners<TState>,
 ) {
   const mutationPrefix = createMutationPrefix(moduleName)
 
@@ -14,12 +12,6 @@ export function createModuleReducer<TState>(
     state = initialState,
     action: TAction,
   ): TState => {
-    const listener = moduleMutationListeners[action.type]
-    if (listener) {
-      const { args } = action as any
-      return listener(state, ...args) || state
-    }
-
     if (action.type.startsWith(mutationPrefix)) {
       const { mutationName, args } = action as any
       const mutation = moduleMutations[mutationName]

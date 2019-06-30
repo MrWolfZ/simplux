@@ -5,7 +5,6 @@ import {
   createSelectors,
   createSimpluxModule,
   getSimpluxReducer,
-  listenToMutation,
   setReduxStoreForSimplux,
 } from '@simplux/core'
 import { combineReducers, createStore } from 'redux'
@@ -311,68 +310,6 @@ describe(`@simplux/core`, () => {
       )
       expect(nrOfTodos.withLatestModuleState()).toBe(2)
       cleanup()
-    })
-  })
-
-  describe('mutation listener', () => {
-    it('works', () => {
-      const module1 = createSimpluxModule({
-        name: 'mutationListenerTestModule1',
-        initialState: {
-          count: 0,
-        },
-      })
-
-      const module2 = createSimpluxModule({
-        name: 'mutationListenerTestModule2',
-        initialState: {
-          count: 0,
-        },
-      })
-
-      const { increment, incrementBy } = createMutations(module1, {
-        increment(state) {
-          state.count += 1
-        },
-        incrementBy(state, amount: number) {
-          state.count += amount
-        },
-      })
-
-      const { decrement } = createMutations(module2, {
-        decrement(state) {
-          state.count -= 1
-        },
-      })
-
-      const { stopListening: stopListening1 } = listenToMutation(
-        module2,
-        increment,
-        state => {
-          state.count += 1
-        },
-      )
-
-      const { stopListening: stopListening2, listener } = listenToMutation(
-        module2,
-        incrementBy,
-        (state, amount) => {
-          state.count += amount
-        },
-      )
-
-      increment()
-      decrement()
-      incrementBy(5)
-
-      stopListening1()
-      stopListening2()
-
-      const result = listener({ count: 10 }, 5)
-
-      expect(module1.getState().count).toBe(6)
-      expect(module2.getState().count).toBe(5)
-      expect(result.count).toBe(15)
     })
   })
 })

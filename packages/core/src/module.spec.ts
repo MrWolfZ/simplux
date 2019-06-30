@@ -45,16 +45,6 @@ describe('module', () => {
       expect(m.extensionStateContainer.mutations).toBeDefined()
     })
 
-    it('creates the mutation listeners extension state container', () => {
-      const initialState = { prop: 'value' }
-      const m = (createModule(simpluxStore, {
-        name: 'test',
-        initialState,
-      }) as any) as SimpluxModuleInternals
-
-      expect(m.extensionStateContainer.mutationListeners).toBeDefined()
-    })
-
     it('immediately adds the module state to the overall state', () => {
       const initialState = { prop: 'value' }
       const { getState } = createModule(simpluxStore, {

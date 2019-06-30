@@ -16,11 +16,6 @@ export {
   Subscription,
 } from './src/module'
 export {
-  listenToMutation,
-  MutationListener,
-  MutationListenerSubscription,
-} from './src/mutation-listener'
-export {
   createMutations,
   MutationBase,
   MutationsBase,
