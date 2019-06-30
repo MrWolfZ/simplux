@@ -41,10 +41,9 @@ const mutations = createMutations(counterModule, {
 })
 
 const selectors = createSelectors(counterModule, {
-  selectCounterValue: ({ value }) => value,
+  selectValue: ({ value }) => value,
 
-  selectCounterValueTimes: ({ value }, multiplier: number) =>
-    value * multiplier,
+  selectValueTimes: ({ value }, multiplier: number) => value * multiplier,
 })
 ```
 
