@@ -170,6 +170,14 @@ export function createMutations<
 
       const createAction = (...allArgs: any[]) => {
         const args = filterEventArgs(allArgs)
+
+        if (args.some(arg => typeof arg === 'function')) {
+          throw new Error(
+            // tslint:disable-next-line: max-line-length
+            `mutation '${mutationName}' was called with a function argument; mutation arguments must be serializable, therefore functions are not supported`,
+          )
+        }
+
         return { type, mutationName, args }
       }
 

@@ -295,6 +295,18 @@ describe('mutations', () => {
           args: [],
         })
       })
+
+      it('throws an error for function arguments', () => {
+        const { increment } = createMutations(moduleMock, {
+          increment: c => c + 1,
+        })
+
+        const incrementAny = increment as any
+
+        expect(() => incrementAny(() => {})).toThrowError(
+          /function.*serializable/,
+        )
+      })
     })
   })
 })
