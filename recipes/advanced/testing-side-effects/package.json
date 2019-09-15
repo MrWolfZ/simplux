@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.advanced.testing-side-effects",
-  "version": "0.9.0-alpha.0",
+  "version": "0.9.0",
   "description": "This recipe gives you some advice on how to test your side effects (like loading data from your API)",
   "main": "src/index.ts",
   "scripts": {
@@ -27,8 +27,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.9.0-alpha.0",
-    "@simplux/testing": "0.9.0-alpha.0",
+    "@simplux/core": "0.9.0",
+    "@simplux/testing": "0.9.0",
     "redux": "^4.0.1"
   },
   "devDependencies": {

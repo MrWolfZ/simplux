@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.basics.computing-derived-state",
-  "version": "0.9.0-alpha.0",
+  "version": "0.9.0",
   "description": "This recipe shows how simple it is to compute derived state for your simplux modules",
   "main": "src/index.ts",
   "scripts": {
@@ -25,7 +25,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.9.0-alpha.0",
+    "@simplux/core": "0.9.0",
     "redux": "^4.0.1"
   },
   "devDependencies": {

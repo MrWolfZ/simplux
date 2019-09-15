@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/MrWolfZ/simplux/compare/v0.9.0-alpha.0...v0.9.0) (2019-09-15)
+
+
+### Bug Fixes
+
+* **core:** fix erroneous absolute reference ([c7988d1](https://github.com/MrWolfZ/simplux/commit/c7988d1))
+* **testing:** add missing export ([0f44b67](https://github.com/MrWolfZ/simplux/commit/0f44b67))
+* **testing:** properly clear effect mocks when clearing all mocks ([1ae4c45](https://github.com/MrWolfZ/simplux/commit/1ae4c45))
+
+
+### Features
+
+* **core:** prevent accidentally dispatching a mutation from within another mutation ([9644645](https://github.com/MrWolfZ/simplux/commit/9644645))
+* **recipes:** add recipe for "performing side effects" ([fe62e80](https://github.com/MrWolfZ/simplux/commit/fe62e80))
+* **recipes:** add recipe for "testing my code that triggers side effects" ([23ad484](https://github.com/MrWolfZ/simplux/commit/23ad484))
+* **recipes:** add recipe for "testing my side effects" ([67002f5](https://github.com/MrWolfZ/simplux/commit/67002f5))
+* **testing:** allow mocking effects ([4155efe](https://github.com/MrWolfZ/simplux/commit/4155efe))
+
+
+
+
+
 # [0.9.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.8.0...v0.9.0-alpha.0) (2019-09-15)
 
 

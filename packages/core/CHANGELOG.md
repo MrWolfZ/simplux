@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/MrWolfZ/simplux/compare/v0.9.0-alpha.0...v0.9.0) (2019-09-15)
+
+
+### Bug Fixes
+
+* **core:** fix erroneous absolute reference ([c7988d1](https://github.com/MrWolfZ/simplux/commit/c7988d1))
+
+
+### Features
+
+* **core:** prevent accidentally dispatching a mutation from within another mutation ([9644645](https://github.com/MrWolfZ/simplux/commit/9644645))
+
+
+
+
+
+
 # [0.9.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.8.0...v0.9.0-alpha.0) (2019-09-15)
 
 
