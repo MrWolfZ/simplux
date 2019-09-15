@@ -78,13 +78,10 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- core: add function to listen to other module's mutations
-- core: throw when function is used as mutation argument
 - core: throw when calling mutation from inside another mutation (i.e. nested dispatch)
-- selectors: add memoization (also mention this briefly in the "derived state" recipe)
-- selectors: add note to "composing my selectors" recipe about interplay with memoization (e.g. due to in-place sorting)
-- effects: rename async package to effects
-- effects: add function to create effect (module-agnostic) to allow mocking them
+- core: add memoization to selectors (also mention this briefly in the "derived state" recipe)
+- core: add note to "composing my selectors" recipe about interplay with memoization (e.g. due to in-place sorting)
+- core: add function to create effect (module-agnostic) to allow mocking them
 - react: add tests that verify HMR works
 - react: add tests that verify server-side rendering works
 - react: verify package works with react-native
