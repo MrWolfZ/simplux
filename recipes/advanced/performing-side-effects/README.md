@@ -1,6 +1,6 @@
 # Recipe: performing side effects
 
-This recipe shows how simple it is to perform side effects (like loading data from your API) with **simplux**.
+This recipe shows how simple it is to perform side effects with **simplux**.
 
 If you are new to **simplux** there is [a recipe](../../basics/getting-started#readme) that will help you get started before you follow this recipe.
 
@@ -14,7 +14,7 @@ npm i @simplux/core redux -S
 
 Now we're ready to go.
 
-For this recipe we use a common scenario: loading data from an API. Let's create a module with some mutations for this.
+For this recipe we use a common scenario: loading data from an API. Let's create a module for this.
 
 ```ts
 interface Todo {

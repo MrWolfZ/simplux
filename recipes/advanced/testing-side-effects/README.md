@@ -1,6 +1,6 @@
 # Recipe: testing side effects
 
-This recipe gives you some advice on how to test your side effects (like loading data from your API).
+This recipe gives you some advice on how to test your side effects.
 
 If you are new to **simplux** there is [a recipe](../../basics/getting-started#readme) that will help you get started before you follow this recipe. The recipe for [performing side effects](../performing-side-effects#readme) is also important for following this recipe.
 
@@ -78,10 +78,10 @@ const get = createEffect(async (url: string) => {
 })
 ```
 
-Once we have 1) mocked we can easily test the post-processing logic from 2) by simply calling the `loadTodosFromApi`.
+Once we have 1) mocked we can easily test the post-processing logic from 2) by simply calling `loadTodosFromApi`.
 
 > There are alternative designs to the effect above that would allow testing the filtering logic without the effect, e.g. by extracting it into a separate function. How you want to structure your effects is completely up to you.
 
-And that how simple it is to test your side effects with the help of **simplux**.
+And that shows how simple it is to test your side effects with the help of **simplux**.
 
 Have a look at our [other recipes](../../../../..#recipes) to learn how **simplux** can help you make your life simple in other situations.

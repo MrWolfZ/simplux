@@ -1,6 +1,6 @@
 # Recipe: testing my code that triggers side effects
 
-This recipe shows you how simple it is to test your code that triggers side effects (like loading data from your API) with **simplux**.
+This recipe shows you how simple it is to test your code that triggers side effects with **simplux**.
 
 If you are new to **simplux** there is [a recipe](../../basics/getting-started#readme) that will help you get started before you follow this recipe. The recipe for [performing side effects](../performing-side-effects#readme) is also important for following this recipe.
 
@@ -73,7 +73,7 @@ async function onLoadButtonClicked(includeDoneItems: boolean) {
 
 This is the code we are going to test.
 
-The best way to test our code is to test it in isolation from the module. That means we do not want the effect (or the mutation) to be executed during our test. This is where the **simplux** testing extension comes into play: it allows us to mock a effects.
+The best way to test our code is to test it in isolation from the module. That means we do not want the effect (or the mutation) to be executed during our test. This is where the **simplux** testing extension comes into play: it allows us to mock an effect.
 
 ```ts
 import { mockEffect, mockMutation } from '@simplux/testing'
