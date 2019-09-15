@@ -1,5 +1,5 @@
 // this code is part of the simplux recipe "testing my code that uses mutations":
-// https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/testing-code-using-mutations
+// https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/testing-code-using-mutations
 
 import { clearAllSimpluxMocks, mockMutation } from '@simplux/testing'
 import { addNewTodoItem } from './index'
