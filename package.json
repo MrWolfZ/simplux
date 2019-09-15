@@ -13,7 +13,8 @@
     "postpublish-prerelease": "npm run build && lerna run publish:custom --stream --no-bail --parallel -- --tag next",
     "precommit": "node ./scripts/pre-commit-hook.js",
     "build:config": "tsc -p ./tsconfig.config.json",
-    "postinstall": "lerna bootstrap --hoist"
+    "lerna:bootstrap": "lerna bootstrap --hoist",
+    "postinstall": "npm run lerna:bootstrap"
   },
   "repository": {
     "type": "git",
