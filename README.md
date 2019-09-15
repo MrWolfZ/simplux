@@ -87,7 +87,6 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - entities: create default set of entity management mutations
 - entities: allow creating custom mutations that act on one entity
 - entities: create default set of selectors for entities
-- streams: add support for reactive event streams using observables
 - docs: create website
 - add dtslint tests for all packages
 
