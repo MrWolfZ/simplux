@@ -32,13 +32,12 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [organizing my application state](recipes/advanced/organizing-application-state#readme)
 - [communicating between modules](recipes/advanced/communicating-between-modules#readme) (work-in-progress)
 - [managing collections of entities](recipes/advanced/managing-entity-collections#readme) (work-in-progress)
-- [performing side effects (like loading data from my API)](recipes/advanced/performing-side-effects#readme) (work-in-progress)
+- [performing side effects (like loading data from my API)](recipes/advanced/performing-side-effects#readme)
 - [testing side effects](recipes/advanced/testing-side-effects#readme) (work-in-progress)
-- [testing my code that triggers side effects](recipes/advanced/testing-code-triggering-side-effects#readme) (work-in-progress)
+- [testing my code that triggers side effects](recipes/advanced/testing-code-triggering-side-effects#readme)
 - [composing my mutations](recipes/advanced/composing-mutations#readme)
 - [composing my selectors](recipes/advanced/composing-selectors#readme)
 - [using Reselect for my selectors](recipes/advanced/using-reselect-for-selectors#readme) (work-in-progress)
-- [handling event streams (like debouncing user input)](recipes/advanced/handling-event-streams#readme) (work-in-progress)
 
 ### React
 
