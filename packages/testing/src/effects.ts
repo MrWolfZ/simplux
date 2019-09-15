@@ -1,4 +1,4 @@
-import { getMockDefinitionsInternal, MockDefinition } from '@simplux/core'
+import { EffectMockDefinition, getMockDefinitionsInternal } from '@simplux/core'
 
 /**
  * Specify a mock function that should be called instead of the
@@ -27,7 +27,7 @@ export function mockEffect<TEffect extends Function>(
 }
 
 function removeMock<TEffect extends Function>(
-  mockDefinitions: MockDefinition[],
+  mockDefinitions: EffectMockDefinition[],
   effectToMock: TEffect,
 ) {
   const idx = mockDefinitions.findIndex(
