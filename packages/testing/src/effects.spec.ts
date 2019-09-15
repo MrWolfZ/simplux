@@ -1,4 +1,5 @@
 import { createEffect } from '@simplux/core'
+import { clearAllSimpluxMocks } from './cleanup'
 import { mockEffect } from './effects'
 
 describe(mockEffect.name, () => {
@@ -33,6 +34,25 @@ describe(mockEffect.name, () => {
         effect()
         expect(spy).toHaveBeenCalled()
         expect(mockSpy).toHaveBeenCalledTimes(1)
+      })
+
+      it('can be removed all at once', () => {
+        const spy = jest.fn()
+        const mockSpy1 = jest.fn()
+        const mockSpy2 = jest.fn()
+        const effect1 = createEffect(spy)
+        const effect2 = createEffect(spy)
+        mockEffect(effect1, mockSpy1)
+        mockEffect(effect2, mockSpy2)
+        effect1()
+        effect2()
+        expect(mockSpy1).toHaveBeenCalledTimes(1)
+        expect(mockSpy2).toHaveBeenCalledTimes(1)
+        clearAllSimpluxMocks()
+        effect1()
+        effect2()
+        expect(mockSpy1).toHaveBeenCalledTimes(1)
+        expect(mockSpy2).toHaveBeenCalledTimes(1)
       })
 
       it('can safely be removed twice', () => {

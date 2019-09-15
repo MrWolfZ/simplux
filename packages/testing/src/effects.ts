@@ -1,4 +1,5 @@
 import { EffectMockDefinition, getMockDefinitionsInternal } from '@simplux/core'
+import { registerMockCleanupFunction } from './cleanup'
 
 /**
  * Specify a mock function that should be called instead of the
@@ -23,7 +24,14 @@ export function mockEffect<TEffect extends Function>(
     mockFn,
   })
 
-  return () => removeMock(mockDefinitions, effectToMock)
+  const cleanup = () => {
+    removeMock(mockDefinitions, effectToMock)
+    clearCleanup()
+  }
+
+  const clearCleanup = registerMockCleanupFunction(cleanup)
+
+  return cleanup
 }
 
 function removeMock<TEffect extends Function>(
