@@ -1,4 +1,4 @@
-import { SimpluxModule, SimpluxModuleInternals } from '@simplux/core'
+import { SimpluxModule, SimpluxModuleInternals } from './module'
 
 export type SelectorBase<TState, TReturn> = (
   state: TState,
