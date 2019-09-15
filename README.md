@@ -7,8 +7,6 @@
 [![codecov](https://codecov.io/gh/MrWolfZ/simplux/branch/master/graph/badge.svg)](https://codecov.io/gh/MrWolfZ/simplux)
 [![license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-This repository is a work-in-progress and is not suitable for use in production just yet.
-
 ## Recipes
 
 Instead of traditional documentation **simplux** has these recipes that will show you how it can make life simple for you. Each recipe will help you solve one particular task that you will typically face during development.
