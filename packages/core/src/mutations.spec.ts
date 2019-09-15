@@ -307,6 +307,27 @@ describe('mutations', () => {
           /function.*serializable/,
         )
       })
+
+      it('throws an error when calling a nested mutation directly', () => {
+        dispatchMock.mockImplementation(({ mutationName }) => {
+          const moduleMutations = moduleMock.extensionStateContainer
+            .mutations as any
+          const mutation = moduleMutations[mutationName]
+          mutation()
+        })
+
+        const { increment, increment2 } = createMutations(moduleMock, {
+          increment: c => c + 1,
+          increment2: () => {
+            increment()
+            increment()
+          },
+        })
+
+        expect(increment2).toThrowError(
+          /mutation .* was attempted to be dispatched from within mutation/,
+        )
+      })
     })
   })
 })

@@ -164,6 +164,8 @@ export function createMutations<
 
   Object.assign(moduleMutations, mutations)
 
+  let currentlyDispatchingMutationName: string | undefined
+
   const resolvedMutations = Object.keys(mutations).reduce(
     (acc, mutationName: keyof TMutations) => {
       const type = `${mutationPrefix}${mutationName}`
@@ -189,7 +191,16 @@ export function createMutations<
             return mock(...args)
           }
 
+          if (currentlyDispatchingMutationName) {
+            throw new Error(
+              // tslint:disable-next-line: max-line-length
+              `mutation '${mutationName}' was attempted to be dispatched from within mutation '${currentlyDispatchingMutationName}' which is not allowed; instead use '${mutationName}.withState(...)' to call the mutation without a dispatch`,
+            )
+          }
+
+          currentlyDispatchingMutationName = mutationName as string
           dispatch(createAction(...args))
+          currentlyDispatchingMutationName = undefined
           return simpluxModule.getState()
         },
       ) as ResolvedMutation<TState, TMutations[typeof mutationName]>

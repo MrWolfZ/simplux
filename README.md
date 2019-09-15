@@ -77,7 +77,6 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- core: throw when calling mutation from inside another mutation (i.e. nested dispatch)
 - core: add memoization to selectors (also mention this briefly in the "derived state" recipe)
 - core: add note to "composing my selectors" recipe about interplay with memoization (e.g. due to in-place sorting)
 - react: add tests that verify HMR works
