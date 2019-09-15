@@ -6,6 +6,11 @@ import { setReduxStore, simpluxStore } from './src/store'
 setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
 
 export {
+  createEffect,
+  getMockDefinitionsInternal,
+  MockDefinition,
+} from './src/effects'
+export {
   ResolvedStateChangeHandler,
   SimpluxModule,
   SimpluxModuleConfig,
