@@ -3,12 +3,12 @@
  *
  * @private
  */
-export interface MockDefinition {
+export interface EffectMockDefinition {
   effectToMock: Function
   mockFn: Function
 }
 
-const mockDefinitions: MockDefinition[] = []
+const mockDefinitions: EffectMockDefinition[] = []
 
 /**
  * Create a new effect. An effect is any function that has side effects.

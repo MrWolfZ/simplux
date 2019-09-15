@@ -7,8 +7,8 @@ setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
 
 export {
   createEffect,
+  EffectMockDefinition,
   getMockDefinitionsInternal,
-  MockDefinition,
 } from './src/effects'
 export {
   ResolvedStateChangeHandler,
