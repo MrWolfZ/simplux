@@ -25,17 +25,17 @@
   "dependencies": {
     "@simplux/core": "0.9.0-alpha.0",
     "@simplux/react": "0.9.0-alpha.0",
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "redux": "^4.0.1"
   },
   "devDependencies": {
-    "@types/react": "^16.8.0",
-    "@types/react-dom": "^16.8.0",
+    "@types/react": "^16.8.6",
+    "@types/react-dom": "^16.8.6",
     "react-scripts": "^3.0.1",
     "typescript": "^3.5.1",
-    "webpack": "4.29.6",
-    "webpack-dev-server": "3.2.1"
+    "webpack": "^4.32.2",
+    "webpack-dev-server": "^3.5.1"
   },
   "browserslist": {
     "production": [
