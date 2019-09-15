@@ -1,6 +1,6 @@
 {
   "name": "@simplux/react",
-  "version": "0.8.0",
+  "version": "0.9.0-alpha.0",
   "description": "The react extension package of simplux. Provides a simple way to use simplux in react applications.",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
@@ -34,10 +34,10 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/core": "0.8.0"
+    "@simplux/core": "0.9.0-alpha.0"
   },
   "devDependencies": {
-    "@simplux/testing": "0.8.0"
+    "@simplux/testing": "0.9.0-alpha.0"
   },
   "peerDependencies": {
     "react": ">=16.8.0",

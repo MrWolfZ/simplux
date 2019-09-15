@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.8.0...v0.9.0-alpha.0) (2019-09-15)
+
+
+### Bug Fixes
+
+* **core:** prevent functions from being used as mutation arguments ([945441e](https://github.com/MrWolfZ/simplux/commit/945441e))
+
+
+### Features
+
+* **core:** allow creating effects ([57c921a](https://github.com/MrWolfZ/simplux/commit/57c921a))
+* **core:** allow listening to other module's mutations ([f0b5505](https://github.com/MrWolfZ/simplux/commit/f0b5505))
+
+
+
+
+
 # [0.8.0](https://github.com/MrWolfZ/simplux/compare/v0.8.0-alpha.2...v0.8.0) (2019-06-26)
 
 **Note:** Version bump only for package @simplux/platform
