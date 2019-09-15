@@ -33,7 +33,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [communicating between modules](recipes/advanced/communicating-between-modules#readme) (work-in-progress)
 - [managing collections of entities](recipes/advanced/managing-entity-collections#readme) (work-in-progress)
 - [performing side effects (like loading data from my API)](recipes/advanced/performing-side-effects#readme)
-- [testing side effects](recipes/advanced/testing-side-effects#readme) (work-in-progress)
+- [testing side effects](recipes/advanced/testing-side-effects#readme)
 - [testing my code that triggers side effects](recipes/advanced/testing-code-triggering-side-effects#readme)
 - [composing my mutations](recipes/advanced/composing-mutations#readme)
 - [composing my selectors](recipes/advanced/composing-selectors#readme)
