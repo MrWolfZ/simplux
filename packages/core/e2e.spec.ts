@@ -1,6 +1,7 @@
 // this file contains an end-to-end test for the public API
 
 import {
+  createEffect,
   createMutations,
   createSelectors,
   createSimpluxModule,
@@ -276,7 +277,7 @@ describe(`@simplux/core`, () => {
   })
 
   describe('selectors', () => {
-    it('works', () => {
+    it('work', () => {
       const todosModule = createSimpluxModule({
         name: 'todos',
         initialState: todoStoreWithTwoTodos,
@@ -310,6 +311,31 @@ describe(`@simplux/core`, () => {
       )
       expect(nrOfTodos.withLatestModuleState()).toBe(2)
       cleanup()
+    })
+  })
+
+  describe('effects', () => {
+    it('work', async () => {
+      const todosModule = createSimpluxModule({
+        name: 'todos',
+        initialState: initialTodoState,
+      })
+
+      const { addTodo } = createMutations(todosModule, {
+        addTodo({ todosById, todoIds }, todo: Todo) {
+          todosById[todo.id] = todo
+          todoIds.push(todo.id)
+        },
+      })
+
+      const addTodoEffect = createEffect(async () => {
+        await new Promise(resolve => resolve())
+        addTodo(todo1)
+      })
+
+      await addTodoEffect()
+
+      expect(todosModule.getState()).toEqual(todoStoreWithOneTodo)
     })
   })
 })
