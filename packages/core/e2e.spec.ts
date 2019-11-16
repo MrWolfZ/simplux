@@ -221,7 +221,7 @@ describe(`@simplux/core`, () => {
 
   it('works without setting a redux store', () => {
     const testModule = createSimpluxModule({
-      name: 'test',
+      name: 'worksWithoutReduxStore',
       initialState: 0,
     })
 
@@ -279,7 +279,7 @@ describe(`@simplux/core`, () => {
   describe('selectors', () => {
     it('work', () => {
       const todosModule = createSimpluxModule({
-        name: 'todos',
+        name: 'selectors',
         initialState: todoStoreWithTwoTodos,
       })
 
@@ -296,20 +296,22 @@ describe(`@simplux/core`, () => {
       )
 
       const { nrOfTodosTimes2 } = createSelectors(todosModule, {
-        nrOfTodosTimes2: s => nrOfTodos(s) * 2,
+        nrOfTodosTimes2: s => nrOfTodos.withState(s) * 2,
       })
 
-      expect(nrOfTodos(todoStoreWithTwoTodos)).toBe(2)
-      expect(nrOfTodosTimes2(todoStoreWithTwoTodos)).toBe(4)
-      expect(getTodosWithDoneState(todoStoreWithTwoTodos, true)).toEqual([
-        todo1,
-      ])
+      expect(nrOfTodos()).toBe(2)
+      expect(nrOfTodosTimes2()).toBe(4)
+      expect(getTodosWithDoneState(true)).toEqual([todo1])
+
+      expect(nrOfTodos.withState(todoStoreWithOneTodo)).toBe(1)
 
       const cleanup = setReduxStoreForSimplux(
         createStore(getSimpluxReducer()),
         s => s,
       )
-      expect(nrOfTodos.withLatestModuleState()).toBe(2)
+
+      expect(nrOfTodos()).toBe(2)
+
       cleanup()
     })
   })
@@ -317,7 +319,7 @@ describe(`@simplux/core`, () => {
   describe('effects', () => {
     it('work', async () => {
       const todosModule = createSimpluxModule({
-        name: 'todos',
+        name: 'effects',
         initialState: initialTodoState,
       })
 

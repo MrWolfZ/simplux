@@ -1,6 +1,6 @@
 import { SimpluxModule, SimpluxModuleInternals } from './module'
 
-export type SelectorBase<TState, TReturn> = (
+export type SelectorDefinition<TState, TReturn> = (
   state: TState,
   // optimally, we would use ...args: any[] but that does not work correctly with
   // TypeScript 3.3.3 so we use this workaround
@@ -15,48 +15,66 @@ export type SelectorBase<TState, TReturn> = (
   arg9?: any,
 ) => TReturn
 
-export interface SelectorsBase<TState> {
-  [name: string]: SelectorBase<TState, any>
+export interface SelectorDefinitions<TState> {
+  [name: string]: SelectorDefinition<TState, any>
 }
 
-export interface ResolvedSelectorExtras<TState, TArgs extends any[], TReturn> {
+export interface SimpluxSelectorMarker {
+  $simpluxType: 'selector'
+}
+
+export interface SimpluxSelector<TState, TArgs extends any[], TReturn>
+  extends SimpluxSelectorMarker {
   /**
-   * By default a selector needs to be provided the module's state and arguments.
-   * However, sometimes it is useful to automatically bind the selector to the
-   * module's latest state and only provide the additional arguments. This function
-   * will do just that.
+   * Evalute the selector with the module's latest state.
    *
-   * @param args the additional arguments for the selector
+   * @param args the arguments for the selector
    *
    * @returns the selected value
    */
-  withLatestModuleState: (...args: TArgs) => TReturn
+  (...args: TArgs): TReturn
 
   /**
-   * This function takes only the additional arguments for a selector and returns
-   * a new selector that takes only the state itself as an argument.
+   * By default a selector is evaluated with the module's latest state.
+   * This function evaluates the selector with the given state instead.
    *
-   * @param args the additional arguments for the selector
+   * @param state the state to use when evaluating the selector
+   * @param args the arguments for the selector
    *
-   * @returns a new selector that takes only the state as an argument
+   * @returns the selected value
    */
-  asFactory: (...args: TArgs) => (state: TState) => TReturn
+  withState: (state: TState, ...args: TArgs) => TReturn
+
+  /**
+   * The module this selector belongs to.
+   */
+  owningModule: SimpluxModule<TState>
 }
 
 export type ResolvedSelector<
   TState,
-  TSelector extends SelectorBase<TState, ReturnType<TSelector>>
-> = TSelector extends (state: TState, ...args: infer TArgs) => infer TReturn
-  ? ((state: TState, ...args: TArgs) => TReturn) &
-      ResolvedSelectorExtras<TState, TArgs, TReturn>
+  TSelectorDefinition extends SelectorDefinition<
+    TState,
+    ReturnType<TSelectorDefinition>
+  >
+> = TSelectorDefinition extends (
+  state: TState,
+  ...args: infer TArgs
+) => infer TReturn
+  ? SimpluxSelector<TState, TArgs, TReturn>
   : never
 
 export type ResolvedSelectors<
   TState,
-  TSelectors extends SelectorsBase<TState>
-> = { [name in keyof TSelectors]: ResolvedSelector<TState, TSelectors[name]> }
+  TSelectorDefinitions extends SelectorDefinitions<TState>
+> = {
+  [name in keyof TSelectorDefinitions]: ResolvedSelector<
+    TState,
+    TSelectorDefinitions[name]
+  >
+}
 
-// this helper function allows creating a function with a dynamic name
+// this helper function allows creating a function with a dynamic name (only works with ES6+)
 function nameFunction<T extends (...args: any[]) => any>(
   name: string,
   body: T,
@@ -68,8 +86,8 @@ function nameFunction<T extends (...args: any[]) => any>(
   }[name] as T
 }
 
-export interface SelectorsExtensionStateContainer<TState> {
-  [moduleName: string]: SelectorsBase<TState>
+export interface ModuleSelectorDefinitions<TState> {
+  [moduleName: string]: SelectorDefinitions<TState>
 }
 
 /**
@@ -81,65 +99,60 @@ export interface SelectorsExtensionStateContainer<TState> {
  * for the latest state and parameters.
  *
  * @param simpluxModule the module to create selectors for
- * @param selectors the selectors to create
+ * @param selectorDefinitions the selectors to create
  *
  * @returns an object that contains a function for each provided
  * selector
  */
 export function createSelectors<
   TState,
-  TSelectors extends SelectorsBase<TState>
+  TSelectorDefinitions extends SelectorDefinitions<TState>
 >(
   simpluxModule: SimpluxModule<TState>,
-  selectors: TSelectors,
-): ResolvedSelectors<TState, TSelectors> {
+  selectorDefinitions: TSelectorDefinitions,
+): ResolvedSelectors<TState, TSelectorDefinitions> {
   const moduleName = simpluxModule.name
   const {
     extensionStateContainer,
   } = (simpluxModule as any) as SimpluxModuleInternals
 
   const selectorsContainer = (extensionStateContainer.selectors ||
-    {}) as SelectorsExtensionStateContainer<TState>
+    {}) as ModuleSelectorDefinitions<TState>
 
   extensionStateContainer.selectors = selectorsContainer
 
-  const moduleSelectors = (selectorsContainer[moduleName] =
+  const moduleDefinitions = (selectorsContainer[moduleName] =
     selectorsContainer[moduleName] || {})
 
-  for (const selectorName of Object.keys(selectors)) {
-    if (moduleSelectors[selectorName]) {
+  for (const selectorName of Object.keys(selectorDefinitions)) {
+    if (moduleDefinitions[selectorName]) {
       throw new Error(
         `selector '${selectorName}' is already defined for module '${moduleName}'`,
       )
     }
   }
 
-  Object.assign(moduleSelectors, selectors)
+  Object.assign(moduleDefinitions, selectorDefinitions)
 
-  const resolvedSelectors = Object.keys(selectors).reduce(
-    (acc, selectorName: keyof TSelectors) => {
-      const getSelector = () => moduleSelectors[selectorName as string]
+  const resolvedSelectors = Object.keys(selectorDefinitions).reduce(
+    (acc, selectorName: keyof TSelectorDefinitions) => {
+      const getDefinition = () => moduleDefinitions[selectorName as string]
 
       const namedSelector = nameFunction(
         selectorName as string,
-        (state: TState, ...args: any[]) => {
-          return getSelector()(state, ...args)
+        (...args: any[]) => {
+          return getDefinition()(simpluxModule.getState(), ...args)
         },
-      ) as ResolvedSelector<TState, TSelectors[typeof selectorName]>
+      ) as ResolvedSelector<TState, TSelectorDefinitions[typeof selectorName]>
 
       acc[selectorName] = namedSelector
 
-      acc[selectorName].withLatestModuleState = (...args: any[]) => {
-        return getSelector()(simpluxModule.getState(), ...args)
-      }
-
-      acc[selectorName].asFactory = (...args: any[]) => (state: TState) => {
-        return getSelector()(state, ...args)
-      }
+      acc[selectorName].withState = (state: TState, ...args: any[]) =>
+        getDefinition()(state, ...args)
 
       return acc
     },
-    {} as ResolvedSelectors<TState, TSelectors>,
+    {} as ResolvedSelectors<TState, TSelectorDefinitions>,
   )
 
   return resolvedSelectors

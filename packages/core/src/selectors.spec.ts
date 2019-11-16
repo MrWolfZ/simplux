@@ -52,39 +52,26 @@ describe('selectors', () => {
         moduleState = 20
       })
 
-      it('selects the state', () => {
+      it('are evaluated with the latest state of the module', () => {
         const { plus, plus2, minusOne } = createSelectors(moduleMock, {
           plus: (c, amount: number) => c + amount,
           plus2: (c, arg1: number, arg2: number) => c + arg1 + arg2,
           minusOne: c => c - 1,
         })
 
-        expect(plus(10, 5)).toBe(15)
-        expect(plus2(10, 5, 7)).toBe(22)
-        expect(minusOne(10)).toBe(9)
+        expect(plus(5)).toBe(25)
+        expect(plus2(5, 7)).toBe(32)
+        expect(minusOne()).toBe(19)
       })
 
-      it('can be called with bound state', () => {
+      it('can be called with a specified state', () => {
         const { plus, plus2 } = createSelectors(moduleMock, {
           plus: (c, amount: number) => c + amount,
           plus2: (c, arg1: number, arg2: number) => c + arg1 + arg2,
         })
 
-        expect(plus.withLatestModuleState(5)).toBe(25)
-        expect(plus2.withLatestModuleState(5, 7)).toBe(32)
-      })
-
-      it('can be called as a factory', () => {
-        const { plus, plus2 } = createSelectors(moduleMock, {
-          plus: (c, amount: number) => c + amount,
-          plus2: (c, arg1: number, arg2: number) => c + arg1 + arg2,
-        })
-
-        expect(plus.asFactory(5)).toBeInstanceOf(Function)
-        expect(plus.asFactory(5)(20)).toBe(25)
-
-        expect(plus2.asFactory(5, 7)).toBeInstanceOf(Function)
-        expect(plus2.asFactory(5, 7)(20)).toBe(32)
+        expect(plus.withState(10, 5)).toBe(15)
+        expect(plus2.withState(10, 5, 7)).toBe(22)
       })
 
       it('can be composed', () => {
@@ -92,7 +79,7 @@ describe('selectors', () => {
           plusOne: c => c + 1,
           plus: (c, amount: number) => {
             for (let i = 0; i < amount; i += 1) {
-              c = plusOne(c)
+              c = plusOne.withState(c)
             }
 
             return c
@@ -100,11 +87,11 @@ describe('selectors', () => {
         })
 
         const { plusTwo } = createSelectors(moduleMock, {
-          plusTwo: c => plusOne(plusOne(c)),
+          plusTwo: c => plusOne.withState(plusOne.withState(c)),
         })
 
-        expect(plusTwo(10)).toBe(12)
-        expect(plus(10, 5)).toBe(15)
+        expect(plusTwo()).toBe(22)
+        expect(plus(5)).toBe(25)
       })
 
       it('has the same name as the selector', () => {
