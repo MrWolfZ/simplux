@@ -14,7 +14,6 @@ export {
   ResolvedStateChangeHandler,
   SimpluxModule,
   SimpluxModuleConfig,
-  SimpluxModuleExtensionStateContainer,
   SimpluxModuleInternals,
   StateChangeHandler,
   SubscribeToStateChanges,

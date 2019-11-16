@@ -1,4 +1,4 @@
-import { SimpluxModule, SimpluxModuleInternals } from './module'
+import { SimpluxModule } from './module'
 import { createSelectors } from './selectors'
 
 describe('selectors', () => {
@@ -8,33 +8,30 @@ describe('selectors', () => {
   const subscribeToModuleStateChangesMock = jest
     .fn()
     .mockImplementation(() => () => void 0)
-  let moduleExtensionStateContainer = {} as any
 
-  let moduleMock: SimpluxModule<typeof moduleState> & SimpluxModuleInternals
+  let moduleMock: SimpluxModule<typeof moduleState>
 
   beforeEach(() => {
     moduleState = 0
-    moduleExtensionStateContainer = {} as any
     moduleMock = {
       getState: getModuleStateMock,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
-      name: 'test',
-      extensionStateContainer: moduleExtensionStateContainer,
-      dispatch: undefined!,
-      getReducer: undefined!,
+      $simpluxInternals: {
+        name: 'test',
+        mockStateValue: undefined,
+        mutations: {},
+        mutationMocks: {},
+        selectors: {},
+        dispatch: undefined!,
+        getReducer: undefined!,
+      },
     }
 
     jest.clearAllMocks()
   })
 
   describe(`factory`, () => {
-    it('adds the selectors state container', () => {
-      createSelectors(moduleMock, {})
-
-      expect(moduleExtensionStateContainer.selectors.test).toEqual({})
-    })
-
     it('throws when existing selector is declared again', () => {
       createSelectors(moduleMock, {
         plus: c => c + 1,

@@ -1,4 +1,4 @@
-import { SimpluxModule, SimpluxModuleInternals } from './module'
+import { SimpluxModule } from './module'
 
 export type MutationBase<TState> = (
   state: TState,
@@ -124,7 +124,7 @@ function nameFunction<T extends (...args: any[]) => any>(
  * and updates the state.
  *
  * @param simpluxModule the module to create mutations for
- * @param mutations the mutations to create
+ * @param mutationDefinitions the mutations to create
  *
  * @returns an object that contains a function for each provided
  * mutation which when called will execute the mutation on the module
@@ -134,39 +134,31 @@ export function createMutations<
   TMutations extends MutationsBase<TState>
 >(
   simpluxModule: SimpluxModule<TState>,
-  mutations: TMutations,
+  mutationDefinitions: TMutations,
 ): ResolvedMutations<TState, TMutations> {
-  const moduleName = simpluxModule.name
   const {
-    extensionStateContainer,
+    name: moduleName,
     dispatch,
     getReducer,
-  } = (simpluxModule as unknown) as SimpluxModuleInternals
-
-  const moduleMutations = extensionStateContainer.mutations as MutationsBase<
-    TState
-  >
-
-  const mutationMocksContainer = (extensionStateContainer.mutationMocks ||
-    {}) as { [mutationName: string]: (...args: any[]) => TState }
-
-  extensionStateContainer.mutationMocks = mutationMocksContainer
+    mutations,
+    mutationMocks,
+  } = simpluxModule.$simpluxInternals
 
   const mutationPrefix = createMutationPrefix(moduleName)
 
-  for (const mutationName of Object.keys(mutations)) {
-    if (moduleMutations[mutationName]) {
+  for (const mutationName of Object.keys(mutationDefinitions)) {
+    if (mutations[mutationName]) {
       throw new Error(
         `mutation '${mutationName}' is already defined for module '${moduleName}'`,
       )
     }
   }
 
-  Object.assign(moduleMutations, mutations)
+  Object.assign(mutations, mutationDefinitions)
 
   let currentlyDispatchingMutationName: string | undefined
 
-  const resolvedMutations = Object.keys(mutations).reduce(
+  const resolvedMutations = Object.keys(mutationDefinitions).reduce(
     (acc, mutationName: keyof TMutations) => {
       const type = `${mutationPrefix}${mutationName}`
 
@@ -186,7 +178,7 @@ export function createMutations<
       const mutation = nameFunction(
         mutationName as string,
         (...args: any[]) => {
-          const mock = mutationMocksContainer[mutationName as string]
+          const mock = mutationMocks[mutationName as string]
           if (mock) {
             return mock(...args)
           }

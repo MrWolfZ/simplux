@@ -1,5 +1,5 @@
 import { createImmerReducer } from './immer'
-import { SimpluxModule, SimpluxModuleInternals } from './module'
+import { SimpluxModule } from './module'
 import {
   createMutations,
   MutationsBase,
@@ -24,7 +24,7 @@ describe('mutations', () => {
     .fn()
     .mockImplementation(() => () => void 0)
 
-  let moduleMock: SimpluxModule<number> & SimpluxModuleInternals
+  let moduleMock: SimpluxModule<number>
 
   beforeEach(() => {
     moduleState = 0
@@ -32,10 +32,15 @@ describe('mutations', () => {
       getState: getModuleStateMock,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
-      name: 'test',
-      extensionStateContainer: { mutations: { test: {} } },
-      dispatch: dispatchMock,
-      getReducer: getReducerMock,
+      $simpluxInternals: {
+        name: 'test',
+        mockStateValue: undefined,
+        mutations: {},
+        mutationMocks: {},
+        selectors: {},
+        dispatch: dispatchMock,
+        getReducer: getReducerMock,
+      },
     }
     jest.clearAllMocks()
   })
@@ -48,7 +53,7 @@ describe('mutations', () => {
     >
 
     beforeEach(() => {
-      moduleMutations = moduleMock.extensionStateContainer.mutations as any
+      moduleMutations = moduleMock.$simpluxInternals.mutations as any
       const moduleReducer = createImmerReducer(
         createModuleReducer('test', moduleState, moduleMutations),
       )
@@ -62,7 +67,7 @@ describe('mutations', () => {
         increment: c => c + 1,
       })
 
-      expect(moduleMock.extensionStateContainer.mutationMocks).toBeDefined()
+      expect(moduleMock.$simpluxInternals.mutationMocks).toBeDefined()
     })
 
     it('throws when existing mutation is declared again', () => {
@@ -195,9 +200,7 @@ describe('mutations', () => {
         })
 
         const mock = jest.fn()
-        ; (moduleMock.extensionStateContainer.mutationMocks as any)[
-          increment.name
-        ] = mock
+        moduleMock.$simpluxInternals.mutationMocks[increment.name] = mock
 
         increment('foo', { nestedArg: true })
 
@@ -310,10 +313,9 @@ describe('mutations', () => {
 
       it('throws an error when calling a nested mutation directly', () => {
         dispatchMock.mockImplementation(({ mutationName }) => {
-          const moduleMutations = moduleMock.extensionStateContainer
-            .mutations as any
+          const moduleMutations = moduleMock.$simpluxInternals.mutations
           const mutation = moduleMutations[mutationName]
-          mutation()
+          mutation(moduleMock.getState())
         })
 
         const { increment, increment2 } = createMutations(moduleMock, {

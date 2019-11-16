@@ -1,4 +1,4 @@
-import { SimpluxModule, SimpluxModuleInternals } from './module'
+import { SimpluxModule } from './module'
 
 export type SelectorDefinition<TState, TReturn> = (
   state: TState,
@@ -86,10 +86,6 @@ function nameFunction<T extends (...args: any[]) => any>(
   }[name] as T
 }
 
-export interface ModuleSelectorDefinitions<TState> {
-  [moduleName: string]: SelectorDefinitions<TState>
-}
-
 /**
  * Create new selectors for the module. A selector is a function
  * that takes the module state and optionally additional parameters
@@ -111,32 +107,21 @@ export function createSelectors<
   simpluxModule: SimpluxModule<TState>,
   selectorDefinitions: TSelectorDefinitions,
 ): ResolvedSelectors<TState, TSelectorDefinitions> {
-  const moduleName = simpluxModule.name
-  const {
-    extensionStateContainer,
-  } = (simpluxModule as any) as SimpluxModuleInternals
-
-  const selectorsContainer = (extensionStateContainer.selectors ||
-    {}) as ModuleSelectorDefinitions<TState>
-
-  extensionStateContainer.selectors = selectorsContainer
-
-  const moduleDefinitions = (selectorsContainer[moduleName] =
-    selectorsContainer[moduleName] || {})
+  const { name: moduleName, selectors } = simpluxModule.$simpluxInternals
 
   for (const selectorName of Object.keys(selectorDefinitions)) {
-    if (moduleDefinitions[selectorName]) {
+    if (selectors[selectorName]) {
       throw new Error(
         `selector '${selectorName}' is already defined for module '${moduleName}'`,
       )
     }
   }
 
-  Object.assign(moduleDefinitions, selectorDefinitions)
+  Object.assign(selectors, selectorDefinitions)
 
   const resolvedSelectors = Object.keys(selectorDefinitions).reduce(
     (acc, selectorName: keyof TSelectorDefinitions) => {
-      const getDefinition = () => moduleDefinitions[selectorName as string]
+      const getDefinition = () => selectors[selectorName as string]
 
       const namedSelector = nameFunction(
         selectorName as string,

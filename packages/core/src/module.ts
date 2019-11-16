@@ -2,6 +2,7 @@ import { AnyAction, Reducer } from 'redux'
 import { createImmerReducer } from './immer'
 import { MutationsBase } from './mutations'
 import { createModuleReducer } from './reducer'
+import { SelectorDefinitions } from './selectors'
 import { SimpluxStore, simpluxStore } from './store'
 
 export interface SimpluxModuleConfig<TState> {
@@ -37,24 +38,50 @@ export type SubscribeToStateChanges<TState> = <
 ) => Subscription<TState, THandler>
 
 /**
+ * This is part of the simplux internal API and should not be accessed
+ * except by simplux extensions.
+ *
  * @private
  */
-export interface SimpluxModuleExtensionStateContainer {
-  [extensionName: string]: unknown
-}
-
-/**
- * @private
- */
-export interface SimpluxModuleInternals {
+export interface SimpluxModuleInternals<TState> {
   /**
-   * This object contains the state for all extensions to this module.
+   * The unique name of the module.
+   *
+   * @private
+   */
+  readonly name: string
+
+  /**
    * This is part of the simplux internal API and should not be accessed
    * except by simplux extensions.
    *
    * @private
    */
-  readonly extensionStateContainer: SimpluxModuleExtensionStateContainer
+  mockStateValue: TState | undefined
+
+  /**
+   * This is part of the simplux internal API and should not be accessed
+   * except by simplux extensions.
+   *
+   * @private
+   */
+  readonly mutations: MutationsBase<TState>
+
+  /**
+   * This is part of the simplux internal API and should not be accessed
+   * except by simplux extensions.
+   *
+   * @private
+   */
+  readonly mutationMocks: { [mutationName: string]: (...args: any[]) => TState }
+
+  /**
+   * This is part of the simplux internal API and should not be accessed
+   * except by simplux extensions.
+   *
+   * @private
+   */
+  readonly selectors: SelectorDefinitions<TState>
 
   /**
    * A proxy to the Redux store's dispatch function. This is part of the
@@ -102,9 +129,12 @@ export interface SimpluxModule<TState> {
   readonly subscribeToStateChanges: SubscribeToStateChanges<TState>
 
   /**
-   * The unique name of the module.
+   * Internal state that is used by simplux. This is part of the simplux
+   * internal API and should not be accessed except by simplux extensions.
+   *
+   * @private
    */
-  readonly name: string
+  readonly $simpluxInternals: SimpluxModuleInternals<TState>
 }
 
 export function createModule<TState>(
@@ -113,15 +143,18 @@ export function createModule<TState>(
 ): SimpluxModule<TState> {
   const { getState, dispatch, subscribe, setReducer } = store
 
-  const extensionStateContainer: SimpluxModuleExtensionStateContainer = {}
-
-  const getModuleState = (): TState => {
-    if (extensionStateContainer.mockStateValue) {
-      return extensionStateContainer.mockStateValue as TState
-    }
-
-    return getState()[config.name]
+  const internals: SimpluxModuleInternals<TState> = {
+    name: config.name,
+    mockStateValue: undefined,
+    mutations: {},
+    mutationMocks: {},
+    selectors: {},
+    dispatch,
+    getReducer: () => simpluxStore.getReducer(config.name),
   }
+
+  const getModuleState = (): TState =>
+    internals.mockStateValue || getState()[config.name]
 
   const setModuleState = (state: TState) => {
     dispatch({
@@ -176,29 +209,21 @@ export function createModule<TState>(
     }
   }
 
-  const mutationsContainer = (extensionStateContainer.mutations ||
-    {}) as MutationsBase<TState>
-
-  extensionStateContainer.mutations = mutationsContainer
-
   const moduleReducer = createModuleReducer(
     config.name,
     config.initialState,
-    mutationsContainer,
+    internals.mutations,
   )
 
   const moduleReducerWithImmerSupport = createImmerReducer(moduleReducer)
 
   setReducer(config.name, moduleReducerWithImmerSupport)
 
-  const result: SimpluxModule<TState> & SimpluxModuleInternals = {
+  const result: SimpluxModule<TState> = {
     getState: getModuleState,
     setState: setModuleState,
     subscribeToStateChanges,
-    name: config.name,
-    extensionStateContainer,
-    dispatch,
-    getReducer: () => simpluxStore.getReducer(config.name),
+    $simpluxInternals: internals,
   }
 
   return result

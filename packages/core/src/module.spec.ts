@@ -1,10 +1,5 @@
 import { combineReducers, createStore, Store } from 'redux'
-import {
-  createModule,
-  SimpluxModule,
-  SimpluxModuleInternals,
-  Subscription,
-} from './module'
+import { createModule, SimpluxModule, Subscription } from './module'
 import {
   createReduxStoreProxy,
   createSimpluxStore,
@@ -33,16 +28,6 @@ describe('module', () => {
       })
 
       expect(setReducerSpy).toHaveBeenCalledWith('test', expect.any(Function))
-    })
-
-    it('creates the mutation extension state container', () => {
-      const initialState = { prop: 'value' }
-      const m = (createModule(simpluxStore, {
-        name: 'test',
-        initialState,
-      }) as any) as SimpluxModuleInternals
-
-      expect(m.extensionStateContainer.mutations).toBeDefined()
     })
 
     it('immediately adds the module state to the overall state', () => {
@@ -103,16 +88,6 @@ describe('module', () => {
       subscribeSpy = jest.spyOn(reduxStore, 'subscribe')
     })
 
-    it('has a name', () => {
-      const initialState = { prop: 'value' }
-      const { name } = createModule(simpluxStore, {
-        name: 'test',
-        initialState,
-      })
-
-      expect(name).toBe('test')
-    })
-
     describe(`getState`, () => {
       it('returns initial state', () => {
         const initialState = { prop: 'value' }
@@ -131,10 +106,8 @@ describe('module', () => {
           initialState,
         })
 
-        const internals = (testModule as unknown) as SimpluxModuleInternals
-
         const mockStateValue: typeof initialState = { prop: 'mocked' }
-        internals.extensionStateContainer.mockStateValue = mockStateValue
+        testModule.$simpluxInternals.mockStateValue = mockStateValue
 
         expect(testModule.getState()).toBe(mockStateValue)
       })
@@ -193,10 +166,8 @@ describe('module', () => {
           initialState,
         })
 
-        const internals = (testModule as unknown) as SimpluxModuleInternals
-
         const mockStateValue: typeof initialState = { prop: 'mocked' }
-        internals.extensionStateContainer.mockStateValue = mockStateValue
+        testModule.$simpluxInternals.mockStateValue = mockStateValue
 
         const { unsubscribe } = testModule.subscribeToStateChanges(handlerSpy)
 
@@ -238,10 +209,8 @@ describe('module', () => {
 
         handlerSpy.mockClear()
 
-        const internals = (testModule as unknown) as SimpluxModuleInternals
-
         const mockStateValue: typeof initialState = { prop: 'mocked' }
-        internals.extensionStateContainer.mockStateValue = mockStateValue
+        testModule.$simpluxInternals.mockStateValue = mockStateValue
 
         expect(handlerSpy).not.toHaveBeenCalled()
 
