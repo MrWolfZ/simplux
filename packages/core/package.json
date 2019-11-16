@@ -37,7 +37,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "immer": "^3.0.0"
+    "immer": "^5.0.0"
   },
   "devDependencies": {
     "jest": "24.8.0",
