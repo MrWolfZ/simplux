@@ -1,8 +1,4 @@
-import {
-  SimpluxModule,
-  SimpluxModuleInternals,
-  Subscription,
-} from '@simplux/core'
+import { SimpluxModule, StateChangeSubscription } from '@simplux/core'
 import { act, cleanup, render } from '@testing-library/react'
 import { default as React, useCallback, useReducer } from 'react'
 import { act as actHook, renderHook } from 'react-hooks-testing-library'
@@ -20,26 +16,25 @@ jest.mock('./window', () => ({
 describe(useModuleSelector.name, () => {
   let moduleState = { count: 0 }
   let subscriber: (state: typeof moduleState) => void = () => void 0
-  const getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
+  let getModuleStateMock: jest.Mock<typeof moduleState, []>
   const setModuleStateMock = jest.fn()
 
-  let subscriptionMock: Subscription<any, any>
+  let subscriptionMock: StateChangeSubscription<any, any>
   let subscribeToModuleStateChangesMock: jest.Mock
 
   let useSelector: <TSelected>(
     selector: (state: typeof moduleState) => TSelected,
   ) => TSelected
 
-  let moduleExtensionStateContainer = {} as any
-  let moduleMock: SimpluxModule<typeof moduleState> & SimpluxModuleInternals
+  let moduleMock: SimpluxModule<typeof moduleState>
 
   beforeEach(() => {
     moduleState = { count: 0 }
-    moduleExtensionStateContainer = {}
     subscriptionMock = {
       unsubscribe: jest.fn(),
       handler: () => void 0,
     }
+    getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
     subscribeToModuleStateChangesMock = jest.fn().mockImplementation(s => {
       subscriber = s
       subscriber(moduleState)
@@ -50,10 +45,15 @@ describe(useModuleSelector.name, () => {
       getState: getModuleStateMock,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
-      name: 'test',
-      extensionStateContainer: moduleExtensionStateContainer,
-      dispatch: undefined!,
-      getReducer: undefined!,
+      $simpluxInternals: {
+        name: 'test',
+        mockStateValue: undefined,
+        mutations: {},
+        mutationMocks: {},
+        selectors: {},
+        dispatch: undefined!,
+        getReducer: undefined!,
+      },
     }
 
     jest.clearAllMocks()
@@ -189,30 +189,23 @@ describe(useModuleSelector.name, () => {
     it('selects the mocked module state if set', () => {
       const useSelector = createSelectorHook(moduleMock)
 
-      moduleMock.extensionStateContainer.reactSelectorHookStateMock = {
-        count: 11,
-      }
+      getModuleStateMock.mockReturnValue({ count: 11 })
 
       const { result } = renderHook(() => useSelector(s => s.count))
 
       expect(result.current).toEqual(11)
-      expect(getModuleStateMock).not.toHaveBeenCalled()
     })
 
     it('selects the mock when subscriber is called', () => {
       const useSelector = createSelectorHook(moduleMock)
 
-      moduleMock.extensionStateContainer.reactSelectorHookStateMock = {
-        count: 11,
-      }
+      getModuleStateMock.mockReturnValue({ count: 11 })
 
       const { result } = renderHook(() => useSelector(s => s.count))
 
       expect(result.current).toEqual(11)
 
-      moduleMock.extensionStateContainer.reactSelectorHookStateMock = {
-        count: 12,
-      }
+      getModuleStateMock.mockReturnValue({ count: 12 })
 
       actHook(() => {
         subscriber({ count: 1 })
@@ -314,7 +307,8 @@ describe(useModuleSelector.name, () => {
     })
 
     it('uses the correct effect hook if window is not defined', () => {
-      (getWindow as jest.Mock).mockImplementation(() => undefined)
+      const getWindowMock = getWindow as jest.Mock
+      getWindowMock.mockImplementation(() => undefined)
 
       expect(() =>
         renderHook(() => useSelector(s => s.count)),
@@ -336,7 +330,7 @@ describe(useModuleSelector.name, () => {
     it('adds the module name to the hook', () => {
       const useSelector = createSelectorHook(moduleMock)
 
-      expect(useSelector.moduleName).toBe(moduleMock.name)
+      expect(useSelector.moduleName).toBe(moduleMock.$simpluxInternals.name)
     })
 
     it('adds the owning module to the hook', () => {

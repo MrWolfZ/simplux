@@ -1,4 +1,4 @@
-import { SubscribeToStateChanges, Subscription } from '@simplux/core'
+import { StateChangeSubscription, SubscribeToStateChanges } from '@simplux/core'
 import { createBatchedSubscribeFunction } from './subscriptions'
 
 describe('subscriptions', () => {
@@ -8,7 +8,7 @@ describe('subscriptions', () => {
 
   describe(createBatchedSubscribeFunction.name, () => {
     let handler: (state: number, previousState: number) => void
-    let subscription: Subscription<any, any>
+    let subscription: StateChangeSubscription<any, any>
     let subscribeToStateChanges: SubscribeToStateChanges<number>
 
     beforeEach(() => {

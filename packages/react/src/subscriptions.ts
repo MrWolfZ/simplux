@@ -1,8 +1,8 @@
 import {
   ResolvedStateChangeHandler,
   StateChangeHandler,
+  StateChangeSubscription,
   SubscribeToStateChanges,
-  Subscription,
 } from '@simplux/core'
 import { unstable_batchedUpdates } from 'react-dom'
 
@@ -11,7 +11,7 @@ export function createBatchedSubscribeFunction<TState>(
 ) {
   const handlers: StateChangeHandler<TState>[] = []
 
-  let subscription: Subscription<any, any> | undefined
+  let subscription: StateChangeSubscription<any, any> | undefined
 
   const subscribeWithBatching: SubscribeToStateChanges<TState> = handler => {
     handlers.push(handler)

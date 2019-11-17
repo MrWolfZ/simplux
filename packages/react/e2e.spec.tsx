@@ -1,6 +1,10 @@
 // this file contains an end-to-end test for the public API
 
-import { createMutations, createSimpluxModule } from '@simplux/core'
+import {
+  createMutations,
+  createSelectors,
+  createSimpluxModule,
+} from '@simplux/core'
 import { createSelectorHook } from '@simplux/react'
 import { clearAllSimpluxMocks, mockModuleState } from '@simplux/testing'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
@@ -197,6 +201,28 @@ describe(`@simplux/react`, () => {
       spy.mockRestore()
 
       expect(renderedItems).toEqual([10, 20, 12, 22, 13, 23, 14, 24])
+    })
+
+    it('works with simplux selectors', () => {
+      const useSelector = createSelectorHook(todosModule)
+
+      const { getIds, getById } = createSelectors(todosModule, {
+        getIds: state => state.todoIds,
+        getById: (state, id: string) => state.todosById[id],
+      })
+
+      const { result: todoIds, unmount: unmount1 } = renderHook(() =>
+        useSelector(getIds.withState),
+      )
+
+      const { result: todo, unmount: unmount2 } = renderHook(() =>
+        useSelector(s => getById.withState(s, '1')),
+      )
+
+      unmounts.push(unmount1, unmount2)
+
+      expect(todoIds.current).toBe(todoStoreWithOneTodo.todoIds)
+      expect(todo.current).toBe(todo1)
     })
   })
 
