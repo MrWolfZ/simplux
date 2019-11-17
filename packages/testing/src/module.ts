@@ -1,4 +1,5 @@
 import { SimpluxModule } from '@simplux/core'
+import { registerMockCleanupFunction } from './cleanup'
 
 /**
  * Set a value that should be returned whenever the module's state
@@ -23,7 +24,12 @@ export function mockModuleState<TState>(
 ) {
   simpluxModule.$simpluxInternals.mockStateValue = mockStateValue
 
-  return () => {
+  const cleanup = () => {
     delete simpluxModule.$simpluxInternals.mockStateValue
+    clearCleanup()
   }
+
+  const clearCleanup = registerMockCleanupFunction(cleanup)
+
+  return cleanup
 }

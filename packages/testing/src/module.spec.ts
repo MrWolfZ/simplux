@@ -53,5 +53,13 @@ describe('module', () => {
 
       expect(moduleMock.$simpluxInternals.mockStateValue).toBeUndefined()
     })
+
+    it('can be cleared globally', () => {
+      mockModuleState(moduleMock, 10)
+
+      clearAllSimpluxMocks()
+
+      expect(moduleMock.$simpluxInternals.mockStateValue).toBeUndefined()
+    })
   })
 })
