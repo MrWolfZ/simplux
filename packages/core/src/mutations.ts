@@ -2,17 +2,7 @@ import { SimpluxModule } from './module'
 
 export type MutationDefinition<TState> = (
   state: TState,
-  // optimally, we would use ...args: any[] but that does not work correctly with
-  // TypeScript 3.3.3 so we use this workaround
-  arg1?: any,
-  arg2?: any,
-  arg3?: any,
-  arg4?: any,
-  arg5?: any,
-  arg6?: any,
-  arg7?: any,
-  arg8?: any,
-  arg9?: any,
+  ...args: any
 ) => TState | void
 
 export interface MutationDefinitions<TState> {
