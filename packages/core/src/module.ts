@@ -1,6 +1,6 @@
 import { AnyAction, Reducer } from 'redux'
 import { createImmerReducer } from './immer'
-import { MutationsBase } from './mutations'
+import { MutationDefinitions } from './mutations'
 import { createModuleReducer } from './reducer'
 import { SelectorDefinitions } from './selectors'
 import { SimpluxStore, simpluxStore } from './store'
@@ -65,7 +65,7 @@ export interface SimpluxModuleInternals<TState> {
    *
    * @private
    */
-  readonly mutations: MutationsBase<TState>
+  readonly mutations: MutationDefinitions<TState>
 
   /**
    * This is part of the simplux internal API and should not be accessed

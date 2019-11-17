@@ -1,10 +1,6 @@
 import { createImmerReducer } from './immer'
 import { SimpluxModule } from './module'
-import {
-  createMutations,
-  MutationsBase,
-  ResolvedMutationInternals,
-} from './mutations'
+import { createMutations, MutationDefinitions } from './mutations'
 import { createModuleReducer } from './reducer'
 
 declare class Event {
@@ -46,7 +42,7 @@ describe('mutations', () => {
   })
 
   describe(`factory`, () => {
-    let moduleMutations: MutationsBase<number>
+    let moduleMutations: MutationDefinitions<number>
     let moduleReducerSpy: jest.Mock<
       number,
       [number | undefined, { type: string }]
@@ -231,10 +227,7 @@ describe('mutations', () => {
           increment: c => c,
         })
 
-        expect(
-          ((increment as unknown) as ResolvedMutationInternals<number>)
-            .mutationName,
-        ).toBe('increment')
+        expect(increment.mutationName).toBe('increment')
       })
 
       it('has a reference to the owning module', () => {
@@ -242,10 +235,7 @@ describe('mutations', () => {
           increment: c => c,
         })
 
-        expect(
-          ((increment as unknown) as ResolvedMutationInternals<number>)
-            .owningModule,
-        ).toBe(moduleMock)
+        expect(increment.owningModule).toBe(moduleMock)
       })
 
       it('ignores event arg in first position', () => {

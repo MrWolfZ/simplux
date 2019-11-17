@@ -1,10 +1,10 @@
 import { Action } from 'redux'
-import { createMutationPrefix, MutationsBase } from './mutations'
+import { createMutationPrefix, MutationDefinitions } from './mutations'
 
 export function createModuleReducer<TState>(
   moduleName: string,
   initialState: TState,
-  moduleMutations: MutationsBase<TState>,
+  moduleMutations: MutationDefinitions<TState>,
 ) {
   const mutationPrefix = createMutationPrefix(moduleName)
 

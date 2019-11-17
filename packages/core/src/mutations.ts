@@ -1,6 +1,6 @@
 import { SimpluxModule } from './module'
 
-export type MutationBase<TState> = (
+export type MutationDefinition<TState> = (
   state: TState,
   // optimally, we would use ...args: any[] but that does not work correctly with
   // TypeScript 3.3.3 so we use this workaround
@@ -15,36 +15,29 @@ export type MutationBase<TState> = (
   arg9?: any,
 ) => TState | void
 
-export interface MutationsBase<TState> {
-  [name: string]: MutationBase<TState>
+export interface MutationDefinitions<TState> {
+  [name: string]: MutationDefinition<TState>
 }
 
-/**
- * @private
- */
-export interface ResolvedMutationInternals<TState> {
+export interface SimpluxMutation<TState, TArgs extends any[]> {
   /**
-   * The name of this mutation. This is part of the simplux internal API
-   * and should not be accessed except by simplux extensions.
+   * Execute the mutation on the module's latest state.
    *
-   * @private
-   */
-  mutationName: string
-
-  /**
-   * The module this mutation belongs to. This is part of the simplux
-   * internal API and should not be accessed except by simplux extensions.
+   * @param args the arguments for the mutation
    *
-   * @private
+   * @returns the updated state
    */
-  owningModule: SimpluxModule<TState>
-}
+  (...args: TArgs): TState
 
-export interface ResolvedMutationExtras<TState, TArgs extends any[]> {
   /**
    * A unique identifier for this type of mutation.
    */
   readonly type: string
+
+  /**
+   * The name of this mutation.
+   */
+  readonly mutationName: string
 
   /**
    * When a mutation is called directly it updates the module's state.
@@ -67,24 +60,24 @@ export interface ResolvedMutationExtras<TState, TArgs extends any[]> {
    */
   readonly asAction: (...args: TArgs) => { type: string; args: TArgs }
 
+  /**
+   * The module this mutation belongs to.
+   */
+  readonly owningModule: SimpluxModule<TState>
 }
-type MutableResolvedMutationExtras<TState, TArgs extends any[]> = {
-  -readonly [prop in keyof ResolvedMutationExtras<
-    TState,
-    TArgs
-  >]: ResolvedMutationExtras<TState, TArgs>[prop]
-}
+
+type Mutable<T> = { -readonly [prop in keyof T]: T[prop] }
 
 export type ResolvedMutation<
   TState,
-  TMutation extends MutationBase<TState>
+  TMutation extends MutationDefinition<TState>
 > = TMutation extends (state: TState, ...args: infer TArgs) => TState | void
-  ? ((...args: TArgs) => TState) & ResolvedMutationExtras<TState, TArgs>
+  ? SimpluxMutation<TState, TArgs>
   : never
 
 export type ResolvedMutations<
   TState,
-  TMutations extends MutationsBase<TState>
+  TMutations extends MutationDefinitions<TState>
 > = {
   readonly [name in keyof TMutations]: ResolvedMutation<
     TState,
@@ -92,26 +85,10 @@ export type ResolvedMutations<
   >
 }
 
-type MutableResolvedMutations<
-  TState,
-  TMutations extends MutationsBase<TState>
-> = {
-  -readonly [name in keyof ResolvedMutations<
-    TState,
-    TMutations
-  >]: ResolvedMutations<TState, TMutations>[name]
-}
-
-export type MutationsFactory<TState> = <
-  TMutations extends MutationsBase<TState>
->(
-  mutations: TMutations,
-) => ResolvedMutations<TState, TMutations>
-
 export const createMutationPrefix = (moduleName: string) =>
   `@simplux/${moduleName}/mutation/`
 
-// this helper function allows creating a function with a dynamic name
+// this helper function allows creating a function with a dynamic name (only works with ES6+)
 function nameFunction<T extends (...args: any[]) => any>(
   name: string,
   body: T,
@@ -136,7 +113,7 @@ function nameFunction<T extends (...args: any[]) => any>(
  */
 export function createMutations<
   TState,
-  TMutations extends MutationsBase<TState>
+  TMutations extends MutationDefinitions<TState>
 >(
   simpluxModule: SimpluxModule<TState>,
   mutationDefinitions: TMutations,
@@ -204,7 +181,7 @@ export function createMutations<
 
       acc[mutationName] = mutation
 
-      const extras = mutation as MutableResolvedMutationExtras<TState, any>
+      const extras = mutation as Mutable<typeof mutation>
 
       extras.withState = (state: TState, ...args: any[]) => {
         return getReducer()(state, createAction(...args))
@@ -214,16 +191,12 @@ export function createMutations<
 
       extras.type = type
 
-      const internals = (mutation as unknown) as ResolvedMutationInternals<
-        TState
-      >
-
-      internals.mutationName = mutationName as string
-      internals.owningModule = simpluxModule
+      extras.mutationName = mutationName as string
+      extras.owningModule = simpluxModule
 
       return acc
     },
-    {} as MutableResolvedMutations<TState, TMutations>,
+    {} as Mutable<ResolvedMutations<TState, TMutations>>,
   )
 
   return resolvedMutations

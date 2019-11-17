@@ -21,13 +21,11 @@ export {
 } from './src/module'
 export {
   createMutations,
-  MutationBase,
-  MutationsBase,
-  MutationsFactory,
+  MutationDefinition,
+  MutationDefinitions,
   ResolvedMutation,
-  ResolvedMutationExtras,
-  ResolvedMutationInternals,
   ResolvedMutations,
+  SimpluxMutation,
 } from './src/mutations'
 export {
   createSelectors,
