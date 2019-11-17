@@ -34,7 +34,6 @@ export {
   SelectorDefinition,
   SelectorDefinitions,
   SimpluxSelector,
-  SimpluxSelectorMarker,
 } from './src/selectors'
 export { SimpluxStore } from './src/store'
 

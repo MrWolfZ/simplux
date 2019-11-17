@@ -19,12 +19,7 @@ export interface SelectorDefinitions<TState> {
   [name: string]: SelectorDefinition<TState, any>
 }
 
-export interface SimpluxSelectorMarker {
-  readonly $simpluxType: 'selector'
-}
-
-export interface SimpluxSelector<TState, TArgs extends any[], TReturn>
-  extends SimpluxSelectorMarker {
+export interface SimpluxSelector<TState, TArgs extends any[], TReturn> {
   /**
    * Evalute the selector with the module's latest state.
    *
