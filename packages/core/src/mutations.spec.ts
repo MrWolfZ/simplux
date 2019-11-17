@@ -132,7 +132,7 @@ describe('mutations', () => {
             mutationSpy(c, arg1, arg2),
         })
 
-        increment.withState(10)('foo', { nestedArg: true })
+        increment.withState(10, 'foo', { nestedArg: true })
 
         expect(mutationSpy).toHaveBeenCalledWith(10, 'foo', { nestedArg: true })
       })
@@ -143,7 +143,7 @@ describe('mutations', () => {
           increment: (c, _arg1: string, _arg2: { nestedArg: boolean }) => c + 1,
         })
 
-        increment.withState(10)('foo', { nestedArg: true })
+        increment.withState(10, 'foo', { nestedArg: true })
 
         expect(moduleReducerSpy).toHaveBeenCalledWith(10, {
           type: '@simplux/test/mutation/increment',
@@ -166,7 +166,7 @@ describe('mutations', () => {
           },
         )
 
-        const updatedState = update.withState(objectState)('foo', {
+        const updatedState = update.withState(objectState, 'foo', {
           nestedArg: true,
         })
 

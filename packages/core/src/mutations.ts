@@ -50,8 +50,13 @@ export interface ResolvedMutationExtras<TState, TArgs extends any[]> {
    * When a mutation is called directly it updates the module's state.
    * Sometimes (e.g. for testing) it is useful to call the mutation
    * with a given state. In this case no changes are made to the module.
+   *
+   * @param state the state to use when executing the mutation
+   * @param args the arguments for the mutation
+   *
+   * @returns the updated state
    */
-  readonly withState: (state: TState) => (...args: TArgs) => TState
+  readonly withState: (state: TState, ...args: TArgs) => TState
 
   /**
    * When a mutation is called directly it updates the module's state by
@@ -201,7 +206,7 @@ export function createMutations<
 
       const extras = mutation as MutableResolvedMutationExtras<TState, any>
 
-      extras.withState = (state: TState) => (...args: any[]) => {
+      extras.withState = (state: TState, ...args: any[]) => {
         return getReducer()(state, createAction(...args))
       }
 

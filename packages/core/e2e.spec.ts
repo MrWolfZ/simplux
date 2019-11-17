@@ -59,7 +59,7 @@ describe(`@simplux/core`, () => {
         }
       },
       addTodos(state, ...todos: Todo[]): TodoState {
-        return todos.reduce((s, t) => addTodo.withState(s)(t), state)
+        return todos.reduce((s, t) => addTodo.withState(s, t), state)
       },
     })
 
@@ -127,7 +127,7 @@ describe(`@simplux/core`, () => {
           todoIds.push(todo.id)
         },
         addTodos(state, ...todos: Todo[]) {
-          todos.forEach(t => addTodo.withState(state)(t))
+          todos.forEach(t => addTodo.withState(state, t))
         },
       })
 
@@ -212,7 +212,7 @@ describe(`@simplux/core`, () => {
         },
       })
 
-      const updatedState = update.withState(initialState)('updated')
+      const updatedState = update.withState(initialState, 'updated')
 
       expect(updatedState).not.toBe(initialState)
       expect(initialState.test).toBe('test')
