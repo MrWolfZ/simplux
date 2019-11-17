@@ -13,6 +13,10 @@ describe(createImmerReducer.name, () => {
           state.test = value || 'updated'
         }
 
+        if (type === 'throw') {
+          throw new Error()
+        }
+
         if (type === 'nested') {
           const stateCopy = { ...state }
           reducer(stateCopy, { type: 'update', value: 'nested-updated' })
@@ -43,6 +47,14 @@ describe(createImmerReducer.name, () => {
     it('mutates the state when called inside itself', () => {
       const result = reducer(initialState, { type: 'nested' })
       expect(result.test).toBe('nested-updated')
+    })
+
+    it('continues working if an invocation throws', () => {
+      expect(() => reducer(initialState, { type: 'throw' })).toThrow()
+
+      const result = reducer(initialState, { type: 'update' })
+      expect(result.test).toBe('updated')
+      expect(initialState.test).toBe('test')
     })
   })
 })
