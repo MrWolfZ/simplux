@@ -65,9 +65,9 @@ export interface ResolvedMutationExtras<TState, TArgs extends any[]> {
    * it automatically. This function returns the redux action instead of
    * dispatching it.
    */
-  readonly asActionCreator: (...args: TArgs) => { type: string; args: TArgs }
-}
+  readonly asAction: (...args: TArgs) => { type: string; args: TArgs }
 
+}
 type MutableResolvedMutationExtras<TState, TArgs extends any[]> = {
   -readonly [prop in keyof ResolvedMutationExtras<
     TState,
@@ -210,7 +210,7 @@ export function createMutations<
         return getReducer()(state, createAction(...args))
       }
 
-      extras.asActionCreator = createAction as any
+      extras.asAction = createAction as any
 
       extras.type = type
 

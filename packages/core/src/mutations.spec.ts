@@ -183,7 +183,7 @@ describe('mutations', () => {
             mutationSpy(c, arg1, arg2),
         })
 
-        const action = increment.asActionCreator('foo', { nestedArg: true })
+        const action = increment.asAction('foo', { nestedArg: true })
 
         expect(mutationSpy).not.toHaveBeenCalled()
         expect(action).toEqual({
