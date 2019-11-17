@@ -98,6 +98,22 @@ describe('selectors', () => {
 
         expect(plus.name).toBe('plus')
       })
+
+      it('has the same selectorName as the selector', () => {
+        const { plus } = createSelectors(moduleMock, {
+          plus: (c, amount: number) => c + amount,
+        })
+
+        expect(plus.selectorName).toBe('plus')
+      })
+
+      it('has a reference to the owning module', () => {
+        const { plus } = createSelectors(moduleMock, {
+          plus: (c, amount: number) => c + amount,
+        })
+
+        expect(plus.owningModule).toBe(moduleMock)
+      })
     })
   })
 })

@@ -20,7 +20,7 @@ export interface SelectorDefinitions<TState> {
 }
 
 export interface SimpluxSelectorMarker {
-  $simpluxType: 'selector'
+  readonly $simpluxType: 'selector'
 }
 
 export interface SimpluxSelector<TState, TArgs extends any[], TReturn>
@@ -35,6 +35,11 @@ export interface SimpluxSelector<TState, TArgs extends any[], TReturn>
   (...args: TArgs): TReturn
 
   /**
+   * The name of this selector.
+   */
+  readonly selectorName: string
+
+  /**
    * By default a selector is evaluated with the module's latest state.
    * This function evaluates the selector with the given state instead.
    *
@@ -43,13 +48,15 @@ export interface SimpluxSelector<TState, TArgs extends any[], TReturn>
    *
    * @returns the selected value
    */
-  withState: (state: TState, ...args: TArgs) => TReturn
+  readonly withState: (state: TState, ...args: TArgs) => TReturn
 
   /**
    * The module this selector belongs to.
    */
-  owningModule: SimpluxModule<TState>
+  readonly owningModule: SimpluxModule<TState>
 }
+
+type Mutable<T> = { -readonly [prop in keyof T]: T[prop] }
 
 export type ResolvedSelector<
   TState,
@@ -68,7 +75,7 @@ export type ResolvedSelectors<
   TState,
   TSelectorDefinitions extends SelectorDefinitions<TState>
 > = {
-  [name in keyof TSelectorDefinitions]: ResolvedSelector<
+  readonly [name in keyof TSelectorDefinitions]: ResolvedSelector<
     TState,
     TSelectorDefinitions[name]
   >
@@ -132,12 +139,17 @@ export function createSelectors<
 
       acc[selectorName] = namedSelector
 
-      acc[selectorName].withState = (state: TState, ...args: any[]) =>
+      const extras = namedSelector as Mutable<typeof namedSelector>
+
+      extras.withState = (state: TState, ...args: any[]) =>
         getDefinition()(state, ...args)
+
+      extras.selectorName = selectorName as string
+      extras.owningModule = simpluxModule
 
       return acc
     },
-    {} as ResolvedSelectors<TState, TSelectorDefinitions>,
+    {} as Mutable<ResolvedSelectors<TState, TSelectorDefinitions>>,
   )
 
   return resolvedSelectors
