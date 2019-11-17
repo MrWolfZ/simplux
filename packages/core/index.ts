@@ -16,6 +16,8 @@ export {
   SimpluxModuleConfig,
   SimpluxModuleInternals,
   StateChangeHandler,
+  StateChangeHandlerOptions,
+  StateChangeSubscription,
   SubscribeToStateChanges,
   Subscription,
 } from './src/module'
