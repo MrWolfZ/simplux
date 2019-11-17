@@ -64,6 +64,7 @@
     "react-dom": "^16.8.6",
     "react-hooks-testing-library": "^0.5.1",
     "react-test-renderer": "^16.8.6",
+    "redux": "^4.0.1",
     "rollup": "^1.13.1",
     "rollup-plugin-node-resolve": "^4.2.4",
     "shelljs": "^0.8.3",
