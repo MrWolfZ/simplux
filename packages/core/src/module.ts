@@ -15,6 +15,10 @@ export type StateChangeHandler<TState> = (
   previousState: TState,
 ) => void
 
+export interface StateChangeHandlerOptions {
+  shouldSkipInitialInvocation?: boolean
+}
+
 // this type exists to get the concrete type of the handler, i.e. to return
 // a handler with the correct number or parameters
 export type ResolvedStateChangeHandler<TState, THandler> = THandler extends (
@@ -23,11 +27,14 @@ export type ResolvedStateChangeHandler<TState, THandler> = THandler extends (
   ? (state: TState) => void
   : StateChangeHandler<TState>
 
-export interface Subscription<
+export interface Subscription {
+  unsubscribe: () => void
+}
+
+export interface StateChangeSubscription<
   TState,
   THandler extends StateChangeHandler<TState>
-> {
-  unsubscribe: () => void
+> extends Subscription {
   handler: ResolvedStateChangeHandler<TState, THandler>
 }
 
@@ -35,7 +42,8 @@ export type SubscribeToStateChanges<TState> = <
   THandler extends StateChangeHandler<TState>
 >(
   handler: THandler,
-) => Subscription<TState, THandler>
+  options?: StateChangeHandlerOptions,
+) => StateChangeSubscription<TState, THandler>
 
 /**
  * This is part of the simplux internal API and should not be accessed
@@ -167,7 +175,23 @@ export function createModule<TState>(
   let latestModuleState = config.initialState
   const handlers: StateChangeHandler<TState>[] = []
 
-  const subscribeToStateChanges: SubscribeToStateChanges<TState> = handler => {
+  type Required<T> = { [prop in keyof T]-?: T[prop] }
+
+  const defaultStateChangeHandlerOptions: Required<
+    StateChangeHandlerOptions
+  > = {
+    shouldSkipInitialInvocation: false,
+  }
+
+  const subscribeToStateChanges: SubscribeToStateChanges<TState> = (
+    handler,
+    options = {},
+  ) => {
+    const fullOptions = {
+      ...defaultStateChangeHandlerOptions,
+      ...options,
+    }
+
     handlers.push(handler)
 
     if (handlers.length === 1) {
@@ -186,7 +210,9 @@ export function createModule<TState>(
       })
     }
 
-    handler(latestModuleState, latestModuleState)
+    if (!fullOptions.shouldSkipInitialInvocation) {
+      handler(latestModuleState, latestModuleState)
+    }
 
     const unsubscribe = () => {
       const idx = handlers.indexOf(handler)

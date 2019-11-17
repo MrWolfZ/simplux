@@ -1,5 +1,5 @@
 import { combineReducers, createStore, Store } from 'redux'
-import { createModule, SimpluxModule, Subscription } from './module'
+import { createModule, SimpluxModule, StateChangeSubscription } from './module'
 import {
   createReduxStoreProxy,
   createSimpluxStore,
@@ -127,7 +127,7 @@ describe('module', () => {
     })
 
     describe(`subscribeToStateChanges`, () => {
-      let subscription: Subscription<any, any>
+      let subscription: StateChangeSubscription<any, any>
       let handlerSpy: jest.Mock
       const initialState = {
         prop: 'value',
@@ -158,6 +158,15 @@ describe('module', () => {
 
       it('calls handler immediately with state', () => {
         expect(handlerSpy).toHaveBeenCalledWith(initialState, initialState)
+      })
+
+      it('does not call handler with state if configured to skip initial invocation', () => {
+        handlerSpy = jest.fn()
+        subscription = subscribeToStateChanges(handlerSpy, {
+          shouldSkipInitialInvocation: true,
+        })
+
+        expect(handlerSpy).not.toHaveBeenCalled()
       })
 
       it('calls handler immediately with mock state if set', () => {
