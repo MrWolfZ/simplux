@@ -1,8 +1,8 @@
 import {
-  MutationsBase,
+  MutationDefinitions,
   ResolvedMutations,
   ResolvedSelectors,
-  SelectorsBase,
+  SelectorDefinitions,
   SimpluxModule,
 } from '@simplux/core'
 import { Observable } from 'rxjs'
@@ -32,8 +32,7 @@ export interface ModuleServiceState<TState> {
   selectState: () => Observable<TState>
 }
 
-export type ObservableSelector<TState, TSelector> = TSelector extends (
-  state: TState,
+export type ObservableSelector<TSelector> = TSelector extends (
   ...args: infer TArgs
 ) => infer TReturn
   ? (...args: TArgs) => Observable<TReturn>
@@ -41,20 +40,19 @@ export type ObservableSelector<TState, TSelector> = TSelector extends (
 
 export type ModuleServiceSelectors<
   TState,
-  TSelectors extends SelectorsBase<TState>,
+  TSelectors extends SelectorDefinitions<TState>,
   TResolvedSelectors extends ResolvedSelectors<TState, TSelectors>
 > = {
   [selectorName in keyof TResolvedSelectors]: ObservableSelector<
-    TState,
     TResolvedSelectors[selectorName]
   >
 }
 
 export type ModuleService<
   TState,
-  TMutations extends MutationsBase<TState>,
+  TMutations extends MutationDefinitions<TState>,
   TResolvedMutations extends ResolvedMutations<TState, TMutations>,
-  TSelectors extends SelectorsBase<TState>,
+  TSelectors extends SelectorDefinitions<TState>,
   TResolvedSelectors extends ResolvedSelectors<TState, TSelectors>
 > = ModuleServiceState<TState> &
   TResolvedMutations &
@@ -80,9 +78,9 @@ export type ModuleService<
  */
 export function createModuleServiceBaseClass<
   TState,
-  TMutations extends MutationsBase<TState>,
+  TMutations extends MutationDefinitions<TState>,
   TResolvedMutations extends ResolvedMutations<TState, TMutations>,
-  TSelectors extends SelectorsBase<TState>,
+  TSelectors extends SelectorDefinitions<TState>,
   TResolvedSelectors extends ResolvedSelectors<TState, TSelectors>
 >(
   simpluxModule: SimpluxModule<TState>,
@@ -114,7 +112,7 @@ export function createModuleServiceBaseClass<
 
 function createObservableSelectors<
   TState,
-  TSelectors extends SelectorsBase<TState>,
+  TSelectors extends SelectorDefinitions<TState>,
   TResolvedSelectors extends ResolvedSelectors<TState, TSelectors>
 >(
   simpluxModule: SimpluxModule<TState>,
@@ -127,7 +125,7 @@ function createObservableSelectors<
       const selector = selectors[selectorName]
       acc[selectorName] = ((...args: any[]) =>
         stateChanges$.pipe(
-          map(state => selector(state, ...args)),
+          map(state => selector.withState(state, ...args)),
           distinctUntilChanged(),
         )) as any
       return acc

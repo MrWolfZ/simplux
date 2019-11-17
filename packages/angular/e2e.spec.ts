@@ -92,7 +92,7 @@ describe(`@simplux/angular`, () => {
     const subscriber1 = jest.fn()
     const subscriber2 = jest.fn()
 
-    service.selectState().subscribe(subscriber0)
+    const sub0 = service.selectState().subscribe(subscriber0)
     service.selectNumberOfTodos().subscribe(subscriber1)
     service.selectTodosWithDoneState(true).subscribe(subscriber2)
 
@@ -104,18 +104,22 @@ describe(`@simplux/angular`, () => {
 
     expect(service.getCurrentState()).toEqual(todoStoreWithTodo2)
 
+    sub0.unsubscribe()
+
+    service.removeTodo(todo2.id)
+
     expect(subscriber0).toHaveBeenCalledTimes(5)
     expect(subscriber0).toHaveBeenCalledWith(initialTodoState)
     expect(subscriber0).toHaveBeenCalledWith(todoStoreWithTodo1)
     expect(subscriber0).toHaveBeenCalledWith(todoStoreWithTodo2)
     expect(subscriber0).toHaveBeenCalledWith(todoStoreWithBothTodos)
 
-    expect(subscriber1).toHaveBeenCalledTimes(4)
+    expect(subscriber1).toHaveBeenCalledTimes(5)
     expect(subscriber1).toHaveBeenCalledWith(0)
     expect(subscriber1).toHaveBeenCalledWith(1)
     expect(subscriber1).toHaveBeenCalledWith(2)
 
-    expect(subscriber2).toHaveBeenCalledTimes(5)
+    expect(subscriber2).toHaveBeenCalledTimes(6)
     expect(subscriber2).toHaveBeenCalledWith([])
     expect(subscriber2).toHaveBeenCalledWith([todo2])
     expect(subscriber2).toHaveBeenCalledWith([

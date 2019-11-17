@@ -1,14 +1,21 @@
 import {
+  MutationDefinitions,
   ResolvedMutations,
   ResolvedSelectors,
+  SelectorDefinitions,
   SimpluxModule,
-  Subscription,
+  StateChangeSubscription,
 } from '@simplux/core'
 import { Observable } from 'rxjs'
 import { createModuleServiceBaseClass } from './service'
 
+type Mutable<T> = { -readonly [prop in keyof T]: T[prop] }
+const asMutable = <T>(t: T): Mutable<T> => t
+
 describe('service', () => {
   describe('class factory function', () => {
+    const onError = (err: any) => console.error(err)
+
     interface State {
       count: number
       metadata: string
@@ -19,25 +26,24 @@ describe('service', () => {
     const getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
     const setModuleStateMock = jest.fn()
 
-    let subscriptionMock: Subscription<any, any>
+    let subscriptionMock: StateChangeSubscription<any, any>
     let subscribeToModuleStateChangesMock: jest.Mock
 
     let moduleMock: SimpluxModule<State>
-    let mutations: ResolvedMutations<
-      State,
-      {
-        increment: (state: State) => State;
-        incrementBy: (state: State, amount: number) => State;
-      }
-    >
 
-    let selectors: ResolvedSelectors<
-      State,
-      {
-        selectCountPlusOne: (state: State) => number;
-        selectCountPlus: (state: State, amount: number) => number;
-      }
-    >
+    interface Mutations extends MutationDefinitions<State> {
+      increment: (state: State) => State
+      incrementBy: (state: State, amount: number) => State
+    }
+
+    let mutations: ResolvedMutations<State, Mutations>
+
+    interface Selectors extends SelectorDefinitions<State> {
+      selectCountPlusOne: (state: State) => number
+      selectCountPlus: (state: State, amount: number) => number
+    }
+
+    let selectors: ResolvedSelectors<State, Selectors>
 
     beforeEach(() => {
       moduleState = { count: 10, metadata: '' }
@@ -55,7 +61,15 @@ describe('service', () => {
         getState: getModuleStateMock,
         setState: setModuleStateMock,
         subscribeToStateChanges: subscribeToModuleStateChangesMock,
-        name: 'test',
+        $simpluxInternals: {
+          name: 'test',
+          mockStateValue: undefined,
+          mutations: {},
+          mutationMocks: {},
+          selectors: {},
+          dispatch: undefined!,
+          getReducer: undefined!,
+        },
       }
 
       mutations = {
@@ -66,10 +80,18 @@ describe('service', () => {
       }
 
       selectors = {
-        selectCountPlusOne: ((state: State) => state.count + 1) as any,
-        selectCountPlus: ((state: State, amount: number) =>
-          state.count + amount) as any,
+        selectCountPlusOne: (() => moduleState.count + 1) as any,
+        selectCountPlus: ((amount: number) =>
+          moduleState.count + amount) as any,
       }
+
+      asMutable(selectors.selectCountPlusOne).withState = (state: State) =>
+        state.count + 1
+
+      asMutable(selectors.selectCountPlus).withState = (
+        state: State,
+        amount: number,
+      ) => state.count + amount
 
       jest.clearAllMocks()
     })
@@ -89,12 +111,11 @@ describe('service', () => {
     })
 
     it('can create a class with multiple sets of mutations', () => {
-      const mutations2: ResolvedMutations<
-        State,
-        {
-          decrement: (state: State) => State;
-        }
-      > = {
+      interface Mutations2 extends MutationDefinitions<State> {
+        decrement: (state: State) => State
+      }
+
+      const mutations2: ResolvedMutations<State, Mutations2> = {
         decrement: (() => moduleState) as any,
       }
 
@@ -115,12 +136,11 @@ describe('service', () => {
     })
 
     it('can create a class with multiple sets of selectors', () => {
-      const selectors2: ResolvedSelectors<
-        State,
-        {
-          selectCountMinusOne: (state: State) => number;
-        }
-      > = {
+      interface Selectors2 extends SelectorDefinitions<State> {
+        selectCountMinusOne: (state: State) => number
+      }
+
+      const selectors2: ResolvedSelectors<State, Selectors2> = {
         selectCountMinusOne: (() => moduleState.count - 1) as any,
       }
 
@@ -162,7 +182,7 @@ describe('service', () => {
         const service = createService()
 
         const subscriber = jest.fn()
-        service.selectState().subscribe(subscriber)
+        service.selectState().subscribe(subscriber, onError)
 
         const updatedState: State = { ...moduleState, count: 20 }
 
@@ -174,11 +194,40 @@ describe('service', () => {
         expect(subscriber).toHaveBeenCalledWith(updatedState)
       })
 
+      it('can stop observing the state', () => {
+        const service = createService()
+
+        const subscriber = jest.fn()
+        const sub = service.selectState().subscribe(subscriber, onError)
+
+        let updatedState: State = { ...moduleState, count: 20 }
+        subscribers.forEach(s => s(updatedState))
+
+        expect(subscriber).toHaveBeenCalledTimes(2)
+
+        sub.unsubscribe()
+
+        updatedState = { ...updatedState, count: 30 }
+        subscribers.forEach(s => s(updatedState))
+
+        expect(subscriber).toHaveBeenCalledTimes(2)
+      })
+
       it('has a method for each mutation', () => {
         const service = createService()
 
         expect(service.increment).toBeDefined()
         expect(service.incrementBy).toBeDefined()
+      })
+
+      it('unsubscribes from store when not observing anymore', () => {
+        const service = createService()
+
+        const subscriber = jest.fn()
+        const sub = service.selectState().subscribe(subscriber, onError)
+        sub.unsubscribe()
+
+        expect(subscriptionMock.unsubscribe).toHaveBeenCalled()
       })
 
       describe('mutations', () => {
@@ -214,8 +263,8 @@ describe('service', () => {
             const subscriber1 = jest.fn()
             const subscriber2 = jest.fn()
 
-            service.selectCountPlusOne().subscribe(subscriber1)
-            service.selectCountPlus(5).subscribe(subscriber2)
+            service.selectCountPlusOne().subscribe(subscriber1, onError)
+            service.selectCountPlus(5).subscribe(subscriber2, onError)
 
             expect(subscriber1).toHaveBeenCalledWith(moduleState.count + 1)
             expect(subscriber2).toHaveBeenCalledWith(moduleState.count + 5)
@@ -227,8 +276,8 @@ describe('service', () => {
             const subscriber1 = jest.fn()
             const subscriber2 = jest.fn()
 
-            service.selectCountPlusOne().subscribe(subscriber1)
-            service.selectCountPlus(5).subscribe(subscriber2)
+            service.selectCountPlusOne().subscribe(subscriber1, onError)
+            service.selectCountPlus(5).subscribe(subscriber2, onError)
 
             const updatedState: State = { ...moduleState, count: 20 }
 
@@ -244,8 +293,8 @@ describe('service', () => {
             const subscriber1 = jest.fn()
             const subscriber2 = jest.fn()
 
-            service.selectCountPlusOne().subscribe(subscriber1)
-            service.selectCountPlus(5).subscribe(subscriber2)
+            service.selectCountPlusOne().subscribe(subscriber1, onError)
+            service.selectCountPlus(5).subscribe(subscriber2, onError)
 
             const updatedState: State = { ...moduleState, metadata: 'updated' }
 
