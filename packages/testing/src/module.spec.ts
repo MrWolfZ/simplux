@@ -1,4 +1,4 @@
-import { SimpluxModule, SimpluxModuleInternals } from '@simplux/core'
+import { SimpluxModule } from '@simplux/core'
 import { clearAllSimpluxMocks } from './cleanup'
 import { mockModuleState } from './module'
 
@@ -10,21 +10,24 @@ describe('module', () => {
   const subscribeToModuleStateChangesMock = jest
     .fn()
     .mockImplementation(() => () => void 0)
-  let moduleExtensionStateContainer = {} as any
 
-  let moduleMock: SimpluxModule<typeof moduleState> & SimpluxModuleInternals
+  let moduleMock: SimpluxModule<typeof moduleState>
 
   beforeEach(() => {
     moduleState = 0
-    moduleExtensionStateContainer = { mutations: {} } as any
     moduleMock = {
       getState: getModuleStateMock,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
-      name: 'test',
-      extensionStateContainer: moduleExtensionStateContainer,
-      dispatch: dispatchMock,
-      getReducer: undefined!,
+      $simpluxInternals: {
+        name: 'test',
+        mockStateValue: undefined,
+        mutations: {},
+        mutationMocks: {},
+        selectors: {},
+        dispatch: dispatchMock,
+        getReducer: undefined!,
+      },
     }
 
     jest.clearAllMocks()
@@ -39,7 +42,7 @@ describe('module', () => {
   it('sets the module mock state value on the extension state container', () => {
     mockModuleState(moduleMock, 10)
 
-    expect(moduleExtensionStateContainer.mockStateValue).toBe(10)
+    expect(moduleMock.$simpluxInternals.mockStateValue).toBe(10)
   })
 
   describe('mock state value', () => {
@@ -48,7 +51,7 @@ describe('module', () => {
 
       clear()
 
-      expect(moduleExtensionStateContainer.mockStateValue).toBeUndefined()
+      expect(moduleMock.$simpluxInternals.mockStateValue).toBeUndefined()
     })
   })
 })

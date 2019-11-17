@@ -1,31 +1,19 @@
-import {
-  ResolvedMutationInternals,
-  SimpluxModule,
-  SimpluxModuleInternals,
-} from '@simplux/core'
+import { SimpluxModule, SimpluxMutation } from '@simplux/core'
 import { registerMockCleanupFunction } from './cleanup'
 
-export function setupMutationMock<
+function setupMutationMock<
   TState,
   TArgs extends any[],
   TMock extends (...args: TArgs) => TState
 >(owningModule: SimpluxModule<TState>, mutationName: string, mockFn: TMock) {
-  const {
-    extensionStateContainer,
-  } = (owningModule as unknown) as SimpluxModuleInternals
-
-  const moduleMutationMocks = extensionStateContainer.mutationMocks as {
-    [mutationName: string]: (...args: TArgs) => TState;
-  }
-
   const cleanup = () => {
-    delete moduleMutationMocks[mutationName]
+    delete owningModule.$simpluxInternals.mutationMocks[mutationName]
     clearCleanup()
   }
 
   const clearCleanup = registerMockCleanupFunction(cleanup)
 
-  moduleMutationMocks[mutationName] = mockFn
+  owningModule.$simpluxInternals.mutationMocks[mutationName] = mockFn as any
 
   return cleanup
 }
@@ -44,15 +32,10 @@ export function mockMutation<
   TState,
   TArgs extends any[],
   TMock extends (...args: TArgs) => TState
->(mutation: (...args: TArgs) => TState, mockFn: TMock) {
-  const {
-    owningModule,
-    mutationName,
-  } = (mutation as unknown) as ResolvedMutationInternals<TState>
-
+>(mutation: SimpluxMutation<TState, TArgs>, mockFn: TMock) {
   return setupMutationMock<TState, TArgs, TMock>(
-    owningModule,
-    mutationName,
+    mutation.owningModule,
+    mutation.mutationName,
     mockFn,
   )
 }

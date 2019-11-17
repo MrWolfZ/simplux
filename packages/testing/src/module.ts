@@ -1,4 +1,4 @@
-import { SimpluxModule, SimpluxModuleInternals } from '@simplux/core'
+import { SimpluxModule } from '@simplux/core'
 
 /**
  * Set a value that should be returned whenever the module's state
@@ -21,11 +21,9 @@ export function mockModuleState<TState>(
   simpluxModule: SimpluxModule<TState>,
   mockStateValue: TState,
 ) {
-  const internals = (simpluxModule as unknown) as SimpluxModuleInternals
-
-  internals.extensionStateContainer.mockStateValue = mockStateValue
+  simpluxModule.$simpluxInternals.mockStateValue = mockStateValue
 
   return () => {
-    delete internals.extensionStateContainer.mockStateValue
+    delete simpluxModule.$simpluxInternals.mockStateValue
   }
 }

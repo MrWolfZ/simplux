@@ -1,8 +1,4 @@
-import {
-  createMutations,
-  SimpluxModule,
-  SimpluxModuleInternals,
-} from '@simplux/core'
+import { createMutations, SimpluxModule } from '@simplux/core'
 import { clearAllSimpluxMocks } from './cleanup'
 import { mockMutation } from './mutations'
 
@@ -14,21 +10,24 @@ describe('mutations', () => {
   const subscribeToModuleStateChangesMock = jest
     .fn()
     .mockImplementation(() => () => void 0)
-  let moduleExtensionStateContainer = {} as any
 
-  let moduleMock: SimpluxModule<typeof moduleState> & SimpluxModuleInternals
+  let moduleMock: SimpluxModule<typeof moduleState>
 
   beforeEach(() => {
     moduleState = 0
-    moduleExtensionStateContainer = { mutations: {} } as any
     moduleMock = {
       getState: getModuleStateMock,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
-      name: 'test',
-      extensionStateContainer: moduleExtensionStateContainer,
-      dispatch: dispatchMock,
-      getReducer: undefined!,
+      $simpluxInternals: {
+        name: 'test',
+        mockStateValue: undefined,
+        mutations: {},
+        mutationMocks: {},
+        selectors: {},
+        dispatch: dispatchMock,
+        getReducer: undefined!,
+      },
     }
 
     jest.clearAllMocks()
@@ -47,7 +46,7 @@ describe('mutations', () => {
 
     incrementBy(5)
 
-    expect(dispatchMock).toHaveBeenCalledWith(incrementBy.asActionCreator(5))
+    expect(dispatchMock).toHaveBeenCalledWith(incrementBy.asAction(5))
   })
 
   it('can be mocked', () => {
@@ -85,7 +84,7 @@ describe('mutations', () => {
       clear()
 
       incrementBy(5)
-      expect(dispatchMock).toHaveBeenCalledWith(incrementBy.asActionCreator(5))
+      expect(dispatchMock).toHaveBeenCalledWith(incrementBy.asAction(5))
       expect(spy).toHaveBeenCalledTimes(1)
     })
 
@@ -108,8 +107,8 @@ describe('mutations', () => {
       increment()
       incrementBy(5)
 
-      expect(dispatchMock).toHaveBeenCalledWith(increment.asActionCreator())
-      expect(dispatchMock).toHaveBeenCalledWith(incrementBy.asActionCreator(5))
+      expect(dispatchMock).toHaveBeenCalledWith(increment.asAction())
+      expect(dispatchMock).toHaveBeenCalledWith(incrementBy.asAction(5))
       expect(spy1).toHaveBeenCalledTimes(1)
       expect(spy2).toHaveBeenCalledTimes(1)
     })
@@ -119,10 +118,15 @@ describe('mutations', () => {
         getState: getModuleStateMock,
         setState: setModuleStateMock,
         subscribeToStateChanges: subscribeToModuleStateChangesMock,
-        name: 'test2',
-        extensionStateContainer: { mutations: {} },
-        dispatch: dispatchMock,
-        getReducer: undefined!,
+        $simpluxInternals: {
+          name: 'test2',
+          mockStateValue: undefined,
+          mutations: {},
+          mutationMocks: {},
+          selectors: {},
+          dispatch: dispatchMock,
+          getReducer: undefined!,
+        },
       }
 
       const { increment, incrementBy } = createMutations(moduleMock, {
@@ -159,13 +163,11 @@ describe('mutations', () => {
       increment2()
       incrementBy2(15)
 
-      expect(dispatchMock).toHaveBeenCalledWith(increment.asActionCreator())
-      expect(dispatchMock).toHaveBeenCalledWith(incrementBy.asActionCreator(5))
+      expect(dispatchMock).toHaveBeenCalledWith(increment.asAction())
+      expect(dispatchMock).toHaveBeenCalledWith(incrementBy.asAction(5))
 
-      expect(dispatchMock).toHaveBeenCalledWith(increment2.asActionCreator())
-      expect(dispatchMock).toHaveBeenCalledWith(
-        incrementBy2.asActionCreator(15),
-      )
+      expect(dispatchMock).toHaveBeenCalledWith(increment2.asAction())
+      expect(dispatchMock).toHaveBeenCalledWith(incrementBy2.asAction(15))
 
       expect(spy1).toHaveBeenCalledTimes(1)
       expect(spy2).toHaveBeenCalledTimes(1)

@@ -152,12 +152,12 @@ describe(`@simplux/testing`, () => {
       mockMutation(addTodo, addTodoSpy)
 
       expect(addTodo.withState).toBeDefined()
-      expect(addTodo.withState(todoStoreWithTodo1)(todo2)).toEqual(
+      expect(addTodo.withState(todoStoreWithTodo1, todo2)).toEqual(
         todoStoreWithBothTodos,
       )
 
-      expect(addTodo.asActionCreator).toBeDefined()
-      expect(addTodo.asActionCreator(todo2).args[0]).toBe(todo2)
+      expect(addTodo.asAction).toBeDefined()
+      expect(addTodo.asAction(todo2).args[0]).toBe(todo2)
     })
 
     describe('mocks', () => {
