@@ -23,7 +23,7 @@ import {
 const counterModule = createSimpluxModule({
   name: 'counter',
   initialState: {
-    counter: 0,
+    value: 0,
   },
 })
 
@@ -33,17 +33,17 @@ export const counter = {
   // use mutations to modify the state
   ...createMutations(counterModule, {
     increment: state => {
-      state.counter += 1
+      state.value += 1
     },
     incrementBy: (state, amount: number) => {
-      state.counter += amount
+      state.value += amount
     },
   }),
 
   // use selectors to access the state
   ...createSelectors(counterModule, {
     value: state => state.value,
-    plus: (state, amount: number) => state + amount,
+    plus: (state, amount: number) => state.value + amount,
   }),
 }
 
