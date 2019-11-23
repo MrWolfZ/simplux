@@ -14,7 +14,7 @@ import { registerMockCleanupFunction } from './cleanup'
 export function mockEffect<TEffect extends Function>(
   effectToMock: TEffect,
   mockFn: TEffect,
-) {
+): [TEffect, () => void] {
   const mockDefinitions = getMockDefinitionsInternal()
 
   removeMock(mockDefinitions, effectToMock)
@@ -31,7 +31,7 @@ export function mockEffect<TEffect extends Function>(
 
   const clearCleanup = registerMockCleanupFunction(cleanup)
 
-  return cleanup
+  return [mockFn, cleanup]
 }
 
 function removeMock<TEffect extends Function>(

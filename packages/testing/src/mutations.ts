@@ -5,7 +5,11 @@ function setupMutationMock<
   TState,
   TArgs extends any[],
   TMock extends (...args: TArgs) => TState
->(owningModule: SimpluxModule<TState>, mutationName: string, mockFn: TMock) {
+>(
+  owningModule: SimpluxModule<TState>,
+  mutationName: string,
+  mockFn: TMock,
+): [TMock, () => void] {
   const cleanup = () => {
     delete owningModule.$simpluxInternals.mutationMocks[mutationName]
     clearCleanup()
@@ -15,7 +19,7 @@ function setupMutationMock<
 
   owningModule.$simpluxInternals.mutationMocks[mutationName] = mockFn as any
 
-  return cleanup
+  return [mockFn, cleanup]
 }
 
 /**

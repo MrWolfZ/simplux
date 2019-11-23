@@ -55,11 +55,15 @@ describe('mutations', () => {
       incrementBy: (c, amount: number) => c + amount,
     })
 
-    const incrementSpy = jest.fn().mockReturnValue(10)
-    mockMutation(increment, incrementSpy)
+    const [incrementSpy] = mockMutation(
+      increment,
+      jest.fn().mockReturnValue(10),
+    )
 
-    const incrementBySpy = jest.fn().mockReturnValue(20)
-    mockMutation(incrementBy, incrementBySpy)
+    const [incrementBySpy] = mockMutation(
+      incrementBy,
+      jest.fn().mockReturnValue(20),
+    )
 
     const incrementReturnValue = increment()
     expect(incrementSpy).toHaveBeenCalled()
@@ -76,8 +80,7 @@ describe('mutations', () => {
         incrementBy: (c, amount: number) => c + amount,
       })
 
-      const spy = jest.fn()
-      const clear = mockMutation(incrementBy, spy)
+      const [spy, clear] = mockMutation(incrementBy, jest.fn())
 
       incrementBy(10)
 
@@ -94,10 +97,8 @@ describe('mutations', () => {
         incrementBy: (c, amount: number) => c + amount,
       })
 
-      const spy1 = jest.fn()
-      mockMutation(increment, spy1)
-      const spy2 = jest.fn()
-      mockMutation(incrementBy, spy2)
+      const [spy1] = mockMutation(increment, jest.fn())
+      const [spy2] = mockMutation(incrementBy, jest.fn())
 
       increment()
       incrementBy(10)
@@ -142,14 +143,10 @@ describe('mutations', () => {
         incrementBy: (c, amount: number) => c + amount,
       })
 
-      const spy1 = jest.fn()
-      mockMutation(increment, spy1)
-      const spy2 = jest.fn()
-      mockMutation(incrementBy, spy2)
-      const spy3 = jest.fn()
-      mockMutation(increment2, spy3)
-      const spy4 = jest.fn()
-      mockMutation(incrementBy2, spy4)
+      const [spy1] = mockMutation(increment, jest.fn())
+      const [spy2] = mockMutation(incrementBy, jest.fn())
+      const [spy3] = mockMutation(increment2, jest.fn())
+      const [spy4] = mockMutation(incrementBy2, jest.fn())
 
       increment()
       incrementBy(10)

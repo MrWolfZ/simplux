@@ -131,11 +131,15 @@ describe(`@simplux/testing`, () => {
     })
 
     it('can be mocked', () => {
-      const addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
-      mockMutation(addTodo, addTodoSpy)
+      const [addTodoSpy] = mockMutation(
+        addTodo,
+        jest.fn().mockReturnValue(todoStoreWithTodo1),
+      )
 
-      const addTodoSpy2 = jest.fn().mockReturnValue(todoStoreWithTodo2)
-      mockMutation(addTodo2, addTodoSpy2)
+      const [addTodoSpy2] = mockMutation(
+        addTodo2,
+        jest.fn().mockReturnValue(todoStoreWithTodo2),
+      )
 
       const mockedReturnValue = addTodo(todo2)
       const mockedReturnValue2 = addTodo2(todo1)
@@ -148,8 +152,7 @@ describe(`@simplux/testing`, () => {
     })
 
     it('extras can be called as normal when state is mocked', () => {
-      const addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
-      mockMutation(addTodo, addTodoSpy)
+      mockMutation(addTodo, jest.fn().mockReturnValue(todoStoreWithTodo1))
 
       expect(addTodo.withState).toBeDefined()
       expect(addTodo.withState(todoStoreWithTodo1, todo2)).toEqual(
@@ -162,8 +165,10 @@ describe(`@simplux/testing`, () => {
 
     describe('mocks', () => {
       it('can be cleared', () => {
-        const addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
-        const clear = mockMutation(addTodo, addTodoSpy)
+        const [addTodoSpy, clear] = mockMutation(
+          addTodo,
+          jest.fn().mockReturnValue(todoStoreWithTodo1),
+        )
 
         addTodo(todo2)
 
@@ -176,11 +181,15 @@ describe(`@simplux/testing`, () => {
       })
 
       it('can be removed all at once', () => {
-        const addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
-        mockMutation(addTodo, addTodoSpy)
+        const [addTodoSpy] = mockMutation(
+          addTodo,
+          jest.fn().mockReturnValue(todoStoreWithTodo1),
+        )
 
-        const addTodoSpy2 = jest.fn().mockReturnValue(todoStoreWithTodo2)
-        mockMutation(addTodo2, addTodoSpy2)
+        const [addTodoSpy2] = mockMutation(
+          addTodo2,
+          jest.fn().mockReturnValue(todoStoreWithTodo2),
+        )
 
         addTodo(todo2)
         addTodo2(todo1)
@@ -215,11 +224,15 @@ describe(`@simplux/testing`, () => {
           },
         })
 
-        const addTodoSpy = jest.fn().mockReturnValue(todoStoreWithTodo1)
-        mockMutation(addTodo, addTodoSpy)
+        const [addTodoSpy] = mockMutation(
+          addTodo,
+          jest.fn().mockReturnValue(todoStoreWithTodo1),
+        )
 
-        const addTodoSpy3 = jest.fn().mockReturnValue(todoStoreWithTodo2)
-        mockMutation(addTodo3, addTodoSpy3)
+        const [addTodoSpy3] = mockMutation(
+          addTodo3,
+          jest.fn().mockReturnValue(todoStoreWithTodo2),
+        )
 
         addTodo(todo2)
         addTodo3(todo1)

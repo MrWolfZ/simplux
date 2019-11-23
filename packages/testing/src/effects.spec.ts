@@ -14,9 +14,8 @@ describe(mockEffect.name, () => {
     describe(`mock`, () => {
       it('is called if defined', () => {
         const spy = jest.fn()
-        const mockSpy = jest.fn()
         const effect = createEffect(spy)
-        mockEffect(effect, mockSpy)
+        const [mockSpy] = mockEffect(effect, jest.fn())
         effect('foo', 1)
         expect(spy).not.toHaveBeenCalled()
         expect(mockSpy).toHaveBeenCalledWith('foo', 1)
@@ -24,9 +23,8 @@ describe(mockEffect.name, () => {
 
       it('can be removed', () => {
         const spy = jest.fn()
-        const mockSpy = jest.fn()
         const effect = createEffect(spy)
-        const clearMock = mockEffect(effect, mockSpy)
+        const [mockSpy, clearMock] = mockEffect(effect, jest.fn())
         effect()
         expect(spy).not.toHaveBeenCalled()
         expect(mockSpy).toHaveBeenCalled()
@@ -38,12 +36,10 @@ describe(mockEffect.name, () => {
 
       it('can be removed all at once', () => {
         const spy = jest.fn()
-        const mockSpy1 = jest.fn()
-        const mockSpy2 = jest.fn()
         const effect1 = createEffect(spy)
         const effect2 = createEffect(spy)
-        mockEffect(effect1, mockSpy1)
-        mockEffect(effect2, mockSpy2)
+        const [mockSpy1] = mockEffect(effect1, jest.fn())
+        const [mockSpy2] = mockEffect(effect2, jest.fn())
         effect1()
         effect2()
         expect(mockSpy1).toHaveBeenCalledTimes(1)
@@ -57,12 +53,10 @@ describe(mockEffect.name, () => {
 
       it('can safely be removed twice', () => {
         const spy = jest.fn()
-        const mockSpy1 = jest.fn()
-        const mockSpy2 = jest.fn()
         const effect1 = createEffect(spy)
         const effect2 = createEffect(spy)
-        const clearMock = mockEffect(effect1, mockSpy1)
-        mockEffect(effect2, mockSpy2)
+        const [mockSpy1, clearMock] = mockEffect(effect1, jest.fn())
+        const [mockSpy2] = mockEffect(effect2, jest.fn())
         effect1()
         effect2()
         expect(mockSpy1).toHaveBeenCalledTimes(1)
@@ -80,11 +74,9 @@ describe(mockEffect.name, () => {
   describe(`creating mocks`, () => {
     it('overwrites existing mock', () => {
       const spy = jest.fn()
-      const mockSpy1 = jest.fn()
-      const mockSpy2 = jest.fn()
       const effect = createEffect(spy)
-      mockEffect(effect, mockSpy1)
-      const clearMock = mockEffect(effect, mockSpy2)
+      const [mockSpy1] = mockEffect(effect, jest.fn())
+      const [mockSpy2, clearMock] = mockEffect(effect, jest.fn())
       effect()
       expect(spy).not.toHaveBeenCalled()
       expect(mockSpy1).not.toHaveBeenCalled()
