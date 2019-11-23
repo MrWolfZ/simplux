@@ -70,15 +70,19 @@ describe(`@simplux/react`, () => {
       },
     })
 
-    const { getTodos, getTodoIds, getNrOfTodos, getById } = createSelectors(
-      todosModule,
-      {
-        getTodos: s => s,
-        getTodoIds: s => s.todoIds,
-        getNrOfTodos: s => Object.keys(s.todosById).length,
-        getById: (state, id: string) => state.todosById[id],
-      },
-    )
+    const {
+      getTodos,
+      getTodoIds,
+      getNrOfTodos,
+      getById,
+      getTodoIdsFromKeys,
+    } = createSelectors(todosModule, {
+      getTodos: s => s,
+      getTodoIds: s => s.todoIds,
+      getNrOfTodos: s => Object.keys(s.todosById).length,
+      getById: (state, id: string) => state.todosById[id],
+      getTodoIdsFromKeys: s => Object.keys(s.todosById),
+    })
 
     let unmounts: (() => void)[] = []
 
@@ -104,13 +108,17 @@ describe(`@simplux/react`, () => {
       const { result: todoResult, unmount: unmount4 } = renderHook(() =>
         useSimplux(getById, '1'),
       )
+      const { result: todoIdsFromKeys, unmount: unmount5 } = renderHook(() =>
+        useSimplux(getTodoIdsFromKeys),
+      )
 
-      unmounts.push(unmount1, unmount2, unmount3, unmount4)
+      unmounts.push(unmount1, unmount2, unmount3, unmount4, unmount5)
 
       expect(state.current).toBe(todoStoreWithOneTodo)
       expect(todoIds.current).toBe(todoStoreWithOneTodo.todoIds)
       expect(nrOfTodos.current).toBe(1)
       expect(todoResult.current).toBe(todo1)
+      expect(todoIdsFromKeys.current).toEqual(todoStoreWithOneTodo.todoIds)
     })
 
     it('re-renders when the state changes', () => {
@@ -126,8 +134,11 @@ describe(`@simplux/react`, () => {
       const { result: todoResult, unmount: unmount4 } = renderHook(() =>
         useSimplux(getById, '1'),
       )
+      const { result: todoIdsFromKeys, unmount: unmount5 } = renderHook(() =>
+        useSimplux(getTodoIdsFromKeys),
+      )
 
-      unmounts.push(unmount1, unmount2, unmount3, unmount4)
+      unmounts.push(unmount1, unmount2, unmount3, unmount4, unmount5)
 
       actHook(() => {
         addTodo(todo2)
@@ -137,6 +148,7 @@ describe(`@simplux/react`, () => {
       expect(todoIds.current).toEqual(todoStoreWithTwoTodos.todoIds)
       expect(nrOfTodos.current).toBe(2)
       expect(todoResult.current).toBe(todo1)
+      expect(todoIdsFromKeys.current).toEqual(todoStoreWithTwoTodos.todoIds)
 
       actHook(() => {
         removeTodo(todo2.id)
@@ -146,6 +158,7 @@ describe(`@simplux/react`, () => {
       expect(todoIds.current).toEqual(todoStoreWithOneTodo.todoIds)
       expect(nrOfTodos.current).toBe(1)
       expect(todoResult.current).toBe(todo1)
+      expect(todoIdsFromKeys.current).toEqual(todoStoreWithOneTodo.todoIds)
     })
 
     it('renders initially with the mocked module state if set', () => {
@@ -163,13 +176,17 @@ describe(`@simplux/react`, () => {
       const { result: todoResult, unmount: unmount4 } = renderHook(() =>
         useSimplux(getById, '2'),
       )
+      const { result: todoIdsFromKeys, unmount: unmount5 } = renderHook(() =>
+        useSimplux(getTodoIdsFromKeys),
+      )
 
-      unmounts.push(unmount1, unmount2, unmount3, unmount4)
+      unmounts.push(unmount1, unmount2, unmount3, unmount4, unmount5)
 
       expect(state.current).toBe(todoStoreWithTwoTodos)
       expect(todoIds.current).toBe(todoStoreWithTwoTodos.todoIds)
       expect(nrOfTodos.current).toBe(2)
       expect(todoResult.current).toBe(todo2)
+      expect(todoIdsFromKeys.current).toEqual(todoStoreWithTwoTodos.todoIds)
     })
 
     it('renders initially with the module state with Provider', () => {
@@ -180,7 +197,14 @@ describe(`@simplux/react`, () => {
         const todoIds = useSimplux(getTodoIds)
         const nrOfTodos = useSimplux(getNrOfTodos)
         const todoResult = useSimplux(getById, '1')
-        renderedItems.push(state, todoIds, nrOfTodos, todoResult)
+        const todoIdsFromKeys = useSimplux(getTodoIdsFromKeys)
+        renderedItems.push(
+          state,
+          todoIds,
+          nrOfTodos,
+          todoResult,
+          todoIdsFromKeys,
+        )
         return <div>{nrOfTodos}</div>
       }
 
@@ -196,6 +220,7 @@ describe(`@simplux/react`, () => {
         todoStoreWithOneTodo.todoIds,
         1,
         todo1,
+        todoStoreWithOneTodo.todoIds,
       ])
     })
 
@@ -207,7 +232,14 @@ describe(`@simplux/react`, () => {
         const todoIds = useSimplux(getTodoIds)
         const nrOfTodos = useSimplux(getNrOfTodos)
         const todoResult = useSimplux(getById, '1')
-        renderedItems.push(state, todoIds, nrOfTodos, todoResult)
+        const todoIdsFromKeys = useSimplux(getTodoIdsFromKeys)
+        renderedItems.push(
+          state,
+          todoIds,
+          nrOfTodos,
+          todoResult,
+          todoIdsFromKeys,
+        )
         return <div>{nrOfTodos}</div>
       }
 
@@ -223,6 +255,7 @@ describe(`@simplux/react`, () => {
         todoStoreWithOneTodo.todoIds,
         1,
         todo1,
+        todoStoreWithOneTodo.todoIds,
       ])
 
       addTodo(todo2)
@@ -232,10 +265,12 @@ describe(`@simplux/react`, () => {
         todoStoreWithOneTodo.todoIds,
         1,
         todo1,
+        todoStoreWithOneTodo.todoIds,
         todoStoreWithTwoTodos,
         todoStoreWithTwoTodos.todoIds,
         2,
         todo1,
+        todoStoreWithTwoTodos.todoIds,
       ])
 
       removeTodo(todo2.id)
@@ -245,14 +280,17 @@ describe(`@simplux/react`, () => {
         todoStoreWithOneTodo.todoIds,
         1,
         todo1,
+        todoStoreWithOneTodo.todoIds,
         todoStoreWithTwoTodos,
         todoStoreWithTwoTodos.todoIds,
         2,
         todo1,
+        todoStoreWithTwoTodos.todoIds,
         todoStoreWithOneTodo,
         todoStoreWithOneTodo.todoIds,
         1,
         todo1,
+        todoStoreWithOneTodo.todoIds,
       ])
     })
 
@@ -266,7 +304,14 @@ describe(`@simplux/react`, () => {
         const todoIds = useSimplux(getTodoIds)
         const nrOfTodos = useSimplux(getNrOfTodos)
         const todoResult = useSimplux(getById, '2')
-        renderedItems.push(state, todoIds, nrOfTodos, todoResult)
+        const todoIdsFromKeys = useSimplux(getTodoIdsFromKeys)
+        renderedItems.push(
+          state,
+          todoIds,
+          nrOfTodos,
+          todoResult,
+          todoIdsFromKeys,
+        )
         return <div>{nrOfTodos}</div>
       }
 
@@ -282,6 +327,7 @@ describe(`@simplux/react`, () => {
         todoStoreWithTwoTodos.todoIds,
         2,
         todo2,
+        todoStoreWithTwoTodos.todoIds,
       ])
     })
 

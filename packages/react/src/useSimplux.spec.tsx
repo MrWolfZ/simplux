@@ -373,6 +373,32 @@ describe(useSimplux.name, () => {
 
       expect(renderCount).toBe(1)
     })
+
+    it('memoizes the selector result', () => {
+      let renderCount = 0
+      let selectorCallCount = 0
+      const selector = createSelector(() => {
+        selectorCallCount += 1
+        return {}
+      })
+
+      const Comp = () => {
+        useSimplux(selector)
+        renderCount += 1
+        return <div />
+      }
+
+      render(<Comp />)
+
+      renderCount = 0
+
+      act(() => {
+        subscriber(getModuleStateMock())
+      })
+
+      expect(selectorCallCount).toBe(1)
+      expect(renderCount).toBe(0)
+    })
   })
 
   describe('mocking', () => {

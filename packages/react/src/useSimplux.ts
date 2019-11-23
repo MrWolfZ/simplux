@@ -1,5 +1,5 @@
 import { SimpluxSelector } from '@simplux/core'
-import { useEffect, useReducer } from 'react'
+import { useEffect, useMemo, useReducer } from 'react'
 import { useSimpluxContext } from './context'
 
 /**
@@ -20,15 +20,32 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
 
   const context = useSimpluxContext()
 
-  const selectedState = selector.withState(
+  const memoizingSelector = useMemo(() => {
+    let memoizedState: TState | undefined
+    let memoizedResult: TResult | undefined
+
+    return (state: TState) => {
+      if (state === memoizedState) {
+        return memoizedResult!
+      }
+
+      const result = selector.withState(state, ...args)
+
+      memoizedState = state
+      memoizedResult = result
+
+      return result
+    }
+  }, [selector, ...args])
+
+  const selectedState = memoizingSelector(
     context.getModuleState(selector.owningModule),
-    ...args,
   )
 
   useEffect(() => {
     function checkForUpdates(state: TState) {
       try {
-        const newSelectedState = selector.withState(state, ...args)
+        const newSelectedState = memoizingSelector(state)
 
         if (newSelectedState === selectedState) {
           return
@@ -47,7 +64,7 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
       selector.owningModule,
       checkForUpdates,
     )
-  }, [selectedState, selector, ...args])
+  }, [selectedState, memoizingSelector])
 
   return selectedState
 }
