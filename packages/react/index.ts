@@ -1,7 +1,2 @@
-export {
-  createSelectorHook,
-  SimpluxModuleSelectorHook,
-  SimpluxModuleSelectorHookExtras,
-  SimpluxModuleSelectorHookInternals,
-  SimpluxModuleSelectorHookWithExtras,
-} from './src/useModuleSelector'
+export { SimpluxProvider } from './src/context'
+export { useSimplux } from './src/useSimplux'

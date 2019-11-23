@@ -5,7 +5,7 @@ import {
   createSelectors,
   createSimpluxModule,
 } from '@simplux/core'
-import { createSelectorHook } from '@simplux/react'
+import { SimpluxProvider, useSimplux } from '@simplux/react'
 import { clearAllSimpluxMocks, mockModuleState } from '@simplux/testing'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import React from 'react'
@@ -39,7 +39,7 @@ describe(`@simplux/react`, () => {
     todoIds: ['1', '2'],
   }
 
-  describe('selector hook', () => {
+  describe('useSimplux', () => {
     const todosModule = createSimpluxModule({
       name: 'todos',
       initialState: todoStoreWithOneTodo,
@@ -70,6 +70,16 @@ describe(`@simplux/react`, () => {
       },
     })
 
+    const { getTodos, getTodoIds, getNrOfTodos, getById } = createSelectors(
+      todosModule,
+      {
+        getTodos: s => s,
+        getTodoIds: s => s.todoIds,
+        getNrOfTodos: s => Object.keys(s.todosById).length,
+        getById: (state, id: string) => state.todosById[id],
+      },
+    )
+
     let unmounts: (() => void)[] = []
 
     beforeEach(() => {
@@ -82,39 +92,42 @@ describe(`@simplux/react`, () => {
     })
 
     it('renders initially with the module state', () => {
-      const useSelector = createSelectorHook(todosModule)
-
       const { result: state, unmount: unmount1 } = renderHook(() =>
-        useSelector(s => s),
+        useSimplux(getTodos),
       )
       const { result: todoIds, unmount: unmount2 } = renderHook(() =>
-        useSelector(state => state.todoIds),
+        useSimplux(getTodoIds),
       )
       const { result: nrOfTodos, unmount: unmount3 } = renderHook(() =>
-        useSelector(state => Object.keys(state.todosById).length),
+        useSimplux(getNrOfTodos),
+      )
+      const { result: todoResult, unmount: unmount4 } = renderHook(() =>
+        useSimplux(getById, '1'),
       )
 
-      unmounts.push(unmount1, unmount2, unmount3)
+      unmounts.push(unmount1, unmount2, unmount3, unmount4)
 
       expect(state.current).toBe(todoStoreWithOneTodo)
       expect(todoIds.current).toBe(todoStoreWithOneTodo.todoIds)
       expect(nrOfTodos.current).toBe(1)
+      expect(todoResult.current).toBe(todo1)
     })
 
     it('re-renders when the state changes', () => {
-      const useSelector = createSelectorHook(todosModule)
-
       const { result: state, unmount: unmount1 } = renderHook(() =>
-        useSelector(s => s),
+        useSimplux(getTodos),
       )
       const { result: todoIds, unmount: unmount2 } = renderHook(() =>
-        useSelector(state => state.todoIds),
+        useSimplux(getTodoIds),
       )
       const { result: nrOfTodos, unmount: unmount3 } = renderHook(() =>
-        useSelector(state => Object.keys(state.todosById).length),
+        useSimplux(getNrOfTodos),
+      )
+      const { result: todoResult, unmount: unmount4 } = renderHook(() =>
+        useSimplux(getById, '1'),
       )
 
-      unmounts.push(unmount1, unmount2, unmount3)
+      unmounts.push(unmount1, unmount2, unmount3, unmount4)
 
       actHook(() => {
         addTodo(todo2)
@@ -123,6 +136,7 @@ describe(`@simplux/react`, () => {
       expect(state.current).toEqual(todoStoreWithTwoTodos)
       expect(todoIds.current).toEqual(todoStoreWithTwoTodos.todoIds)
       expect(nrOfTodos.current).toBe(2)
+      expect(todoResult.current).toBe(todo1)
 
       actHook(() => {
         removeTodo(todo2.id)
@@ -131,57 +145,181 @@ describe(`@simplux/react`, () => {
       expect(state.current).toEqual(todoStoreWithOneTodo)
       expect(todoIds.current).toEqual(todoStoreWithOneTodo.todoIds)
       expect(nrOfTodos.current).toBe(1)
+      expect(todoResult.current).toBe(todo1)
     })
 
     it('renders initially with the mocked module state if set', () => {
-      const useSelector = createSelectorHook(todosModule)
-
       mockModuleState(todosModule, todoStoreWithTwoTodos)
 
       const { result: state, unmount: unmount1 } = renderHook(() =>
-        useSelector(s => s),
+        useSimplux(getTodos),
       )
       const { result: todoIds, unmount: unmount2 } = renderHook(() =>
-        useSelector(state => state.todoIds),
+        useSimplux(getTodoIds),
       )
       const { result: nrOfTodos, unmount: unmount3 } = renderHook(() =>
-        useSelector(state => Object.keys(state.todosById).length),
+        useSimplux(getNrOfTodos),
+      )
+      const { result: todoResult, unmount: unmount4 } = renderHook(() =>
+        useSimplux(getById, '2'),
       )
 
-      unmounts.push(unmount1, unmount2, unmount3)
+      unmounts.push(unmount1, unmount2, unmount3, unmount4)
 
       expect(state.current).toBe(todoStoreWithTwoTodos)
       expect(todoIds.current).toBe(todoStoreWithTwoTodos.todoIds)
       expect(nrOfTodos.current).toBe(2)
+      expect(todoResult.current).toBe(todo2)
     })
 
-    it('uses batching for notifying subscribers', () => {
+    it('renders initially with the module state with Provider', () => {
+      const renderedItems: any[] = []
+
+      const Comp = () => {
+        const state = useSimplux(getTodos)
+        const todoIds = useSimplux(getTodoIds)
+        const nrOfTodos = useSimplux(getNrOfTodos)
+        const todoResult = useSimplux(getById, '1')
+        renderedItems.push(state, todoIds, nrOfTodos, todoResult)
+        return <div>{nrOfTodos}</div>
+      }
+
+      render(
+        // tslint:disable-next-line: jsx-wrap-multiline
+        <SimpluxProvider>
+          <Comp />
+        </SimpluxProvider>,
+      )
+
+      expect(renderedItems).toEqual([
+        todoStoreWithOneTodo,
+        todoStoreWithOneTodo.todoIds,
+        1,
+        todo1,
+      ])
+    })
+
+    it('re-renders when the state changes with Provider', () => {
+      const renderedItems: any[] = []
+
+      const Comp = () => {
+        const state = useSimplux(getTodos)
+        const todoIds = useSimplux(getTodoIds)
+        const nrOfTodos = useSimplux(getNrOfTodos)
+        const todoResult = useSimplux(getById, '1')
+        renderedItems.push(state, todoIds, nrOfTodos, todoResult)
+        return <div>{nrOfTodos}</div>
+      }
+
+      render(
+        // tslint:disable-next-line: jsx-wrap-multiline
+        <SimpluxProvider>
+          <Comp />
+        </SimpluxProvider>,
+      )
+
+      expect(renderedItems).toEqual([
+        todoStoreWithOneTodo,
+        todoStoreWithOneTodo.todoIds,
+        1,
+        todo1,
+      ])
+
+      addTodo(todo2)
+
+      expect(renderedItems).toEqual([
+        todoStoreWithOneTodo,
+        todoStoreWithOneTodo.todoIds,
+        1,
+        todo1,
+        todoStoreWithTwoTodos,
+        todoStoreWithTwoTodos.todoIds,
+        2,
+        todo1,
+      ])
+
+      removeTodo(todo2.id)
+
+      expect(renderedItems).toEqual([
+        todoStoreWithOneTodo,
+        todoStoreWithOneTodo.todoIds,
+        1,
+        todo1,
+        todoStoreWithTwoTodos,
+        todoStoreWithTwoTodos.todoIds,
+        2,
+        todo1,
+        todoStoreWithOneTodo,
+        todoStoreWithOneTodo.todoIds,
+        1,
+        todo1,
+      ])
+    })
+
+    it('renders initially with a mocked module state with Provider', () => {
+      mockModuleState(todosModule, todoStoreWithTwoTodos)
+
+      const renderedItems: any[] = []
+
+      const Comp = () => {
+        const state = useSimplux(getTodos)
+        const todoIds = useSimplux(getTodoIds)
+        const nrOfTodos = useSimplux(getNrOfTodos)
+        const todoResult = useSimplux(getById, '2')
+        renderedItems.push(state, todoIds, nrOfTodos, todoResult)
+        return <div>{nrOfTodos}</div>
+      }
+
+      render(
+        // tslint:disable-next-line: jsx-wrap-multiline
+        <SimpluxProvider>
+          <Comp />
+        </SimpluxProvider>,
+      )
+
+      expect(renderedItems).toEqual([
+        todoStoreWithTwoTodos,
+        todoStoreWithTwoTodos.todoIds,
+        2,
+        todo2,
+      ])
+    })
+
+    it('uses batching for notifying subscribers with Provider', () => {
       const batchingModule = createSimpluxModule({
         name: 'batching',
         initialState: 0,
       })
 
-      const useSelector = createSelectorHook(batchingModule)
-
       const { increment } = createMutations(batchingModule, {
         increment: c => c + 1,
+      })
+
+      const { plus10, plus20 } = createSelectors(batchingModule, {
+        plus10: c => c + 10,
+        plus20: c => c + 20,
       })
 
       const renderedItems: number[] = []
 
       const Parent = () => {
-        const result = useSelector(c => c + 10)
+        const result = useSimplux(plus10)
         renderedItems.push(result)
         return <Child />
       }
 
       const Child = () => {
-        const result = useSelector(c => c + 20)
+        const result = useSimplux(plus20)
         renderedItems.push(result)
         return <div>{result}</div>
       }
 
-      render(<Parent />)
+      render(
+        // tslint:disable-next-line: jsx-wrap-multiline
+        <SimpluxProvider>
+          <Parent />
+        </SimpluxProvider>,
+      )
 
       act(() => {
         increment()
@@ -201,28 +339,6 @@ describe(`@simplux/react`, () => {
       spy.mockRestore()
 
       expect(renderedItems).toEqual([10, 20, 12, 22, 13, 23, 14, 24])
-    })
-
-    it('works with simplux selectors', () => {
-      const useSelector = createSelectorHook(todosModule)
-
-      const { getIds, getById } = createSelectors(todosModule, {
-        getIds: state => state.todoIds,
-        getById: (state, id: string) => state.todosById[id],
-      })
-
-      const { result: todoIds, unmount: unmount1 } = renderHook(() =>
-        useSelector(getIds.withState),
-      )
-
-      const { result: todo, unmount: unmount2 } = renderHook(() =>
-        useSelector(s => getById.withState(s, '1')),
-      )
-
-      unmounts.push(unmount1, unmount2)
-
-      expect(todoIds.current).toBe(todoStoreWithOneTodo.todoIds)
-      expect(todo.current).toBe(todo1)
     })
   })
 
