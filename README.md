@@ -1,6 +1,6 @@
 # simplux - simple, scalable state management for web applications
 
-**simplux** is state management as it should be: simple to use, no boilerplate, type-safe but not verbose, and with excellent testability. **simplux** provides out-of-the-box support for [React](https://reactjs.org/) and [Angular](https://angular.io/), but can be used with virtually any framework.
+**simplux** is state management as it should be: simple to use, no boilerplate, type-safe but not verbose, and with excellent testability. **simplux** provides out-of-the-box support for [React](https://reactjs.org/) and [Angular](https://angular.io/), but can be used with any framework.
 
 [![npm version](https://badge.fury.io/js/%40simplux%2Fcore.svg)](https://www.npmjs.com/package/@simplux/core)
 [![Build Status](https://travis-ci.org/MrWolfZ/simplux.svg?branch=master)](https://travis-ci.org/MrWolfZ/simplux)
@@ -57,6 +57,8 @@ counter.incrementBy(5)
 console.log('incremented counter by 5:', counter.value())
 ```
 
+See the recipe for [getting started](recipes/basics/getting-started#readme) for a more detailed look into how **simplux** can make your life simple.
+
 ### React
 
 ```sh
@@ -85,6 +87,8 @@ const Counter = () => {
   )
 }
 ```
+
+See the recipe for [using **simplux** in my React application](recipes/react/using-in-react-application#readme) for a more detailed look into how **simplux** can power up your React application.
 
 ### Angular
 
