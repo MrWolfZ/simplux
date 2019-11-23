@@ -1,6 +1,6 @@
 import { combineReducers, Reducer, Store as ReduxStore } from 'redux'
 
-interface ReduxStoreProxy {
+export interface InternalReduxStoreProxy {
   id: number
   getState: () => any
   dispatch: ReduxStore['dispatch']
@@ -9,7 +9,7 @@ interface ReduxStoreProxy {
 }
 
 let latestReduxStoreId = 0
-let reduxStoreProxy: ReduxStoreProxy | undefined
+let reduxStoreProxy: InternalReduxStoreProxy | undefined
 
 export const simpluxStore = createSimpluxStore(() => {
   if (!reduxStoreProxy) {
@@ -20,6 +20,22 @@ export const simpluxStore = createSimpluxStore(() => {
 
   return reduxStoreProxy
 })
+
+/**
+ * This function is part of the internal simplux API that should only ever
+ * be used by its extension packages.
+ *
+ * @private
+ */
+export function getInternalReduxStoreProxy() {
+  if (!reduxStoreProxy) {
+    throw new Error(
+      'simplux must be initialized with a redux store before it can be used!',
+    )
+  }
+
+  return reduxStoreProxy
+}
 
 export function setReduxStore<TState>(
   storeToUse: ReduxStore<TState>,
@@ -37,7 +53,7 @@ export function setReduxStore<TState>(
   const id = latestReduxStoreId
   latestReduxStoreId += 1
 
-  const subscribers: ReduxStoreProxy['subscribers'] = []
+  const subscribers: InternalReduxStoreProxy['subscribers'] = []
 
   reduxStoreProxy = createReduxStoreProxy(
     storeToUse,
@@ -64,8 +80,8 @@ export function setReduxStore<TState>(
 }
 
 export function transferConfigurationToNewStore(
-  previousStoreProxy: ReduxStoreProxy,
-  newReduxStoreProxy: ReduxStoreProxy,
+  previousStoreProxy: InternalReduxStoreProxy,
+  newReduxStoreProxy: InternalReduxStoreProxy,
 ) {
   for (const subscriber of previousStoreProxy.subscribers) {
     subscriber.unsubscribe()
@@ -77,8 +93,8 @@ export function createReduxStoreProxy<TState>(
   storeToUse: ReduxStore<TState>,
   simpluxStateGetter: (rootState: TState) => any,
   id: number,
-  subscribers: ReduxStoreProxy['subscribers'],
-): ReduxStoreProxy {
+  subscribers: InternalReduxStoreProxy['subscribers'],
+): InternalReduxStoreProxy {
   return {
     id,
     subscribers,
@@ -111,7 +127,7 @@ export interface SimpluxStore {
 }
 
 export function createSimpluxStore(
-  getReduxStoreProxy: () => ReduxStoreProxy,
+  getReduxStoreProxy: () => InternalReduxStoreProxy,
 ): SimpluxStore {
   const reducers: { [name: string]: Reducer } = {}
   let reducer: Reducer | undefined

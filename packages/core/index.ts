@@ -37,7 +37,11 @@ export {
   SelectorDefinitions,
   SimpluxSelector,
 } from './src/selectors'
-export { SimpluxStore } from './src/store'
+export {
+  getInternalReduxStoreProxy,
+  InternalReduxStoreProxy,
+  SimpluxStore,
+} from './src/store'
 
 // tslint:disable: max-line-length (cannot line break the links)
 

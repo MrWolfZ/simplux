@@ -2,6 +2,7 @@ import { combineReducers, createStore } from 'redux'
 import {
   createReduxStoreProxy,
   createSimpluxStore,
+  getInternalReduxStoreProxy,
   setReduxStore,
   simpluxStore,
   transferConfigurationToNewStore,
@@ -15,6 +16,19 @@ describe('store', () => {
       cleanup()
       cleanup = undefined
     }
+  })
+
+  describe(getInternalReduxStoreProxy.name, () => {
+    it(`returns the proxy`, () => {
+      cleanup = setReduxStore(createStore((c: number = 10) => c), s => s)
+      const proxy = getInternalReduxStoreProxy()
+
+      expect(proxy.getState()).toBe(10)
+    })
+
+    it(`throws if proxy is not set`, () => {
+      expect(getInternalReduxStoreProxy).toThrow()
+    })
   })
 
   describe(setReduxStore.name, () => {
