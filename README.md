@@ -14,6 +14,8 @@ npm i @simplux/preset -S
 ```
 
 ```ts
+// counter.ts
+
 import {
   createSimpluxModule,
   createMutations,
@@ -54,6 +56,39 @@ console.log('incremented counter value + 2:', counter.plus(2))
 counter.incrementBy(5)
 console.log('incremented counter by 5:', counter.value())
 ```
+
+### React
+
+```sh
+npm i @simplux/preset-react -S
+```
+
+```tsx
+import { useSimplux } from '@simplux/react'
+import React from 'react'
+import { counter } from './counter'
+
+const Counter = () => {
+  const value = useSimplux(counter.value)
+  const valuePlusFive = useSimplux(counter.plus, 5)
+
+  return (
+    <>
+      <span>value: {value}</span>
+      <br />
+      <span>value + 5: {valuePlusFive}</span>
+      <br />
+      <button onClick={counter.increment}>Increment</button>
+      <br />
+      <button onClick={() => counter.incrementBy(5)}>Increment by 5</button>
+    </>
+  )
+}
+```
+
+### Angular
+
+See the recipe for [using **simplux** in my Angular application](recipes/angular/using-in-angular-application#readme).
 
 ## Recipes
 
@@ -126,9 +161,11 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - core: add multi-modules that maintain a variable set of states
 - core: add memoization to selectors (also mention this briefly in the "derived state" recipe)
 - core: add note to "composing my selectors" recipe about interplay with memoization (e.g. due to in-place sorting)
+- react: add preset
 - react: create overload for `useSimplux` that takes a module and an inline selector
 - react: add tests that verify HMR works
 - react: add tests that verify server-side rendering works
+- angular: add preset
 - entities: create package for managing collections of entities
 - entities: create default set of entity management mutations
 - entities: allow creating custom mutations that act on one entity
