@@ -1,11 +1,59 @@
-# simplux - Redux, but simple
+# simplux - simple, scalable state management for web applications
 
-**simplux** is state management as it should be: simple to use, no boilerplate, type-safe but not verbose - all while giving you the full power of [Redux](https://redux.js.org/).
+**simplux** is state management as it should be: simple to use, no boilerplate, type-safe but not verbose, and with excellent testability. **simplux** provides out-of-the-box support for [React](https://reactjs.org/) and [Angular](https://angular.io/), but can be used with virtually any framework.
 
 [![npm version](https://badge.fury.io/js/%40simplux%2Fcore.svg)](https://www.npmjs.com/package/@simplux/core)
 [![Build Status](https://travis-ci.org/MrWolfZ/simplux.svg?branch=master)](https://travis-ci.org/MrWolfZ/simplux)
 [![codecov](https://codecov.io/gh/MrWolfZ/simplux/branch/master/graph/badge.svg)](https://codecov.io/gh/MrWolfZ/simplux)
 [![license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+## Quickstart
+
+```sh
+npm i @simplux/preset -S
+```
+
+```ts
+import {
+  createSimpluxModule,
+  createMutations,
+  createSelectors,
+} from '@simplux/core'
+
+const counterModule = createSimpluxModule({
+  name: 'counter',
+  initialState: {
+    counter: 0,
+  },
+})
+
+export const counter = {
+  ...counterModule,
+
+  // use mutations to modify the state
+  ...createMutations(counterModule, {
+    increment: state => {
+      state.counter += 1
+    },
+    incrementBy: (state, amount: number) => {
+      state.counter += amount
+    },
+  }),
+
+  // use selectors to access the state
+  ...createSelectors(counterModule, {
+    value: state => state.value,
+    plus: (state, amount: number) => state + amount,
+  }),
+}
+
+counter.increment()
+console.log('incremented counter:', counter.value())
+console.log('incremented counter value + 2:', counter.plus(2))
+
+counter.incrementBy(5)
+console.log('incremented counter by 5:', counter.value())
+```
 
 ## Recipes
 
@@ -57,15 +105,15 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 
 ## Motivation
 
-When discovering this library your first thought may have been: "Are you kidding me, yet another state management library?" That is an absolutely valid thought to have. There are many existing options for managing your state in JavaScript applications. If you are already using one of those and it works for you, then you should probably stick with it. However, **simplux** brings some unique points to the table that make it a worthwhile addition to the state management ecosystem:
+When discovering this library your first thought may have been: "Are you kidding me, yet another state management library?" That sentiment is perfectly understandable. There are many existing options for managing your state in web applications. If you are already using one of those and it works for you, then you should probably stick with it. However, **simplux** brings some unique points to the table that make it a worthwhile addition to the state management ecosystem:
 
 - **excellent task-driven documentation:** a lot of effort went into writing our [recipes](#recipes). While most other libraries have documentation that is centered around explaining _what_ they do, our task-driven documentation is focused on showing you how **simplux** _helps you to solve your concrete tasks_. We also provide code sandboxes for every recipe that allow you to interact with the code while reading the recipe, which greatly improves the learning experience.
 
-- **strong focus on testability:** testing is a very important topic that is sadly often neglected. **simplux** takes testability very seriously and makes sure that you know how you can test the code you have written using it (you may have noticed that the recipe immediately after [getting started](recipes/basics/getting-started#readme) already shows you how you can [test the code](recipes/basics/testing-state-changes#readme) from the first recipe).
+- **strong focus on testability:** testing is a very important topic that is sadly often neglected. **simplux** takes testability very seriously and makes sure that you know how you can test the code you have written using it (you may have noticed that the recipe immediately following [getting started](recipes/basics/getting-started#readme) in the list above already shows you how you can [test the code](recipes/basics/testing-state-changes#readme) from the first recipe).
 
 - **optimized for TypeScript:** **simplux** is built with and for TypeScript. Sometimes TypeScript code can be a bit verbose. We put a lot of effort into ensuring that the amount of type annotations in your code is minimized by leveraging type inference wherever possible. That said **simplux** can also be used with plain JavaScript, in which case your IDE may still use the TypeScript information to help you due to our bundled typings.
 
-- **out of the box solutions for many common yet complex use-cases:** Have you ever tried setting up hot module reloading or code splitting with React and Redux? It can be quite tricky. **simplux** aims to solve as many of these complex use-cases by providing zero-configuration out of the box solutions.
+- **out of the box solutions for many common yet complex use-cases:** Have you ever tried setting up hot module reloading or code splitting with React and Redux? It can be quite tricky. **simplux** aims to solve as many of these complex use-cases by providing zero-configuration out-of-the-box solutions.
 
 - **modular and extensible architecture:** Our core package only contains the bare minimum that is required to use **simplux**. All other advanced functionality is added via extension packages. On one hand this allows you to pick and choose what functionality you want to use without paying for anything that you don't. On the other hand it allows adding new extension packages without risk of breaking any existing functionality.
 
@@ -75,16 +123,19 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
+- core: add multi-modules that maintain a variable set of states
 - core: add memoization to selectors (also mention this briefly in the "derived state" recipe)
 - core: add note to "composing my selectors" recipe about interplay with memoization (e.g. due to in-place sorting)
+- react: create overload for `useSimplux` that takes a module and an inline selector
 - react: add tests that verify HMR works
 - react: add tests that verify server-side rendering works
-- react: verify package works with react-native
 - entities: create package for managing collections of entities
 - entities: create default set of entity management mutations
 - entities: allow creating custom mutations that act on one entity
 - entities: create default set of selectors for entities
 - docs: create website
+- recipes: adjust all recipes to have less focus on redux
+- recipes: add or adjust recipes to show pattern for exporting a module with its mutations, selectors and effects
 - add dtslint tests for all packages
 
 ## Contributing
