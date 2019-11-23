@@ -35,6 +35,15 @@
   "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
   "license": "MIT",
   "devDependencies": {
+    "@angular-devkit/build-angular": "^0.803.4",
+    "@angular/cli": "^8.3.4",
+    "@angular/common": "^8.2.6",
+    "@angular/compiler": "^8.2.6",
+    "@angular/compiler-cli": "^8.2.6",
+    "@angular/core": "^8.2.6",
+    "@angular/language-service": "^8.2.6",
+    "@angular/platform-browser": "^8.2.6",
+    "@angular/platform-browser-dynamic": "^8.2.6",
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
     "@testing-library/react": "^9.3.2",
@@ -53,6 +62,7 @@
     "@types/webpack-chain": "^5.2.0",
     "@types/webpack-env": "^1.13.9",
     "codecov": "^3.5.0",
+    "core-js": "^3.1.4",
     "glob": "^7.1.4",
     "husky": "^2.3.0",
     "immer": "^5.0.0",
@@ -68,14 +78,18 @@
     "redux": "^4.0.1",
     "rollup": "^1.13.1",
     "rollup-plugin-node-resolve": "^4.2.4",
+    "rxjs": "^6.5.2",
     "shelljs": "^0.8.3",
     "sorcery": "^0.10.0",
     "staged-git-files": "^1.2.0",
     "ts-jest": "^24.0.2",
+    "ts-node": "~7.0.0",
+    "tslib": "^1.9.0",
     "tslint": "^5.17.0",
     "tslint-react": "^4.0.0",
     "typescript": "^3.7.2",
     "uglifyjs": "^2.4.11",
-    "yargs": "^13.2.4"
+    "yargs": "^13.2.4",
+    "zone.js": "~0.9.1"
   }
 }
