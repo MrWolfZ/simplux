@@ -6,7 +6,7 @@ import { createSelectors, createSimpluxModule } from '@simplux/core'
 const counterModule = createSimpluxModule({
   name: 'counter',
   initialState: {
-    counter: 10,
+    value: 10,
   },
 })
 
@@ -16,24 +16,21 @@ const counterModule = createSimpluxModule({
 // value
 const { plusOne, plus } = createSelectors(counterModule, {
   // we can have selectors that only use the state
-  plusOne: ({ counter }) => counter + 1,
+  plusOne: ({ value }) => value + 1,
 
   // but they can also have arguments
-  plus: ({ counter }, amount: number) => counter + amount,
+  plus: ({ value }, amount: number) => value + amount,
 })
 
-// by default, a selector needs to be provided with the state and
-// any additional arguments it requires
-console.log(`20 + 1:`, plusOne({ counter: 20 }))
-console.log(`20 + 5:`, plus({ counter: 20 }, 5))
-console.log(`state + 10:`, plus(counterModule.getState(), 10))
+// by default, a selector is evaluated with the module's latest state
+console.log(`state + 1:`, plusOne()) // prints 11
+console.log(`state + 5:`, plus(5)) // prints 15
 
-// but you can also call it bound to the module's latest state
-console.log(`state + 1:`, plusOne.withLatestModuleState())
-console.log(`state + 5:`, plus.withLatestModuleState(5))
+// but you can also call a selector with a specific state
+console.log(`20 + 1:`, plusOne.withState({ value: 20 })) // prints 21
+console.log(`20 + 5:`, plus.withState({ value: 20 }, 5)) // prints 25
 
 // when the module's state is changed, the selector will get
-// called with the changed state
-const plusLatest = plus.withLatestModuleState
-counterModule.setState({ counter: 50 })
-console.log(`changed state + 5:`, plusLatest(5))
+// evaluated with the changed state
+counterModule.setState({ value: 50 })
+console.log(`changed state + 5:`, plus(5))
