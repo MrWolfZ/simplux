@@ -26,17 +26,17 @@
   "private": true,
   "dependencies": {
     "@simplux/preset-react": "0.10.0-alpha.0",
+    "@testing-library/react": "^9.3.2",
+    "enzyme-adapter-react-16": "^1.14.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
   "devDependencies": {
-    "@testing-library/react": "^9.3.2",
     "@types/enzyme": "^3.9.3",
     "@types/jest": "^24.0.18",
     "@types/react": "^16.8.6",
     "@types/react-dom": "^16.8.6",
     "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
     "react-scripts": "^3.0.1",
     "typescript": "^3.7.2"
   },
