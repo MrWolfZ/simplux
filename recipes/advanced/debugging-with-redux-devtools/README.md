@@ -2,7 +2,7 @@
 
 This recipe shows you how simple it is to debug your state changes with **simplux** by leveraging the [Redux DevTools](https://github.com/reduxjs/redux-devtools).
 
-Setting up the Redux DevTools with **simplux** is done exactly the same way as for any normal Redux application. That means we need to have a Redux store. Therefore, if you haven't done so, follow [this recipe](../using-in-redux-application#readme) to learn how to use **simplux** with a custom Redux store. This recipe also uses the [DevTools extension](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en), meaning you need to install it.
+Setting up the Redux DevTools with **simplux** is done exactly the same way as for any normal Redux application. That means we need to have a Redux store. Therefore, if you haven't done so, follow [this recipe](../using-in-redux-application#readme) to learn how to use **simplux** with a Redux store. This recipe also uses the [DevTools extension](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en), meaning you need to install it.
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/advanced/debugging-with-redux-devtools).
 
@@ -40,13 +40,16 @@ const counterModule = createSimpluxModule({
   initialState: 0,
 })
 
-const { increment, incrementBy } = createMutations(counterModule, {
-  increment: c => c + 1,
-  incrementBy: (c, amount: number) => c + amount,
-})
+const counter = {
+  ...counterModule,
+  ...createMutations(counterModule, {
+    increment: c => c + 1,
+    incrementBy: (c, amount: number) => c + amount,
+  }),
+}
 
-increment()
-incrementBy(5)
+counter.increment()
+counter.incrementBy(5)
 ```
 
 ![alt text](DevTools.png 'DevTools')

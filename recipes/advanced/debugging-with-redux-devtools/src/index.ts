@@ -29,10 +29,13 @@ const counterModule = createSimpluxModule({
   initialState: 0,
 })
 
-const { increment, incrementBy } = createMutations(counterModule, {
-  increment: c => c + 1,
-  incrementBy: (c, amount: number) => c + amount,
-})
+const counter = {
+  ...counterModule,
+  ...createMutations(counterModule, {
+    increment: c => c + 1,
+    incrementBy: (c, amount: number) => c + amount,
+  }),
+}
 
-increment()
-incrementBy(5)
+counter.increment()
+counter.incrementBy(5)
