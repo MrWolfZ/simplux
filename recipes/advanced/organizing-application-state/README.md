@@ -62,7 +62,7 @@ Now that we know the requirements as well as the technical and UX design, we can
 - any user inputs and the result for the calculator
 - the logged in user's tasks that have been loaded from the server
 - any user inputs for the task list
-- information about the API interaction (e.g. is data currently loading, was there are error etc.)
+- information about the API interaction (e.g. is data currently loading, was there an error etc.)
 - which feature is currently active
 - whether the user is logged in or not
 - some information about the logged in user (e.g. an authentication token)
@@ -91,7 +91,7 @@ You application probably also consists of multiple independent features. Therefo
 
 > Look for the independent features in your application and create a module for each feature. Larger features can often be decomposed into multiple modules.
 
-Next, let's look at how to determine which feature is currently active. One way to do this would be to add a boolean flag to each feature module to mark it as active or inactive. However, if we think about the constraints for this information, we find this is probably not the right approach. The main constraint here is that at most one feature can be active at once. If we put this information into the feature modules we will have to synchronize them to ensure we keep to the constraint. An alternative better design would be to encapsulate this information in a separate independent module which will easily allow us to fulfill the constraint in our mutations. Since this module only contains UI state, let's call it by the name of the UI component that accesses it the most: the sidebar.
+Next, let's look at how to determine which feature is currently active. One way to do this would be to add a boolean flag to each feature module to mark it as active or inactive. However, if we think about the constraints for this information, we find this is probably not the right approach. The main constraint here is that at most one feature can be active at once. If we put this information into the feature modules we will have to synchronize them to ensure we adhere to the constraint. An alternative better design would be to encapsulate this information in a separate independent module which will easily allow us to fulfill the constraint in our mutations. Since this module only contains UI state, let's call it by the name of the UI component that accesses it the most: the sidebar.
 
 ```ts
 interface SidebarState {
