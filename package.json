@@ -35,10 +35,10 @@
   "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
   "license": "MIT",
   "dependencies": {
-    "@simplux/angular": "file:packages/angular",
-    "@simplux/core": "file:packages/core",
-    "@simplux/testing": "file:packages/testing",
-    "@simplux/react": "file:packages/react"
+    "@simplux/angular": "0.9.0",
+    "@simplux/core": "0.9.0",
+    "@simplux/react": "0.9.0",
+    "@simplux/testing": "0.9.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.803.4",
