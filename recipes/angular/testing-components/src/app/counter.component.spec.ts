@@ -15,8 +15,8 @@ describe('CounterComponent', () => {
       // here we list all the methods that are used inside our component
       [
         'getCurrentState',
-        'selectValue',
-        'selectValueTimes',
+        'value',
+        'valueTimes',
         'selectState',
         'increment',
         'incrementBy',
@@ -25,8 +25,8 @@ describe('CounterComponent', () => {
 
     // we configure all selector spies to return test values
     counterSpy.getCurrentState.and.returnValue({ value: 10 })
-    counterSpy.selectValue.and.returnValue(of(10))
-    counterSpy.selectValueTimes.and.callFake(multiplier => of(10 * multiplier))
+    counterSpy.value.and.returnValue(of(10))
+    counterSpy.valueTimes.and.callFake(multiplier => of(10 * multiplier))
     counterSpy.selectState.and.returnValue(of({ value: 10 }))
 
     TestBed.configureTestingModule({
@@ -57,7 +57,7 @@ describe('CounterComponent', () => {
     expect(spy).toHaveBeenCalledWith(10)
 
     // we can also assert that the correct selector method was called
-    expect(counterSpy.selectValue).toHaveBeenCalled()
+    expect(counterSpy.value).toHaveBeenCalled()
   })
 
   it('selects the value times two', () => {
@@ -66,7 +66,7 @@ describe('CounterComponent', () => {
     component.valueTimesTwo$.subscribe(spy)
 
     expect(spy).toHaveBeenCalledWith(20)
-    expect(counterSpy.selectValueTimes).toHaveBeenCalled()
+    expect(counterSpy.valueTimes).toHaveBeenCalled()
   })
 
   it('selects the value times five', () => {

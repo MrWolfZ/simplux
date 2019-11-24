@@ -14,18 +14,16 @@ export const counterModule = createSimpluxModule({
   },
 })
 
-export const mutations = createMutations(counterModule, {
+export const counterMutations = createMutations(counterModule, {
   increment(state) {
     state.value += 1
   },
-
   incrementBy(state, amount: number) {
     state.value += amount
   },
 })
 
-export const selectors = createSelectors(counterModule, {
-  selectValue: ({ value }) => value,
-
-  selectValueTimes: ({ value }, multiplier: number) => value * multiplier,
+export const counterSelectors = createSelectors(counterModule, {
+  value: ({ value }) => value,
+  valueTimes: ({ value }, multiplier: number) => value * multiplier,
 })

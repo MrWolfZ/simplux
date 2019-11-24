@@ -6,10 +6,10 @@ If you are new to using **simplux** with Angular there is [a recipe](../using-in
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/angular/testing-components). Note that the tests don't work in the sandbox since it does not support Karma. If you want to run the tests you can clone this repository and run the tests locally.
 
-Before we start let's install all the packages we need (we assume you already have all packages required for Angular installed).
+Before we start let's install **simplux** (we assume you already have all packages required for Angular installed).
 
 ```sh
-npm i @simplux/angular @simplux/core redux -S
+npm i @simplux/preset-angular -S
 ```
 
 Now we're ready to go.
@@ -36,27 +36,24 @@ const counterModule = createSimpluxModule({
   },
 })
 
-const mutations = createMutations(counterModule, {
+const counterMutations = createMutations(counterModule, {
   increment(state) {
     state.value += 1
   },
-
   incrementBy(state, amount: number) {
     state.value += amount
   },
 })
 
-const selectors = createSelectors(counterModule, {
-  selectCounterValue: ({ value }) => value,
-
-  selectCounterValueTimes: ({ value }, multiplier: number) =>
-    value * multiplier,
+const counterSelectors = createSelectors(counterModule, {
+  value: ({ value }) => value,
+  valueTimes: ({ value }, multiplier: number) => value * multiplier,
 })
 
 const CounterServiceBase = createModuleServiceBaseClass(
   counterModule,
-  mutations,
-  selectors,
+  counterMutations,
+  counterSelectors,
 )
 
 @Injectable({ providedIn: 'root' })
@@ -76,8 +73,8 @@ export class CounterComponent {
 
   constructor(private counter: CounterService) {
     this.initialValue = counter.getCurrentState().value
-    this.value$ = counter.selectValue()
-    this.valueTimesTwo$ = counter.selectValueTimes(2)
+    this.value$ = counter.value()
+    this.valueTimesTwo$ = counter.valueTimes(2)
 
     this.valueTimesFive$ = counter
       .selectState()
@@ -106,8 +103,8 @@ counterSpy = jasmine.createSpyObj<CounterService>(
   // here we list all the methods that are used inside our component
   [
     'getCurrentState',
-    'selectValue',
-    'selectValueTimes',
+    'value',
+    'valueTimes',
     'selectState',
     'increment',
     'incrementBy',
@@ -116,8 +113,8 @@ counterSpy = jasmine.createSpyObj<CounterService>(
 
 // we configure all selector spies to return test values
 counterSpy.getCurrentState.and.returnValue({ value: 10 })
-counterSpy.selectValue.and.returnValue(of(10))
-counterSpy.selectValueTimes.and.callFake(multiplier => of(10 * multiplier))
+counterSpy.value.and.returnValue(of(10))
+counterSpy.valueTimes.and.callFake(multiplier => of(10 * multiplier))
 counterSpy.selectState.and.returnValue(of({ value: 10 }))
 ```
 
@@ -141,7 +138,7 @@ it('selects the value', () => {
   expect(spy).toHaveBeenCalledWith(10)
 
   // we can also assert that the correct selector method was called
-  expect(counterSpy.selectValue).toHaveBeenCalled()
+  expect(counterSpy.value).toHaveBeenCalled()
 })
 ```
 

@@ -29,10 +29,10 @@ export class CounterComponent {
     // the selector applied to the module's current state when
     // subscribed to; new values are emitted whenever the state
     // and the selector's result for that state change
-    this.value$ = counter.selectValue()
+    this.value$ = counter.value()
 
     // the selectors can have arguments as well
-    this.valueTimesTwo$ = counter.selectValueTimes(2)
+    this.valueTimesTwo$ = counter.valueTimes(2)
 
     // you can get an observable of all state changes and transform
     // it yourself if required; the observable immediately emits the
