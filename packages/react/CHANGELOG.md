@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.9.0...v0.10.0-alpha.0) (2019-11-24)
+
+
+### Features
+
+* **react:** memoize selector result in `useSimplux` ([4e7edcc](https://github.com/MrWolfZ/simplux/commit/4e7edcc))
+* **react:** replace `createSelectorHook` with `useSimplux` ([7ae26b5](https://github.com/MrWolfZ/simplux/commit/7ae26b5))
+
+
+
+
+
 # [0.9.0](https://github.com/MrWolfZ/simplux/compare/v0.9.0-alpha.0...v0.9.0) (2019-09-15)
 
 **Note:** Version bump only for package @simplux/react

@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.react.testing-components",
-  "version": "0.9.0",
+  "version": "0.10.0-alpha.0",
   "description": "This recipe shows you how simple it is to test your React components that read and change state with simplux",
   "scripts": {
     "start": "react-scripts start",
@@ -25,7 +25,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/preset-react": "0.9.0",
+    "@simplux/preset-react": "0.10.0-alpha.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },

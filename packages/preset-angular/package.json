@@ -1,6 +1,6 @@
 {
   "name": "@simplux/preset-angular",
-  "version": "0.9.0",
+  "version": "0.10.0-alpha.0",
   "description": "A preset for installing simplux in your Angular application.",
   "scripts": {
     "publish:custom": "npm publish . --access public"
@@ -27,9 +27,9 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/angular": "0.9.0",
-    "@simplux/core": "0.9.0",
-    "@simplux/testing": "0.9.0",
+    "@simplux/angular": "0.10.0-alpha.0",
+    "@simplux/core": "0.10.0-alpha.0",
+    "@simplux/testing": "0.10.0-alpha.0",
     "redux": "^4.0.1"
   },
   "files": []

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.9.0...v0.10.0-alpha.0) (2019-11-24)
+
+
+### Bug Fixes
+
+* **testing:** clear state mocks when clearing all simplux mocks ([faf7e11](https://github.com/MrWolfZ/simplux/commit/faf7e11))
+
+
+### Features
+
+* **testing:** return a tuple of handler and clear function from `mockMutation` and `mockEffect` ([f20382c](https://github.com/MrWolfZ/simplux/commit/f20382c))
+
+
+
+
+
 # [0.9.0](https://github.com/MrWolfZ/simplux/compare/v0.9.0-alpha.0...v0.9.0) (2019-09-15)
 
 

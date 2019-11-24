@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.9.0...v0.10.0-alpha.0) (2019-11-24)
+
+
+### Bug Fixes
+
+* **core:** ensure immer reducer keeps working if invocation of reducer throws ([f0e87eb](https://github.com/MrWolfZ/simplux/commit/f0e87eb))
+
+
+### Features
+
+* **core:** add options argument to `subscribeToStateChanges` to allow skipping initial invocation ([f096b98](https://github.com/MrWolfZ/simplux/commit/f096b98))
+
+
+
+
+
 # [0.9.0](https://github.com/MrWolfZ/simplux/compare/v0.9.0-alpha.0...v0.9.0) (2019-09-15)
 
 

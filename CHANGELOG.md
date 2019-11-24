@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.9.0...v0.10.0-alpha.0) (2019-11-24)
+
+
+### Bug Fixes
+
+* **core:** ensure immer reducer keeps working if invocation of reducer throws ([f0e87eb](https://github.com/MrWolfZ/simplux/commit/f0e87eb))
+* **testing:** clear state mocks when clearing all simplux mocks ([faf7e11](https://github.com/MrWolfZ/simplux/commit/faf7e11))
+
+
+### Features
+
+* **core:** add options argument to `subscribeToStateChanges` to allow skipping initial invocation ([f096b98](https://github.com/MrWolfZ/simplux/commit/f096b98))
+* **preset:** add default preset package for simple installation ([4b97dd8](https://github.com/MrWolfZ/simplux/commit/4b97dd8))
+* **preset-angular:** add preset package for Angular ([70ef486](https://github.com/MrWolfZ/simplux/commit/70ef486))
+* **preset-react:** add preset package for React ([94b5920](https://github.com/MrWolfZ/simplux/commit/94b5920))
+* **react:** memoize selector result in `useSimplux` ([4e7edcc](https://github.com/MrWolfZ/simplux/commit/4e7edcc))
+* **react:** replace `createSelectorHook` with `useSimplux` ([7ae26b5](https://github.com/MrWolfZ/simplux/commit/7ae26b5))
+* **testing:** return a tuple of handler and clear function from `mockMutation` and `mockEffect` ([f20382c](https://github.com/MrWolfZ/simplux/commit/f20382c))
+
+
+
+
+
 # [0.9.0](https://github.com/MrWolfZ/simplux/compare/v0.9.0-alpha.0...v0.9.0) (2019-09-15)
 
 
