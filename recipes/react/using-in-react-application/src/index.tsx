@@ -6,7 +6,7 @@ import {
   createSelectors,
   createSimpluxModule,
 } from '@simplux/core'
-import { createSelectorHook } from '@simplux/react'
+import { useSimplux } from '@simplux/react'
 import React from 'react'
 import { render } from 'react-dom'
 
@@ -19,106 +19,86 @@ const counterModule = createSimpluxModule({
   },
 })
 
-const { increment, incrementBy } = createMutations(counterModule, {
-  increment(state) {
-    state.value += 1
-  },
-
-  incrementBy(state, amount: number) {
-    state.value += amount
-  },
-})
-
-const { selectCounterValue, selectCounterValueTimes } = createSelectors(
-  counterModule,
-  {
-    selectCounterValue: ({ value }) => value,
-
-    selectCounterValueTimes: ({ value }, multiplier: number) =>
-      value * multiplier,
-  },
-)
-
-// the simplux react extension adds function that creates a React
-// hook which allows using a module's state in a component
-const useCounter = createSelectorHook(counterModule)
+const counter = {
+  ...counterModule,
+  ...createMutations(counterModule, {
+    increment(state) {
+      state.value += 1
+    },
+    incrementBy(state, amount: number) {
+      state.value += amount
+    },
+  }),
+  ...createSelectors(counterModule, {
+    value: ({ value }) => value,
+    valueTimes: ({ value }, multiplier: number) => value * multiplier,
+  }),
+}
 
 // now we can start using our module in our React components
 
 const Counter = () => {
-  // as the name of the createSelectorHook function suggests the created
-  // useCounter hook allows us to use our module's selectors inside our
-  // component; this hook also ensures that the component is updated
-  // whenever the selected value changes
-  const value = useCounter(selectCounterValue)
+  // to access a module's state we can use the `useSimplux` hook; this
+  // hook takes a module selector (plus its extra arguments if any) and
+  // evaluates it with the module's current state; the hook also ensures
+  // that the component is updated whenever the selected value changes
+  const value = useSimplux(counter.value)
 
-  // the selector can be defined inline
-  const valueTimesTwo = useCounter(s => s.value * 2)
-
-  // and for selectors that take additional arguments we can call the
-  // selector as a factory to create a new selector for only the state
-  const selectCounterValueTimesFive = selectCounterValueTimes.asFactory(5)
-  const valueTimesFive = useCounter(selectCounterValueTimesFive)
+  // provide any arguments for the selector directly to the hook
+  const valueTimesFive = useSimplux(counter.valueTimes, 5)
 
   return (
     <>
       <span>value: {value}</span>
       <br />
-      <span>value * 2: {valueTimesTwo}</span>
-      <br />
       <span>value * 5: {valueTimesFive}</span>
       <br />
       {/* we can use mutations directly as event handlers */}
-      <button onClick={increment}>Increment</button>
+      <button onClick={counter.increment}>Increment</button>
       <br />
       {/* we can also use mutations with arguments */}
-      <button onClick={() => incrementBy(5)}>Increment by 5</button>
+      <button onClick={() => counter.incrementBy(5)}>Increment by 5</button>
     </>
   )
 }
 
 render(<Counter />, document.getElementById('root'))
 
-// finally, if you do want or need your component to be a class
-// component (and therefore cannot use hooks) we recommend that
-// you build a functional wrapper component that uses module
-// selector hooks to select the state your component requires and
-// passes it to your class component as props; note that mutations
-// can be used directly in class components; let's have a look at
-// how our counter component would look like as a class component
+// finally, if you want or need your component to be a class component
+// (and therefore cannot use hooks directly) we recommend that you
+// build a functional wrapper component with `useSimplux` to select
+// the state your component requires and pass it to your class component
+// as props; mutations can be used directly in class components just
+// like in functional components; let's have a look at how our counter
+// component would look like as a class component
 
 interface CounterProps {
   value: number
-  valueTimesTwo: number
   valueTimesFive: number
 }
 
 class CounterComponent extends React.Component<CounterProps> {
   render() {
-    const { value, valueTimesTwo, valueTimesFive } = this.props
+    const { value, valueTimesFive } = this.props
 
     return (
       <>
         <span>value: {value}</span>
         <br />
-        <span>value * 2: {valueTimesTwo}</span>
-        <br />
         <span>value * 5: {valueTimesFive}</span>
         <br />
         {/* mutations can still be used directly */}
-        <button onClick={increment}>Increment</button>
+        <button onClick={counter.increment}>Increment</button>
         <br />
-        <button onClick={() => incrementBy(5)}>Increment by 5</button>
+        <button onClick={() => counter.incrementBy(5)}>Increment by 5</button>
       </>
     )
   }
 }
 
 export const CounterWrapper = () => {
-  const value = useCounter(selectCounterValue)
-  const valueTimesTwo = useCounter(s => s.value * 2)
-  const valueTimesFive = useCounter(selectCounterValueTimes.asFactory(5))
-
-  const props = { value, valueTimesTwo, valueTimesFive }
+  const value = useSimplux(counter.value)
+  const valueTimesFive = useSimplux(counter.valueTimes, 5)
+  const props = { value, valueTimesFive }
   return <CounterComponent {...props} />
 }
