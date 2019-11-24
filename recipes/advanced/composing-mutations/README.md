@@ -23,7 +23,6 @@ interface Book {
   id: string
   title: string
   author: string
-  isDone: boolean
 }
 
 interface BooksState {
@@ -48,7 +47,7 @@ We want to create two mutations for this module: one for adding a single book, a
 import { createMutations } from '@simplux/core'
 
 const booksMutations = createMutations(booksModule, {
-  addBook({ booksById, bookIds }, book: Book) {
+  add({ booksById, bookIds }, book: Book) {
     booksById[book.id] = book
     bookIds.push(book.id)
   },
@@ -59,8 +58,8 @@ const booksMutations = createMutations(booksModule, {
   // however, simplux is able to detect when a mutation is used
   // within another mutation and allows changing the state object
   // directly in this situation
-  addMultipleBooks(state, books: Book[]) {
-    books.forEach(book => booksMutations.addBook.withState(state, book))
+  addMultiple(state, books: Book[]) {
+    books.forEach(book => booksMutations.add.withState(state, book))
   },
 })
 ```
@@ -68,9 +67,14 @@ const booksMutations = createMutations(booksModule, {
 Now we can use our mutations to add books.
 
 ```ts
+const books = {
+  ...booksModule,
+  ...booksMutations,
+}
+
 console.log(
   'added single book:',
-  booksMutations.addBook({
+  books.add({
     id: '1',
     title: 'The Lord of the Rings',
     author: 'J.R.R. Tolkien',
@@ -79,7 +83,7 @@ console.log(
 
 console.log(
   'added multiple books:',
-  booksMutations.addMultipleBooks([
+  books.addMultiple([
     { id: '2', title: 'The Black Company', author: 'Glen Cook' },
     { id: '3', title: 'Nineteen Eighty-Four', author: 'George Orwell' },
   ]),
