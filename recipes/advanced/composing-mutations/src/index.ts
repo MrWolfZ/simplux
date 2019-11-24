@@ -4,56 +4,64 @@
 import { createMutations, createSimpluxModule } from '@simplux/core'
 
 // for this recipe we use a simple scenario: managing a collection
-// of Todo items
-interface Todo {
+// of books
+interface Book {
   id: string
-  description: string
-  isDone: boolean
+  title: string
+  author: string
 }
 
-interface TodoState {
-  todosById: { [id: string]: Todo }
-  todoIds: string[]
+interface BooksState {
+  booksById: { [id: string]: Book }
+  bookIds: string[]
 }
 
-const initialState: TodoState = {
-  todosById: {},
-  todoIds: [],
+const initialState: BooksState = {
+  booksById: {},
+  bookIds: [],
 }
 
-const todosModule = createSimpluxModule({
-  name: 'todos',
+const booksModule = createSimpluxModule({
+  name: 'books',
   initialState,
 })
 
-// we want two mutations: one for adding a single todo item and
-// one for adding multiple items at once
+// we want two mutations: one for adding a single book and
+// one for adding multiple books at once
 
-const { addTodo, addMultipleTodos } = createMutations(todosModule, {
-  addTodo({ todosById, todoIds }, todo: Todo) {
-    todosById[todo.id] = todo
-    todoIds.push(todo.id)
+const booksMutations = createMutations(booksModule, {
+  addBook({ booksById, bookIds }, book: Book) {
+    booksById[book.id] = book
+    bookIds.push(book.id)
   },
 
-  // instead of repeating the logic for adding the todo item we
-  // want to re-use the logic we already have for a single item,
-  // that is we want to compose our mutations; to do this we can
-  // simply call the mutation with the state
-  addMultipleTodos(state, todos: Todo[]) {
-    const addTodoWithState = addTodo.withState(state)
-    todos.forEach(addTodoWithState)
+  // instead of repeating the logic for adding the book we want
+  // to re-use the logic we already have for a single item; in
+  // other words, we want to compose our mutations; this can be
+  // achieved by calling the mutation via `withState`; usually,
+  // when a mutation is called with a state it creates a modified
+  // copy of the state instead of mutating the state directly;
+  // however, simplux is able to detect when a mutation is used
+  // within another mutation and allows changing the state object
+  // directly in this situation
+  addMultipleBooks(state, books: Book[]) {
+    books.forEach(book => booksMutations.addBook.withState(state, book))
   },
 })
 
 console.log(
-  'added single Todo item:',
-  addTodo({ id: '1', description: 'go shopping', isDone: false }),
+  'added single book:',
+  booksMutations.addBook({
+    id: '1',
+    title: 'The Lord of the Rings',
+    author: 'J.R.R. Tolkien',
+  }),
 )
 
 console.log(
-  'added multiple Todo items:',
-  addMultipleTodos([
-    { id: '2', description: 'clean house', isDone: false },
-    { id: '3', description: 'go to the gym', isDone: false },
+  'added multiple books:',
+  booksMutations.addMultipleBooks([
+    { id: '2', title: 'The Black Company', author: 'Glen Cook' },
+    { id: '3', title: 'Nineteen Eighty-Four', author: 'George Orwell' },
   ]),
 )

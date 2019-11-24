@@ -6,73 +6,82 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/advanced/composing-mutations).
 
-Before we start let's install all the packages we need.
+Before we start let's install **simplux**.
 
 ```sh
-npm i @simplux/core redux -S
+npm i @simplux/preset -S
 ```
 
 Now we're ready to go.
 
-For this recipe we use a simple scenario: managing a collection of Todo items. Let's create a module for this.
+For this recipe we use a simple scenario: managing a collection of books. Let's create a module for this.
 
 ```ts
 import { createSimpluxModule } from '@simplux/core'
 
-interface Todo {
+interface Book {
   id: string
-  description: string
+  title: string
+  author: string
   isDone: boolean
 }
 
-interface TodoState {
-  todosById: { [id: string]: Todo }
-  todoIds: string[]
+interface BooksState {
+  booksById: { [id: string]: Book }
+  bookIds: string[]
 }
 
-const initialState: TodoState = {
-  todosById: {},
-  todoIds: [],
+const initialState: BooksState = {
+  booksById: {},
+  bookIds: [],
 }
 
-const todosModule = createSimpluxModule({
-  name: 'todos',
+const booksModule = createSimpluxModule({
+  name: 'books',
   initialState,
 })
 ```
 
-We want to create two mutations for this module: one for adding a single Todo item, and another one for adding multiple items at once. However, instead of duplicating the logic for adding an item we want to re-use the mutation for adding a single item inside the mutation that adds multiple items. That means we want to compose our two mutations. Let's see how we can do this.
+We want to create two mutations for this module: one for adding a single book, and another one for adding multiple books at once. However, instead of duplicating the logic for adding a book we want to re-use the mutation for adding a single book inside the mutation that adds multiple books. In other words, we want to compose our two mutations. Let's see how we can do this.
 
 ```ts
 import { createMutations } from '@simplux/core'
 
-const { addTodo, addMultipleTodos } = createMutations(todosModule, {
-  addTodo({ todosById, todoIds }, todo: Todo) {
-    todosById[todo.id] = todo
-    todoIds.push(todo.id)
+const booksMutations = createMutations(booksModule, {
+  addBook({ booksById, bookIds }, book: Book) {
+    booksById[book.id] = book
+    bookIds.push(book.id)
   },
 
-  // to re-use a mutation we can simply call it with the state
-  addMultipleTodos(state, todos: Todo[]) {
-    const addTodoWithState = addTodo.withState(state)
-    todos.forEach(addTodoWithState)
+  // mutations can be composed by using `withState`; usually,
+  // when a mutation is called with a state it creates a modified
+  // copy of the state instead of mutating the state directly;
+  // however, simplux is able to detect when a mutation is used
+  // within another mutation and allows changing the state object
+  // directly in this situation
+  addMultipleBooks(state, books: Book[]) {
+    books.forEach(book => booksMutations.addBook.withState(state, book))
   },
 })
 ```
 
-Now we can use our mutations to add Todo items.
+Now we can use our mutations to add books.
 
 ```ts
 console.log(
-  'added single Todo item:',
-  addTodo({ id: '1', description: 'go shopping', isDone: false }),
+  'added single book:',
+  booksMutations.addBook({
+    id: '1',
+    title: 'The Lord of the Rings',
+    author: 'J.R.R. Tolkien',
+  }),
 )
 
 console.log(
-  'added multiple Todo items:',
-  addMultipleTodos([
-    { id: '2', description: 'clean house', isDone: false },
-    { id: '3', description: 'go to the gym', isDone: false },
+  'added multiple books:',
+  booksMutations.addMultipleBooks([
+    { id: '2', title: 'The Black Company', author: 'Glen Cook' },
+    { id: '3', title: 'Nineteen Eighty-Four', author: 'George Orwell' },
   ]),
 )
 ```
