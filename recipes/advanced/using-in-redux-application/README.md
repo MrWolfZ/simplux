@@ -1,4 +1,4 @@
-# Recipe: using **simplux** in my application that already uses Redux
+# Recipe: using **simplux** in my application together with Redux
 
 This recipe shows you how simple it is to integrate **simplux** into your application that is already using [Redux](https://redux.js.org/).
 
@@ -6,7 +6,7 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/advanced/using-in-redux-application).
 
-Before we start let's install all the packages we need.
+Before we start let's install **simplux** and Redux.
 
 ```sh
 npm i @simplux/core redux -S
@@ -14,7 +14,7 @@ npm i @simplux/core redux -S
 
 Now we're ready to go.
 
-For this recipe we assume we have a very simple existing application that uses redux to manage a counter. In your application this setup is probably quite a bit more complex with many more reducers, middlewares and such. All of these things do not affect **simplux**, so you can keep them just as they are.
+For this recipe we assume we have a very simple existing application that uses Redux to manage a counter. In your application this setup is probably quite a bit more complex with many more reducers, middlewares and such. All of these things do not affect **simplux**, so you can keep them just as they are.
 
 ```ts
 import { combineReducers, createStore, Reducer } from 'redux'
@@ -29,7 +29,9 @@ const rootReducer = combineReducers({
 const store = createStore(rootReducer)
 ```
 
-**simplux** is built on top of Redux. However, instead of wrapping Redux it is designed to seamlessly compose with it. To achieve this **simplux** exports its root reducer which you can place anywhere in your reducer hierarchy. Therefore, we only need to make a slight adjustment to the store setup above.
+**simplux** and Redux can be used side-by-side just fine without any extra effort. However, if you want to make use of certain Redux features (e.g. the [Redux DevTools](https://github.com/reduxjs/redux-devtools)) then it is useful to connect both.
+
+**simplux** is designed to seamlessly compose with Redux. To achieve this **simplux** exports a reducer which you can place anywhere in your reducer hierarchy. Therefore, we only need to make a slight adjustment to the store setup above.
 
 ```ts
 import { getSimpluxReducer } from '@simplux/core'
@@ -43,7 +45,7 @@ const rootReducer = combineReducers({
 })
 ```
 
-Now there is only one more step that is required. We need to let **simplux** know about our new store.
+Now there is only one more step that is required. We need to let **simplux** know about our Redux store.
 
 ```ts
 import { setReduxStoreForSimplux } from '@simplux/core'

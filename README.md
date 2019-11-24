@@ -109,7 +109,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 
 ### Advanced
 
-- [using **simplux** in my application that already uses Redux](recipes/advanced/using-in-redux-application#readme)
+- [using **simplux** in my application together with Redux](recipes/advanced/using-in-redux-application#readme)
 - [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme)
 - [creating non-trivial modules](recipes/advanced/creating-non-trivial-modules#readme)
 - [testing my code that uses mutations](recipes/advanced/testing-code-using-mutations#readme)

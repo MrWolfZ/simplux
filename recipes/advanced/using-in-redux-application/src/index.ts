@@ -1,5 +1,5 @@
 // this code is part of the simplux recipe "using simplux in my
-// application that already uses Redux":
+// application together with Redux":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/using-in-redux-application
 
 import {
