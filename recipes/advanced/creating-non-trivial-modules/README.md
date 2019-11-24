@@ -23,7 +23,7 @@ interface Book {
   id: string
   title: string
   author: string
-  isDone: boolean
+  amountInStock: number
 }
 
 interface BooksState {
