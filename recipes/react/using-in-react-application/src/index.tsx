@@ -6,7 +6,7 @@ import {
   createSelectors,
   createSimpluxModule,
 } from '@simplux/core'
-import { useSimplux } from '@simplux/react'
+import { SimpluxProvider, useSimplux } from '@simplux/react'
 import React from 'react'
 import { render } from 'react-dom'
 
@@ -62,7 +62,14 @@ const Counter = () => {
   )
 }
 
-render(<Counter />, document.getElementById('root'))
+// lastly, we have to surround our application root component with a provider
+const App = () => (
+  <SimpluxProvider>
+    <Counter />
+  </SimpluxProvider>
+)
+
+render(<App />, document.getElementById('root'))
 
 // finally, if you want or need your component to be a class component
 // (and therefore cannot use hooks directly) we recommend that you

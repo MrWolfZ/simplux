@@ -79,6 +79,18 @@ const Counter = () => {
 
 > Since the **simplux** react package uses hooks it requires at least React version 16.8.
 
+Lastly, we have to surround our application root component with a provider and then we can render it.
+
+```tsx
+const App = () => (
+  <SimpluxProvider>
+    <Counter />
+  </SimpluxProvider>
+)
+
+render(<App />, document.getElementById('root'))
+```
+
 If you want or need your component to be a class component (and therefore cannot use hooks directly) we recommend that you build a functional wrapper component with `useSimplux` to select the state your component requires and pass it to your class component as props. Mutations can be used directly in class components just like in functional components. Let's have a look at how our counter component would look like as a class component.
 
 ```tsx
