@@ -8,13 +8,13 @@ import { Observable } from 'rxjs'
 
 interface UserState {
   isLoggedIn: boolean
-  icon: string | undefined // this is a base64 image
+  iconUrl: string | undefined
   authToken: string | undefined
 }
 
 const initialState: UserState = {
   isLoggedIn: false,
-  icon: undefined,
+  iconUrl: undefined,
   authToken: undefined,
 }
 
@@ -24,25 +24,30 @@ const userModule = createSimpluxModule({
 })
 
 // let's create a couple of basic mutations: for logging in and
-// logging out as well as for updating the user's icon
+// logging out as well as for updating the user's icon URL
 
-const { logIn, logOut, setIcon } = createMutations(userModule, {
+const userMutations = createMutations(userModule, {
   logIn(state, authToken: string, icon: string) {
     state.isLoggedIn = true
     state.authToken = authToken
-    state.icon = icon
+    state.iconUrl = icon
   },
 
   logOut(state) {
     state.isLoggedIn = false
     state.authToken = undefined
-    state.icon = undefined
+    state.iconUrl = undefined
   },
 
   setIcon(state, icon: string) {
-    state.icon = icon
+    state.iconUrl = icon
   },
 })
+
+const user = {
+  ...userModule,
+  ...userMutations,
+}
 
 // a typical use case for reacting to state changes is redirecting
 // the user to a different page after signing out; in this recipe
@@ -51,10 +56,11 @@ const { logIn, logOut, setIcon } = createMutations(userModule, {
 // library you are using
 
 // a simplux module provides a function to register a handler to
-// be called whenever the module's state changes; the handler will
-// also be called with the module's current state immediately after
-// subscribing
-const { unsubscribe } = userModule.subscribeToStateChanges(state => {
+// be called whenever the module's state changes; by default the
+// handler will also be called with the module's current state
+// immediately after subscribing; this can be configured through
+// the optional second options parameter
+const { unsubscribe } = user.subscribeToStateChanges(state => {
   console.log('state changed:', state)
 })
 
@@ -64,15 +70,15 @@ const { unsubscribe } = userModule.subscribeToStateChanges(state => {
 // state as the second parameter to the handler; this allows you
 // to compare any nested fields to determine whether the state
 // change is relevant for your handler
-const { handler } = userModule.subscribeToStateChanges(
+const { handler } = user.subscribeToStateChanges(
   ({ isLoggedIn }, previousState) => {
     // we can check for changes of specific properties
     const isLoggedInChanged = isLoggedIn !== previousState.isLoggedIn
 
-    // by checking these two conditions we can react to the specific
-    // change of the user logging out
-    if (!isLoggedIn && isLoggedInChanged) {
-      console.log('User logged out. Redirecting...')
+    if (isLoggedInChanged) {
+      console.log(
+        isLoggedIn ? 'User logged in.' : 'User logged out. Redirecting...',
+      )
     }
   },
 )
@@ -87,10 +93,10 @@ handler(initialState, initialState)
 // of state changes
 const observeUserState = () =>
   new Observable<UserState>(sub =>
-    userModule.subscribeToStateChanges(state => sub.next(state)),
+    user.subscribeToStateChanges(state => sub.next(state)),
   )
 
-const subscription = observeUserState().subscribe(state => {
+const rxjsSubscription = observeUserState().subscribe(state => {
   console.log('observed state with RxJS:', state)
 })
 
@@ -99,14 +105,14 @@ const subscription = observeUserState().subscribe(state => {
 // reactions are called; we also unsubscribe from certain change
 // handlers in between some of the changes
 
-logIn('authToken', 'icon')
+user.logIn('authToken', 'http://my.domain.com/userIcon')
 
-subscription.unsubscribe()
+rxjsSubscription.unsubscribe()
 
-setIcon('newIcon')
+user.setIcon('http://my.domain.com/updatedUserIcon')
 
 // the subscribeToStateChanges function returns a callback that
 // can be used to unsubscribe from state changes
 unsubscribe()
 
-logOut()
+user.logOut()
