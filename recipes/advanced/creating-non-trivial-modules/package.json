@@ -1,7 +1,7 @@
 {
   "name": "@simplux/recipes.advanced.creating-non-trivial-modules",
   "version": "0.9.0",
-  "description": "This recipe shows you how you can make your state changes simpler with less boilerplate while keeping the benefits of immutability",
+  "description": "This recipe shows you how you can create simplux modules that are as non-trivial as the modules you will typically create in your application",
   "main": "src/index.ts",
   "scripts": {
     "start": "webpack-dev-server --mode development --progress --color",
@@ -27,8 +27,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.9.0",
-    "redux": "^4.0.1"
+    "@simplux/preset": "0.9.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.18",

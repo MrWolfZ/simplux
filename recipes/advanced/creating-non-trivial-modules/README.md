@@ -6,150 +6,163 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/advanced/creating-non-trivial-modules).
 
-Before we start let's install all the packages we need.
+Before we start let's install **simplux**.
 
 ```sh
-npm i @simplux/core redux -S
+npm i @simplux/preset -S
 ```
 
 Now we're ready to go.
 
-For this recipe we use a common scenario: managing a collection of entities, specifically Todo items. Let's create our module. For non-trivial modules like this we recommend to create explicit interfaces for the state instead of having the type of state inferred from the initial state value. This makes testing the module simpler as well as making type signatures for mutations and selectors more clean.
+For this recipe we use a common scenario: managing a collection of entities, specifically books. Let's create our module. For non-trivial modules like this we recommend to create explicit interfaces for the state instead of having the type of state inferred from the initial state value. This makes testing the module simpler as well as making type signatures for mutations and selectors easier to understand.
 
 ```ts
 import { createSimpluxModule } from '@simplux/core'
 
-interface Todo {
+interface Book {
   id: string
-  description: string
+  title: string
+  author: string
   isDone: boolean
 }
 
-interface TodoState {
-  todosById: { [id: string]: Todo }
-  todoIds: string[]
+interface BooksState {
+  booksById: { [id: string]: Book }
+  bookIds: string[]
 }
 
-const initialState: TodoState = {
-  todosById: {},
-  todoIds: [],
+const initialState: BooksState = {
+  booksById: {},
+  bookIds: [],
 }
 
-const todosModule = createSimpluxModule({
-  name: 'todos',
+const booksModule = createSimpluxModule({
+  name: 'books',
   initialState,
 })
-
-const getTodosState = todosModule.getState
 ```
 
-For updating our collection of entities we need mutations for adding and removing items. **simplux** allows us to write these mutations with normal mutating JavaScript code while still keeping all the state updates immutable and simple to test (this is achieved by leveraging [immer](https://github.com/immerjs/immer)). However, if you prefer a more explicit immutable style you can also manually copy the object and return the updated copy instead.
+For updating our collection of books we need mutations for adding and removing items.
+
+> **simplux** allows us to write mutations with normal mutating JavaScript code while still keeping all the state updates immutable and simple to test (this is achieved by leveraging [immer](https://github.com/immerjs/immer)). However, if you prefer a more explicit immutable style you can also manually copy the object and return the updated copy instead.
 
 ```ts
 import { createMutations } from '@simplux/core'
 
-const { addTodo, addTodos, removeTodoById } = createMutations(todosModule, {
-  addTodo({ todosById, todoIds }, todo: Todo) {
-    todosById[todo.id] = todo
-    todoIds.push(todo.id)
+const booksMutations = createMutations(booksModule, {
+  addBook({ booksById, bookIds }, book: Book) {
+    booksById[book.id] = book
+    bookIds.push(book.id)
   },
 
-  addTodos(state, ...todos: Todo[]) {
+  addBooks(state, ...books: Book[]) {
     // see the recipe for "composing my mutations" for more details about
     // this style of writing mutations
-    todos.forEach(t => addTodo.withState(state)(t))
+    books.forEach(book => booksMutations.addBook.withState(state, book))
   },
 
-  // it is recommended to code defensively, i.e. to check
-  // if an item exists before trying to remove it
-  removeTodoById({ todosById, todoIds }, id: string) {
-    const idx = todoIds.indexOf(id)
+  removeBookById({ booksById, bookIds }, id: string) {
+    const idx = bookIds.indexOf(id)
     if (idx >= 0) {
-      delete todosById[id]
-      todoIds.splice(idx, 1)
+      delete booksById[id]
+      bookIds.splice(idx, 1)
     }
+  },
+
+  // we also want a mutation for setting the amount in stock; this example
+  // shows how easy it is to update deeply nested objects thanks to immer
+  setAmountInStock({ booksById }, bookId: string, amount: number) {
+    booksById[bookId].amountInStock = amount
   },
 })
 ```
 
-Let's also create a mutation for marking an item as done. This shows how simple it is to update nested objects.
-
-```ts
-const { markTodoAsDone } = createMutations(todosModule, {
-  // once again we check defensively if the item exists; alternatively
-  // we could also throw an Error, depending on your requirements
-  markTodoAsDone({ todosById }, todoId: string) {
-    if (!todosById[todoId]) {
-      return
-    }
-
-    todosById[todoId].isDone = true
-  },
-})
-```
-
-Now that we have a way to update our collection of Todo items we need a way to access the collection in a structured way. For this we create selectors (see [this recipe](../../basics/computing-derived-state#readme) if you are unfamilar with selectors).
+Now that we have a way to update our collection of books we need a way to access the collection in a structured way. For this we create selectors (see [this recipe](../../basics/computing-derived-state#readme) if you are unfamilar with selectors).
 
 ```ts
 import { createSelectors } from '@simplux/core'
 
-const {
-  selectTodoIds,
-  selectNumberOfTodos,
-  selectAllTodos,
-  selectPendingTodos,
-  selectTodoById,
-} = createSelectors(todosModule, {
+const booksSelectors = createSelectors(booksModule, {
   // optionally we can explicitly annotate the function with a return
   // type that indicates the value is readonly to prevent accidental
   // direct mutations of the returned value
-  selectTodoIds: ({ todoIds }): readonly string[] => todoIds,
+  ids: ({ bookIds }): ReadonlyArray<string> => bookIds,
 
-  selectNumberOfTodos: ({ todoIds }) => todoIds.length,
+  numberOfBooks: ({ bookIds }) => bookIds.length,
 
-  selectAllTodos: ({ todoIds, todosById }) => todoIds.map(id => todosById[id]),
+  all: ({ bookIds, booksById }) => bookIds.map(id => booksById[id]),
 
   // see the recipe for "composing my selectors" for more details about
   // this style of writing selectors
-  selectPendingTodos: (state): Todo[] =>
-    selectAllTodos(state).filter(t => !t.isDone),
+  outOfStock: (state): Book[] =>
+    booksSelectors.all
+      .withState(state)
+      .filter(book => book.amountInStock === 0),
 
   // we use an explicit type annotation to express that the accessed
-  // Todo item might not exists, which allows TypeScript to prevent
-  // bugs in strict mode
-  selectTodoById: ({ todosById }, id: string): Todo | undefined =>
-    todosById[id],
+  // book might not exists, which allows TypeScript to prevent bugs
+  // in strict mode
+  byId: ({ booksById }, id: string): Book | undefined => booksById[id],
 })
 ```
 
-We can now use our module.
+If your module has many mutations and selectors (like the [books module](src/books) in this recipe) we recommend to split it into separate files for the module, its mutations, and its selectors. This makes the module easier to understand and simpler to test. It is also useful to bring all these aspects together in a single export to make the consumer agnostic to the internal file structure of the module.
+
+> The file structure from this recipe is only a recommendation and there are other ways for structuring your modules that work just as well. Regardless of the structure you choose in your application it is important to agree with your team on a common structure and use it consistently.
 
 ```ts
+import { booksModule } from './books.module'
+import { booksMutations } from './books.mutations'
+import { booksSelectors } from './books.selectors'
+
+export const books = {
+  ...booksModule,
+  ...booksMutations,
+  ...booksSelectors,
+}
+```
+
+Now it is time to use our new module.
+
+```ts
+import { books } from './books'
+
 console.log(
-  'add single Todo:',
-  addTodo({ id: '1', description: 'go shopping', isDone: false }),
+  'add single book:',
+  books.addBook({
+    id: '1',
+    title: 'The Lord of the Rings',
+    author: 'J.R.R. Tolkien',
+    amountInStock: 100,
+  }),
 )
 
-console.log('number of Todos:', selectNumberOfTodos(getTodosState()))
+console.log('number of books:', books.numberOfBooks())
 
 console.log(
-  'add multiple Todos:',
-  addTodos(
-    { id: '2', description: 'clean house', isDone: false },
-    { id: '3', description: 'work out', isDone: false },
+  'add multiple books:',
+  books.addBooks(
+    {
+      id: '2',
+      title: 'The Black Company',
+      author: 'Glen Cook',
+      amountInStock: 20,
+    },
+    {
+      id: '3',
+      title: 'Nineteen Eighty-Four',
+      author: 'George Orwell',
+      amountInStock: 0,
+    },
   ),
 )
 
-console.log('mark Todo item as done:', markTodoAsDone('2'))
+console.log('out of stock:', books.outOfStock())
 
-console.log('pending todos:', selectPendingTodos.withLatestModuleState())
+console.log('update amount in stock:', books.setAmountInStock('3', 200))
 
-console.log('todo 3:', selectTodoById.withLatestModuleState('3'))
+console.log('book 3:', books.byId('3'))
 ```
-
-In the [code for this recipe](src/todos) you can see the recommended way of structuring your module into multiple files. Keeping the module, its mutations, and its selectors in separate files helps making each of them easier to understand. The same applies to the tests for which we have one file for each. In addition, all those files are placed in a single folder that represents the whole module to clearly separate it from its surrounding code.
-
-> The file structure from this recipe is only a recommendation and there are other ways for structuring your modules that work as well. Regardless of the structure you choose in your application it is important to agree with your team on a common structure and apply it consistently everywhere.
 
 We hope this recipe could give you some pointers for how you can create non-trivial **simplux** modules in your application.
 

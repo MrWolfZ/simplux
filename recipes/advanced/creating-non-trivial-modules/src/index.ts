@@ -1,31 +1,40 @@
 // this code is part of the simplux recipe "creating non-trivial modules":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/creating-non-trivial-modules
 
-import { getTodosState } from './todos/todos.module'
-import { addTodo, addTodos, markTodoAsDone } from './todos/todos.mutations'
-import {
-  selectNumberOfTodos,
-  selectPendingTodos,
-  selectTodoById,
-} from './todos/todos.selectors'
+import { books } from './books'
 
 console.log(
-  'add single Todo:',
-  addTodo({ id: '1', description: 'go shopping', isDone: false }),
+  'add single book:',
+  books.addBook({
+    id: '1',
+    title: 'The Lord of the Rings',
+    author: 'J.R.R. Tolkien',
+    amountInStock: 100,
+  }),
 )
 
-console.log('number of Todos:', selectNumberOfTodos(getTodosState()))
+console.log('number of books:', books.numberOfBooks())
 
 console.log(
-  'add multiple Todos:',
-  addTodos(
-    { id: '2', description: 'clean house', isDone: false },
-    { id: '3', description: 'work out', isDone: false },
+  'add multiple books:',
+  books.addBooks(
+    {
+      id: '2',
+      title: 'The Black Company',
+      author: 'Glen Cook',
+      amountInStock: 20,
+    },
+    {
+      id: '3',
+      title: 'Nineteen Eighty-Four',
+      author: 'George Orwell',
+      amountInStock: 0,
+    },
   ),
 )
 
-console.log('mark Todo item as done:', markTodoAsDone('2'))
+console.log('out of stock:', books.outOfStock())
 
-console.log('pending todos:', selectPendingTodos.withLatestModuleState())
+console.log('update amount in stock:', books.setAmountInStock('3', 200))
 
-console.log('todo 3:', selectTodoById.withLatestModuleState('3'))
+console.log('book 3:', books.byId('3'))
