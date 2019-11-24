@@ -16,11 +16,7 @@ npm i @simplux/preset -S
 ```ts
 // counter.ts
 
-import {
-  createSimpluxModule,
-  createMutations,
-  createSelectors,
-} from '@simplux/core'
+import { createSimpluxModule, createMutations, createSelectors } from '@simplux/core'
 
 const counterModule = createSimpluxModule({
   name: 'counter',
@@ -112,12 +108,10 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [creating non-trivial modules](recipes/advanced/creating-non-trivial-modules#readme)
 - [testing my code that uses mutations](recipes/advanced/testing-code-using-mutations#readme)
 - [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme)
+- [creating testable side effects (like loading data from my API)](recipes/advanced/creating-testable-side-effects#readme)
 - [organizing my application state](recipes/advanced/organizing-application-state#readme)
 - [communicating between modules](recipes/advanced/communicating-between-modules#readme) (work-in-progress)
 - [managing collections of entities](recipes/advanced/managing-entity-collections#readme) (work-in-progress)
-- [performing side effects (like loading data from my API)](recipes/advanced/performing-side-effects#readme)
-- [testing side effects](recipes/advanced/testing-side-effects#readme)
-- [testing my code that triggers side effects](recipes/advanced/testing-code-triggering-side-effects#readme)
 - [composing my mutations](recipes/advanced/composing-mutations#readme)
 - [composing my selectors](recipes/advanced/composing-selectors#readme)
 - [using **simplux** in my application together with Redux](recipes/advanced/using-in-redux-application#readme)
