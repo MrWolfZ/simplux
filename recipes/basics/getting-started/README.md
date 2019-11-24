@@ -7,7 +7,7 @@ This recipe shows how simple it is to get started using **simplux**.
 Before we start let's install **simplux**.
 
 ```sh
-npm i @simplux/preset -S
+npm i @simplux/core -S
 ```
 
 Now we're ready to go.

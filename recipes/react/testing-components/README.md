@@ -9,7 +9,7 @@ If you are new to using **simplux** with React there is [a recipe](../using-in-r
 Before we start let's install **simplux** (we assume you already have all packages required for React installed).
 
 ```sh
-npm i @simplux/preset-react -S
+npm i @simplux/core @simplux/react @simplux/testing -S
 ```
 
 Now we're ready to go.

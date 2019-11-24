@@ -7,7 +7,7 @@ Most web applications contain code which has [side effects](<https://en.wikipedi
 Before we start let's install **simplux**.
 
 ```sh
-npm i @simplux/preset -S
+npm i @simplux/core @simplux/testing -S
 ```
 
 Now we're ready to go.

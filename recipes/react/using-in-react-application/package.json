@@ -23,7 +23,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/preset-react": "0.10.0-alpha.0",
+    "@simplux/core": "0.10.0-alpha.0",
+    "@simplux/react": "0.10.0-alpha.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },

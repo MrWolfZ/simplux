@@ -25,7 +25,9 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/preset-react": "0.10.0-alpha.0",
+    "@simplux/core": "0.10.0-alpha.0",
+    "@simplux/react": "0.10.0-alpha.0",
+    "@simplux/testing": "0.10.0-alpha.0",
     "@testing-library/react": "^9.3.2",
     "enzyme-adapter-react-16": "^1.14.0",
     "react": "^16.8.6",

@@ -9,7 +9,7 @@ If you are new to computing derived state with **simplux** there is [a recipe](.
 Before we start let's install **simpux**.
 
 ```sh
-npm i @simplux/preset -S
+npm i @simplux/core -S
 ```
 
 Now we're ready to go.

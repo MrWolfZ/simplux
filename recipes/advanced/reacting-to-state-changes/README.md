@@ -9,7 +9,7 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 Before we start let's install all the packages we need.
 
 ```sh
-npm i @simplux/core redux -S
+npm i @simplux/core -S
 ```
 
 Now we're ready to go.

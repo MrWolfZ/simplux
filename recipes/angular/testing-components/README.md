@@ -9,7 +9,7 @@ If you are new to using **simplux** with Angular there is [a recipe](../using-in
 Before we start let's install **simplux** (we assume you already have all packages required for Angular installed).
 
 ```sh
-npm i @simplux/preset-angular -S
+npm i @simplux/angular @simplux/core @simplux/testing -S
 ```
 
 Now we're ready to go.
