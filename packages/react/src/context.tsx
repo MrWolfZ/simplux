@@ -27,10 +27,6 @@ interface ModuleStates {
   [moduleName: string]: any
 }
 
-interface ModuleSubscribers {
-  [moduleName: string]: Set<(state: any, previousState: any) => void>
-}
-
 // this default context value just passes calls through to the module; this
 // is mainly useful for testing since you do not have to wrap your component
 // in a provider
@@ -57,7 +53,10 @@ export const useSimpluxSubscription = (
     getStoreProxy().getState(),
   )
 
-  const subscribers = useMemo<ModuleSubscribers>(() => ({}), [])
+  const subscribers = useMemo(
+    () => new Map<string, Set<(state: any, previousState: any) => void>>(),
+    [],
+  )
 
   useEffect(() => {
     let previousModuleStates = moduleStates
@@ -70,14 +69,14 @@ export const useSimpluxSubscription = (
       unstable_batchedUpdates(() => {
         setModuleStates(currentModuleStates)
 
-        for (const moduleName of Object.keys(subscribers)) {
-          for (const subscriber of subscribers[moduleName]) {
+        subscribers.forEach((moduleSubscribers, moduleName) => {
+          moduleSubscribers.forEach(subscriber =>
             subscriber(
               currentModuleStates[moduleName],
               previousModuleStates[moduleName],
-            )
-          }
-        }
+            ),
+          )
+        })
       })
     })
   }, [])
@@ -96,12 +95,15 @@ export const useSimpluxSubscription = (
       const moduleName = simpluxModule.$simpluxInternals.name
       const moduleState = getModuleState(simpluxModule)
 
-      subscribers[moduleName] = subscribers[moduleName] || new Set()
-      subscribers[moduleName].add(handler)
+      if (!subscribers.has(moduleName)) {
+        subscribers.set(moduleName, new Set())
+      }
+
+      subscribers.get(moduleName)!.add(handler)
 
       handler(moduleState, moduleState)
 
-      return () => subscribers[moduleName].delete(handler)
+      return () => subscribers.get(moduleName)!.delete(handler)
     },
     [],
   )
