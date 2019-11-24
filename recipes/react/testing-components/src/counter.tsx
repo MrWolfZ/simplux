@@ -1,32 +1,23 @@
 // this code is part of the simplux recipe "testing my React components":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-component
 
+import { useSimplux } from '@simplux/react'
 import React from 'react'
-import {
-  increment,
-  incrementBy,
-  selectCounterValue,
-  selectCounterValueTimes,
-  useCounter,
-} from './counter-module'
+import { counter } from './counter-module'
 
 export const Counter = () => {
-  const value = useCounter(selectCounterValue)
-  const valueTimesTwo = useCounter(s => s.value * 2)
-  const selectCounterValueTimesFive = selectCounterValueTimes.asFactory(5)
-  const valueTimesFive = useCounter(selectCounterValueTimesFive)
+  const value = useSimplux(counter.value)
+  const valueTimesFive = useSimplux(counter.valueTimes, 5)
 
   return (
     <>
       <span>value: {value}</span>
       <br />
-      <span>value * 2: {valueTimesTwo}</span>
-      <br />
       <span>value * 5: {valueTimesFive}</span>
       <br />
-      <button onClick={increment}>Increment</button>
+      <button onClick={counter.increment}>Increment</button>
       <br />
-      <button onClick={() => incrementBy(5)}>Increment by 5</button>
+      <button onClick={() => counter.incrementBy(5)}>Increment by 5</button>
     </>
   )
 }

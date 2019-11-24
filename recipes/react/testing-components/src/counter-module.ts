@@ -6,33 +6,26 @@ import {
   createSelectors,
   createSimpluxModule,
 } from '@simplux/core'
-import { createSelectorHook } from '@simplux/react'
 
-export const counterModule = createSimpluxModule({
+const counterModule = createSimpluxModule({
   name: 'counter',
   initialState: {
     value: 0,
   },
 })
 
-export const useCounter = createSelectorHook(counterModule)
-
-export const { increment, incrementBy } = createMutations(counterModule, {
-  increment(state) {
-    state.value += 1
-  },
-
-  incrementBy(state, amount: number) {
-    state.value += amount
-  },
-})
-
-export const { selectCounterValue, selectCounterValueTimes } = createSelectors(
-  counterModule,
-  {
-    selectCounterValue: ({ value }) => value,
-
-    selectCounterValueTimes: ({ value }, multiplier: number) =>
-      value * multiplier,
-  },
-)
+export const counter = {
+  ...counterModule,
+  ...createMutations(counterModule, {
+    increment(state) {
+      state.value += 1
+    },
+    incrementBy(state, amount: number) {
+      state.value += amount
+    },
+  }),
+  ...createSelectors(counterModule, {
+    value: ({ value }) => value,
+    valueTimes: ({ value }, multiplier: number) => value * multiplier,
+  }),
+}
