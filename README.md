@@ -16,7 +16,11 @@ npm i @simplux/preset -S
 ```ts
 // counter.ts
 
-import { createSimpluxModule, createMutations, createSelectors } from '@simplux/core'
+import {
+  createSimpluxModule,
+  createMutations,
+  createSelectors,
+} from '@simplux/core'
 
 const counterModule = createSimpluxModule({
   name: 'counter',
@@ -126,7 +130,6 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [using lazy loaded components/code splitting](recipes/react/using-lazy-loading-code-splitting#readme) (work-in-progress)
 - [using hot module reloading (HMR)](recipes/react/using-hot-module-reloading#readme) (work-in-progress)
 - [using server-side rendering (SSR)](recipes/react/using-server-side-rendering#readme) (work-in-progress)
-- [using **simplux** with React Redux](recipes/react/using-with-react-redux#readme) (work-in-progress)
 - [using **simplux** in my React Native application](recipes/react/using-in-react-native-application#readme) (work-in-progress)
 
 ### Angular
