@@ -4,13 +4,13 @@
 import { createMutations, createSimpluxModule } from '@simplux/core'
 
 export interface CounterState {
-  counter: number
+  value: number
 }
 
 const counterModule = createSimpluxModule<CounterState>({
   name: 'counter',
   initialState: {
-    counter: 0,
+    value: 0,
   },
 })
 
@@ -18,10 +18,10 @@ export const counter = {
   ...counterModule,
   ...createMutations(counterModule, {
     increment: state => {
-      state.counter += 1
+      state.value += 1
     },
     incrementBy: (state, amount: number) => {
-      state.counter += amount
+      state.value += amount
     },
   }),
 }

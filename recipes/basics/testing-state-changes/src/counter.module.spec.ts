@@ -7,7 +7,7 @@ describe('counter module', () => {
   // by default our mutations will update their module's state when
   // called; however, it is best to test our mutations in isolation
   // with a specific state value
-  const testState: CounterState = { counter: 10 }
+  const testState: CounterState = { value: 10 }
 
   describe('mutations', () => {
     describe('increment', () => {
@@ -16,7 +16,7 @@ describe('counter module', () => {
         // state value with `withState`; when called this way the
         // mutation does not affect the module's state at all
         const result = counter.increment.withState(testState)
-        expect(result.counter).toBe(11)
+        expect(result.value).toBe(11)
       })
     })
 
@@ -24,7 +24,7 @@ describe('counter module', () => {
       it('increments the counter by the provided amount', () => {
         // of course you can also provide arguments to your mutations
         const result = counter.incrementBy.withState(testState, 5)
-        expect(result.counter).toBe(15)
+        expect(result.value).toBe(15)
       })
     })
   })

@@ -26,7 +26,7 @@ interface CounterState {
 const counterModule = createSimpluxModule<CounterState>({
   name: 'counter',
   initialState: {
-    counter: 0,
+    value: 0,
   },
 })
 
@@ -34,10 +34,10 @@ const counter = {
   ...counterModule,
   ...createMutations(counterModule, {
     increment: state => {
-      state.counter += 1
+      state.value += 1
     },
     incrementBy: (state, amount: number) => {
-      state.counter += amount
+      state.value += amount
     },
   }),
 }
@@ -46,12 +46,12 @@ const counter = {
 Let's start by testing our `increment` mutation. By default mutations will update their module's state when called. However, it is best to test our mutations in isolation with a specific state value. This can be done by using `withState`. When called this way the mutation does not affect the module's state at all.
 
 ```ts
-const testState: CounterState = { counter: 10 }
+const testState: CounterState = { value: 10 }
 
 describe('increment', () => {
   it('increments the counter by one', () => {
     const result = counter.increment.withState(testState)
-    expect(result.counter).toBe(11)
+    expect(result.value).toBe(11)
   })
 })
 ```
@@ -62,7 +62,7 @@ We can also use `withState` to test our mutations that take arguments.
 describe('incrementBy', () => {
   it('increments the counter by the provided amount', () => {
     const result = counter.incrementBy.withState(testState, 5)
-    expect(result.counter).toBe(15)
+    expect(result.value).toBe(15)
   })
 })
 ```
