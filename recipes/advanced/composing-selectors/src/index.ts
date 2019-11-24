@@ -4,63 +4,54 @@
 import { createSelectors, createSimpluxModule } from '@simplux/core'
 
 // for this recipe we use a simple scenario: managing a collection
-// of Todo items
-interface Todo {
+// of books
+interface Book {
   id: string
-  description: string
-  isDone: boolean
+  title: string
+  author: string
 }
 
-interface TodoState {
-  [id: string]: Todo
-}
+const initialState: Book[] = [
+  { id: '1', title: 'The Lord of the Rings', author: 'J.R.R. Tolkien' },
+  { id: '2', title: 'The Hobbit', author: 'J.R.R. Tolkien' },
+  { id: '3', title: 'The Black Company', author: 'Glen Cook' },
+  { id: '4', title: 'Nineteen Eighty-Four', author: 'George Orwell' },
+]
 
-const initialState: TodoState = {
-  '1': { id: '1', description: 'go shopping', isDone: false },
-  '2': { id: '2', description: 'clean house', isDone: true },
-  '3': { id: '3', description: 'bring out trash', isDone: true },
-  '4': { id: '4', description: 'go to the gym', isDone: false },
-}
-
-const todosModule = createSimpluxModule({
-  name: 'todos',
+const booksModule = createSimpluxModule({
+  name: 'books',
   initialState,
 })
 
 // we want to select three types of things:
-// 1) all items with a specific value for isDone
-// 2) all items that are done
-// 3) the descriptions of all done items
+// 1) a set of all authors
+// 2) all books by a given author
+// 3) all books grouped by author
 
-const { selectItemsWithIsDoneValue, selectDoneItems } = createSelectors(
-  todosModule,
-  {
-    selectItemsWithIsDoneValue: (todos, targetIsDoneValue: boolean) =>
-      Object.keys(todos)
-        .map(id => todos[id])
-        .filter(item => item.isDone === targetIsDoneValue),
+const booksSelectors = createSelectors(booksModule, {
+  allAuthors: books => new Set<string>(books.map(book => book.author)),
+  byAuthor: (books, author: string) => books.filter(b => b.author === author),
 
-    // instead of repeating the logic for filtering Todo items we want to
-    // re-use the logic we already have, that is we want to compose our
-    // selectors; to do this we can simply call the selector; however,
-    // TypeScript cannot infer the return type of the selector, so we need
-    // to specify it ourselves
-    selectDoneItems: (todos): Todo[] => selectItemsWithIsDoneValue(todos, true),
+  // for the third point we can re-use the selectors for the first two points
+  // which prevents code duplication; in other words, we want to compose our
+  // selectors; to do this we can simply call the other selector with a state;
+  // however, TypeScript cannot infer the return type of the selector due to
+  // the cyclic dependency, so we need to specify it ourselves
+  groupedByAuthor: (books): Map<string, Book[]> => {
+    const allAuthors = Array.from(booksSelectors.allAuthors.withState(books))
+    return allAuthors.reduce(
+      (grouped, author) =>
+        grouped.set(author, booksSelectors.byAuthor.withState(books, author)),
+      new Map<string, Book[]>(),
+    )
   },
-)
-
-// alternatively to specifying the return type of a composed selector
-// explicitly we can also just create it in another createSelectors
-// call
-const { selectDoneItemDescriptions } = createSelectors(todosModule, {
-  // this selector does not need type annotations, even though it is
-  // composed
-  selectDoneItemDescriptions: todos =>
-    selectDoneItems(todos).map(item => item.description),
 })
 
-console.log('done items:', selectDoneItems.withLatestModuleState())
-console.log(
-  'done item descriptions:',
-  selectDoneItemDescriptions(todosModule.getState()),
-)
+const books = {
+  ...booksModule,
+  ...booksSelectors,
+}
+
+console.log('authors:', books.allAuthors())
+console.log('books by Tolkien:', books.byAuthor('J.R.R. Tolkien'))
+console.log('books grouped by author:', books.groupedByAuthor())

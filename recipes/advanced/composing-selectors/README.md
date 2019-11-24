@@ -6,85 +6,77 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/advanced/composing-selectors).
 
-Before we start let's install all the packages we need.
+Before we start let's install **simplux**.
 
 ```sh
-npm i @simplux/core redux -S
+npm i @simplux/preset -S
 ```
 
 Now we're ready to go.
 
-For this recipe we use a simple scenario: managing a collection of Todo items. Let's create a module for this.
+For this recipe we use a simple scenario: managing a collection of books. Let's create a module for this.
 
 ```ts
 import { createSimpluxModule } from '@simplux/core'
 
-interface Todo {
+interface Book {
   id: string
-  description: string
-  isDone: boolean
+  title: string
+  author: string
 }
 
-interface TodoState {
-  [id: string]: Todo
-}
+const initialState: Book[] = [
+  { id: '1', title: 'The Lord of the Rings', author: 'J.R.R. Tolkien' },
+  { id: '2', title: 'The Hobbit', author: 'J.R.R. Tolkien' },
+  { id: '3', title: 'The Black Company', author: 'Glen Cook' },
+  { id: '4', title: 'Nineteen Eighty-Four', author: 'George Orwell' },
+]
 
-const initialState: TodoState = {
-  '1': { id: '1', description: 'go shopping', isDone: false },
-  '2': { id: '2', description: 'clean house', isDone: true },
-  '3': { id: '3', description: 'bring out trash', isDone: true },
-  '4': { id: '4', description: 'go to the gym', isDone: false },
-}
-
-const todosModule = createSimpluxModule({
-  name: 'todos',
+const booksModule = createSimpluxModule({
+  name: 'books',
   initialState,
 })
 ```
 
 We want to select three types of things for this module:
 
-1. all items with a specific value for `isDone`
-2. all items that are done
-3. the descriptions of all done items
+1. a set of all authors
+2. all books by a given author
+3. all books grouped by author
 
-However, instead of duplicating the logic for filtering Todo items we want to re-use our logic. That means we want to compose our selectors. To do this, we can simply call any other selector we require. Let's see how we can do this to select all items that are done.
+For the third point we can re-use the selectors for the first two points which prevents unnecessary code duplication. In other words, we want to compose our selectors. To do this we can simply call the other selector with a state. Let's see how this looks like in code.
 
 ```ts
 import { createSelectors } from '@simplux/core'
 
-const { selectItemsWithIsDoneValue, selectDoneItems } = createSelectors(
-  todosModule,
-  {
-    selectItemsWithIsDoneValue: (todos, targetIsDoneValue: boolean) =>
-      Object.keys(todos)
-        .map(id => todos[id])
-        .filter(item => item.isDone === targetIsDoneValue),
+const booksSelectors = createSelectors(booksModule, {
+  allAuthors: books => new Set<string>(books.map(book => book.author)),
+  byAuthor: (books, author: string) => books.filter(b => b.author === author),
 
-    // sadly, TypeScript cannot infer the return type of the
-    // selector, so we need to specify it ourselves
-    selectDoneItems: (todos): Todo[] => selectItemsWithIsDoneValue(todos, true),
+  // sadly, TypeScript cannot infer the return type of the selector due to
+  // the cyclic dependency, so we need to specify it ourselves
+  groupedByAuthor: (books): Map<string, Book[]> => {
+    const allAuthors = Array.from(booksSelectors.allAuthors.withState(books))
+    return allAuthors.reduce(
+      (grouped, author) =>
+        grouped.set(author, booksSelectors.byAuthor.withState(books, author)),
+      new Map<string, Book[]>(),
+    )
   },
-)
-```
-
-Instead of adding type annotations to our composed selectors, we can also create them in a separate `createSelectors` call, which allows TypeScript to properly infer all types. Let's do this for our last selector.
-
-```ts
-const { selectDoneItemDescriptions } = createSelectors(todosModule, {
-  selectDoneItemDescriptions: todos =>
-    selectDoneItems(todos).map(item => item.description),
 })
 ```
 
-We can call our composed selectors like any other selector.
+We can now use our selectors.
 
 ```ts
-console.log('done items:', selectDoneItems.withLatestModuleState())
-console.log(
-  'done item descriptions:',
-  selectDoneItemDescriptions(todosModule.getState()),
-)
+const books = {
+  ...booksModule,
+  ...booksSelectors,
+}
+
+console.log('authors:', books.allAuthors())
+console.log('books by Tolkien:', books.byAuthor('J.R.R. Tolkien'))
+console.log('books grouped by author:', books.groupedByAuthor())
 ```
 
 And that is all you need for composing your selectors with **simplux**.
