@@ -11,7 +11,7 @@ const counterModule = createSimpluxModule({
 
   // we use a simple number as the state
   initialState: {
-    counter: 0,
+    value: 0,
   },
 })
 
@@ -25,12 +25,12 @@ console.log('initial state:', counterModule.getState())
 const { increment, incrementBy } = createMutations(counterModule, {
   // we can have mutations that only use the state
   increment: state => {
-    state.counter += 1
+    state.value += 1
   },
 
   // but they can also have arguments
   incrementBy: (state, amount: number) => {
-    state.counter += amount
+    state.value += amount
   },
 })
 

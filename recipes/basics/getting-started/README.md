@@ -4,10 +4,10 @@ This recipe shows how simple it is to get started using **simplux**.
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
 
-Before we start let's install all the packages we need.
+Before we start let's install **simplux**.
 
 ```sh
-npm i @simplux/core redux -S
+npm i @simplux/preset -S
 ```
 
 Now we're ready to go.
@@ -24,7 +24,7 @@ const counterModule = createSimpluxModule({
 
   // we use a simple number as the state
   initialState: {
-    counter: 0,
+    value: 0,
   },
 })
 
@@ -41,12 +41,12 @@ import { createMutations } from '@simplux/core'
 const { increment, incrementBy } = createMutations(counterModule, {
   // we can have mutations that only use the state
   increment: state => {
-    state.counter += 1
+    state.value += 1
   },
 
   // but they can also have arguments
   incrementBy: (state, amount: number) => {
-    state.counter += amount
+    state.value += amount
   },
 })
 
