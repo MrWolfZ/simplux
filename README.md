@@ -109,8 +109,6 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 
 ### Advanced
 
-- [using **simplux** in my application together with Redux](recipes/advanced/using-in-redux-application#readme)
-- [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme)
 - [creating non-trivial modules](recipes/advanced/creating-non-trivial-modules#readme)
 - [testing my code that uses mutations](recipes/advanced/testing-code-using-mutations#readme)
 - [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme)
@@ -122,6 +120,8 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [testing my code that triggers side effects](recipes/advanced/testing-code-triggering-side-effects#readme)
 - [composing my mutations](recipes/advanced/composing-mutations#readme)
 - [composing my selectors](recipes/advanced/composing-selectors#readme)
+- [using **simplux** in my application together with Redux](recipes/advanced/using-in-redux-application#readme)
+- [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme)
 - [using Reselect for my selectors](recipes/advanced/using-reselect-for-selectors#readme) (work-in-progress)
 
 ### React
