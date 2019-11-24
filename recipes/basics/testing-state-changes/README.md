@@ -6,10 +6,10 @@ If you are new to **simplux** there is [a recipe](../getting-started#readme) tha
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/testing-state-changes).
 
-Before we start let's install all the packages we need.
+Before we start let's install **simplux**.
 
 ```sh
-npm i @simplux/core redux -S
+npm i @simplux/preset -S
 ```
 
 Now we're ready to go.
@@ -30,25 +30,27 @@ const counterModule = createSimpluxModule<CounterState>({
   },
 })
 
-const { increment, incrementBy } = createMutations(counterModule, {
-  increment: state => {
-    state.counter += 1
-  },
-
-  incrementBy: (state, amount: number) => {
-    state.counter += amount
-  },
-})
+const counter = {
+  ...counterModule,
+  ...createMutations(counterModule, {
+    increment: state => {
+      state.counter += 1
+    },
+    incrementBy: (state, amount: number) => {
+      state.counter += amount
+    },
+  }),
+}
 ```
 
-Let's start by testing our `increment` mutation. By default mutations will update their module's state when called. However, it is best to test our mutations in isolation with a specific state value. This can be done by using `withState`.
+Let's start by testing our `increment` mutation. By default mutations will update their module's state when called. However, it is best to test our mutations in isolation with a specific state value. This can be done by using `withState`. When called this way the mutation does not affect the module's state at all.
 
 ```ts
 const testState: CounterState = { counter: 10 }
 
 describe('increment', () => {
   it('increments the counter by one', () => {
-    const result = increment.withState(testState)()
+    const result = counter.increment.withState(testState)
     expect(result.counter).toBe(11)
   })
 })
@@ -59,7 +61,7 @@ We can also use `withState` to test our mutations that take arguments.
 ```ts
 describe('incrementBy', () => {
   it('increments the counter by the provided amount', () => {
-    const result = incrementBy.withState(testState)(5)
+    const result = counter.incrementBy.withState(testState, 5)
     expect(result.counter).toBe(15)
   })
 })

@@ -1,7 +1,7 @@
 // this code is part of the simplux recipe "testing state changes":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/testing-state-changes
 
-import { CounterState, increment, incrementBy } from './counter.module'
+import { counter, CounterState } from './counter.module'
 
 describe('counter module', () => {
   // by default our mutations will update their module's state when
@@ -13,8 +13,9 @@ describe('counter module', () => {
     describe('increment', () => {
       it('increments the counter by one', () => {
         // mutations are tested in isolation by providing a custom
-        // state value with `withState`
-        const result = increment.withState(testState)()
+        // state value with `withState`; when called this way the
+        // mutation does not affect the module's state at all
+        const result = counter.increment.withState(testState)
         expect(result.counter).toBe(11)
       })
     })
@@ -22,7 +23,7 @@ describe('counter module', () => {
     describe('incrementBy', () => {
       it('increments the counter by the provided amount', () => {
         // of course you can also provide arguments to your mutations
-        const result = incrementBy.withState(testState)(5)
+        const result = counter.incrementBy.withState(testState, 5)
         expect(result.counter).toBe(15)
       })
     })

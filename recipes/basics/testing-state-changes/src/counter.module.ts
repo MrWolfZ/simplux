@@ -7,21 +7,21 @@ export interface CounterState {
   counter: number
 }
 
-export const counterModule = createSimpluxModule<CounterState>({
+const counterModule = createSimpluxModule<CounterState>({
   name: 'counter',
   initialState: {
     counter: 0,
   },
 })
 
-export const getCounterState = counterModule.getState
-
-export const { increment, incrementBy } = createMutations(counterModule, {
-  increment: state => {
-    state.counter += 1
-  },
-
-  incrementBy: (state, amount: number) => {
-    state.counter += amount
-  },
-})
+export const counter = {
+  ...counterModule,
+  ...createMutations(counterModule, {
+    increment: state => {
+      state.counter += 1
+    },
+    incrementBy: (state, amount: number) => {
+      state.counter += amount
+    },
+  }),
+}
