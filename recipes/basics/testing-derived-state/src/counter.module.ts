@@ -4,17 +4,20 @@
 import { createSelectors, createSimpluxModule } from '@simplux/core'
 
 export interface CounterState {
-  counter: number
+  value: number
 }
 
-export const counterModule = createSimpluxModule<CounterState>({
+const counterModule = createSimpluxModule<CounterState>({
   name: 'counter',
   initialState: {
-    counter: 0,
+    value: 0,
   },
 })
 
-export const { plusOne, plus } = createSelectors(counterModule, {
-  plusOne: ({ counter }) => counter + 1,
-  plus: ({ counter }, amount: number) => counter + amount,
-})
+export const counter = {
+  ...counterModule,
+  ...createSelectors(counterModule, {
+    plusOne: ({ value }) => value + 1,
+    plus: ({ value }, amount: number) => value + amount,
+  }),
+}

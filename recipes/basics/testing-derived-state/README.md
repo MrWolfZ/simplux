@@ -6,10 +6,10 @@ If you are new to computing derived state with **simplux** there is [a recipe](.
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/basics/testing-derived-state).
 
-Before we start let's install all the packages we need.
+Before we start let's install **simpux**.
 
 ```sh
-npm i @simplux/core redux -S
+npm i @simplux/preset -S
 ```
 
 Now we're ready to go.
@@ -26,24 +26,27 @@ interface CounterState {
 const counterModule = createSimpluxModule<CounterState>({
   name: 'counter',
   initialState: {
-    counter: 0,
+    value: 0,
   },
 })
 
-const { plusOne, plus } = createSelectors(counterModule, {
-  plusOne: ({ counter }) => counter + 1,
-  plus: ({ counter }, amount: number) => counter + amount,
-})
+const counter = {
+  ...counterModule,
+  ...createSelectors(counterModule, {
+    plusOne: ({ value }) => value + 1,
+    plus: ({ value }, amount: number) => value + amount,
+  }),
+}
 ```
 
-Let's start by testing our `plusOne` selector. It is best to test the selector in isolation by simply calling it directly.
+Let's start by testing our `plusOne` selector. It is best to test the selector in isolation by calling it with a specific state.
 
 ```ts
 const testState: CounterState = { counter: 10 }
 
 describe('plusOne', () => {
   it('returns the counter plus one', () => {
-    const result = plusOne(testState)
+    const result = counter.plusOne.withState(testState)
     expect(result).toBe(11)
   })
 })
@@ -54,7 +57,7 @@ This also works with selectors that take arguments.
 ```ts
 describe('plus', () => {
   it('returns the sum of the counter and the amount', () => {
-    const result = plus(testState, 5)
+    const result = counter.plus.withState(testState, 5)
     expect(result).toBe(15)
   })
 })

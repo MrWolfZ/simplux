@@ -4,6 +4,6 @@
 // this file only exists for code sandbox to execute correctly;
 // for the tests please see the counter.module.spec.ts file
 
-import { counterModule } from './counter.module'
+import { counter } from './counter.module'
 
-console.log(`counter module state:`, counterModule.getState())
+console.log(`counter module state:`, counter.getState())
