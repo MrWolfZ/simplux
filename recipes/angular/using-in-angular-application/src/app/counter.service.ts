@@ -3,14 +3,14 @@
 
 import { Injectable } from '@angular/core'
 import { createModuleServiceBaseClass } from '@simplux/angular'
-import { counterModule, mutations, selectors } from './counter'
+import { counterModule, counterMutations, counterSelectors } from './counter'
 
 // this function creates a base class which contains methods for
 // interacting with the module
 const CounterServiceBase = createModuleServiceBaseClass(
   counterModule,
-  mutations,
-  selectors,
+  counterMutations,
+  counterSelectors,
 )
 
 // we can create an Angular service and extend the module's generated

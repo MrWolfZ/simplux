@@ -6,10 +6,10 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/angular/using-in-angular-application).
 
-Before we start let's install all the packages we need (we assume you already have all packages required for Angular installed).
+Before we start let's install **simplux** (we assume you already have all packages required for Angular installed).
 
 ```sh
-npm i @simplux/angular @simplux/core redux -S
+npm i @simplux/preset-angular -S
 ```
 
 Now we're ready to go.
@@ -30,20 +30,18 @@ const counterModule = createSimpluxModule({
   },
 })
 
-const mutations = createMutations(counterModule, {
+const counterMutations = createMutations(counterModule, {
   increment(state) {
     state.value += 1
   },
-
   incrementBy(state, amount: number) {
     state.value += amount
   },
 })
 
-const selectors = createSelectors(counterModule, {
-  selectValue: ({ value }) => value,
-
-  selectValueTimes: ({ value }, multiplier: number) => value * multiplier,
+const counterSelectors = createSelectors(counterModule, {
+  value: ({ value }) => value,
+  valueTimes: ({ value }, multiplier: number) => value * multiplier,
 })
 ```
 
@@ -54,8 +52,8 @@ import { createModuleServiceBaseClass } from '@simplux/angular'
 
 const CounterServiceBase = createModuleServiceBaseClass(
   counterModule,
-  mutations,
-  selectors,
+  counterMutations,
+  counterSelectors,
 )
 
 @Injectable({ providedIn: 'root' })
@@ -95,10 +93,10 @@ export class CounterComponent {
     // the selector applied to the module's current state when
     // subscribed to; new values are emitted whenever the state
     // and the selector's result for that state change
-    this.value$ = counter.selectValue()
+    this.value$ = counter.value()
 
     // the selectors can have arguments as well
-    this.valueTimesTwo$ = counter.selectValueTimes(2)
+    this.valueTimesTwo$ = counter.valueTimes(2)
 
     // you can get an observable of all state changes and transform
     // it yourself if required; the observable immediately emits the
