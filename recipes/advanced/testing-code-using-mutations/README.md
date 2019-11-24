@@ -6,75 +6,76 @@ If you are new to **simplux** there is [a recipe](../../basics/getting-started#r
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/advanced/testing-code-using-mutations).
 
-Before we start let's install all the packages we need.
+Before we start let's install **simplux**.
 
 ```sh
-npm i @simplux/core @simplux/testing redux -S
+npm i @simplux/preset -S
 ```
 
 Now we're ready to go.
 
-For this recipe we use a simple scenario: managing a collection of Todo items. Let's create a module for this.
+For this recipe we use a simple scenario: managing a collection of books. Let's create a module for this.
 
 ```ts
-interface Todo {
+interface Book {
   id: string
-  description: string
+  title: string
+  author: string
 }
 
-interface TodoState {
-  [id: string]: Todo
+interface BooksState {
+  [id: string]: Book
 }
 
-const initialState: TodoState = {}
+const initialState: BooksState = {}
 
-const todosModule = createSimpluxModule({
-  name: 'todos',
+const booksModule = createSimpluxModule({
+  name: 'books',
   initialState,
 })
 
-const getTodos = todosModule.getState
-const setTodos = todosModule.setState
-
-const { addTodo } = createMutations(todosModule, {
-  addTodo(todosById, todo: Todo) {
-    todosById[todo.id] = todo
-  },
-})
+const books = {
+  ...booksModule,
+  ...createMutations(booksModule, {
+    addBook(state, book: Book) {
+      state[book.id] = book
+    },
+  }),
+}
 ```
 
-In our application code we want to create a new Todo item with a random 4 character id.
+In our application code we want to create a new book with a random 4 character id.
 
 ```ts
-function addNewTodoItem(description: string) {
+function addNewBook(title: string, author: string) {
   const id = `${Math.round(Math.random() * 8999 + 1000)}`
-  addTodo({ id, description })
+  books.addBook({ id, title, author })
   return id
 }
 ```
 
 This is the code we are going to test.
 
-> You may think that `addNewTodoItem` could be a mutation itself, but it must not be since it is not pure (due the random generation of the id).
+> You may think that `addNewBook` could be a mutation itself, but it must not be since it is not pure (due the random generation of the id).
 
 The best way to test our code is to test it in isolation from the module. That means we do not want the mutation to be executed during our test. This is where the **simplux** testing extension comes into play: it allows us to mock a mutation.
 
-> It is also possible to test your code that uses mutations with the module by just letting the test call the mutation normally and then checking the module's state to see if the mutation was correctly applied. However, this is not recommended as it can cause side-effects.
+> It is also possible to test your code that uses mutations with the module by just letting the test call the mutation normally and then checking the module's state to see if the mutation was correctly applied. However, this is not recommended since it can cause side-effects.
 
 ```ts
 import { mockMutation } from '@simplux/testing'
 
 it('generates a 4 character ID', () => {
-  const addTodoMock = jest.fn()
-
   // after this line all invocations of the mutation will be
-  // redirected to the provided mock function
-  mockMutation(addTodo, addTodoMock)
+  // redirected to the provided mock function; for convenience
+  // `mockMutation` returns the provided mock function as the
+  // first item in its returned tuple
+  const [addBookMock] = mockMutation(books.addBook, jest.fn())
 
-  addNewTodoItem('test item')
+  addNewBook('test title', 'test author')
 
-  expect(addTodoMock).toHaveBeenCalled()
-  expect((addTodoMock.mock.calls[0][0] as Todo).id.length).toBe(4)
+  expect(addBookMock).toHaveBeenCalled()
+  expect((addBookMock.mock.calls[0][0] as Book).id.length).toBe(4)
 })
 ```
 
@@ -86,28 +87,28 @@ import { clearAllSimpluxMocks } from '@simplux/testing'
 afterEach(clearAllSimpluxMocks)
 ```
 
-In specific rare situations it can be useful to manually clear a mock during a test. For this the `mockMutation` function returns a callback function that can be called to clear the mock.
+In specific rare situations it can be useful to manually clear a mock during a test. For this the `mockMutation` function returns a callback function as the second item in its returned tuple that can be called to clear the mock.
 
 ```ts
 it('uses the value as description', () => {
-  const addTodoMock = jest.fn()
-  const clearAddTodoMock = mockMutation(addTodo, addTodoMock)
+  const [addBookMock, clearAddBookMock] = mockMutation(books.addBook, jest.fn())
 
-  const description = 'test item (mocked)'
-  addNewTodoItem(description)
+  const title = 'test title (mocked)'
+  const author = 'test author (mocked)'
+  addNewBook(title, author)
 
-  expect(addTodoMock).toHaveBeenCalledWith(
-    expect.objectContaining({ description }),
+  expect(addBookMock).toHaveBeenCalledWith(
+    expect.objectContaining({ title, author }),
   )
 
-  clearAddTodoMock()
+  clearAddBookMock()
 
   // after clearing the mock all calls will use the original mutation;
   // note that it is usually a bad idea to call the real mutation
   // during a test like this
-  const id = addNewTodoItem('test item')
-  expect(getTodos()[id].description).toBe('test item')
-  setTodos({})
+  const id = addNewBook('test title', 'test author')
+  expect(books.getState()[id].title).toBe('test title')
+  books.setState({})
 })
 ```
 
