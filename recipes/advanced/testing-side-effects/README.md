@@ -1,15 +1,13 @@
 # Recipe: testing side effects
 
-This recipe gives you some advice on how to test your side effects.
-
-If you are new to **simplux** there is [a recipe](../../basics/getting-started#readme) that will help you get started before you follow this recipe. The recipe for [performing side effects](../performing-side-effects#readme) is also important for following this recipe.
+Most web applications contain code which has [side effects](<https://en.wikipedia.org/wiki/Side_effect_(computer_science)>), e.g. changing the document title for the current tab or communicating over the network. Traditionally, this kind of code is difficult to test. **simplux** makes the concept of effects a first-class citizen and thereby solves the testing issue. If you have not already done so, it is recommended to first read the recipe for [performing side effects](../performing-side-effects#readme) before continuing with this recipe. Finally, it is recommended to read the recipe for [testing side effects](../testing-side-effects#readme) after you are done reading through this one.
 
 > You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/advanced/testing-side-effects).
 
-Before we start let's install all the packages we need.
+Before we start let's install **simplux**.
 
 ```sh
-npm i @simplux/core @simplux/testing redux -S
+npm i @simplux/preset -S
 ```
 
 Now we're ready to go.
@@ -17,52 +15,58 @@ Now we're ready to go.
 For this recipe we use a simple scenario: loading data from an API. Let's create a module for this.
 
 ```ts
-interface Todo {
+interface Book {
   id: string
-  description: string
-  isDone: boolean
+  title: string
+  author: string
 }
 
-interface TodoState {
-  [id: string]: Todo
+interface BooksState {
+  [id: string]: Book
 }
 
-const initialState: TodoState = {}
+const initialState: BooksState = {}
 
-const todosModule = createSimpluxModule({
-  name: 'todos',
+const booksModule = createSimpluxModule({
+  name: 'books',
   initialState,
 })
 
-const { setTodoItems } = createMutations(todosModule, {
-  setTodoItems(state, items: Todo[]) {
-    for (const id of Object.keys(state)) {
-      delete state[id]
-    }
+const booksMutations = createMutations(booksModule, {
+  setItems(_, items: Book[]) {
+    const newState: BooksState = {}
 
     for (const item of items) {
-      state[item.id] = item
+      newState[item.id] = item
     }
+
+    return newState
   },
 })
 ```
 
-We want to load the todo items from our API. As we learned in the recipe for [performing side effects](../performing-side-effects#readme) we can create an effect for this.
+We want to load the books from our API. As we learned in the recipe for [performing side effects](../performing-side-effects#readme) we can create an effect for this.
 
 ```ts
 // this effect first calls an HTTP API and then performs some post-processing
 // on the client (in a typical application this post processing would most
 // likely already be done in the API but it serves as a good example for this
 // recipe)
-const loadTodosFromApi = createEffect(async (includeDoneItems: boolean) => {
-  await loadItemsViaHttp() // to be implemented, see below
+const loadFromApi = createEffect(async (authorFilter: string) => {
+  const result = await loadItemsViaHttp() // to be implemented, see below
 
   // do some post processing
-  return todos.filter(t => !t.isDone || includeDoneItems)
+  return !authorFilter ? result : result.filter(t => t.author === authorFilter)
 })
+
+const books = {
+  ...booksModule,
+  ...booksMutations,
+  loadFromApi,
+}
 ```
 
-How are we going to test this and what exactly are we even testing here? There are two parts: 1) the call to the HTTP API, and 2) the post processing logic. 2) is the real logic that we should test and 1) is something that we certainly do not want to execute during our test, so we should mock it. Depending on your tech stack the library you use for making HTTP calls probably already provides a way to mock HTTP calls, in which case we recommend you use that library's testing capabilities. However, alternatively we could (and I am sure you have already guessed this) just make `loadItemsViaHttp` an effect itself.
+How are we going to test this and what exactly are we even testing here? There are two parts: 1) the call to the HTTP API, and 2) the post processing logic. 2) is the real logic that we should test and 1) is something that we certainly do not want to execute during our test, so we should mock it. Depending on your tech stack the library you use for making HTTP calls probably already provides a way to mock HTTP calls, in which case we recommend you use that library's testing capabilities. However, alternatively we could (and you certainly have already guessed this) just make `loadItemsViaHttp` an effect itself.
 
 ```ts
 const loadItemsViaHttp = createEffect(async () => {
@@ -78,7 +82,7 @@ const get = createEffect(async (url: string) => {
 })
 ```
 
-Once we have 1) mocked we can easily test the post-processing logic from 2) by simply calling `loadTodosFromApi`.
+Once we have 1) mocked we can easily test the post-processing logic from 2) by simply calling `books.loadFromApi`.
 
 > There are alternative designs to the effect above that would allow testing the filtering logic without the effect, e.g. by extracting it into a separate function. How you want to structure your effects is completely up to you.
 

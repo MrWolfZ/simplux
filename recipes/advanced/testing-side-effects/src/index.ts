@@ -1,7 +1,7 @@
 // this code is part of the simplux recipe "testing my side effects":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/testing-side-effects
 
-import { loadTodosFromApi, setTodoItems } from './todos'
+import { books } from './books'
 
 if (document.getElementById('loadDataBtn')) {
   setupEventHandler()
@@ -14,9 +14,9 @@ export function setupEventHandler() {
     .getElementById('loadDataBtn')!
     .addEventListener('click', async () => {
       const inputElement = document.getElementById(
-        'includeDoneItemsCheckbox',
+        'authorFilter',
       ) as HTMLInputElement
-      const value = inputElement.checked
+      const value = inputElement.value
 
       const items = await onLoadButtonClicked(value)
 
@@ -27,17 +27,17 @@ export function setupEventHandler() {
         child = itemList.lastElementChild
       }
 
-      for (const { id, description } of items) {
+      for (const { id, title, author } of items) {
         const newItemElement = document.createElement('li')
         newItemElement.id = id
-        newItemElement.innerHTML = description
+        newItemElement.innerHTML = `${title} by ${author}`
         itemList.appendChild(newItemElement)
       }
     })
 }
 
-export async function onLoadButtonClicked(includeDoneItems: boolean) {
-  const todos = await loadTodosFromApi(includeDoneItems)
-  setTodoItems(todos)
-  return todos
+export async function onLoadButtonClicked(authorFilter: string) {
+  const result = await books.loadFromApi(authorFilter)
+  books.setItems(result)
+  return result
 }

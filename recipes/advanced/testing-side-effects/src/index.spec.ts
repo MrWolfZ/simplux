@@ -3,40 +3,37 @@
 
 import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
 import { loadItemsViaHttp } from './api'
-import { loadTodosFromApi, Todo } from './todos'
+import { Book, books } from './books'
 
 describe('loading todo items', () => {
   it('calls the HTTP API', async () => {
     // since we use an effect for calling the HTTP API we can simply test
     // whether it was called inside our effect or not
-    const loadDataMock = jest.fn().mockReturnValue(Promise.resolve([]))
-    mockEffect(loadItemsViaHttp, loadDataMock)
+    const [loadDataMock] = mockEffect(
+      loadItemsViaHttp,
+      jest.fn().mockReturnValue(Promise.resolve([])),
+    )
 
-    await loadTodosFromApi(true)
+    await books.loadFromApi('')
 
     expect(loadDataMock).toHaveBeenCalled()
   })
 
   it('filters out done items if requested', async () => {
-    const data: Todo[] = [
-      {
-        id: '1',
-        description: 'clean',
-        isDone: false,
-      },
-      {
-        id: '2',
-        description: 'shopping',
-        isDone: true,
-      },
+    const data: Book[] = [
+      { id: '1', title: 'The Lord of the Rings', author: 'J.R.R. Tolkien' },
+      { id: '2', title: 'The Black Company', author: 'Glen Cook' },
+      { id: '3', title: 'Nineteen Eighty-Four', author: 'George Orwell' },
     ]
 
     // to test only the filtering logic of the effect, we mock the lower-level
     // effect with the appropriate data
-    const loadDataMock = jest.fn().mockReturnValue(Promise.resolve(data))
-    mockEffect(loadItemsViaHttp, loadDataMock)
+    mockEffect(
+      loadItemsViaHttp,
+      jest.fn().mockReturnValue(Promise.resolve(data)),
+    )
 
-    const result = await loadTodosFromApi(false)
+    const result = await books.loadFromApi('J.R.R. Tolkien')
 
     expect(result).toEqual([data[0]])
   })

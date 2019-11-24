@@ -2,15 +2,14 @@
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/testing-side-effects
 
 import { createEffect } from '@simplux/core'
-import { Todo } from './todos'
+import { Book } from './books'
 
 export const loadItemsViaHttp = createEffect(async () => {
   await new Promise(resolve => setTimeout(resolve, 200))
 
   return [
-    { id: '1', description: 'go shopping', isDone: false },
-    { id: '2', description: 'clean house', isDone: true },
-    { id: '3', description: 'bring out trash', isDone: true },
-    { id: '4', description: 'go to the gym', isDone: false },
-  ] as Todo[]
+    { id: '1', title: 'The Lord of the Rings', author: 'J.R.R. Tolkien' },
+    { id: '2', title: 'The Black Company', author: 'Glen Cook' },
+    { id: '3', title: 'Nineteen Eighty-Four', author: 'George Orwell' },
+  ] as Book[]
 })
