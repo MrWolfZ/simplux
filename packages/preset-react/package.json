@@ -1,0 +1,36 @@
+{
+  "name": "@simplux/preset-react",
+  "version": "0.9.0",
+  "description": "A preset for installing simplux in your React application.",
+  "scripts": {
+    "publish:custom": "npm publish . --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWolfZ/simplux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/simplux/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/packages/preset#readme",
+  "keywords": [
+    "immer",
+    "redux",
+    "selectors",
+    "simplux",
+    "state",
+    "typescript",
+    "preset",
+    "react"
+  ],
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@simplux/core": "0.9.0",
+    "@simplux/react": "0.9.0",
+    "@simplux/testing": "0.9.0",
+    "redux": "^4.0.1"
+  },
+  "files": []
+}
