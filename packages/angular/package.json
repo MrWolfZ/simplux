@@ -1,6 +1,6 @@
 {
   "name": "@simplux/angular",
-  "version": "0.10.0-alpha.1",
+  "version": "0.10.0-alpha.2",
   "description": "The Angular extension package of simplux. Provides a simple way to use simplux in Angular applications.",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
@@ -34,7 +34,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/core": "0.10.0-alpha.1"
+    "@simplux/core": "0.10.0-alpha.2"
   },
   "devDependencies": {
     "jest": "24.8.0",
