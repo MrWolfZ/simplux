@@ -25,11 +25,11 @@ const setDocumentTitle = createEffect((title: string) => {
 
 These simple looking effects provide some interesting challenges for testing. There are two scenarios to consider:
 
-#### testing an effect itself
+#### Testing an effect itself
 
-For our effects above sadly there is not much that **simplux** can do for you. You will either need to write an integration test that runs in a browser and really reads and sets the title. Or you will need to run the test in an environment that mocks the `document` and allows you to assert the title was set correctly, although this just moves the responsibility for mocking to a different library or framework. Since the effects are so simple you may also decide to omit testing them at all and instead focus on the more interesting scenario below.
+For our effects above you will either need to write an integration test that runs in a browser and really reads and sets the title. Or you will need to run the test in an environment that mocks the `document` and allows you to assert the title was set correctly, although this just moves the responsibility for mocking to a different library or framework. Since the effects are so simple you may also decide to omit testing them at all and instead focus on the more interesting scenario below.
 
-#### testing other code that uses this effect
+#### Testing other code that uses this effect
 
 This is where **simplux** can make your life simple. Each **simplux** effect can be mocked with the help of the `mockEffect` function from the testing package. Let's say we have a function to show a notification count in the tab title.
 
@@ -69,7 +69,7 @@ describe('prefixDocumentTitleWithNotificationCount', () => {
 })
 ```
 
-The `mockEffect` call above mocks our effect indefinitely. The testing package provides a way to clear all simplux mocks which we can simply do after each test.
+The `mockEffect` call above mocks our effect indefinitely (or until it is manually cleared via the second item in the returned tuple). The testing package provides a way to clear all simplux mocks which we can simply do after each test.
 
 ```ts
 import { clearAllSimpluxMocks } from '@simplux/testing'
@@ -138,7 +138,7 @@ const loadBooksFromApi = createEffect(async (authorFilter: string) => {
 })
 ```
 
-Thanks for **simplux** this effect is simple to test since we can mock both the `httpGet` effect as well as the `setAll` mutation ([this recipe](../testing-code-using-mutations#readme) will help you if you are unfamiliar with mocking mutations). At the same time, all code that uses this effect (e.g. a UI component) is also easy to test.
+Thanks to **simplux** this effect is simple to test since we can mock both the `httpGet` effect as well as the `setAll` mutation ([this recipe](../testing-code-using-mutations#readme) will help you if you are unfamiliar with mocking mutations). At the same time, all code that uses this effect (e.g. a UI component) is also easy to test.
 
 ```ts
 import {
