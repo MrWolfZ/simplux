@@ -29,7 +29,7 @@ These simple looking effects provide some interesting challenges for testing. Th
 
 For our effects above you will either need to write an integration test that runs in a browser and really reads and sets the title. Or you will need to run the test in an environment that mocks the `document` and allows you to assert the title was set correctly, although this just moves the responsibility for mocking to a different library or framework. Since the effects are so simple you may also decide to omit testing them at all and instead focus on the more interesting scenario below.
 
-#### Testing other code that uses this effect
+#### Testing other code that uses an effect
 
 This is where **simplux** can make your life simple. Each **simplux** effect can be mocked with the help of the `mockEffect` function from the testing package. Let's say we have a function to show a notification count in the tab title.
 
