@@ -44,6 +44,9 @@ const defaultContextValue: SimpluxContextValue = {
 // pass
 const SimpluxContext = createContext(defaultContextValue, () => 0)
 
+// we only support accessing the context via the useSimplux hook
+delete SimpluxContext.Consumer
+
 export const useSimpluxContext = () => useContext(SimpluxContext)
 
 export const useSimpluxSubscription = (
