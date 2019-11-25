@@ -54,7 +54,7 @@ counter.incrementBy(5)
 console.log('incremented counter by 5:', counter.value())
 ```
 
-See this example in action [here](https://codesandbox.io/s/simpluxrecipesbasicsgetting-started-ildpu). For a more detailed look into how **simplux** can make your life simple follow our recipe for [getting started](recipes/basics/getting-started#readme).
+See this example in action [here](https://codesandbox.io/s/simpluxquickstart-ildpu). For a more detailed look into how **simplux** can make your life simple follow our recipe for [getting started](recipes/basics/getting-started#readme).
 
 ### React
 
@@ -85,7 +85,7 @@ const Counter = () => {
 }
 ```
 
-See this example in action [here](https://codesandbox.io/s/simpluxrecipesreactusing-in-react-application-phtq3). For a more detailed look into how **simplux** can power up your React application follow our recipe for [using **simplux** in your React application](recipes/react/using-in-react-application#readme).
+See this example in action [here](https://codesandbox.io/s/simpluxquickstart-react-phtq3). For a more detailed look into how **simplux** can power up your React application follow our recipe for [using **simplux** in your React application](recipes/react/using-in-react-application#readme).
 
 ### Angular
 
