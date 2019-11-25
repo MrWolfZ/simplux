@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.advanced.creating-testable-side-effects",
-  "version": "0.10.0",
+  "version": "0.10.2-alpha.0",
   "description": "This recipe shows how simplux helps you create testable side effects (like loading data from your API)",
   "main": "src/index.ts",
   "scripts": {
@@ -27,8 +27,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.10.0",
-    "@simplux/testing": "0.10.0"
+    "@simplux/core": "0.10.2-alpha.0",
+    "@simplux/testing": "0.10.2-alpha.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.18",
