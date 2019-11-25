@@ -18,6 +18,7 @@ npm i @simplux/core -S
 
 import { createSimpluxModule, createMutations, createSelectors } from '@simplux/core'
 
+// state in simplux is contained in modules
 const counterModule = createSimpluxModule({
   name: 'counter',
   initialState: {
@@ -30,10 +31,10 @@ export const counter = {
 
   // use mutations to modify the state
   ...createMutations(counterModule, {
-    increment: state => {
+    increment(state) {
       state.value += 1
     },
-    incrementBy: (state, amount: number) => {
+    incrementBy(state, amount: number) {
       state.value += amount
     },
   }),
@@ -47,13 +48,13 @@ export const counter = {
 
 counter.increment()
 console.log('incremented counter:', counter.value())
-console.log('incremented counter value + 2:', counter.plus(2))
+console.log('counter value + 2:', counter.plus(2))
 
 counter.incrementBy(5)
 console.log('incremented counter by 5:', counter.value())
 ```
 
-See the recipe for [getting started](recipes/basics/getting-started#readme) for a more detailed look into how **simplux** can make your life simple.
+See this example in action [here](https://codesandbox.io/s/simpluxrecipesbasicsgetting-started-ildpu). For a more detailed look into how **simplux** can make your life simple follow our recipe for [getting started](recipes/basics/getting-started#readme).
 
 ### React
 
@@ -84,7 +85,7 @@ const Counter = () => {
 }
 ```
 
-See the recipe for [using **simplux** in my React application](recipes/react/using-in-react-application#readme) for a more detailed look into how **simplux** can power up your React application.
+See this example in action [here](https://codesandbox.io/s/simpluxrecipesreactusing-in-react-application-phtq3). For a more detailed look into how **simplux** can power up your React application follow our recipe for [using **simplux** in your React application](recipes/react/using-in-react-application#readme).
 
 ### Angular
 
