@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.1](https://github.com/MrWolfZ/simplux/compare/v0.10.0...v0.10.1) (2019-11-25)
+
+
+### Performance Improvements
+
+* **react:** in provider only call module subscribers if the module's state has changed ([2543897](https://github.com/MrWolfZ/simplux/commit/2543897))
+* **react:** reduce the number of times a component needs to resubscribe to the store ([c76aa37](https://github.com/MrWolfZ/simplux/commit/c76aa37))
+
+
+
+
+
 # [0.10.0](https://github.com/MrWolfZ/simplux/compare/v0.10.0-alpha.2...v0.10.0) (2019-11-24)
 
 **Note:** Version bump only for package @simplux/react
