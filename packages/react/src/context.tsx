@@ -70,12 +70,12 @@ export const useSimpluxSubscription = (
         setModuleStates(currentModuleStates)
 
         subscribers.forEach((moduleSubscribers, moduleName) => {
-          moduleSubscribers.forEach(subscriber =>
-            subscriber(
-              currentModuleStates[moduleName],
-              previousModuleStates[moduleName],
-            ),
-          )
+          const currentState = currentModuleStates[moduleName]
+          const prevState = previousModuleStates[moduleName]
+
+          if (currentState !== prevState) {
+            moduleSubscribers.forEach(sub => sub(currentState, prevState))
+          }
         })
       })
     })

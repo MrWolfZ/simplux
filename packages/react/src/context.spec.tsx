@@ -6,29 +6,35 @@ import { useSimpluxContext, useSimpluxSubscription } from './context'
 
 describe('context', () => {
   let moduleState = { count: 0 }
+  let moduleState2 = { value: '' }
   let subscriber: () => void = () => void 0
   let getModuleStateMock: jest.Mock<typeof moduleState, []>
-  let getModulesStateMock: jest.Mock<{ test: typeof moduleState }, []>
+  let getModuleStateMock2: jest.Mock<typeof moduleState2, []>
+  let getModulesStateMock: jest.Mock<
+    { test: typeof moduleState; test2: typeof moduleState2 },
+    []
+  >
 
   let unsubscribeMock: jest.Mock<void, []>
   let subscribeToReduxStoreProxyMock: jest.Mock<() => void, [() => void]>
-  let subscribeToModuleMock: jest.Mock<
-    any,
-    [(state: typeof moduleState, previousState: typeof moduleState) => void]
-  >
+  let subscribeToModuleMock: jest.Mock
 
   let moduleMock: SimpluxModule<typeof moduleState>
+  let moduleMock2: SimpluxModule<typeof moduleState2>
   let reduxStoreProxyMock: InternalReduxStoreProxy
 
   beforeEach(() => {
     moduleState = { count: 10 }
+    moduleState2 = { value: 'foo' }
 
     unsubscribeMock = jest.fn()
 
     getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
+    getModuleStateMock2 = jest.fn().mockImplementation(() => moduleState2)
+
     getModulesStateMock = jest
       .fn()
-      .mockImplementation(() => ({ test: moduleState }))
+      .mockImplementation(() => ({ test: moduleState, test2: moduleState2 }))
 
     subscribeToReduxStoreProxyMock = jest.fn().mockImplementation(s => {
       subscriber = s
@@ -45,6 +51,21 @@ describe('context', () => {
       subscribeToStateChanges: subscribeToModuleMock,
       $simpluxInternals: {
         name: 'test',
+        mockStateValue: undefined,
+        mutations: {},
+        mutationMocks: {},
+        selectors: {},
+        dispatch: undefined!,
+        getReducer: undefined!,
+      },
+    }
+
+    moduleMock2 = {
+      getState: getModuleStateMock2,
+      setState: undefined!,
+      subscribeToStateChanges: subscribeToModuleMock,
+      $simpluxInternals: {
+        name: 'test2',
         mockStateValue: undefined,
         mutations: {},
         mutationMocks: {},
@@ -114,6 +135,53 @@ describe('context', () => {
       subscriber()
 
       expect(handler).toHaveBeenCalledWith({ count: 12 }, { count: 11 })
+    })
+
+    it('only notifies module handlers if the state for the module changed', () => {
+      const handler = jest.fn()
+      const handler2 = jest.fn()
+
+      const Comp = () => {
+        const value = useSimpluxSubscription(() => reduxStoreProxyMock)
+        useEffect(() => {
+          const unsub1 = value.subscribeToModuleStateChanges(
+            moduleMock,
+            handler,
+          )
+          const unsub2 = value.subscribeToModuleStateChanges(
+            moduleMock2,
+            handler2,
+          )
+          return () => {
+            unsub1()
+            unsub2()
+          }
+        }, [])
+        return <div />
+      }
+
+      render(<Comp />)
+
+      expect(handler).toHaveBeenCalledWith({ count: 10 }, { count: 10 })
+      expect(handler2).toHaveBeenCalledWith({ value: 'foo' }, { value: 'foo' })
+
+      handler.mockClear()
+      handler2.mockClear()
+
+      moduleState = { count: 11 }
+      subscriber()
+
+      expect(handler).toHaveBeenCalledWith({ count: 11 }, { count: 10 })
+      expect(handler2).not.toHaveBeenCalled()
+
+      handler.mockClear()
+      handler2.mockClear()
+
+      moduleState2 = { value: 'bar' }
+      subscriber()
+
+      expect(handler).not.toHaveBeenCalled()
+      expect(handler2).toHaveBeenCalledWith({ value: 'bar' }, { value: 'foo' })
     })
   })
 })
