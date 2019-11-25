@@ -16,11 +16,7 @@ npm i @simplux/preset -S
 ```ts
 // counter.ts
 
-import {
-  createSimpluxModule,
-  createMutations,
-  createSelectors,
-} from '@simplux/core'
+import { createSimpluxModule, createMutations, createSelectors } from '@simplux/core'
 
 const counterModule = createSimpluxModule({
   name: 'counter',
