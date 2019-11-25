@@ -84,11 +84,25 @@ describe(`@simplux/react`, () => {
       getTodoIdsFromKeys: s => Object.keys(s.todosById),
     })
 
+    const counterModule = createSimpluxModule({
+      name: 'counter',
+      initialState: 10,
+    })
+
+    const { increment } = createMutations(counterModule, {
+      increment: c => c + 1,
+    })
+
+    const { value } = createSelectors(counterModule, {
+      value: c => c,
+    })
+
     let unmounts: (() => void)[] = []
 
     beforeEach(() => {
       unmounts = []
       todosModule.setState(todoStoreWithOneTodo)
+      counterModule.setState(10)
     })
 
     afterEach(() => {
@@ -111,14 +125,18 @@ describe(`@simplux/react`, () => {
       const { result: todoIdsFromKeys, unmount: unmount5 } = renderHook(() =>
         useSimplux(getTodoIdsFromKeys),
       )
+      const { result: counterValue, unmount: unmount6 } = renderHook(() =>
+        useSimplux(value),
+      )
 
-      unmounts.push(unmount1, unmount2, unmount3, unmount4, unmount5)
+      unmounts.push(unmount1, unmount2, unmount3, unmount4, unmount5, unmount6)
 
       expect(state.current).toBe(todoStoreWithOneTodo)
       expect(todoIds.current).toBe(todoStoreWithOneTodo.todoIds)
       expect(nrOfTodos.current).toBe(1)
       expect(todoResult.current).toBe(todo1)
       expect(todoIdsFromKeys.current).toEqual(todoStoreWithOneTodo.todoIds)
+      expect(counterValue.current).toBe(10)
     })
 
     it('re-renders when the state changes', () => {
@@ -137,8 +155,11 @@ describe(`@simplux/react`, () => {
       const { result: todoIdsFromKeys, unmount: unmount5 } = renderHook(() =>
         useSimplux(getTodoIdsFromKeys),
       )
+      const { result: counterValue, unmount: unmount6 } = renderHook(() =>
+        useSimplux(value),
+      )
 
-      unmounts.push(unmount1, unmount2, unmount3, unmount4, unmount5)
+      unmounts.push(unmount1, unmount2, unmount3, unmount4, unmount5, unmount6)
 
       actHook(() => {
         addTodo(todo2)
@@ -149,6 +170,7 @@ describe(`@simplux/react`, () => {
       expect(nrOfTodos.current).toBe(2)
       expect(todoResult.current).toBe(todo1)
       expect(todoIdsFromKeys.current).toEqual(todoStoreWithTwoTodos.todoIds)
+      expect(counterValue.current).toBe(10)
 
       actHook(() => {
         removeTodo(todo2.id)
@@ -159,10 +181,18 @@ describe(`@simplux/react`, () => {
       expect(nrOfTodos.current).toBe(1)
       expect(todoResult.current).toBe(todo1)
       expect(todoIdsFromKeys.current).toEqual(todoStoreWithOneTodo.todoIds)
+      expect(counterValue.current).toBe(10)
+
+      actHook(() => {
+        increment()
+      })
+
+      expect(counterValue.current).toBe(11)
     })
 
     it('renders initially with the mocked module state if set', () => {
       mockModuleState(todosModule, todoStoreWithTwoTodos)
+      mockModuleState(counterModule, 20)
 
       const { result: state, unmount: unmount1 } = renderHook(() =>
         useSimplux(getTodos),
@@ -179,14 +209,18 @@ describe(`@simplux/react`, () => {
       const { result: todoIdsFromKeys, unmount: unmount5 } = renderHook(() =>
         useSimplux(getTodoIdsFromKeys),
       )
+      const { result: counterValue, unmount: unmount6 } = renderHook(() =>
+        useSimplux(value),
+      )
 
-      unmounts.push(unmount1, unmount2, unmount3, unmount4, unmount5)
+      unmounts.push(unmount1, unmount2, unmount3, unmount4, unmount5, unmount6)
 
       expect(state.current).toBe(todoStoreWithTwoTodos)
       expect(todoIds.current).toBe(todoStoreWithTwoTodos.todoIds)
       expect(nrOfTodos.current).toBe(2)
       expect(todoResult.current).toBe(todo2)
       expect(todoIdsFromKeys.current).toEqual(todoStoreWithTwoTodos.todoIds)
+      expect(counterValue.current).toBe(20)
     })
 
     it('renders initially with the module state with Provider', () => {
@@ -198,12 +232,14 @@ describe(`@simplux/react`, () => {
         const nrOfTodos = useSimplux(getNrOfTodos)
         const todoResult = useSimplux(getById, '1')
         const todoIdsFromKeys = useSimplux(getTodoIdsFromKeys)
+        const counterValue = useSimplux(value)
         renderedItems.push(
           state,
           todoIds,
           nrOfTodos,
           todoResult,
           todoIdsFromKeys,
+          counterValue,
         )
         return <div>{nrOfTodos}</div>
       }
@@ -221,6 +257,7 @@ describe(`@simplux/react`, () => {
         1,
         todo1,
         todoStoreWithOneTodo.todoIds,
+        10,
       ])
     })
 
@@ -233,12 +270,14 @@ describe(`@simplux/react`, () => {
         const nrOfTodos = useSimplux(getNrOfTodos)
         const todoResult = useSimplux(getById, '1')
         const todoIdsFromKeys = useSimplux(getTodoIdsFromKeys)
+        const counterValue = useSimplux(value)
         renderedItems.push(
           state,
           todoIds,
           nrOfTodos,
           todoResult,
           todoIdsFromKeys,
+          counterValue,
         )
         return <div>{nrOfTodos}</div>
       }
@@ -256,6 +295,7 @@ describe(`@simplux/react`, () => {
         1,
         todo1,
         todoStoreWithOneTodo.todoIds,
+        10,
       ])
 
       addTodo(todo2)
@@ -266,11 +306,13 @@ describe(`@simplux/react`, () => {
         1,
         todo1,
         todoStoreWithOneTodo.todoIds,
+        10,
         todoStoreWithTwoTodos,
         todoStoreWithTwoTodos.todoIds,
         2,
         todo1,
         todoStoreWithTwoTodos.todoIds,
+        10,
       ])
 
       removeTodo(todo2.id)
@@ -281,21 +323,54 @@ describe(`@simplux/react`, () => {
         1,
         todo1,
         todoStoreWithOneTodo.todoIds,
+        10,
         todoStoreWithTwoTodos,
         todoStoreWithTwoTodos.todoIds,
         2,
         todo1,
         todoStoreWithTwoTodos.todoIds,
+        10,
         todoStoreWithOneTodo,
         todoStoreWithOneTodo.todoIds,
         1,
         todo1,
         todoStoreWithOneTodo.todoIds,
+        10,
+      ])
+
+      increment()
+
+      expect(renderedItems).toEqual([
+        todoStoreWithOneTodo,
+        todoStoreWithOneTodo.todoIds,
+        1,
+        todo1,
+        todoStoreWithOneTodo.todoIds,
+        10,
+        todoStoreWithTwoTodos,
+        todoStoreWithTwoTodos.todoIds,
+        2,
+        todo1,
+        todoStoreWithTwoTodos.todoIds,
+        10,
+        todoStoreWithOneTodo,
+        todoStoreWithOneTodo.todoIds,
+        1,
+        todo1,
+        todoStoreWithOneTodo.todoIds,
+        10,
+        todoStoreWithOneTodo,
+        todoStoreWithOneTodo.todoIds,
+        1,
+        todo1,
+        todoStoreWithOneTodo.todoIds,
+        11,
       ])
     })
 
     it('renders initially with a mocked module state with Provider', () => {
       mockModuleState(todosModule, todoStoreWithTwoTodos)
+      mockModuleState(counterModule, 20)
 
       const renderedItems: any[] = []
 
@@ -305,12 +380,14 @@ describe(`@simplux/react`, () => {
         const nrOfTodos = useSimplux(getNrOfTodos)
         const todoResult = useSimplux(getById, '2')
         const todoIdsFromKeys = useSimplux(getTodoIdsFromKeys)
+        const counterValue = useSimplux(value)
         renderedItems.push(
           state,
           todoIds,
           nrOfTodos,
           todoResult,
           todoIdsFromKeys,
+          counterValue,
         )
         return <div>{nrOfTodos}</div>
       }
@@ -328,6 +405,7 @@ describe(`@simplux/react`, () => {
         2,
         todo2,
         todoStoreWithTwoTodos.todoIds,
+        20,
       ])
     })
 
