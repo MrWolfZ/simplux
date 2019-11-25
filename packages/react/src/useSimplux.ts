@@ -43,18 +43,25 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
   )
 
   useEffect(() => {
+    let previousSelectedState = selectedState
+    let hadError = false
+
     function checkForUpdates(state: TState) {
       try {
         const newSelectedState = memoizingSelector(state)
 
-        if (newSelectedState === selectedState) {
+        if (newSelectedState === previousSelectedState && !hadError) {
           return
         }
+
+        previousSelectedState = newSelectedState
+        hadError = false
       } catch (err) {
         // we ignore all errors here, since when the component
         // is re-rendered, the selector is called again, and
         // will throw again, if neither args nor module state
         // changed
+        hadError = true
       }
 
       forceRender({})
@@ -64,7 +71,7 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
       selector.owningModule,
       checkForUpdates,
     )
-  }, [selectedState, memoizingSelector])
+  }, [memoizingSelector])
 
   return selectedState
 }

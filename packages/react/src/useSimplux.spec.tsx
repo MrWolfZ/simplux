@@ -242,9 +242,7 @@ describe(useSimplux.name, () => {
         subscriber(moduleState)
       })
 
-      // it is called twice since the update itself causes a resubscribe
-      // of the child before it is unmounted
-      expect(subscriptionMock.unsubscribe).toHaveBeenCalledTimes(2)
+      expect(subscriptionMock.unsubscribe).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -518,7 +516,6 @@ describe(useSimplux.name, () => {
     })
 
     it('ignores transient errors in selector (e.g. due to stale props)', () => {
-      const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
       const selector = createSelector(s => s.count)
       const consistencyCheckSelector = createSelector(
         ({ count }, parentCount: number) => {
@@ -548,8 +545,6 @@ describe(useSimplux.name, () => {
           subscriber(moduleState)
         })
       }).not.toThrowError()
-
-      spy.mockRestore()
     })
 
     it('re-throws errors in selector', () => {
@@ -577,6 +572,40 @@ describe(useSimplux.name, () => {
       }).toThrowError()
 
       spy.mockRestore()
+    })
+
+    it('correctly handles updates after transient error', () => {
+      let hasThrown = false
+      const renderedItems: number[] = []
+
+      const selector = createSelector(({ count }) => {
+        if (count > 10 && !hasThrown) {
+          hasThrown = true
+          throw new Error()
+        }
+
+        return count
+      })
+
+      const Comp = () => {
+        const result = useSimplux(selector)
+        renderedItems.push(result)
+        return <div>{result}</div>
+      }
+
+      render(<Comp />)
+
+      act(() => {
+        moduleState = { count: 11 }
+        subscriber(moduleState)
+      })
+
+      act(() => {
+        moduleState = { count: 10 }
+        subscriber(moduleState)
+      })
+
+      expect(renderedItems).toEqual([10, 11, 10])
     })
   })
 })
