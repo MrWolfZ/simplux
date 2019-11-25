@@ -10,7 +10,7 @@
 ## Quickstart
 
 ```sh
-npm i @simplux/preset -S
+npm i @simplux/core -S
 ```
 
 ```ts
@@ -58,7 +58,7 @@ See the recipe for [getting started](recipes/basics/getting-started#readme) for 
 ### React
 
 ```sh
-npm i @simplux/preset-react -S
+npm i @simplux/core @simplux/react -S
 ```
 
 ```tsx
