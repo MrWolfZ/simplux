@@ -156,7 +156,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 ## Open points
 
 - core: make state input to selectors deep readonly (i.e. freeze during dev and add `Immutable` type)
-- core: add multi-modules that maintain a variable set of states
+- core: enable sanity checks only during dev
 - react: create overload for `useSimplux` that takes a module and an inline selector
 - react: add tests that verify HMR works
 - react: add tests that verify server-side rendering works
@@ -165,6 +165,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - entities: allow creating custom mutations that act on one entity
 - entities: create default set of selectors for entities
 - docs: create website
+- recipes: add advanced recipe for `mixing in mutations and selectors`
 - add dtslint tests for all packages
 
 ## Contributing
