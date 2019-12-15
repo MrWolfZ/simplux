@@ -145,7 +145,7 @@ When discovering this library your first thought may have been: "Are you kidding
 
 - **optimized for TypeScript:** **simplux** is built with and for TypeScript. Sometimes TypeScript code can be a bit verbose. We put a lot of effort into ensuring that the amount of type annotations in your code is minimized by leveraging type inference wherever possible. That said **simplux** can also be used with plain JavaScript, in which case your IDE may still use the TypeScript information to help you due to our bundled typings.
 
-- **out of the box solutions for many common yet complex use-cases:** Have you ever tried setting up hot module reloading or code splitting with React and Redux? It can be quite tricky. **simplux** aims to solve as many of these complex use-cases by providing zero-configuration out-of-the-box solutions.
+- **out-of-the-box solutions for many common yet complex use-cases:** Have you ever tried setting up hot module reloading or code splitting with React and Redux? It can be quite tricky. **simplux** aims to solve as many of these complex use-cases by providing zero-configuration out-of-the-box solutions.
 
 - **modular and extensible architecture:** Our core package only contains the bare minimum that is required to use **simplux**. All other advanced functionality is added via extension packages. On one hand this allows you to pick and choose what functionality you want to use without paying for anything that you don't. On the other hand it allows adding new extension packages without risk of breaking any existing functionality.
 
