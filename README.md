@@ -117,7 +117,6 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [composing my selectors](recipes/advanced/composing-selectors#readme)
 - [using **simplux** in my application together with Redux](recipes/advanced/using-in-redux-application#readme)
 - [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme)
-- [using Reselect for my selectors](recipes/advanced/using-reselect-for-selectors#readme) (work-in-progress)
 
 ### React
 
