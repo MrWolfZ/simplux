@@ -46,7 +46,7 @@
     "@angular/language-service": "^8.2.6",
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
-    "@types/node": "^11.13.13",
+    "@types/node": "^12.12.17",
     "jasmine-core": "~3.4.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.1.0",
