@@ -1,8 +1,13 @@
 // this file contains an end-to-end test for the public API
 
-import { createMutations, createSimpluxModule } from '@simplux/core'
+import {
+  createEffect,
+  createMutations,
+  createSimpluxModule,
+} from '@simplux/core'
 import {
   clearAllSimpluxMocks,
+  mockEffect,
   mockModuleState,
   mockMutation,
 } from '@simplux/testing'
@@ -248,6 +253,17 @@ describe(`@simplux/testing`, () => {
         expect(addTodoSpy3).toHaveBeenCalledWith(todo1)
         expect(updatedState3).toEqual(todoStoreWithTodo2)
       })
+    })
+  })
+
+  describe('effects', () => {
+    it('can be mocked', () => {
+      const spy = jest.fn<number, [string, number]>()
+      const effect = createEffect(spy)
+      const [mockSpy] = mockEffect(effect, jest.fn())
+      effect('foo', 1)
+      expect(spy).not.toHaveBeenCalled()
+      expect(mockSpy).toHaveBeenCalledWith('foo', 1)
     })
   })
 })
