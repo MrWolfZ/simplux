@@ -2,7 +2,7 @@
 
 **simplux** is state management as it should be: simple to use, no boilerplate, type-safe but not verbose, and with excellent testability. **simplux** provides out-of-the-box support for [React](https://reactjs.org/) and [Angular](https://angular.io/), but can be used with any framework.
 
-[![npm version](https://badge.fury.io/js/%40simplux%2Fcore.svg)](https://www.npmjs.com/package/@simplux/core)
+[![npm version](https://badge.fury.io/js/%40simplux%2Fcore.svg)](https://www.npmjs.com/org/simplux)
 [![Build Status](https://travis-ci.org/MrWolfZ/simplux.svg?branch=master)](https://travis-ci.org/MrWolfZ/simplux)
 [![codecov](https://codecov.io/gh/MrWolfZ/simplux/branch/master/graph/badge.svg)](https://codecov.io/gh/MrWolfZ/simplux)
 [![license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
