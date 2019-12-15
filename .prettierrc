@@ -7,7 +7,7 @@
   "trailingComma": "all",
   "overrides": [
     {
-      "files": ["recipes/**/*.*", "README.md"],
+      "files": ["README.md"],
       "options": {
         "printWidth": 100
       }
