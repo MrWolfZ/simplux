@@ -157,7 +157,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 - core: add memoization to selectors (also mention this briefly in the "derived state" recipe)
 - core: add note to "composing my selectors" recipe about interplay with memoization (e.g. due to in-place sorting)
-- core: make state input to selectors deep readonly
+- core: make state input to selectors deep readonly (i.e. freeze during dev and add `Immutable` type)
 - core: add multi-modules that maintain a variable set of states
 - react: create overload for `useSimplux` that takes a module and an inline selector
 - react: add tests that verify HMR works
