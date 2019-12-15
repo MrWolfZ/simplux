@@ -124,7 +124,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [testing my React components](recipes/react/testing-components#readme)
 - [building non-trivial React applications](recipes/react/building-non-trivial-applications#readme) (work-in-progress)
 - [using lazy loaded components/code splitting](recipes/react/using-lazy-loading-code-splitting#readme)
-- [using hot module reloading (HMR)](recipes/react/using-hot-module-reloading#readme) (work-in-progress)
+- [using hot module reloading (HMR)](recipes/react/using-hot-module-reloading#readme)
 - [using server-side rendering (SSR)](recipes/react/using-server-side-rendering#readme) (work-in-progress)
 - [using **simplux** in my React Native application](recipes/react/using-in-react-native-application#readme) (work-in-progress)
 
