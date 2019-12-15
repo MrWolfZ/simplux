@@ -4,7 +4,7 @@ This recipe shows you how simple it is to use **simplux** in your React applicat
 
 If you are new to using **simplux** with React there is [a recipe](../using-in-react-application#readme) that will help you get started before you follow this recipe.
 
-> You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/react/using-hot-module-reloading).
+> You can play with the code for this recipe in this [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/react/using-hot-module-reloading). Note that the code may seem to work properly in the sandbox but that is due to its integrated hot reloading. If you want to see this recipe in action properly we recommend you run it locally.
 
 Before we start let's install **simplux** (we assume you already have all packages required for React installed).
 
@@ -107,7 +107,7 @@ const App = () => (
 render(<App />, document.getElementById('root'))
 ```
 
-When you run this example (e.g. through [the code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/react/using-hot-module-reloading)) and make changes to the code you will see that the state of the counter is retained. You could for example do the following:
+When you run this example locally and make changes to the code you will see that the state of the counter is retained. You could for example do the following:
 
 1. click the `Increment` button (the displayed value changes to 1)
 2. change the `increment` mutation to be `state.value += 2` (the displayed value remains 1, i.e. the state is retained)
