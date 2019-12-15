@@ -82,6 +82,9 @@ const Counter = () => {
 Lastly, we have to surround our application root component with a provider and then we can render it.
 
 ```tsx
+import { SimpluxProvider } from '@simplux/react'
+import { render } from 'react-dom'
+
 const App = () => (
   <SimpluxProvider>
     <Counter />
