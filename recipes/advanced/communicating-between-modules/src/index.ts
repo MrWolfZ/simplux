@@ -64,15 +64,13 @@ const notifications = {
 
 // we want subscribe to state changes of the `user` module and in
 // the state change handler we clear the `notifications` module
-const { unsubscribe } = user.subscribeToStateChanges(
-  ({ isLoggedIn }, previousState) => {
-    const userHasLoggedOut = !isLoggedIn && previousState.isLoggedIn
+const { unsubscribe } = user.subscribeToStateChanges(({ isLoggedIn }, previousState) => {
+  const userHasLoggedOut = !isLoggedIn && previousState.isLoggedIn
 
-    if (userHasLoggedOut) {
-      notifications.clear()
-    }
-  },
-)
+  if (userHasLoggedOut) {
+    notifications.clear()
+  }
+})
 
 user.logIn('authToken')
 

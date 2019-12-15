@@ -2,17 +2,12 @@
 // application together with Redux":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/using-in-redux-application
 
-import {
-  createSimpluxModule,
-  getSimpluxReducer,
-  setReduxStoreForSimplux,
-} from '@simplux/core'
+import { createSimpluxModule, getSimpluxReducer, setReduxStoreForSimplux } from '@simplux/core'
 import { combineReducers, createStore, Reducer } from 'redux'
 
 // let's say our application currently consists of a single simple
 // counter reducer
-const counterReducer: Reducer<number> = (c = 0, { type }) =>
-  type === 'INC' ? c + 1 : c
+const counterReducer: Reducer<number> = (c = 0, { type }) => (type === 'INC' ? c + 1 : c)
 
 // when building your root reducer you can add a special reducer
 // that simplux provides

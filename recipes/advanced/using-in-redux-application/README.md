@@ -19,8 +19,7 @@ For this recipe we assume we have a very simple existing application that uses R
 ```ts
 import { combineReducers, createStore, Reducer } from 'redux'
 
-const counterReducer: Reducer<number> = (c = 0, { type }) =>
-  type === 'INC' ? c + 1 : c
+const counterReducer: Reducer<number> = (c = 0, { type }) => (type === 'INC' ? c + 1 : c)
 
 const rootReducer = combineReducers({
   counter: counterReducer,

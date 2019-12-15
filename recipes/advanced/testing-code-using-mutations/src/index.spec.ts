@@ -32,18 +32,13 @@ describe('adding new books', () => {
   // a mock during a test; for this the `mockMutation` function
   // returns a callback function that can be called to clear the mock
   it('sets the title and author', () => {
-    const [addBookMock, clearAddBookMock] = mockMutation(
-      books.addBook,
-      jest.fn(),
-    )
+    const [addBookMock, clearAddBookMock] = mockMutation(books.addBook, jest.fn())
 
     const title = 'test title (mocked)'
     const author = 'test author (mocked)'
     addNewBook(title, author)
 
-    expect(addBookMock).toHaveBeenCalledWith(
-      expect.objectContaining({ title, author }),
-    )
+    expect(addBookMock).toHaveBeenCalledWith(expect.objectContaining({ title, author }))
 
     clearAddBookMock()
 

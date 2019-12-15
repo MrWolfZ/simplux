@@ -17,11 +17,7 @@ Now we're ready to go.
 In this recipe we are going to build a simple counter component. Let's start by creating our module with some simple mutations and selectors ([this recipe](../../basics/computing-derived-state#readme) will help you if you are unfamiliar with selectors).
 
 ```ts
-import {
-  createSelectors,
-  createSimpluxModule,
-  createMutations,
-} from '@simplux/core'
+import { createSelectors, createSimpluxModule, createMutations } from '@simplux/core'
 
 const counterModule = createSimpluxModule({
   name: 'counter',
@@ -102,9 +98,7 @@ export class CounterComponent {
     // it yourself if required; the observable immediately emits the
     // module's current state when subscribed to; we do recommend to
     // always use selectors if possible since they are simpler to test
-    this.valueTimesFive$ = counter
-      .selectState()
-      .pipe(map(state => state.value * 5))
+    this.valueTimesFive$ = counter.selectState().pipe(map(state => state.value * 5))
   }
 
   incrementCounter() {

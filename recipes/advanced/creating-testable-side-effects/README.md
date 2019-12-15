@@ -80,13 +80,11 @@ afterEach(clearAllSimpluxMocks)
 Now let's go one step further and assume we have some code (maybe a UI component) that calls the `prefixDocumentTitleWithNotificationCount`. To test that code you would always have to mock both `getDocumentTitle` and `setDocumentTitle`, which can become quite noisy. However, as you probably already guessed, there is an alternative approach: make `prefixDocumentTitleWithNotificationCount` an effect itself.
 
 ```ts
-const prefixDocumentTitleWithNotificationCount = createEffect(
-  (count: number) => {
-    const currentTitle = getDocumentTitle()
-    const prefixedTitle = `(${count}) ${currentTitle}`
-    setDocumentTitle(prefixedTitle)
-  },
-)
+const prefixDocumentTitleWithNotificationCount = createEffect((count: number) => {
+  const currentTitle = getDocumentTitle()
+  const prefixedTitle = `(${count}) ${currentTitle}`
+  setDocumentTitle(prefixedTitle)
+})
 ```
 
 This allows us to mock it directly where necessary without having to mock the lower level effects. We can see a pattern emerging here:
@@ -130,9 +128,7 @@ We want to populate the module with data from our API.
 
 ```ts
 const loadBooksFromApi = createEffect(async (authorFilter: string) => {
-  const result = await httpGet<Book[]>(
-    `https://my.domain.com/books?authorFilter=${authorFilter}`,
-  )
+  const result = await httpGet<Book[]>(`https://my.domain.com/books?authorFilter=${authorFilter}`)
   books.setAll(result)
   return result
 })
@@ -141,11 +137,7 @@ const loadBooksFromApi = createEffect(async (authorFilter: string) => {
 Thanks to **simplux** this effect is simple to test since we can mock both the `httpGet` effect as well as the `setAll` mutation ([this recipe](../testing-code-using-mutations#readme) will help you if you are unfamiliar with mocking mutations). At the same time, all code that uses this effect (e.g. a UI component) is also easy to test.
 
 ```ts
-import {
-  clearAllSimpluxMocks,
-  mockEffect,
-  mockMutation,
-} from '@simplux/testing'
+import { clearAllSimpluxMocks, mockEffect, mockMutation } from '@simplux/testing'
 
 describe('loading books from the API', () => {
   afterEach(clearAllSimpluxMocks)
@@ -158,9 +150,7 @@ describe('loading books from the API', () => {
 
     loadBooksFromApi('Tolkien')
 
-    expect(httpGetMock).toHaveBeenCalledWith(
-      'https://my.domain.com/books?authorFilter=Tolkien',
-    )
+    expect(httpGetMock).toHaveBeenCalledWith('https://my.domain.com/books?authorFilter=Tolkien')
   })
 
   // ... see the code of this recipe for a full list of tests

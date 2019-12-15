@@ -9,10 +9,8 @@ export const setDocumentTitle = createEffect((title: string) => {
   document.title = title
 })
 
-export const prefixDocumentTitleWithNotificationCount = createEffect(
-  (count: number) => {
-    const currentTitle = getDocumentTitle()
-    const prefixedTitle = `(${count}) ${currentTitle}`
-    setDocumentTitle(prefixedTitle)
-  },
-)
+export const prefixDocumentTitleWithNotificationCount = createEffect((count: number) => {
+  const currentTitle = getDocumentTitle()
+  const prefixedTitle = `(${count}) ${currentTitle}`
+  setDocumentTitle(prefixedTitle)
+})

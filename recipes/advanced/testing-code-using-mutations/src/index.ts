@@ -11,9 +11,7 @@ if (document.getElementById('addItemBtn')) {
 
 export function setupEventHandler() {
   document.getElementById('addItemBtn')!.addEventListener('click', () => {
-    const inputElement = document.getElementById(
-      'itemInput',
-    ) as HTMLInputElement
+    const inputElement = document.getElementById('itemInput') as HTMLInputElement
     const value = inputElement.value
 
     if (!value) {

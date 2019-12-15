@@ -79,18 +79,14 @@ const { unsubscribe } = user.subscribeToStateChanges(state => {
 This handler will be executed for every state change. However, often you do not want to react to all changes to a module's state, but only to specific changes inside the module. `subscribeToStateChanges` allows this by providing the previous state as the second parameter to the handler. This allows you to compare any nested fields to determine whether the state change is relevant for your handler.
 
 ```ts
-const { handler } = user.subscribeToStateChanges(
-  ({ isLoggedIn }, previousState) => {
-    // we can check for changes of specific properties
-    const isLoggedInChanged = isLoggedIn !== previousState.isLoggedIn
+const { handler } = user.subscribeToStateChanges(({ isLoggedIn }, previousState) => {
+  // we can check for changes of specific properties
+  const isLoggedInChanged = isLoggedIn !== previousState.isLoggedIn
 
-    if (isLoggedInChanged) {
-      console.log(
-        isLoggedIn ? 'User logged in.' : 'User logged out. Redirecting...',
-      )
-    }
-  },
-)
+  if (isLoggedInChanged) {
+    console.log(isLoggedIn ? 'User logged in.' : 'User logged out. Redirecting...')
+  }
+})
 
 // to make the state change handler simple to test without needing
 // to create a separate function for it (which would require manual
@@ -107,9 +103,7 @@ If you are already using [RxJS](https://www.learnrxjs.io/) in your application (
 import { Observable } from 'rxjs'
 
 const observeUserState = () =>
-  new Observable<UserState>(sub =>
-    user.subscribeToStateChanges(state => sub.next(state)),
-  )
+  new Observable<UserState>(sub => user.subscribeToStateChanges(state => sub.next(state)))
 
 const rxjsSubscription = observeUserState().subscribe(state => {
   console.log('observed state with RxJS:', state)

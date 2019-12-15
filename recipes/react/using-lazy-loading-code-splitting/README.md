@@ -17,11 +17,7 @@ Now we're ready to go.
 **simplux** supports lazy loading and code splitting out-of-the-box. Therefore, there is nothing you need to do except using the standard technique for lazy loading your components. In this recipe we are going to build such a lazily loaded counter component so that you can see that it works. Let's start by creating our module and the component that uses it.
 
 ```tsx
-import {
-  createSelectors,
-  createSimpluxModule,
-  createMutations,
-} from '@simplux/core'
+import { createSelectors, createSimpluxModule, createMutations } from '@simplux/core'
 
 const lazyCounterModule = createSimpluxModule({
   name: 'lazyCounter',

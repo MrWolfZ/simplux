@@ -97,9 +97,7 @@ it('uses the value as description', () => {
   const author = 'test author (mocked)'
   addNewBook(title, author)
 
-  expect(addBookMock).toHaveBeenCalledWith(
-    expect.objectContaining({ title, author }),
-  )
+  expect(addBookMock).toHaveBeenCalledWith(expect.objectContaining({ title, author }))
 
   clearAddBookMock()
 

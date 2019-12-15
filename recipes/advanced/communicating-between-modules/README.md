@@ -76,15 +76,13 @@ const notifications = {
 So how do we clear the notifications when the user logs out? If you have read the recipe for [reacting to state changes](../reacting-to-state-changes#readme) you probably already know how to do this (otherwise we recommend you to read it). What we want to do is to subscribe to state changes of the `user` module and in the state change handler we will clear the `notifications` module if the user logged out.
 
 ```ts
-const { unsubscribe } = user.subscribeToStateChanges(
-  ({ isLoggedIn }, previousState) => {
-    const userHasLoggedOut = !isLoggedIn && previousState.isLoggedIn
+const { unsubscribe } = user.subscribeToStateChanges(({ isLoggedIn }, previousState) => {
+  const userHasLoggedOut = !isLoggedIn && previousState.isLoggedIn
 
-    if (userHasLoggedOut) {
-      notifications.clear()
-    }
-  },
-)
+  if (userHasLoggedOut) {
+    notifications.clear()
+  }
+})
 ```
 
 With this the notifications be will cleared once the user logs out.

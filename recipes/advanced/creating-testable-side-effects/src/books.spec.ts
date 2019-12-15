@@ -1,11 +1,7 @@
 // this code is part of the simplux recipe "creating testable side effects":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/creating-testable-side-effects
 
-import {
-  clearAllSimpluxMocks,
-  mockEffect,
-  mockMutation,
-} from '@simplux/testing'
+import { clearAllSimpluxMocks, mockEffect, mockMutation } from '@simplux/testing'
 import { Book, books } from './books'
 import { httpGet } from './http'
 
@@ -25,9 +21,7 @@ describe('loading books from the API', () => {
 
     books.loadFromApi('Tolkien')
 
-    expect(httpGetMock).toHaveBeenCalledWith(
-      'https://my.domain.com/books?authorFilter=Tolkien',
-    )
+    expect(httpGetMock).toHaveBeenCalledWith('https://my.domain.com/books?authorFilter=Tolkien')
   })
 
   it('returns the result', async () => {

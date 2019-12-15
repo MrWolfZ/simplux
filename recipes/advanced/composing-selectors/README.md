@@ -58,8 +58,7 @@ const booksSelectors = createSelectors(booksModule, {
   groupedByAuthor: (books): Map<string, Book[]> => {
     const allAuthors = Array.from(booksSelectors.allAuthors.withState(books))
     return allAuthors.reduce(
-      (grouped, author) =>
-        grouped.set(author, booksSelectors.byAuthor.withState(books, author)),
+      (grouped, author) => grouped.set(author, booksSelectors.byAuthor.withState(books, author)),
       new Map<string, Book[]>(),
     )
   },

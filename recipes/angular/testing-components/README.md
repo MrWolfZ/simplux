@@ -21,11 +21,7 @@ In this recipe we are going to test a simple counter component. Let's start by c
 ```ts
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { createModuleServiceBaseClass } from '@simplux/angular'
-import {
-  createSelectors,
-  createSimpluxModule,
-  createMutations,
-} from '@simplux/core'
+import { createSelectors, createSimpluxModule, createMutations } from '@simplux/core'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 
@@ -76,9 +72,7 @@ export class CounterComponent {
     this.value$ = counter.value()
     this.valueTimesTwo$ = counter.valueTimes(2)
 
-    this.valueTimesFive$ = counter
-      .selectState()
-      .pipe(map(state => state.value * 5))
+    this.valueTimesFive$ = counter.selectState().pipe(map(state => state.value * 5))
   }
 
   incrementCounter() {
@@ -101,14 +95,7 @@ We need to instantiate the component with a mocked instance of our module's serv
 counterSpy = jasmine.createSpyObj<CounterService>(
   'CounterService',
   // here we list all the methods that are used inside our component
-  [
-    'getCurrentState',
-    'value',
-    'valueTimes',
-    'selectState',
-    'increment',
-    'incrementBy',
-  ],
+  ['getCurrentState', 'value', 'valueTimes', 'selectState', 'increment', 'incrementBy'],
 )
 
 // we configure all selector spies to return test values

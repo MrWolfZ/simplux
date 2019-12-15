@@ -1,11 +1,7 @@
 // this code is part of the simplux recipe "using lazy loaded React components/code splitting":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/react/using-lazy-loading-code-splitting
 
-import {
-  createMutations,
-  createSelectors,
-  createSimpluxModule,
-} from '@simplux/core'
+import { createMutations, createSelectors, createSimpluxModule } from '@simplux/core'
 import { useSimplux } from '@simplux/react'
 import React from 'react'
 

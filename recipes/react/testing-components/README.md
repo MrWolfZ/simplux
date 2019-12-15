@@ -19,11 +19,7 @@ Now we're ready to go.
 In this recipe we are going to test a simple counter component. Let's start by creating a module for the counter as well as the `Counter` component (this is the same code as in [this recipe](../using-in-react-application#readme)).
 
 ```tsx
-import {
-  createSelectors,
-  createSimpluxModule,
-  createMutations,
-} from '@simplux/core'
+import { createSelectors, createSimpluxModule, createMutations } from '@simplux/core'
 import { useSimplux } from '@simplux/react'
 import React from 'react'
 
@@ -124,9 +120,7 @@ it('increments the counter when the "Increment" button is clicked', () => {
 
   const wrapper = shallow(<Counter />)
 
-  wrapper
-    .findWhere(el => el.type() === 'button' && el.text() === 'Increment')
-    .simulate('click')
+  wrapper.findWhere(el => el.type() === 'button' && el.text() === 'Increment').simulate('click')
 
   expect(incrementMock).toHaveBeenCalled()
 })

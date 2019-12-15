@@ -13,14 +13,7 @@ describe('CounterComponent', () => {
     counterSpy = jasmine.createSpyObj<CounterService>(
       'CounterService',
       // here we list all the methods that are used inside our component
-      [
-        'getCurrentState',
-        'value',
-        'valueTimes',
-        'selectState',
-        'increment',
-        'incrementBy',
-      ],
+      ['getCurrentState', 'value', 'valueTimes', 'selectState', 'increment', 'incrementBy'],
     )
 
     // we configure all selector spies to return test values

@@ -1,11 +1,7 @@
 // this code is part of the simplux recipe "testing my React components":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-component
 
-import {
-  clearAllSimpluxMocks,
-  mockModuleState,
-  mockMutation,
-} from '@simplux/testing'
+import { clearAllSimpluxMocks, mockModuleState, mockMutation } from '@simplux/testing'
 import { shallow } from 'enzyme'
 import React from 'react'
 import { Counter } from './counter'
@@ -63,9 +59,7 @@ describe(Counter.name, () => {
 
     const wrapper = shallow(<Counter />)
 
-    wrapper
-      .findWhere(el => el.type() === 'button' && el.text() === 'Increment')
-      .simulate('click')
+    wrapper.findWhere(el => el.type() === 'button' && el.text() === 'Increment').simulate('click')
 
     expect(incrementMock).toHaveBeenCalled()
   })

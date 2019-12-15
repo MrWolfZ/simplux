@@ -1,11 +1,7 @@
 // this code is part of the simplux recipe "testing my React components":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-component
 
-import {
-  clearAllSimpluxMocks,
-  mockModuleState,
-  mockMutation,
-} from '@simplux/testing'
+import { clearAllSimpluxMocks, mockModuleState, mockMutation } from '@simplux/testing'
 import { cleanup, fireEvent, render } from '@testing-library/react'
 import React from 'react'
 import { Counter } from './counter'

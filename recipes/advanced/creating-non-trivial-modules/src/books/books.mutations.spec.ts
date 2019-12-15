@@ -35,29 +35,19 @@ describe('books module', () => {
 
     describe('removeBookById', () => {
       it('removes a book by id', () => {
-        const updatedState = removeBookById.withState(
-          booksStateWithTwoBooks,
-          book2.id,
-        )
+        const updatedState = removeBookById.withState(booksStateWithTwoBooks, book2.id)
         expect(updatedState).toEqual(booksStateWithOneBook)
       })
 
       it('does not change the state if the book does not exist', () => {
-        const updatedState = removeBookById.withState(
-          booksStateWithTwoBooks,
-          'does-not-exist',
-        )
+        const updatedState = removeBookById.withState(booksStateWithTwoBooks, 'does-not-exist')
         expect(updatedState).toBe(booksStateWithTwoBooks)
       })
     })
 
     describe('setAmountInStock', () => {
       it('sets the amount in stock of the correct book', () => {
-        const updatedState = setAmountInStock.withState(
-          booksStateWithTwoBooks,
-          book2.id,
-          200,
-        )
+        const updatedState = setAmountInStock.withState(booksStateWithTwoBooks, book2.id, 200)
         expect(updatedState.booksById[book2.id].amountInStock).toBe(200)
       })
 

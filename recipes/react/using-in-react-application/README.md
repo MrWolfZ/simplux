@@ -17,11 +17,7 @@ Now we're ready to go.
 In this recipe we are going to build a simple counter component. Let's start by creating our module with some simple mutations and selectors.
 
 ```ts
-import {
-  createSelectors,
-  createSimpluxModule,
-  createMutations,
-} from '@simplux/core'
+import { createSelectors, createSimpluxModule, createMutations } from '@simplux/core'
 
 const counterModule = createSimpluxModule({
   name: 'counter',

@@ -4,5 +4,13 @@
   "semi": false,
   "singleQuote": true,
   "tabWidth": 2,
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "overrides": [
+    {
+      "files": ["recipes/**/*.*", "README.md"],
+      "options": {
+        "printWidth": 100
+      }
+    }
+  ]
 }

@@ -38,9 +38,7 @@ export class CounterComponent {
     // it yourself if required; the observable immediately emits the
     // module's current state when subscribed to; we do recommend to
     // always use selectors if possible since they are simpler to test
-    this.valueTimesFive$ = counter
-      .selectState()
-      .pipe(map(state => state.value * 5))
+    this.valueTimesFive$ = counter.selectState().pipe(map(state => state.value * 5))
   }
 
   incrementCounter() {

@@ -37,28 +37,20 @@ describe('books module', () => {
 
     describe('outOfStock', () => {
       it('returns an array of all items that are out of stock', () => {
-        const books = outOfStock.withState(
-          booksStateWithTwoAvailableAndOneSoldOutBook,
-        )
+        const books = outOfStock.withState(booksStateWithTwoAvailableAndOneSoldOutBook)
         expect(books).toEqual([book3])
       })
     })
 
     describe('byId', () => {
       it('returns a book by ID', () => {
-        const selectedBook = byId.withState(
-          booksStateWithTwoAvailableAndOneSoldOutBook,
-          book2.id,
-        )
+        const selectedBook = byId.withState(booksStateWithTwoAvailableAndOneSoldOutBook, book2.id)
 
         expect(selectedBook).toEqual(book2)
       })
 
       it('returns undefined if the book does not exist', () => {
-        const selectedBook = byId.withState(
-          booksStateWithTwoBooks,
-          'does-not-exist',
-        )
+        const selectedBook = byId.withState(booksStateWithTwoBooks, 'does-not-exist')
 
         expect(selectedBook).toBeUndefined()
       })

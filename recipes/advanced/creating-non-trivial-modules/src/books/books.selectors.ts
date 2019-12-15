@@ -19,9 +19,7 @@ export const booksSelectors = createSelectors(booksModule, {
   // see the recipe for "composing my selectors" for more details about
   // this style of writing selectors
   outOfStock: (state): Book[] =>
-    booksSelectors.all
-      .withState(state)
-      .filter(book => book.amountInStock === 0),
+    booksSelectors.all.withState(state).filter(book => book.amountInStock === 0),
 
   // we use an explicit type annotation to express that the accessed
   // book might not exists, which allows TypeScript to prevent bugs
