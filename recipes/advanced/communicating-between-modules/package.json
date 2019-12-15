@@ -1,0 +1,40 @@
+{
+  "name": "@simplux/recipes.advanced.communicating-between-modules",
+  "version": "0.10.2",
+  "description": "This recipe shows you how simple it is to communicate between your simplux modules",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "webpack-dev-server --mode development --progress --color"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrWolfZ/simplux.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MrWolfZ/simplux/issues"
+  },
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/communicating-between-modules#readme",
+  "keywords": [
+    "recipe",
+    "redux",
+    "simplux",
+    "mutations",
+    "functional",
+    "composition",
+    "typescript"
+  ],
+  "author": "Jonathan Ziller <jonathan.ziller@gmail.com> (https://www.github.com/MrWolfZ)",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@simplux/core": "0.10.2"
+  },
+  "devDependencies": {
+    "html-webpack-plugin": "^3.2.0",
+    "ts-loader": "^6.0.2",
+    "typescript": "^3.7.2",
+    "webpack": "^4.32.2",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.5.1"
+  }
+}

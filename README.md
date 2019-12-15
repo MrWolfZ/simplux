@@ -111,7 +111,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme)
 - [creating testable side effects (like loading data from my API)](recipes/advanced/creating-testable-side-effects#readme)
 - [organizing my application state](recipes/advanced/organizing-application-state#readme)
-- [communicating between modules](recipes/advanced/communicating-between-modules#readme) (work-in-progress)
+- [communicating between modules](recipes/advanced/communicating-between-modules#readme)
 - [managing collections of entities](recipes/advanced/managing-entity-collections#readme) (work-in-progress)
 - [composing my mutations](recipes/advanced/composing-mutations#readme)
 - [composing my selectors](recipes/advanced/composing-selectors#readme)
