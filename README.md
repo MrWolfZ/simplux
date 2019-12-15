@@ -89,7 +89,7 @@ See this example in action [here](https://codesandbox.io/s/simpluxquickstart-rea
 
 ### Angular
 
-See the recipe for [using **simplux** in my Angular application](recipes/angular/using-in-angular-application#readme).
+See the recipe for [using **simplux** in your Angular application](recipes/angular/using-in-angular-application#readme).
 
 ## Recipes
 
