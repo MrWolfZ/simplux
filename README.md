@@ -155,9 +155,10 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- core: add multi-modules that maintain a variable set of states
 - core: add memoization to selectors (also mention this briefly in the "derived state" recipe)
 - core: add note to "composing my selectors" recipe about interplay with memoization (e.g. due to in-place sorting)
+- core: make state input to selectors deep readonly
+- core: add multi-modules that maintain a variable set of states
 - testing: adjust `mockEffect` to return proper mocked function type
 - react: create overload for `useSimplux` that takes a module and an inline selector
 - react: add tests that verify HMR works
@@ -167,8 +168,6 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - entities: allow creating custom mutations that act on one entity
 - entities: create default set of selectors for entities
 - docs: create website
-- recipes: adjust all recipes to have less focus on redux
-- recipes: add or adjust recipes to show pattern for exporting a module with its mutations, selectors and effects
 - add dtslint tests for all packages
 
 ## Contributing
