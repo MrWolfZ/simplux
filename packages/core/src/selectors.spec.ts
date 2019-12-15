@@ -114,6 +114,70 @@ describe('selectors', () => {
 
         expect(plus.owningModule).toBe(moduleMock)
       })
+
+      it('is memoized without arguments', () => {
+        const mock = jest.fn()
+
+        const { value } = createSelectors(moduleMock, {
+          value: c => mock(c)!,
+        })
+
+        value()
+
+        expect(mock).toHaveBeenCalledTimes(1)
+
+        value()
+
+        expect(mock).toHaveBeenCalledTimes(1)
+
+        moduleState = moduleState + 1
+
+        value()
+
+        expect(mock).toHaveBeenCalledTimes(2)
+
+        value()
+
+        expect(mock).toHaveBeenCalledTimes(2)
+      })
+
+      it('is memoized with arguments', () => {
+        const mock = jest.fn()
+
+        const { plus } = createSelectors(moduleMock, {
+          plus: (c, amount: number) => mock(c, amount)!,
+        })
+
+        plus(5)
+
+        expect(mock).toHaveBeenCalledTimes(1)
+
+        plus(5)
+
+        expect(mock).toHaveBeenCalledTimes(1)
+
+        moduleState = moduleState + 1
+
+        plus(5)
+
+        expect(mock).toHaveBeenCalledTimes(2)
+
+        plus(5)
+
+        expect(mock).toHaveBeenCalledTimes(2)
+
+        plus(10)
+
+        expect(mock).toHaveBeenCalledTimes(3)
+
+        plus(10)
+
+        expect(mock).toHaveBeenCalledTimes(3)
+
+        plus(5)
+
+        expect(mock).toHaveBeenCalledTimes(4)
+      })
     })
   })
 })

@@ -113,12 +113,13 @@ export function createSelectors<
 
   const resolvedSelectors = Object.keys(selectorDefinitions).reduce(
     (acc, selectorName: keyof TSelectorDefinitions) => {
-      const getDefinition = () => selectors[selectorName as string]
+      const definition = selectors[selectorName as string]
+      const memoizedDefinition = memoize(definition)
 
       const namedSelector = nameFunction(
         selectorName as string,
         (...args: any[]) => {
-          return getDefinition()(simpluxModule.getState(), ...args)
+          return memoizedDefinition(simpluxModule.getState(), ...args)
         },
       ) as ResolvedSelector<TState, TSelectorDefinitions[typeof selectorName]>
 
@@ -126,8 +127,7 @@ export function createSelectors<
 
       const extras = namedSelector as Mutable<typeof namedSelector>
 
-      extras.withState = (state: TState, ...args: any[]) =>
-        getDefinition()(state, ...args)
+      extras.withState = memoizedDefinition
 
       extras.selectorName = selectorName as string
       extras.owningModule = simpluxModule
@@ -138,4 +138,25 @@ export function createSelectors<
   )
 
   return resolvedSelectors
+}
+
+function memoize<TFunction extends Function>(fn: TFunction): TFunction {
+  let memoizedArgs: any[] | undefined
+  let memoizedResult: any
+
+  const memoizedFunction = (...args: any[]) => {
+    const memoizedResultNeedsToBeRefreshed =
+      !memoizedArgs ||
+      memoizedArgs.length !== args.length ||
+      !memoizedArgs.every((a, idx) => a === args[idx])
+
+    if (memoizedResultNeedsToBeRefreshed) {
+      memoizedArgs = args
+      memoizedResult = fn(...args)
+    }
+
+    return memoizedResult
+  }
+
+  return (memoizedFunction as unknown) as TFunction
 }

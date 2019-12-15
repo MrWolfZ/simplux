@@ -27,7 +27,9 @@ const counterModule = createSimpluxModule({
 })
 ```
 
-To compute derived state for our module we can define so-called _selectors_. A selector is a pure function that takes the module's state - and optionally some additional arguments - and returns some derived value.
+To compute derived state for our module we can define so-called _selectors_. A selector is a [pure function](https://en.wikipedia.org/wiki/Pure_function) that takes the module's state - and optionally some additional arguments - and returns some derived value.
+
+> It is important that the selector is pure since it allows [memoizing](https://en.wikipedia.org/wiki/Memoization#Functional_programming) its result for efficiency (which **simplux** does for you automatically)
 
 ```ts
 import { createSelectors } from '@simplux/core'
