@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.basics.computing-derived-state",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "description": "This recipe shows how simple it is to compute derived state for your simplux modules",
   "main": "src/index.ts",
   "scripts": {
@@ -25,7 +25,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.10.2"
+    "@simplux/core": "0.11.0"
   },
   "devDependencies": {
     "html-webpack-plugin": "^3.2.0",
