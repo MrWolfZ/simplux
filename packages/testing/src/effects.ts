@@ -11,10 +11,10 @@ import { registerMockCleanupFunction } from './cleanup'
  *
  * @returns a function that clears the mock when called
  */
-export function mockEffect<TEffect extends Function>(
+export function mockEffect<TEffect extends Function, TMock extends TEffect>(
   effectToMock: TEffect,
-  mockFn: TEffect,
-): [TEffect, () => void] {
+  mockFn: TMock,
+): [TMock, () => void] {
   const mockDefinitions = getMockDefinitionsInternal()
 
   removeMock(mockDefinitions, effectToMock)

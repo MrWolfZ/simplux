@@ -68,6 +68,13 @@ describe(mockEffect.name, () => {
         expect(mockSpy1).toHaveBeenCalledTimes(1)
         expect(mockSpy2).toHaveBeenCalledTimes(2)
       })
+
+      it('returns a function of the correct type', () => {
+        const effect = createEffect((c: number) => c)
+        const [mockSpy] = mockEffect(effect, jest.fn())
+        // tslint:disable-next-line: no-unbound-method
+        expect(mockSpy.mockImplementation).toBeDefined()
+      })
     })
   })
 

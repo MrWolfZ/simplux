@@ -159,7 +159,6 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - core: add note to "composing my selectors" recipe about interplay with memoization (e.g. due to in-place sorting)
 - core: make state input to selectors deep readonly
 - core: add multi-modules that maintain a variable set of states
-- testing: adjust `mockEffect` to return proper mocked function type
 - react: create overload for `useSimplux` that takes a module and an inline selector
 - react: add tests that verify HMR works
 - react: add tests that verify server-side rendering works
