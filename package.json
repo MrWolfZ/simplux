@@ -14,7 +14,8 @@
     "precommit": "node ./scripts/pre-commit-hook.js",
     "build:config": "tsc -p ./tsconfig.config.json",
     "lerna:bootstrap": "lerna bootstrap --hoist",
-    "postinstall": "npm run lerna:bootstrap"
+    "postinstall": "npm run lerna:bootstrap",
+    "lerna": "lerna"
   },
   "repository": {
     "type": "git",
