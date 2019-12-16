@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.advanced.debugging-with-redux-devtools",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "This recipe shows you how simple it is to debug your state changes with simplux by leveraging the Redux DevTools",
   "main": "src/index.ts",
   "scripts": {
@@ -25,7 +25,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.11.0",
+    "@simplux/core": "0.11.1",
     "redux": ">=4.0.0",
     "redux-devtools-extension": "^2.13.8"
   },
