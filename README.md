@@ -165,6 +165,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - docs: create website
 - recipes: add advanced recipe for `mixing in mutations and selectors`
 - add dtslint tests for all packages
+- move quickstart recipes to repository
 
 ## Contributing
 
