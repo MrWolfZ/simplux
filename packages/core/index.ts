@@ -77,8 +77,43 @@ export function getSimpluxReducer() {
  */
 export function createSimpluxModule<TState>(
   config: SimpluxModuleConfig<TState>,
+): SimpluxModule<TState>
+
+/**
+ * Create a new simplux module.
+ *
+ * A module has a unique name and a type of state it contains.
+ *
+ * The returned module contains functions for basic interaction with
+ * the module as well as any other functions that are provided by the
+ * extension packages you have loaded.
+ *
+ * To learn more, have a look at the [getting started recipe](https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
+ *
+ * @param name the unique name of the module
+ * @param initialState the initial state of the module
+ *
+ * @returns the created module
+ */
+export function createSimpluxModule<TState>(
+  name: string,
+  initialState: TState,
+): SimpluxModule<TState>
+
+export function createSimpluxModule<TState>(
+  configOrName: SimpluxModuleConfig<TState> | string,
+  initialState?: TState,
 ): SimpluxModule<TState> {
-  return createModule(simpluxStore, config)
+  if (typeof configOrName === 'string') {
+    const config: SimpluxModuleConfig<TState> = {
+      name: configOrName,
+      initialState: initialState!,
+    }
+
+    return createModule(simpluxStore, config)
+  }
+
+  return createModule(simpluxStore, configOrName)
 }
 
 /**

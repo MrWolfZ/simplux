@@ -112,6 +112,11 @@ describe(`@simplux/core`, () => {
     cleanup()
   })
 
+  it('works with module factory shorthand', () => {
+    const counterModule = createSimpluxModule('counter', 10)
+    expect(counterModule.getState()).toBe(10)
+  })
+
   describe('mutable/immer-style mutations', () => {
     it('work', () => {
       const todosModule = createSimpluxModule({
