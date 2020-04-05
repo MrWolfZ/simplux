@@ -1,6 +1,6 @@
 {
   "name": "@simplux/testing",
-  "version": "0.11.1",
+  "version": "0.12.0",
   "description": "The testing package for simplux. Contains various testing utilities (e.g. for mocking module states and mutations).",
   "module": "./bundles/bundle.es5.js",
   "es2015": "./bundles/bundle.js",
@@ -36,7 +36,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/core": "0.11.1"
+    "@simplux/core": "0.12.0"
   },
   "devDependencies": {
     "jest": "24.8.0",
