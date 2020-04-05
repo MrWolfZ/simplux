@@ -254,3 +254,16 @@ export function createModule<TState>(
 
   return result
 }
+
+/**
+ * Checks if an object is a simplux module.
+ *
+ * @param object the object to check
+ *
+ * @returns true if the object is a simplux module
+ */
+export function isSimpluxModule<TState, TOther>(
+  object: SimpluxModule<TState> | TOther,
+): object is SimpluxModule<TState> {
+  return object && !!(object as SimpluxModule<any>).$simpluxInternals
+}

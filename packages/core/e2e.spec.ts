@@ -6,6 +6,7 @@ import {
   createSelectors,
   createSimpluxModule,
   getSimpluxReducer,
+  isSimpluxModule,
   setReduxStoreForSimplux,
 } from '@simplux/core'
 import { combineReducers, createStore } from 'redux'
@@ -107,6 +108,9 @@ describe(`@simplux/core`, () => {
     expect(handler).toHaveBeenCalledWith(updatedState, initialTodoState)
 
     expect(handler).toHaveBeenCalledTimes(6)
+
+    expect(isSimpluxModule(todosModule)).toBe(true)
+    expect(isSimpluxModule('string')).toBe(false)
 
     subscription.unsubscribe()
     cleanup()

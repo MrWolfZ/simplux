@@ -1,5 +1,10 @@
 import { combineReducers, createStore, Store } from 'redux'
-import { createModule, SimpluxModule, StateChangeSubscription } from './module'
+import {
+  createModule,
+  isSimpluxModule,
+  SimpluxModule,
+  StateChangeSubscription,
+} from './module'
 import {
   createReduxStoreProxy,
   createSimpluxStore,
@@ -287,6 +292,38 @@ describe('module', () => {
         handler(initialState)
         expect(mock).toHaveBeenCalled()
       })
+    })
+  })
+
+  describe('isSimpluxModule', () => {
+    let simpluxStore: SimpluxStore
+
+    beforeEach(() => {
+      const getReduxStoreProxy = () =>
+        createReduxStoreProxy(reduxStore, s => s, 1, [])
+      simpluxStore = createSimpluxStore(getReduxStoreProxy)
+      const reduxStore = createStore(simpluxStore.rootReducer)
+    })
+
+    it('returns true for a simplux module', () => {
+      const isSimpluxModuleTestModule = createModule(simpluxStore, {
+        name: 'isSimpluxModuleTest',
+        initialState: '',
+      })
+
+      expect(isSimpluxModule(isSimpluxModuleTestModule)).toBe(true)
+    })
+
+    it('returns false for a string value', () => {
+      expect(isSimpluxModule('string')).toBe(false)
+    })
+
+    it('returns false for a number value', () => {
+      expect(isSimpluxModule(10)).toBe(false)
+    })
+
+    it('returns false for an object value', () => {
+      expect(isSimpluxModule({})).toBe(false)
     })
   })
 })

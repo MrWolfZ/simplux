@@ -11,6 +11,7 @@ export {
   getMockDefinitionsInternal,
 } from './src/effects'
 export {
+  isSimpluxModule,
   ResolvedStateChangeHandler,
   SimpluxModule,
   SimpluxModuleConfig,
