@@ -1,10 +1,11 @@
-import { SimpluxSelector } from '@simplux/core'
+import { isSimpluxModule, SimpluxModule, SimpluxSelector } from '@simplux/core'
 import { useEffect, useMemo, useReducer } from 'react'
 import { useSimpluxContext } from './context'
 
 /**
  * A react hook that allows accessing a module's state inside
- * a component.
+ * a component. Whenever the result of the selector changes the
+ * component using the hook will be re-rendered.
  *
  * @param selector the module selector that determines the slice
  * of the module's state which is returned
@@ -15,6 +16,41 @@ import { useSimpluxContext } from './context'
 export function useSimplux<TState, TArgs extends any[], TResult>(
   selector: SimpluxSelector<TState, TArgs, TResult>,
   ...args: TArgs
+): TResult
+
+/**
+ * A react hook that allows accessing a module's state inside
+ * a component. Whenever the state of the module changes the
+ * component using the hook will be re-rendered.
+ *
+ * @param simpluxModule the module to return the state for
+ *
+ * @returns the state of the module
+ */
+export function useSimplux<TState>(simpluxModule: SimpluxModule<TState>): TState
+
+export function useSimplux<TState, TArgs extends any[], TResult>(
+  selectorOrModule:
+    | SimpluxSelector<TState, TArgs, TResult>
+    | SimpluxModule<TState>,
+  ...args: TArgs
+): TResult {
+  if (isSimpluxModule(selectorOrModule)) {
+    const result = useSimpluxInternal(selectorOrModule, id, [])
+    return (result as unknown) as TResult
+  }
+
+  return useSimpluxInternal(
+    selectorOrModule.owningModule,
+    selectorOrModule.withState,
+    args,
+  )
+}
+
+export function useSimpluxInternal<TState, TArgs extends any[], TResult>(
+  module: SimpluxModule<TState>,
+  selector: (state: TState, ...args: TArgs) => TResult,
+  args: TArgs,
 ): TResult {
   const [, forceRender] = useReducer((s: number) => s + 1, 0)
 
@@ -29,7 +65,7 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
         return memoizedResult!
       }
 
-      const result = selector.withState(state, ...args)
+      const result = selector(state, ...args)
 
       memoizedState = state
       memoizedResult = result
@@ -38,9 +74,7 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
     }
   }, [selector, ...args])
 
-  const selectedState = memoizingSelector(
-    context.getModuleState(selector.owningModule),
-  )
+  const selectedState = memoizingSelector(context.getModuleState(module))
 
   useEffect(() => {
     let previousSelectedState = selectedState
@@ -67,11 +101,12 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
       forceRender({})
     }
 
-    return context.subscribeToModuleStateChanges(
-      selector.owningModule,
-      checkForUpdates,
-    )
+    return context.subscribeToModuleStateChanges(module, checkForUpdates)
   }, [memoizingSelector])
 
   return selectedState
+}
+
+function id<T>(t: T) {
+  return t
 }

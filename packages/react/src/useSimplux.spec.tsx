@@ -110,6 +110,26 @@ describe(useSimplux.name, () => {
     expect(result.current).toEqual(16)
   })
 
+  describe('with module', () => {
+    it('selects the module state on initial render', () => {
+      const { result } = renderHook(() => useSimplux(moduleMock))
+      expect(result.current).toEqual(moduleState)
+    })
+
+    it('selects the state and renders the component when the store updates', () => {
+      const { result } = renderHook(() => useSimplux(moduleMock))
+
+      expect(result.current).toEqual(moduleState)
+
+      actHook(() => {
+        moduleState = { count: 11 }
+        subscriber(moduleState)
+      })
+
+      expect(result.current).toEqual(moduleState)
+    })
+  })
+
   describe('with provider', () => {
     it('selects the module state on initial render', () => {
       const renderedItems: number[] = []
