@@ -4,7 +4,7 @@ import {
   StateChangeSubscription,
 } from '@simplux/core'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import React, { useLayoutEffect, useState } from 'react'
+import React, { useCallback, useLayoutEffect, useState } from 'react'
 import { act as actHook, renderHook } from 'react-hooks-testing-library'
 import { create } from 'react-test-renderer'
 import { SimpluxProvider } from './context'
@@ -127,6 +127,26 @@ describe(useSimplux.name, () => {
       })
 
       expect(result.current).toEqual(moduleState)
+    })
+  })
+
+  describe('with inline selector', () => {
+    it('selects the module state on initial render', () => {
+      const { result } = renderHook(() => useSimplux(moduleMock, s => s.count))
+      expect(result.current).toBe(10)
+    })
+
+    it('selects the state and renders the component when the store updates', () => {
+      const { result } = renderHook(() => useSimplux(moduleMock, s => s.count))
+
+      expect(result.current).toBe(10)
+
+      actHook(() => {
+        moduleState = { count: 11 }
+        subscriber(moduleState)
+      })
+
+      expect(result.current).toBe(11)
     })
   })
 
@@ -626,6 +646,39 @@ describe(useSimplux.name, () => {
       })
 
       expect(renderedItems).toEqual([10, 11, 10])
+    })
+
+    it('re-subscribes on change with an unstable inline selector', () => {
+      const Comp = () => {
+        const count = useSimplux(moduleMock, s => s.count + 1)
+        return <div>{count}</div>
+      }
+
+      render(<Comp />)
+
+      act(() => {
+        getModuleStateMock.mockReturnValue({ count: moduleState.count + 1 })
+        subscriber(getModuleStateMock())
+      })
+
+      expect(subscribeToModuleStateChangesMock).toHaveBeenCalledTimes(2)
+    })
+
+    it('does not re-subscribe on change with a stable inline selector', () => {
+      const Comp = () => {
+        const selector = useCallback((s: typeof moduleState) => s.count + 1, [])
+        const count = useSimplux(moduleMock, selector)
+        return <div>{count}</div>
+      }
+
+      render(<Comp />)
+
+      act(() => {
+        getModuleStateMock.mockReturnValue({ count: moduleState.count + 1 })
+        subscriber(getModuleStateMock())
+      })
+
+      expect(subscribeToModuleStateChangesMock).toHaveBeenCalledTimes(1)
     })
   })
 })

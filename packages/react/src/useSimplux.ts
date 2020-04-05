@@ -4,6 +4,37 @@ import { useSimpluxContext } from './context'
 
 /**
  * A react hook that allows accessing a module's state inside
+ * a component. Whenever the state of the module changes the
+ * component using the hook will be re-rendered.
+ *
+ * @param simpluxModule the module to return the state for
+ *
+ * @returns the state of the module
+ */
+export function useSimplux<TState>(simpluxModule: SimpluxModule<TState>): TState
+
+/**
+ * A react hook that allows accessing a module's state inside
+ * a component. Whenever the result of the selector changes the
+ * component using the hook will be re-rendered.
+ *
+ * Note that for optimal performance the selector reference
+ * should not change between invocations, for example by using
+ * `useCallback` to create the selector.
+ *
+ * @param simpluxModule the module to return the state for
+ * @param selector the selector that determines the slice
+ * of the module's state which is returned
+ *
+ * @returns the result of the selector
+ */
+export function useSimplux<TState, TResult>(
+  simpluxModule: SimpluxModule<TState>,
+  selector: (state: TState) => TResult,
+): TState
+
+/**
+ * A react hook that allows accessing a module's state inside
  * a component. Whenever the result of the selector changes the
  * component using the hook will be re-rendered.
  *
@@ -18,32 +49,23 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
   ...args: TArgs
 ): TResult
 
-/**
- * A react hook that allows accessing a module's state inside
- * a component. Whenever the state of the module changes the
- * component using the hook will be re-rendered.
- *
- * @param simpluxModule the module to return the state for
- *
- * @returns the state of the module
- */
-export function useSimplux<TState>(simpluxModule: SimpluxModule<TState>): TState
-
 export function useSimplux<TState, TArgs extends any[], TResult>(
   selectorOrModule:
     | SimpluxSelector<TState, TArgs, TResult>
     | SimpluxModule<TState>,
+  selectorOrArg?: any,
   ...args: TArgs
 ): TResult {
   if (isSimpluxModule(selectorOrModule)) {
-    const result = useSimpluxInternal(selectorOrModule, id, [])
+    const selector = typeof selectorOrArg === 'function' ? selectorOrArg : id
+    const result = useSimpluxInternal(selectorOrModule, selector, [])
     return (result as unknown) as TResult
   }
 
   return useSimpluxInternal(
     selectorOrModule.owningModule,
     selectorOrModule.withState,
-    args,
+    [selectorOrArg, ...args] as TArgs,
   )
 }
 
