@@ -7,7 +7,7 @@
     "jsx": "preserve",
     "esModuleInterop": true,
     "noImplicitAny": true,
-    "sourceMap": true,
+    "inlineSourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": false,
     "strict": true,

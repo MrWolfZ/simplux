@@ -51,34 +51,22 @@ async function build() {
     await executeStep(`Linting`, () => util_2.execAsync(`tslint`, `-c ${path_1.default.join(ROOT_DIR, 'tslint.json')}`, `-t stylish`, `--project ${PACKAGE_DIR} ${PACKAGE_DIR}/**/*.ts`));
     await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`));
     await executeStep(`Compiling esm5`, async () => {
-        const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es5`, `--module es2015`, `--outDir ${OUTPUT_DIR}/esm5`, `--noLib`, `--sourceMap`, `--jsx react`);
+        const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es5`, `--module es2015`, `--outDir ${OUTPUT_DIR}/esm5`, `--noLib`, `--inlineSourceMap`, `--inlineSources`, `--jsx react`);
         // 2 indicates failure with output still being generated
         // (this command will usually fail because of the --noLib flag)
-        if (![0, 2].includes(ret.code)) {
-            return ret;
+        if (ret.code === 2) {
+            return 0;
         }
-        const globPromise = util_1.promisify(glob_1.default);
-        const jsFiles = await globPromise(`${OUTPUT_DIR}/esm5/**/*.js`);
-        let code = 0;
-        for (const file of jsFiles) {
-            code += await mapSources(file, false);
-        }
-        return code;
+        return ret;
     });
     await executeStep(`Compiling esm2015`, async () => {
-        const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es2015`, `--module es2015`, `--outDir ${OUTPUT_DIR}/esm2015`, `--noLib`, `--sourceMap`, `--jsx react`);
+        const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es2015`, `--module es2015`, `--outDir ${OUTPUT_DIR}/esm2015`, `--noLib`, `--inlineSourceMap`, `--inlineSources`, `--jsx react`);
         // 2 indicates failure with output still being generated
         // (this command will usually fail because of the --noLib flag)
-        if (![0, 2].includes(ret.code)) {
-            return ret;
+        if (ret.code === 2) {
+            return 0;
         }
-        const globPromise = util_1.promisify(glob_1.default);
-        const jsFiles = await globPromise(`${OUTPUT_DIR}/esm2015/**/*.js`);
-        let code = 0;
-        for (const file of jsFiles) {
-            code += await mapSources(file, false);
-        }
-        return code;
+        return ret;
     });
     const externalsArr = Object.keys(PACKAGE.dependencies || {})
         .concat(Object.keys(PACKAGE.devDependencies || {}))
@@ -112,11 +100,7 @@ async function build() {
         ? `-g ${externalsArr.map(e => `${e}:${globals_1.GLOBALS[e] || e}`).join(',')}`
         : '';
     await executeStep(`Bundling UMD (DEV)`, async () => {
-        const ret = await util_2.execAsync(`rollup`, `-c ${path_1.default.join(ROOT_DIR, 'rollup.config.dev.js')}`, `-f umd`, `-i ${TEMP_DIR}/bundle.es5.js`, `-o ${UMD_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`, `-n ${PACKAGE.name}`, `-m`, `--exports named`, externalsArg, globalsArg);
-        if (ret.code !== 0) {
-            return ret;
-        }
-        ret.code = await mapSources(`${UMD_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`);
+        const ret = await util_2.execAsync(`rollup`, `-c ${path_1.default.join(ROOT_DIR, 'rollup.config.dev.js')}`, `-f umd`, `-i ${TEMP_DIR}/bundle.es5.js`, `-o ${UMD_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`, `-n ${PACKAGE.name}`, `-m inline`, `--exports named`, externalsArg, globalsArg);
         return ret;
     });
     await executeStep(`Bundling UMD`, async () => {
@@ -128,11 +112,7 @@ async function build() {
         return ret;
     });
     await executeStep(`Bundling CJS (DEV)`, async () => {
-        const ret = await util_2.execAsync(`rollup`, `-c ${path_1.default.join(ROOT_DIR, 'rollup.config.dev.js')}`, `-f cjs`, `-i ${TEMP_DIR}/bundle.es5.js`, `-o ${CJS_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`, `-n ${PACKAGE.name}`, `-m`, `--exports named`, externalsArg, globalsArg);
-        if (ret.code !== 0) {
-            return ret;
-        }
-        ret.code = await mapSources(`${CJS_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`);
+        const ret = await util_2.execAsync(`rollup`, `-c ${path_1.default.join(ROOT_DIR, 'rollup.config.dev.js')}`, `-f cjs`, `-i ${TEMP_DIR}/bundle.es5.js`, `-o ${CJS_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`, `-n ${PACKAGE.name}`, `-m inline`, `--exports named`, externalsArg, globalsArg);
         return ret;
     });
     await executeStep(`Bundling CJS`, async () => {

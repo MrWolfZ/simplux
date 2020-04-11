@@ -73,26 +73,18 @@ async function build() {
       `--module es2015`,
       `--outDir ${OUTPUT_DIR}/esm5`,
       `--noLib`,
-      `--sourceMap`,
+      `--inlineSourceMap`,
+      `--inlineSources`,
       `--jsx react`,
     )
 
     // 2 indicates failure with output still being generated
     // (this command will usually fail because of the --noLib flag)
-    if (![0, 2].includes(ret.code)) {
-      return ret
+    if (ret.code === 2) {
+      return 0
     }
 
-    const globPromise = promisify(glob)
-    const jsFiles = await globPromise(`${OUTPUT_DIR}/esm5/**/*.js`)
-
-    let code = 0
-
-    for (const file of jsFiles) {
-      code += await mapSources(file, false)
-    }
-
-    return code
+    return ret
   })
 
   await executeStep(`Compiling esm2015`, async () => {
@@ -103,26 +95,18 @@ async function build() {
       `--module es2015`,
       `--outDir ${OUTPUT_DIR}/esm2015`,
       `--noLib`,
-      `--sourceMap`,
+      `--inlineSourceMap`,
+      `--inlineSources`,
       `--jsx react`,
     )
 
     // 2 indicates failure with output still being generated
     // (this command will usually fail because of the --noLib flag)
-    if (![0, 2].includes(ret.code)) {
-      return ret
+    if (ret.code === 2) {
+      return 0
     }
 
-    const globPromise = promisify(glob)
-    const jsFiles = await globPromise(`${OUTPUT_DIR}/esm2015/**/*.js`)
-
-    let code = 0
-
-    for (const file of jsFiles) {
-      code += await mapSources(file, false)
-    }
-
-    return code
+    return ret
   })
 
   const externalsArr = Object.keys(PACKAGE.dependencies || {})
@@ -190,18 +174,10 @@ async function build() {
       `-i ${TEMP_DIR}/bundle.es5.js`,
       `-o ${UMD_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
       `-n ${PACKAGE.name}`,
-      `-m`,
+      `-m inline`,
       `--exports named`,
       externalsArg,
       globalsArg,
-    )
-
-    if (ret.code !== 0) {
-      return ret
-    }
-
-    ret.code = await mapSources(
-      `${UMD_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
     )
 
     return ret
@@ -237,18 +213,10 @@ async function build() {
       `-i ${TEMP_DIR}/bundle.es5.js`,
       `-o ${CJS_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
       `-n ${PACKAGE.name}`,
-      `-m`,
+      `-m inline`,
       `--exports named`,
       externalsArg,
       globalsArg,
-    )
-
-    if (ret.code !== 0) {
-      return ret
-    }
-
-    ret.code = await mapSources(
-      `${CJS_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
     )
 
     return ret
