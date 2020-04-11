@@ -111,10 +111,7 @@ interface Book {
   author: string
 }
 
-const booksModule = createSimpluxModule<Book[]>({
-  name: 'books',
-  initialState: [],
-})
+const booksModule = createSimpluxModule<Book[]>('books', [])
 
 const books = {
   ...booksModule,

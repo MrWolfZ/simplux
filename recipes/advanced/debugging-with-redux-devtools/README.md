@@ -35,10 +35,7 @@ Now, when we create a **simplux** module and call its mutations we can see them 
 ```ts
 import { createMutations, createSimpluxModule } from '@simplux/core'
 
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: 0,
-})
+const counterModule = createSimpluxModule('counter', 0)
 
 const counter = {
   ...counterModule,

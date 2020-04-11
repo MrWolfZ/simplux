@@ -36,10 +36,7 @@ const initialState: BooksState = {
   bookIds: [],
 }
 
-const booksModule = createSimpluxModule({
-  name: 'books',
-  initialState,
-})
+const booksModule = createSimpluxModule('books', initialState)
 ```
 
 For updating our collection of books we need mutations for adding and removing items.

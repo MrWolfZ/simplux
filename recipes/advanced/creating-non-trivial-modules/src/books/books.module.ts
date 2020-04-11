@@ -27,7 +27,4 @@ const initialState: BooksState = {
   bookIds: [],
 }
 
-export const booksModule = createSimpluxModule({
-  name: 'books',
-  initialState,
-})
+export const booksModule = createSimpluxModule('books', initialState)

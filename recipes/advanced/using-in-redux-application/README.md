@@ -61,12 +61,7 @@ setReduxStoreForSimplux(
 Now we can start creating modules.
 
 ```ts
-const { getState } = createSimpluxModule({
-  name: 'mySimpluxModule',
-  initialState: {
-    value: 'mySimpluxState',
-  },
-})
+const { getState } = createSimpluxModule('mySimpluxModule', { value: 'mySimpluxState' })
 
 console.log('my module state:', getState())
 console.log('full redux state:', store.getState())

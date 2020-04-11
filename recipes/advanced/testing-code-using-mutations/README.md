@@ -29,10 +29,7 @@ interface BooksState {
 
 const initialState: BooksState = {}
 
-const booksModule = createSimpluxModule({
-  name: 'books',
-  initialState,
-})
+const booksModule = createSimpluxModule('books', initialState)
 
 const books = {
   ...booksModule,

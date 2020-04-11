@@ -32,10 +32,7 @@ const initialState: Book[] = [
   { id: '4', title: 'Nineteen Eighty-Four', author: 'George Orwell' },
 ]
 
-const booksModule = createSimpluxModule({
-  name: 'books',
-  initialState,
-})
+const booksModule = createSimpluxModule('books', initialState)
 ```
 
 We want to select three types of things for this module:

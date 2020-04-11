@@ -16,12 +16,9 @@ interface UserState {
   authToken: string | undefined
 }
 
-const userModule = createSimpluxModule<UserState>({
-  name: 'user',
-  initialState: {
-    isLoggedIn: false,
-    authToken: undefined,
-  },
+const userModule = createSimpluxModule<UserState>('user', {
+  isLoggedIn: false,
+  authToken: undefined,
 })
 
 const user = {
@@ -44,10 +41,7 @@ interface Notification {
   isMarkedAsSeen: boolean
 }
 
-const notificationsModule = createSimpluxModule<Notification[]>({
-  name: 'notifications',
-  initialState: [],
-})
+const notificationsModule = createSimpluxModule<Notification[]>('notifications', [])
 
 const notifications = {
   ...notificationsModule,

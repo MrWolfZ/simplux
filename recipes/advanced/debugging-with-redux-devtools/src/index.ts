@@ -24,10 +24,7 @@ setReduxStoreForSimplux(store, s => s.simplux)
 
 // now when we create a module and call mutations we will see
 // them in the Redux DevTools
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: 0,
-})
+const counterModule = createSimpluxModule('counter', 0)
 
 const counter = {
   ...counterModule,

@@ -10,10 +10,7 @@ export interface Book {
   author: string
 }
 
-const booksModule = createSimpluxModule<Book[]>({
-  name: 'books',
-  initialState: [],
-})
+const booksModule = createSimpluxModule<Book[]>('books', [])
 
 const booksMutations = createMutations(booksModule, {
   setAll: (_, books: Book[]) => books,

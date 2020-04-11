@@ -21,10 +21,7 @@ const initialState: BooksState = {
   bookIds: [],
 }
 
-const booksModule = createSimpluxModule({
-  name: 'books',
-  initialState,
-})
+const booksModule = createSimpluxModule('books', initialState)
 
 // we want two mutations: one for adding a single book and
 // one for adding multiple books at once

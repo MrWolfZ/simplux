@@ -35,10 +35,7 @@ const initialState: BooksState = {
   bookIds: [],
 }
 
-const booksModule = createSimpluxModule({
-  name: 'books',
-  initialState,
-})
+const booksModule = createSimpluxModule('books', initialState)
 ```
 
 We want to create two mutations for this module: one for adding a single book, and another one for adding multiple books at once. However, instead of duplicating the logic for adding a book we want to re-use the mutation for adding a single book inside the mutation that adds multiple books. In other words, we want to compose our two mutations. Let's see how we can do this.

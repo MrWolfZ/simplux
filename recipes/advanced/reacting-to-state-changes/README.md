@@ -29,10 +29,7 @@ const initialState: UserState = {
   authToken: undefined,
 }
 
-const userModule = createSimpluxModule({
-  name: 'user',
-  initialState,
-})
+const userModule = createSimpluxModule('user', initialState)
 
 // let's create a couple of basic mutations: for logging in and
 // logging out as well as for updating the user's icon URL

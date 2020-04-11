@@ -18,10 +18,7 @@ const initialState: Book[] = [
   { id: '4', title: 'Nineteen Eighty-Four', author: 'George Orwell' },
 ]
 
-const booksModule = createSimpluxModule({
-  name: 'books',
-  initialState,
-})
+const booksModule = createSimpluxModule('books', initialState)
 
 // we want to select three types of things:
 // 1) a set of all authors
