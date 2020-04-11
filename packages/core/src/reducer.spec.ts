@@ -1,13 +1,19 @@
 import { createModuleReducer } from './reducer'
 
 describe(`reducer`, () => {
-  const reducer = createModuleReducer(
-    'test',
-    10,
-    {
-      incrementBy: (c, amount: number) => c + amount,
-    },
-  )
+  let nodeEnv = ''
+
+  beforeEach(() => {
+    nodeEnv = process.env.NODE_ENV
+  })
+
+  afterEach(() => {
+    process.env.NODE_ENV = nodeEnv
+  })
+
+  const reducer = createModuleReducer('test', 10, {
+    incrementBy: (c, amount: number) => c + amount,
+  })
 
   it('updates the state', () => {
     const result = reducer(undefined, {
@@ -26,6 +32,18 @@ describe(`reducer`, () => {
         args: [],
       }),
     ).toThrowError(/does not exist/)
+  })
+
+  it('does not throw if the mutation does not exist in production', () => {
+    process.env.NODE_ENV = 'production'
+
+    expect(() =>
+      reducer(undefined, {
+        type: '@simplux/test/mutation/doesNotExist',
+        mutationName: 'doesNotExist',
+        args: [],
+      }),
+    ).not.toThrowError(/does not exist/)
   })
 
   it('ignores unknown actions', () => {

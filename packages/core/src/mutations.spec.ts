@@ -10,6 +10,7 @@ declare class Event {
 declare const window: any
 
 describe('mutations', () => {
+  let nodeEnv = ''
   const dispatchMock = jest.fn().mockImplementation(a => a)
   const getReducerMock = jest.fn()
 
@@ -39,6 +40,11 @@ describe('mutations', () => {
       },
     }
     jest.clearAllMocks()
+    nodeEnv = process.env.NODE_ENV
+  })
+
+  afterEach(() => {
+    process.env.NODE_ENV = nodeEnv
   })
 
   describe(`factory`, () => {
@@ -78,6 +84,20 @@ describe('mutations', () => {
       ).toThrowError(
         `mutation 'increment' is already defined for module 'test'`,
       )
+    })
+
+    it('does not throw when existing mutation is declared again in production', () => {
+      process.env.NODE_ENV = 'production'
+
+      createMutations(moduleMock, {
+        increment: c => c + 1,
+      })
+
+      expect(() =>
+        createMutations(moduleMock, {
+          increment: c => c + 2,
+        }),
+      ).not.toThrowError()
     })
 
     describe(`returned mutations`, () => {
@@ -297,6 +317,20 @@ describe('mutations', () => {
         const incrementAny = increment as any
 
         expect(() => incrementAny(() => {})).toThrowError(
+          /function.*serializable/,
+        )
+      })
+
+      it('does not throw an error for function arguments in production', () => {
+        process.env.NODE_ENV = 'production'
+
+        const { increment } = createMutations(moduleMock, {
+          increment: c => c + 1,
+        })
+
+        const incrementAny = increment as any
+
+        expect(() => incrementAny(() => {})).not.toThrowError(
           /function.*serializable/,
         )
       })

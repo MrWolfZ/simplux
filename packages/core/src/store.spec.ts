@@ -10,12 +10,19 @@ import {
 
 describe('store', () => {
   let cleanup: (() => void) | undefined
+  let nodeEnv = ''
+
+  beforeEach(() => {
+    nodeEnv = process.env.NODE_ENV
+  })
 
   afterEach(() => {
     if (cleanup) {
       cleanup()
       cleanup = undefined
     }
+
+    process.env.NODE_ENV = nodeEnv
   })
 
   describe(getInternalReduxStoreProxy.name, () => {
@@ -28,6 +35,11 @@ describe('store', () => {
 
     it(`throws if proxy is not set`, () => {
       expect(getInternalReduxStoreProxy).toThrow()
+    })
+
+    it(`does not throw if proxy is not set in production`, () => {
+      process.env.NODE_ENV = 'production'
+      expect(getInternalReduxStoreProxy).not.toThrow()
     })
   })
 
@@ -61,6 +73,23 @@ describe('store', () => {
       )
 
       expect(cleanup1).toThrowError('cannot cleanup store')
+      cleanup2()
+    })
+
+    it(`does not throw if trying to clean up outdated store in production`, () => {
+      process.env.NODE_ENV = 'production'
+
+      const cleanup1 = setReduxStore(
+        createStore((c: number = 10) => c + 1),
+        s => s,
+      )
+
+      const cleanup2 = setReduxStore(
+        createStore((c: number = 10) => c + 1),
+        s => s,
+      )
+
+      expect(cleanup1).not.toThrowError('cannot cleanup store')
       cleanup2()
     })
   })
