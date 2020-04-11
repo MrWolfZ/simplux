@@ -35,6 +35,8 @@ build().catch(err => {
 async function build() {
   const PACKAGE_DIR = argv.packageDir
   const OUTPUT_DIR = path.join(PACKAGE_DIR, `dist`)
+  const ESM5_DIR = path.join(OUTPUT_DIR, `esm5`)
+  const ESM2015_DIR = path.join(OUTPUT_DIR, `esm2015`)
   const UMD_DIR = path.join(OUTPUT_DIR, `umd`)
   const CJS_DIR = path.join(OUTPUT_DIR, `cjs`)
   const TEMP_DIR = path.join(OUTPUT_DIR, `temp`)
@@ -71,20 +73,25 @@ async function build() {
       `${PACKAGE_DIR}/index.ts`,
       `--target es5`,
       `--module es2015`,
-      `--outDir ${OUTPUT_DIR}/esm5`,
+      `--outDir ${ESM5_DIR}`,
       `--noLib`,
-      `--inlineSourceMap`,
-      `--inlineSources`,
+      `--sourceMap`,
       `--jsx react`,
     )
 
     // 2 indicates failure with output still being generated
     // (this command will usually fail because of the --noLib flag)
-    if (ret.code === 2) {
-      return 0
+    if (ret.code !== 0 && ret.code !== 2) {
+      return ret
     }
 
-    return ret
+    let code = 0
+    const jsFiles = await promisify(glob)(`${ESM5_DIR}/**/*.js`)
+    for (const file of jsFiles) {
+      code += await mapSources(file, false)
+    }
+
+    return code
   })
 
   await executeStep(`Compiling esm2015`, async () => {
@@ -93,20 +100,25 @@ async function build() {
       `${PACKAGE_DIR}/index.ts`,
       `--target es2015`,
       `--module es2015`,
-      `--outDir ${OUTPUT_DIR}/esm2015`,
+      `--outDir ${ESM2015_DIR}`,
       `--noLib`,
-      `--inlineSourceMap`,
-      `--inlineSources`,
+      `--sourceMap`,
       `--jsx react`,
     )
 
     // 2 indicates failure with output still being generated
     // (this command will usually fail because of the --noLib flag)
-    if (ret.code === 2) {
-      return 0
+    if (ret.code !== 0 && ret.code !== 2) {
+      return ret
     }
 
-    return ret
+    let code = 0
+    const jsFiles = await promisify(glob)(`${ESM2015_DIR}/**/*.js`)
+    for (const file of jsFiles) {
+      code += await mapSources(file, false)
+    }
+
+    return code
   })
 
   const externalsArr = Object.keys(PACKAGE.dependencies || {})
@@ -174,10 +186,18 @@ async function build() {
       `-i ${TEMP_DIR}/bundle.es5.js`,
       `-o ${UMD_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
       `-n ${PACKAGE.name}`,
-      `-m inline`,
+      `-m`,
       `--exports named`,
       externalsArg,
       globalsArg,
+    )
+
+    if (ret.code !== 0) {
+      return ret
+    }
+
+    ret.code = await mapSources(
+      `${UMD_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
     )
 
     return ret
@@ -213,10 +233,18 @@ async function build() {
       `-i ${TEMP_DIR}/bundle.es5.js`,
       `-o ${CJS_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
       `-n ${PACKAGE.name}`,
-      `-m inline`,
+      `-m`,
       `--exports named`,
       externalsArg,
       globalsArg,
+    )
+
+    if (ret.code !== 0) {
+      return ret
+    }
+
+    ret.code = await mapSources(
+      `${CJS_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
     )
 
     return ret
@@ -255,7 +283,7 @@ async function build() {
       `--comments`,
       `-o ${UMD_DIR}/${fileName}`,
       // tslint:disable-next-line: max-line-length
-      `--source-map "filename='${fileName}.map',url='${fileName}.map',includeSources"`,
+      `--source-map "filename='${fileName}.map',url='./${fileName}.map',includeSources"`,
       `${TEMP_DIR}/bundle.umd.js`,
     )
 
@@ -277,7 +305,7 @@ async function build() {
       `--comments`,
       `-o ${CJS_DIR}/${fileName}`,
       // tslint:disable-next-line: max-line-length
-      `--source-map "filename='${fileName}.map',url='${fileName}.map',includeSources"`,
+      `--source-map "filename='${fileName}.map',url='./${fileName}.map',includeSources"`,
       `${TEMP_DIR}/bundle.cjs.js`,
     )
 
@@ -309,7 +337,7 @@ if (process.env.NODE_ENV !== 'production') {
     await Promise.all(
       bundleMapFiles.map(async mapFile => {
         const fileContent = await promisify(fs.readFile)(mapFile)
-        const fileContentJson = JSON.parse(fileContent as any) as {
+        const fileContentJson = JSON.parse(fileContent.toString()) as {
           // tslint:disable-next-line:trailing-comma type-literal-delimiter
           sources: string[]
         }
@@ -324,6 +352,38 @@ if (process.env.NODE_ENV !== 'production') {
           return packagePrefixSourcePath.replace(/\\/g, '/')
         })
         await promisify(fs.writeFile)(mapFile, JSON.stringify(fileContentJson))
+      }),
+    )
+  })
+
+  await executeStep(`Inlining source maps`, async () => {
+    const globPromise = promisify(glob)
+    const esm5MapFiles = await globPromise(`${ESM5_DIR}/**/*.map`)
+    const esm2015MapFiles = await globPromise(`${ESM2015_DIR}/**/*.map`)
+    const developmentMapFiles = await globPromise(
+      `${OUTPUT_DIR}/**/*.development.js.map`,
+    )
+
+    const bundleMapFiles = esm5MapFiles
+      .concat(esm2015MapFiles)
+      .concat(developmentMapFiles)
+
+    await Promise.all(
+      bundleMapFiles.map(async mapFile => {
+        const sourceFile = mapFile.replace(/\.map$/, '')
+        const mapFileContent = await promisify(fs.readFile)(mapFile)
+        const sourceFileContent = await promisify(fs.readFile)(sourceFile)
+        const base64Content = mapFileContent.toString('base64')
+
+        const adjustedSourceFileContent = sourceFileContent
+          .toString()
+          .replace(
+            /# sourceMappingURL=[^\n]*/,
+            `# sourceMappingURL=data:application/json;base64,${base64Content}`,
+          )
+
+        await promisify(fs.writeFile)(sourceFile, adjustedSourceFileContent)
+        await promisify(fs.unlink)(mapFile)
       }),
     )
   })
