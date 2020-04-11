@@ -23,12 +23,7 @@ interface CounterState {
   counter: number
 }
 
-const counterModule = createSimpluxModule<CounterState>({
-  name: 'counter',
-  initialState: {
-    value: 0,
-  },
-})
+const counterModule = createSimpluxModule<CounterState>('counter', { value: 0 })
 
 const counter = {
   ...counterModule,

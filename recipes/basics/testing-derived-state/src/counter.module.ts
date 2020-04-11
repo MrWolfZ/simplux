@@ -7,12 +7,7 @@ export interface CounterState {
   value: number
 }
 
-const counterModule = createSimpluxModule<CounterState>({
-  name: 'counter',
-  initialState: {
-    value: 0,
-  },
-})
+const counterModule = createSimpluxModule<CounterState>('counter', { value: 0 })
 
 export const counter = {
   ...counterModule,

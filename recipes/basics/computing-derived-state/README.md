@@ -19,12 +19,7 @@ In **simplux** all state is contained in _modules_, so let's create one.
 ```ts
 import { createSimpluxModule } from '@simplux/core'
 
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: {
-    value: 10,
-  },
-})
+const counterModule = createSimpluxModule('counter', { value: 10 })
 ```
 
 To compute derived state for our module we can define so-called _selectors_. A selector is a [pure function](https://en.wikipedia.org/wiki/Pure_function) that takes the module's state - and optionally some additional arguments - and returns some derived value.

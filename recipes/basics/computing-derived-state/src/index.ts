@@ -3,12 +3,7 @@
 
 import { createSelectors, createSimpluxModule } from '@simplux/core'
 
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: {
-    value: 10,
-  },
-})
+const counterModule = createSimpluxModule('counter', { value: 10 })
 
 // to compute derived state we can define selectors; a selector
 // is a pure function that takes the module's current state and

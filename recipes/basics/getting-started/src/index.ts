@@ -4,16 +4,10 @@
 import { createMutations, createSimpluxModule } from '@simplux/core'
 
 // state in simplux is organized into modules; here we create
-// our first simple counter module
-const counterModule = createSimpluxModule({
-  // this name uniquely identifies our module
-  name: 'counter',
-
-  // we use a simple number as the state
-  initialState: {
-    value: 0,
-  },
-})
+// our first simple counter module; the name (first parameter)
+// uniquely identifies our module; the second parameter is the
+// initial state of the module
+const counterModule = createSimpluxModule('counter', { value: 0 })
 
 // you can access the module's current state with getState
 console.log('initial state:', counterModule.getState())
