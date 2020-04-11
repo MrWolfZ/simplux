@@ -1,3 +1,4 @@
+import { setAutoFreeze } from 'immer'
 import { combineReducers, createStore, Store } from 'redux'
 import {
   createModule,
@@ -93,6 +94,10 @@ describe('module', () => {
       subscribeSpy = jest.spyOn(reduxStore, 'subscribe')
     })
 
+    afterEach(() => {
+      setAutoFreeze(true)
+    })
+
     describe(`getState`, () => {
       it('returns initial state', () => {
         const initialState = { prop: 'value' }
@@ -115,6 +120,36 @@ describe('module', () => {
         testModule.$simpluxInternals.mockStateValue = mockStateValue
 
         expect(testModule.getState()).toBe(mockStateValue)
+      })
+
+      it('returns frozen state during development', () => {
+        const initialState = { prop: 'value' }
+        const testModule = createModule(simpluxStore, {
+          name: 'getStateTest',
+          initialState,
+        })
+
+        expect(
+          () => ((testModule.getState() as any).prop = 'updated'),
+        ).toThrowError()
+      })
+
+      it('returns unfrozen state during production', () => {
+        // immer freezes objects by default in non-production environments
+        // and this default is determined when the module is imported, so
+        // instead of setting process.env.NODE_ENV we use the configuration
+        // function from immer
+        setAutoFreeze(false)
+
+        const initialState = { prop: 'value' }
+        const testModule = createModule(simpluxStore, {
+          name: 'getStateTest',
+          initialState,
+        })
+
+        expect(
+          () => ((testModule.getState() as any).prop = 'updated'),
+        ).not.toThrowError()
       })
     })
 
