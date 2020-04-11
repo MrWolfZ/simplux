@@ -1,5 +1,5 @@
+import { Immutable } from 'immer'
 import { SimpluxModule } from './module'
-import { Immutable } from './types'
 
 export type SelectorDefinition<TState, TReturn> = (
   state: Immutable<TState>,

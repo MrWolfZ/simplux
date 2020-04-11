@@ -1,6 +1,6 @@
+import { Immutable } from 'immer'
 import { Action } from 'redux'
 import { createMutationPrefix, MutationDefinitions } from './mutations'
-import { Immutable } from './types'
 
 export function createModuleReducer<TState>(
   moduleName: string,

@@ -1,11 +1,12 @@
+import { Immutable } from 'immer'
 import { createStore, Store } from 'redux'
 import { createModule, SimpluxModule, SimpluxModuleConfig } from './src/module'
 import { setReduxStore, simpluxStore } from './src/store'
-import { Immutable } from './src/types'
 
 // we create and set a default redux store for simple scenarios
 setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
 
+export { Immutable } from 'immer'
 export {
   createEffect,
   EffectMockDefinition,
@@ -44,14 +45,6 @@ export {
   InternalReduxStoreProxy,
   SimpluxStore,
 } from './src/store'
-export {
-  Immutable,
-  ImmutableArray,
-  ImmutableMap,
-  ImmutableObject,
-  ImmutableSet,
-  Primitive,
-} from './src/types'
 
 // tslint:disable: max-line-length (cannot line break the links)
 

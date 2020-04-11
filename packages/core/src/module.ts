@@ -1,10 +1,10 @@
+import { Immutable } from 'immer'
 import { AnyAction, Reducer } from 'redux'
 import { createImmerReducer } from './immer'
 import { MutationDefinitions } from './mutations'
 import { createModuleReducer } from './reducer'
 import { SelectorDefinitions } from './selectors'
 import { SimpluxStore, simpluxStore } from './store'
-import { Immutable } from './types'
 
 export interface SimpluxModuleConfig<TState> {
   name: string
