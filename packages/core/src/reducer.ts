@@ -16,10 +16,12 @@ export function createModuleReducer<TState>(
       const { mutationName, args } = action as any
       const mutation = moduleMutations[mutationName]
 
-      if (!mutation) {
-        throw new Error(
-          `mutation '${mutationName}' does not exist in module '${moduleName}'`,
-        )
+      if (process.env.NODE_ENV !== 'production') {
+        if (!mutation) {
+          throw new Error(
+            `mutation '${mutationName}' does not exist in module '${moduleName}'`,
+          )
+        }
       }
 
       return mutation(state, ...args) || state

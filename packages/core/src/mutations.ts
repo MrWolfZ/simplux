@@ -118,11 +118,13 @@ export function createMutations<
 
   const mutationPrefix = createMutationPrefix(moduleName)
 
-  for (const mutationName of Object.keys(mutationDefinitions)) {
-    if (mutations[mutationName]) {
-      throw new Error(
-        `mutation '${mutationName}' is already defined for module '${moduleName}'`,
-      )
+  if (process.env.NODE_ENV !== 'production') {
+    for (const mutationName of Object.keys(mutationDefinitions)) {
+      if (mutations[mutationName]) {
+        throw new Error(
+          `mutation '${mutationName}' is already defined for module '${moduleName}'`,
+        )
+      }
     }
   }
 
@@ -137,11 +139,13 @@ export function createMutations<
       const createAction = (...allArgs: any[]) => {
         const args = filterEventArgs(allArgs)
 
-        if (args.some(arg => typeof arg === 'function')) {
-          throw new Error(
-            // tslint:disable-next-line: max-line-length
-            `mutation '${mutationName}' was called with a function argument; mutation arguments must be serializable, therefore functions are not supported`,
-          )
+        if (process.env.NODE_ENV !== 'production') {
+          if (args.some(arg => typeof arg === 'function')) {
+            throw new Error(
+              // tslint:disable-next-line: max-line-length
+              `mutation '${mutationName}' was called with a function argument; mutation arguments must be serializable, therefore functions are not supported`,
+            )
+          }
         }
 
         return { type, mutationName, args }
@@ -155,11 +159,13 @@ export function createMutations<
             return mock(...args)
           }
 
-          if (currentlyDispatchingMutationName) {
-            throw new Error(
-              // tslint:disable-next-line: max-line-length
-              `mutation '${mutationName}' was attempted to be dispatched from within mutation '${currentlyDispatchingMutationName}' which is not allowed; instead use '${mutationName}.withState(...)' to call the mutation without a dispatch`,
-            )
+          if (process.env.NODE_ENV !== 'production') {
+            if (currentlyDispatchingMutationName) {
+              throw new Error(
+                // tslint:disable-next-line: max-line-length
+                `mutation '${mutationName}' was attempted to be dispatched from within mutation '${currentlyDispatchingMutationName}' which is not allowed; instead use '${mutationName}.withState(...)' to call the mutation without a dispatch`,
+              )
+            }
           }
 
           currentlyDispatchingMutationName = mutationName as string

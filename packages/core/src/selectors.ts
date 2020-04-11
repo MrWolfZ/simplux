@@ -101,11 +101,13 @@ export function createSelectors<
 ): ResolvedSelectors<TState, TSelectorDefinitions> {
   const { name: moduleName, selectors } = simpluxModule.$simpluxInternals
 
-  for (const selectorName of Object.keys(selectorDefinitions)) {
-    if (selectors[selectorName]) {
-      throw new Error(
-        `selector '${selectorName}' is already defined for module '${moduleName}'`,
-      )
+  if (process.env.NODE_ENV !== 'production') {
+    for (const selectorName of Object.keys(selectorDefinitions)) {
+      if (selectors[selectorName]) {
+        throw new Error(
+          `selector '${selectorName}' is already defined for module '${moduleName}'`,
+        )
+      }
     }
   }
 

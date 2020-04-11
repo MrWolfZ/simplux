@@ -12,13 +12,15 @@ let latestReduxStoreId = 0
 let reduxStoreProxy: InternalReduxStoreProxy | undefined
 
 export const simpluxStore = createSimpluxStore(() => {
-  if (!reduxStoreProxy) {
-    throw new Error(
-      'simplux must be initialized with a redux store before it can be used!',
-    )
+  if (process.env.NODE_ENV !== 'production') {
+    if (!reduxStoreProxy) {
+      throw new Error(
+        'simplux must be initialized with a redux store before it can be used!',
+      )
+    }
   }
 
-  return reduxStoreProxy
+  return reduxStoreProxy!
 })
 
 /**
@@ -28,13 +30,15 @@ export const simpluxStore = createSimpluxStore(() => {
  * @private
  */
 export function getInternalReduxStoreProxy() {
-  if (!reduxStoreProxy) {
-    throw new Error(
-      'simplux must be initialized with a redux store before it can be used!',
-    )
+  if (process.env.NODE_ENV !== 'production') {
+    if (!reduxStoreProxy) {
+      throw new Error(
+        'simplux must be initialized with a redux store before it can be used!',
+      )
+    }
   }
 
-  return reduxStoreProxy
+  return reduxStoreProxy!
 }
 
 export function setReduxStore<TState>(
@@ -67,12 +71,14 @@ export function setReduxStore<TState>(
   }
 
   return () => {
-    if (!reduxStoreProxy) {
-      return
-    }
+    if (process.env.NODE_ENV !== 'production') {
+      if (!reduxStoreProxy) {
+        return
+      }
 
-    if (reduxStoreProxy.id !== id) {
-      throw new Error('cannot cleanup store since another store has been set')
+      if (reduxStoreProxy.id !== id) {
+        throw new Error('cannot cleanup store since another store has been set')
+      }
     }
 
     reduxStoreProxy = previousStoreProxy
