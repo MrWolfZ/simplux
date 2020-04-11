@@ -7,13 +7,7 @@ import React from 'react'
 import { render } from 'react-dom'
 
 // let's create a simple counter module
-
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: {
-    value: 0,
-  },
-})
+const counterModule = createSimpluxModule('counter', { value: 0 })
 
 const counter = {
   ...counterModule,

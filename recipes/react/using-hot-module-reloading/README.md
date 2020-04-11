@@ -51,12 +51,7 @@ With this out of the way we can now create our app. Let's start with a counter m
 ```tsx
 import { createSelectors, createSimpluxModule, createMutations } from '@simplux/core'
 
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: {
-    value: 0,
-  },
-})
+const counterModule = createSimpluxModule('counter', { value: 0 })
 
 const counter = {
   ...counterModule,

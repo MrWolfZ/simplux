@@ -23,12 +23,7 @@ import { createSelectors, createSimpluxModule, createMutations } from '@simplux/
 import { useSimplux } from '@simplux/react'
 import React from 'react'
 
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: {
-    value: 0,
-  },
-})
+const counterModule = createSimpluxModule('counter', { value: 0 })
 
 const counter = {
   ...counterModule,

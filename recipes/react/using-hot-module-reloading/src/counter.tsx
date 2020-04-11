@@ -6,12 +6,7 @@ import { useSimplux } from '@simplux/react'
 import React from 'react'
 import { hot } from 'react-hot-loader'
 
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: {
-    value: 0,
-  },
-})
+const counterModule = createSimpluxModule('counter', { value: 0 })
 
 const counter = {
   ...counterModule,

@@ -5,12 +5,7 @@ import { createMutations, createSelectors, createSimpluxModule } from '@simplux/
 import { useSimplux } from '@simplux/react'
 import React from 'react'
 
-const lazyCounterModule = createSimpluxModule({
-  name: 'lazyCounter',
-  initialState: {
-    value: 0,
-  },
-})
+const lazyCounterModule = createSimpluxModule('lazyCounter', { value: 0 })
 
 const lazyCounter = {
   ...lazyCounterModule,

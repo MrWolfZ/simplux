@@ -3,12 +3,7 @@
 
 import { createMutations, createSelectors, createSimpluxModule } from '@simplux/core'
 
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: {
-    value: 0,
-  },
-})
+const counterModule = createSimpluxModule('counter', { value: 0 })
 
 export const counter = {
   ...counterModule,

@@ -19,12 +19,7 @@ Now we're ready to go.
 ```tsx
 import { createSelectors, createSimpluxModule, createMutations } from '@simplux/core'
 
-const lazyCounterModule = createSimpluxModule({
-  name: 'lazyCounter',
-  initialState: {
-    value: 0,
-  },
-})
+const lazyCounterModule = createSimpluxModule('lazyCounter', { value: 0 })
 
 const lazyCounter = {
   ...lazyCounterModule,
