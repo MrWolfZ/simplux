@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.react.using-lazy-loading-code-splitting",
-  "version": "0.13.0-alpha.3",
+  "version": "0.13.0-alpha.4",
   "description": "This recipe shows you how simple it is to use simplux with your lazy loaded React components and while using code splitting for your application",
   "scripts": {
     "start": "react-scripts start"
@@ -24,8 +24,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.13.0-alpha.3",
-    "@simplux/react": "0.13.0-alpha.3",
+    "@simplux/core": "0.13.0-alpha.4",
+    "@simplux/react": "0.13.0-alpha.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },
