@@ -1,4 +1,9 @@
-import { isSimpluxModule, SimpluxModule, SimpluxSelector } from '@simplux/core'
+import {
+  Immutable,
+  isSimpluxModule,
+  SimpluxModule,
+  SimpluxSelector,
+} from '@simplux/core'
 import { useEffect, useMemo, useReducer } from 'react'
 import { useSimpluxContext } from './context'
 
@@ -71,7 +76,7 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
 
 export function useSimpluxInternal<TState, TArgs extends any[], TResult>(
   module: SimpluxModule<TState>,
-  selector: (state: TState, ...args: TArgs) => TResult,
+  selector: (state: Immutable<TState>, ...args: TArgs) => TResult,
   args: TArgs,
 ): TResult {
   const [, forceRender] = useReducer((s: number) => s + 1, 0)
@@ -79,10 +84,10 @@ export function useSimpluxInternal<TState, TArgs extends any[], TResult>(
   const context = useSimpluxContext()
 
   const memoizingSelector = useMemo(() => {
-    let memoizedState: TState | undefined
+    let memoizedState: Immutable<TState> | undefined
     let memoizedResult: TResult | undefined
 
-    return (state: TState) => {
+    return (state: Immutable<TState>) => {
       if (state === memoizedState) {
         return memoizedResult!
       }
@@ -102,7 +107,7 @@ export function useSimpluxInternal<TState, TArgs extends any[], TResult>(
     let previousSelectedState = selectedState
     let hadError = false
 
-    function checkForUpdates(state: TState) {
+    function checkForUpdates(state: Immutable<TState>) {
       try {
         const newSelectedState = memoizingSelector(state)
 
