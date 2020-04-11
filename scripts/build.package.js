@@ -51,7 +51,7 @@ async function build() {
     await executeStep(`Linting`, () => util_2.execAsync(`tslint`, `-c ${path_1.default.join(ROOT_DIR, 'tslint.json')}`, `-t stylish`, `--project ${PACKAGE_DIR} ${PACKAGE_DIR}/**/*.ts`));
     await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`));
     await executeStep(`Compiling esm5`, async () => {
-        const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es5`, `--module es2015`, `--outDir ${OUTPUT_DIR}/esm5`, `--noLib`, `--sourceMap`);
+        const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es5`, `--module es2015`, `--outDir ${OUTPUT_DIR}/esm5`, `--noLib`, `--sourceMap`, `--jsx preserve`);
         // 2 indicates failure with output still being generated
         // (this command will usually fail because of the --noLib flag)
         if (![0, 2].includes(ret.code)) {
@@ -66,7 +66,7 @@ async function build() {
         return code;
     });
     await executeStep(`Compiling esm2015`, async () => {
-        const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es2015`, `--module es2015`, `--outDir ${OUTPUT_DIR}/esm2015`, `--noLib`, `--sourceMap`);
+        const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es2015`, `--module es2015`, `--outDir ${OUTPUT_DIR}/esm2015`, `--noLib`, `--sourceMap`, `--jsx preserve`);
         // 2 indicates failure with output still being generated
         // (this command will usually fail because of the --noLib flag)
         if (![0, 2].includes(ret.code)) {
