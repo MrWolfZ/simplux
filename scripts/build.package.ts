@@ -74,7 +74,7 @@ async function build() {
       `--outDir ${OUTPUT_DIR}/esm5`,
       `--noLib`,
       `--sourceMap`,
-      `--jsx preserve`,
+      `--jsx react`,
     )
 
     // 2 indicates failure with output still being generated
@@ -104,7 +104,7 @@ async function build() {
       `--outDir ${OUTPUT_DIR}/esm2015`,
       `--noLib`,
       `--sourceMap`,
-      `--jsx preserve`,
+      `--jsx react`,
     )
 
     // 2 indicates failure with output still being generated
