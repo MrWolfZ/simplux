@@ -11,17 +11,7 @@ export interface InternalReduxStoreProxy {
 let latestReduxStoreId = 0
 let reduxStoreProxy: InternalReduxStoreProxy | undefined
 
-export const simpluxStore = createSimpluxStore(() => {
-  if (process.env.NODE_ENV !== 'production') {
-    if (!reduxStoreProxy) {
-      throw new Error(
-        'simplux must be initialized with a redux store before it can be used!',
-      )
-    }
-  }
-
-  return reduxStoreProxy!
-})
+export const simpluxStore = createSimpluxStore(getInternalReduxStoreProxy)
 
 /**
  * This function is part of the internal simplux API that should only ever
