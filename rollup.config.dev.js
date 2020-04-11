@@ -12,5 +12,5 @@ module.exports = {
     // console.warn everything else
     console.warn(warning.message)
   },
-  plugins: [replace({ 'process.env.NODE_ENV': "'production'" })],
+  plugins: [replace({ 'process.env.NODE_ENV': "'development'" })],
 }

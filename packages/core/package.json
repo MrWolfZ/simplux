@@ -4,7 +4,7 @@
   "description": "The core package of simplux. Contains everything to manage your application state in a simple way.",
   "module": "./esm5/index.js",
   "es2015": "./esm2015/index.js",
-  "main": "./bundles/bundle.umd.js",
+  "main": "./index.js",
   "typings": "./index.d.ts",
   "sideEffects": false,
   "scripts": {

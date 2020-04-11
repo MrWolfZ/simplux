@@ -2,9 +2,9 @@
   "name": "@simplux/angular",
   "version": "0.12.0",
   "description": "The Angular extension package of simplux. Provides a simple way to use simplux in Angular applications.",
-  "module": "./bundles/bundle.es5.js",
-  "es2015": "./bundles/bundle.js",
-  "main": "./bundles/bundle.umd.js",
+  "module": "./esm5/index.js",
+  "es2015": "./esm2015/index.js",
+  "main": "./index.js",
   "typings": "./index.d.ts",
   "scripts": {
     "build": "node ../../scripts/build.package.js --forceEnableColors=true",

@@ -35,9 +35,12 @@ build().catch(err => {
 async function build() {
   const PACKAGE_DIR = argv.packageDir
   const OUTPUT_DIR = path.join(PACKAGE_DIR, `dist`)
-  const BUNDLES_DIR = path.join(OUTPUT_DIR, `bundles`)
+  const UMD_DIR = path.join(OUTPUT_DIR, `umd`)
+  const CJS_DIR = path.join(OUTPUT_DIR, `cjs`)
+  const TEMP_DIR = path.join(OUTPUT_DIR, `temp`)
   const ROOT_DIR = path.resolve(path.join(__dirname, `..`))
   const PACKAGE = require(path.join(PACKAGE_DIR, 'package.json'))
+  const PACKAGE_SIMPLE_NAME = PACKAGE.name.split('/')[1]
 
   const buildStart = process.hrtime()
 
@@ -45,7 +48,8 @@ async function build() {
 
   await executeStep(`Cleaning output directory`, () => {
     shell.rm(`-Rf`, `${OUTPUT_DIR}/*`)
-    shell.mkdir(`-p`, BUNDLES_DIR)
+    shell.mkdir(`-p`, UMD_DIR)
+    shell.mkdir(`-p`, CJS_DIR)
   })
 
   await executeStep(`Linting`, () =>
@@ -119,25 +123,26 @@ async function build() {
     return code
   })
 
+  const externalsArr = Object.keys(PACKAGE.dependencies || {})
+    .concat(Object.keys(PACKAGE.devDependencies || {}))
+    .concat(Object.keys(PACKAGE.peerDependencies || {}))
+
+  // a bit of special handling for rxjs since it has two entry
+  // points that make the dependencies heuristic fail
+  if (externalsArr.includes('rxjs')) {
+    externalsArr.push('rxjs/operators')
+  }
+
+  const externalsCsv = externalsArr.join(',')
+  const externalsArg = externalsCsv ? ` -e ${externalsCsv}` : ''
+
   await executeStep(`Bundling`, async () => {
-    const externalsArr = Object.keys(PACKAGE.dependencies || {})
-      .concat(Object.keys(PACKAGE.devDependencies || {}))
-      .concat(Object.keys(PACKAGE.peerDependencies || {}))
-
-    // a bit of special handling for rxjs since it has two entry
-    // points that make the dependencies heuristic fail
-    if (externalsArr.includes('rxjs')) {
-      externalsArr.push('rxjs/operators')
-    }
-
-    const externalsCsv = externalsArr.join(',')
-    const externalsArg = externalsCsv ? ` -e ${externalsCsv}` : ''
     const ret = await execAsync(
       `rollup`,
       `-f esm`,
       `-n ${PACKAGE.name}`,
       `-i ${OUTPUT_DIR}/index.js`,
-      `-o ${BUNDLES_DIR}/bundle.js`,
+      `-o ${TEMP_DIR}/bundle.js`,
       `-m`,
       externalsArg,
     )
@@ -146,15 +151,15 @@ async function build() {
       return ret
     }
 
-    ret.code = await mapSources(`${BUNDLES_DIR}/bundle.js`)
+    ret.code = await mapSources(`${TEMP_DIR}/bundle.js`)
     return ret
   })
 
   await executeStep(`Downleveling ES2015 to ESM/ES5`, async () => {
-    shell.cp(`${BUNDLES_DIR}/bundle.js`, `${BUNDLES_DIR}/bundle.es5.ts`)
+    shell.cp(`${TEMP_DIR}/bundle.js`, `${TEMP_DIR}/bundle.es5.ts`)
     const ret = await execAsync(
       `tsc`,
-      `${BUNDLES_DIR}/bundle.es5.ts`,
+      `${TEMP_DIR}/bundle.es5.ts`,
       `--target es5`,
       `--module es2015`,
       `--noLib`,
@@ -167,42 +172,21 @@ async function build() {
       return ret
     }
 
-    const code = await mapSources(`${BUNDLES_DIR}/bundle.es5.js`)
-
-    if (code !== 0) {
-      return code
-    }
-
-    shell.rm(`-f`, `${BUNDLES_DIR}/bundle.es5.ts`)
-
-    return code
+    return await mapSources(`${TEMP_DIR}/bundle.es5.js`)
   })
 
-  await executeStep(`Bundling UMD`, async () => {
-    const externalsArr = Object.keys(PACKAGE.dependencies || {})
-      .concat(Object.keys(PACKAGE.devDependencies || {}))
-      .concat(Object.keys(PACKAGE.peerDependencies || {}))
+  const globalsArg =
+    externalsArr.length > 0
+      ? `-g ${externalsArr.map(e => `${e}:${GLOBALS[e] || e}`).join(',')}`
+      : ''
 
-    // a bit of special handling for rxjs since it has two entry
-    // points that make the dependencies heuristic fail
-    if (externalsArr.includes('rxjs')) {
-      externalsArr.push('rxjs/operators')
-    }
-
-    const externalsCsv = externalsArr.join(',')
-    const externalsArg = externalsCsv ? ` -e ${externalsCsv}` : ''
-
-    const globalsArg =
-      externalsArr.length > 0
-        ? `-g ${externalsArr.map(e => `${e}:${GLOBALS[e] || e}`).join(',')}`
-        : ''
-
+  await executeStep(`Bundling UMD (DEV)`, async () => {
     const ret = await execAsync(
       `rollup`,
-      `-c ${path.join(ROOT_DIR, 'rollup.config.js')}`,
+      `-c ${path.join(ROOT_DIR, 'rollup.config.dev.js')}`,
       `-f umd`,
-      `-i ${BUNDLES_DIR}/bundle.es5.js`,
-      `-o ${BUNDLES_DIR}/bundle.umd.js`,
+      `-i ${TEMP_DIR}/bundle.es5.js`,
+      `-o ${UMD_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
       `-n ${PACKAGE.name}`,
       `-m`,
       `--exports named`,
@@ -214,29 +198,139 @@ async function build() {
       return ret
     }
 
-    ret.code = await mapSources(`${BUNDLES_DIR}/bundle.umd.js`)
+    ret.code = await mapSources(
+      `${UMD_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
+    )
+
     return ret
   })
 
-  await executeStep(`Minifying`, async () => {
-    let code = await execAsync(
+  await executeStep(`Bundling UMD`, async () => {
+    const ret = await execAsync(
+      `rollup`,
+      `-c ${path.join(ROOT_DIR, 'rollup.config.js')}`,
+      `-f umd`,
+      `-i ${TEMP_DIR}/bundle.es5.js`,
+      `-o ${TEMP_DIR}/bundle.umd.js`,
+      `-n ${PACKAGE.name}`,
+      `-m`,
+      `--exports named`,
+      externalsArg,
+      globalsArg,
+    )
+
+    if (ret.code !== 0) {
+      return ret
+    }
+
+    ret.code = await mapSources(`${TEMP_DIR}/bundle.umd.js`)
+    return ret
+  })
+
+  await executeStep(`Bundling CJS (DEV)`, async () => {
+    const ret = await execAsync(
+      `rollup`,
+      `-c ${path.join(ROOT_DIR, 'rollup.config.dev.js')}`,
+      `-f cjs`,
+      `-i ${TEMP_DIR}/bundle.es5.js`,
+      `-o ${CJS_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
+      `-n ${PACKAGE.name}`,
+      `-m`,
+      `--exports named`,
+      externalsArg,
+      globalsArg,
+    )
+
+    if (ret.code !== 0) {
+      return ret
+    }
+
+    ret.code = await mapSources(
+      `${CJS_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`,
+    )
+
+    return ret
+  })
+
+  await executeStep(`Bundling CJS`, async () => {
+    const ret = await execAsync(
+      `rollup`,
+      `-c ${path.join(ROOT_DIR, 'rollup.config.js')}`,
+      `-f cjs`,
+      `-i ${TEMP_DIR}/bundle.es5.js`,
+      `-o ${TEMP_DIR}/bundle.cjs.js`,
+      `-n ${PACKAGE.name}`,
+      `-m`,
+      `--exports named`,
+      externalsArg,
+      globalsArg,
+    )
+
+    if (ret.code !== 0) {
+      return ret
+    }
+
+    ret.code = await mapSources(`${TEMP_DIR}/bundle.cjs.js`)
+    return ret
+  })
+
+  await executeStep(`Minifying UMD`, async () => {
+    const fileName = `simplux.${PACKAGE_SIMPLE_NAME}.production.min.js`
+
+    const code = await execAsync(
       `${path.join(ROOT_DIR, 'node_modules/.bin/uglifyjs')}`,
       false,
       `-c`,
       `-m`,
       `--comments`,
-      `-o ${BUNDLES_DIR}/bundle.umd.min.js`,
+      `-o ${UMD_DIR}/${fileName}`,
       // tslint:disable-next-line: max-line-length
-      `--source-map "filename='bundle.umd.min.js.map',url='bundle.umd.min.js.map',includeSources"`,
-      `${BUNDLES_DIR}/bundle.umd.js`,
+      `--source-map "filename='${fileName}.map',url='${fileName}.map',includeSources"`,
+      `${TEMP_DIR}/bundle.umd.js`,
     )
 
     if (code !== 0) {
       return code
     }
 
-    code = await mapSources(`${BUNDLES_DIR}/bundle.umd.min.js`)
-    return code
+    return await mapSources(`${UMD_DIR}/${fileName}`)
+  })
+
+  await executeStep(`Minifying CJS`, async () => {
+    const fileName = `simplux.${PACKAGE_SIMPLE_NAME}.production.min.js`
+
+    const code = await execAsync(
+      `${path.join(ROOT_DIR, 'node_modules/.bin/uglifyjs')}`,
+      false,
+      `-c`,
+      `-m`,
+      `--comments`,
+      `-o ${CJS_DIR}/${fileName}`,
+      // tslint:disable-next-line: max-line-length
+      `--source-map "filename='${fileName}.map',url='${fileName}.map',includeSources"`,
+      `${TEMP_DIR}/bundle.cjs.js`,
+    )
+
+    if (code !== 0) {
+      return code
+    }
+
+    return await mapSources(`${CJS_DIR}/${fileName}`)
+  })
+
+  await executeStep(`Creating entry point`, async () => {
+    await promisify(fs.writeFile)(
+      `${OUTPUT_DIR}/index.js`,
+      `'use strict'
+
+if (process.env.NODE_ENV !== 'production') {
+  module.exports = require('./cjs/simplux.${PACKAGE_SIMPLE_NAME}.development.js')
+} else {
+  module.exports = require('./cjs/simplux.${PACKAGE_SIMPLE_NAME}.production.min.js')
+}
+`,
+    )
+    return 0
   })
 
   await executeStep(`Adjusting bundle sourcemap sources paths`, async () => {
@@ -246,8 +340,10 @@ async function build() {
       bundleMapFiles.map(async mapFile => {
         const fileContent = await promisify(fs.readFile)(mapFile)
         const fileContentJson = JSON.parse(fileContent as any) as {
-          sources: string[];
+          // tslint:disable-next-line:trailing-comma type-literal-delimiter
+          sources: string[]
         }
+
         fileContentJson.sources = fileContentJson.sources.map(s => {
           const sourcePath = path.resolve(path.join(path.dirname(mapFile), s))
           const packagePrefixSourcePath = sourcePath.replace(
@@ -263,12 +359,13 @@ async function build() {
   })
 
   await executeStep(`Cleaning build files`, () => {
-    shell.rm(`-Rf`, `${OUTPUT_DIR}/*.js`)
     shell.rm(`-Rf`, `${OUTPUT_DIR}/*.js.map`)
+    shell.rm(`-Rf`, `${OUTPUT_DIR}/*.spec.js`)
     shell.rm(`-Rf`, `${OUTPUT_DIR}/*.spec.d.ts`)
     shell.rm(`-Rf`, `${OUTPUT_DIR}/src/**/*.js`)
     shell.rm(`-Rf`, `${OUTPUT_DIR}/src/**/*.js.map`)
     shell.rm(`-Rf`, `${OUTPUT_DIR}/src/**/*.spec.d.ts`)
+    shell.rm(`-Rf`, TEMP_DIR)
   })
 
   await executeStep(`Copying static assets`, () => {
