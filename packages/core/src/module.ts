@@ -4,15 +4,16 @@ import { MutationDefinitions } from './mutations'
 import { createModuleReducer } from './reducer'
 import { SelectorDefinitions } from './selectors'
 import { SimpluxStore, simpluxStore } from './store'
+import { Immutable } from './types'
 
 export interface SimpluxModuleConfig<TState> {
   name: string
-  initialState: TState
+  initialState: Immutable<TState>
 }
 
 export type StateChangeHandler<TState> = (
-  state: TState,
-  previousState: TState,
+  state: Immutable<TState>,
+  previousState: Immutable<TState>,
 ) => void
 
 export interface StateChangeHandlerOptions {
@@ -22,9 +23,9 @@ export interface StateChangeHandlerOptions {
 // this type exists to get the concrete type of the handler, i.e. to return
 // a handler with the correct number or parameters
 export type ResolvedStateChangeHandler<TState, THandler> = THandler extends (
-  state: TState,
+  state: Immutable<TState>,
 ) => void
-  ? (state: TState) => void
+  ? (state: Immutable<TState>) => void
   : StateChangeHandler<TState>
 
 export interface Subscription {
@@ -116,14 +117,14 @@ export interface SimpluxModule<TState> {
    *
    * @returns the module state
    */
-  readonly getState: () => TState
+  readonly getState: () => Immutable<TState>
 
   /**
    * Replace the whole module state.
    *
    * @param state the state to set for the module
    */
-  readonly setState: (state: TState) => void
+  readonly setState: (state: Immutable<TState>) => void
 
   /**
    * Register a handler to be called whenever the module's state
@@ -161,10 +162,10 @@ export function createModule<TState>(
     getReducer: () => simpluxStore.getReducer(config.name),
   }
 
-  const getModuleState = (): TState =>
+  const getModuleState = (): Immutable<TState> =>
     internals.mockStateValue || getState()[config.name]
 
-  const setModuleState = (state: TState) => {
+  const setModuleState = (state: Immutable<TState>) => {
     dispatch({
       type: `@simplux/${config.name}/setState`,
       state,

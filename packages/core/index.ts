@@ -1,6 +1,7 @@
 import { createStore, Store } from 'redux'
 import { createModule, SimpluxModule, SimpluxModuleConfig } from './src/module'
 import { setReduxStore, simpluxStore } from './src/store'
+import { Immutable } from './src/types'
 
 // we create and set a default redux store for simple scenarios
 setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
@@ -43,6 +44,14 @@ export {
   InternalReduxStoreProxy,
   SimpluxStore,
 } from './src/store'
+export {
+  Immutable,
+  ImmutableArray,
+  ImmutableMap,
+  ImmutableObject,
+  ImmutableSet,
+  Primitive,
+} from './src/types'
 
 // tslint:disable: max-line-length (cannot line break the links)
 
@@ -103,12 +112,12 @@ export function createSimpluxModule<TState>(
 
 export function createSimpluxModule<TState>(
   configOrName: SimpluxModuleConfig<TState> | string,
-  initialState?: TState,
+  initialState?: Immutable<TState>,
 ): SimpluxModule<TState> {
   if (typeof configOrName === 'string') {
     const config: SimpluxModuleConfig<TState> = {
       name: configOrName,
-      initialState: initialState!,
+      initialState: initialState as Immutable<TState>,
     }
 
     return createModule(simpluxStore, config)

@@ -1,7 +1,8 @@
 import { SimpluxModule } from './module'
+import { Immutable } from './types'
 
 export type SelectorDefinition<TState, TReturn> = (
-  state: TState,
+  state: Immutable<TState>,
   ...args: any
 ) => TReturn
 
@@ -33,7 +34,7 @@ export interface SimpluxSelector<TState, TArgs extends any[], TReturn> {
    *
    * @returns the selected value
    */
-  readonly withState: (state: TState, ...args: TArgs) => TReturn
+  readonly withState: (state: Immutable<TState>, ...args: TArgs) => TReturn
 
   /**
    * The module this selector belongs to.
@@ -50,7 +51,7 @@ export type ResolvedSelector<
     ReturnType<TSelectorDefinition>
   >
 > = TSelectorDefinition extends (
-  state: TState,
+  state: Immutable<TState>,
   ...args: infer TArgs
 ) => infer TReturn
   ? SimpluxSelector<TState, TArgs, TReturn>
@@ -121,7 +122,10 @@ export function createSelectors<
       const namedSelector = nameFunction(
         selectorName as string,
         (...args: any[]) => {
-          return memoizedDefinition(simpluxModule.getState(), ...args)
+          return memoizedDefinition(
+            simpluxModule.getState() as Immutable<TState>,
+            ...args,
+          )
         },
       ) as ResolvedSelector<TState, TSelectorDefinitions[typeof selectorName]>
 
