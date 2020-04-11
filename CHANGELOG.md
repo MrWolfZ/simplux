@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.12.0...v0.13.0-alpha.0) (2020-04-11)
+
+
+### Features
+
+* **core:** remove invariant checks from production bundle ([cd66ab3](https://github.com/MrWolfZ/simplux/commit/cd66ab3))
+
+
+
+
+
 # [0.12.0](https://github.com/MrWolfZ/simplux/compare/v0.11.1...v0.12.0) (2020-04-05)
 
 

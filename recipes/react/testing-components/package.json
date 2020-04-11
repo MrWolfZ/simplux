@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.react.testing-components",
-  "version": "0.12.0",
+  "version": "0.13.0-alpha.0",
   "description": "This recipe shows you how simple it is to test your React components that read and change state with simplux",
   "scripts": {
     "start": "react-scripts start",
@@ -25,9 +25,9 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.12.0",
-    "@simplux/react": "0.12.0",
-    "@simplux/testing": "0.12.0",
+    "@simplux/core": "0.13.0-alpha.0",
+    "@simplux/react": "0.13.0-alpha.0",
+    "@simplux/testing": "0.13.0-alpha.0",
     "@testing-library/react": "^9.3.2",
     "enzyme-adapter-react-16": "^1.14.0",
     "react": "^16.8.6",
