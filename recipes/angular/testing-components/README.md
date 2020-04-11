@@ -25,12 +25,7 @@ import { createSelectors, createSimpluxModule, createMutations } from '@simplux/
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: {
-    value: 0,
-  },
-})
+const counterModule = createSimpluxModule('counter', { value: 0 })
 
 const counterMutations = createMutations(counterModule, {
   increment(state) {

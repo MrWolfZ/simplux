@@ -19,12 +19,7 @@ In this recipe we are going to build a simple counter component. Let's start by 
 ```ts
 import { createSelectors, createSimpluxModule, createMutations } from '@simplux/core'
 
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: {
-    value: 0,
-  },
-})
+const counterModule = createSimpluxModule('counter', { value: 0 })
 
 const counterMutations = createMutations(counterModule, {
   increment(state) {
