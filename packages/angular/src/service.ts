@@ -1,4 +1,5 @@
 import {
+  Immutable,
   MutationDefinitions,
   ResolvedMutations,
   ResolvedSelectors,
@@ -19,7 +20,7 @@ export interface ModuleServiceState<TState> {
    *
    * @returns a snapshot of the module's current state
    */
-  getCurrentState: () => TState
+  getCurrentState: () => Immutable<TState>
 
   /**
    * Get an observable of state changes of the module. The observable
@@ -29,7 +30,7 @@ export interface ModuleServiceState<TState> {
    *
    * @returns an observable of state changes of the module
    */
-  selectState: () => Observable<TState>
+  selectState: () => Observable<Immutable<TState>>
 }
 
 export type ObservableSelector<TSelector> = TSelector extends (
@@ -125,7 +126,7 @@ function createObservableSelectors<
       const selector = selectors[selectorName]
       acc[selectorName] = ((...args: any[]) =>
         stateChanges$.pipe(
-          map(state => selector.withState(state, ...args)),
+          map(state => selector.withState(state as Immutable<TState>, ...args)),
           distinctUntilChanged(),
         )) as any
       return acc
@@ -135,7 +136,7 @@ function createObservableSelectors<
 }
 
 function observeState<TState>(simpluxModule: SimpluxModule<TState>) {
-  return new Observable<TState>(sub =>
+  return new Observable<Immutable<TState>>(sub =>
     simpluxModule.subscribeToStateChanges(state => sub.next(state)),
   )
 }
