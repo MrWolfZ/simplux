@@ -16,9 +16,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* **angular:** mark state types as immutable where appropriate ([63fca62](https://github.com/MrWolfZ/simplux/commit/63fca62))
-* **core:** mark state types as immutable where appropriate ([1c05a83](https://github.com/MrWolfZ/simplux/commit/1c05a83))
-* **react:** mark state types as immutable where appropriate ([0b6e5f3](https://github.com/MrWolfZ/simplux/commit/0b6e5f3))
+**Note:** Version bump only for package @simplux/platform
 
 
 

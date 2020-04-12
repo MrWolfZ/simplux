@@ -16,7 +16,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* **core:** mark state types as immutable where appropriate ([1c05a83](https://github.com/MrWolfZ/simplux/commit/1c05a83))
+**Note:** Version bump only for package @simplux/core
 
 
 
