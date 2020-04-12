@@ -1,7 +1,8 @@
 import { SimpluxModule } from './module'
+import { Mutable } from './types'
 
 export type MutationDefinition<TState> = (
-  state: TState,
+  state: Mutable<TState>,
   ...args: any
 ) => TState | void
 
@@ -56,7 +57,7 @@ export interface SimpluxMutation<TState, TArgs extends any[]> {
   readonly owningModule: SimpluxModule<TState>
 }
 
-type Mutable<T> = { -readonly [prop in keyof T]: T[prop] }
+type ShallowMutable<T> = { -readonly [prop in keyof T]: T[prop] }
 
 export type ResolvedMutation<
   TState,
@@ -177,7 +178,7 @@ export function createMutations<
 
       acc[mutationName] = mutation
 
-      const extras = mutation as Mutable<typeof mutation>
+      const extras = mutation as ShallowMutable<typeof mutation>
 
       extras.withState = (state: TState, ...args: any[]) => {
         return getReducer()(state, createAction(...args))
@@ -192,7 +193,7 @@ export function createMutations<
 
       return acc
     },
-    {} as Mutable<ResolvedMutations<TState, TMutations>>,
+    {} as ShallowMutable<ResolvedMutations<TState, TMutations>>,
   )
 
   return resolvedMutations

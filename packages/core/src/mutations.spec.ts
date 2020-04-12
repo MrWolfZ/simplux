@@ -2,6 +2,7 @@ import { createImmerReducer } from './immer'
 import { SimpluxModule } from './module'
 import { createMutations, MutationDefinitions } from './mutations'
 import { createModuleReducer } from './reducer'
+import { Immutable } from './types'
 
 declare class Event {
   constructor(arg: any)
@@ -178,6 +179,28 @@ describe('mutations', () => {
             // tslint:disable-next-line: no-unnecessary-callback-wrapper variable-name
             update: (state, _arg1: string, _arg2: { nestedArg: boolean }) => {
               state.prop = 'updated'
+            },
+          },
+        )
+
+        const updatedState = update.withState(objectState, 'foo', {
+          nestedArg: true,
+        })
+
+        expect(updatedState.prop).toBe('updated')
+        expect(objectState.prop).toBe('value')
+      })
+
+      it('allows mutating the state for immutable state type', () => {
+        const objectState = { prop: 'value' }
+        moduleState = objectState as any
+
+        const { update } = createMutations(
+          (moduleMock as any) as SimpluxModule<Immutable<typeof objectState>>,
+          {
+            // tslint:disable-next-line: no-unnecessary-callback-wrapper variable-name
+            update: (state, _arg1: string, _arg2: { nestedArg: boolean }) => {
+              state.prop = 'updated' // would be compile error without proper types
             },
           },
         )

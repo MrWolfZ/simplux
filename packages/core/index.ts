@@ -43,7 +43,7 @@ export {
   InternalReduxStoreProxy,
   SimpluxStore,
 } from './src/store'
-export { Immutable } from './src/types'
+export { Immutable, Mutable } from './src/types'
 
 // tslint:disable: max-line-length (cannot line break the links)
 
