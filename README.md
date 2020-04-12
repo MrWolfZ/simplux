@@ -155,9 +155,6 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- core: make state input to selectors deep readonly (i.e. freeze during dev and add `Immutable` type)
-- core: enable sanity checks only during dev
-- react: create overload for `useSimplux` that takes a module and an inline selector
 - entities: create package for managing collections of entities
 - entities: create default set of entity management mutations
 - entities: allow creating custom mutations that act on one entity
