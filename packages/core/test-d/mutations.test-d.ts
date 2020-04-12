@@ -2,7 +2,7 @@ import { expectAssignable, expectError, expectType } from 'tsd'
 import { createModule } from '../src/module'
 import { createMutations } from '../src/mutations'
 import { simpluxStore } from '../src/store'
-import { Immutable } from '../src/types'
+import { Immutable, Mutable } from '../src/types'
 
 interface State {
   count: number
@@ -23,10 +23,12 @@ const mutations = createMutations(module, {
 })
 
 expectAssignable<() => State>(mutations.increment)
-expectType<(s: State) => State>(mutations.increment.withState)
+expectType<(s: State | Mutable<State>) => State>(mutations.increment.withState)
 expectType<() => { type: string; args: [] }>(mutations.increment.asAction)
 expectAssignable<(a: number) => State>(mutations.incrementBy)
-expectType<(s: State, a: number) => State>(mutations.incrementBy.withState)
+expectType<(s: State | Mutable<State>, a: number) => State>(
+  mutations.incrementBy.withState,
+)
 expectType<(a: number) => { type: string; args: [number] }>(
   mutations.incrementBy.asAction,
 )
