@@ -14,6 +14,7 @@ import {
 
 describe('module', () => {
   describe('creating module', () => {
+    let nodeEnv = ''
     let setReducerSpy: jest.SpyInstance
     let simpluxStore: SimpluxStore
     let reduxStore: Store
@@ -24,6 +25,11 @@ describe('module', () => {
       simpluxStore = createSimpluxStore(getReduxStoreProxy)
       reduxStore = createStore(simpluxStore.rootReducer)
       setReducerSpy = jest.spyOn(simpluxStore, 'setReducer')
+      nodeEnv = process.env.NODE_ENV
+    })
+
+    afterEach(() => {
+      process.env.NODE_ENV = nodeEnv
     })
 
     it('sets the reducer', () => {
@@ -79,6 +85,26 @@ describe('module', () => {
       }).not.toThrow()
 
       expect(setReducerSpy).toHaveBeenCalledTimes(2)
+    })
+
+    it('throws for empty name', () => {
+      expect(() => {
+        createModule(simpluxStore, {
+          name: '',
+          initialState: 0,
+        })
+      }).toThrow()
+    })
+
+    it('does not throw for empty name in production', () => {
+      process.env.NODE_ENV = 'production'
+
+      expect(() => {
+        createModule(simpluxStore, {
+          name: '',
+          initialState: 0,
+        })
+      }).not.toThrow()
     })
   })
 

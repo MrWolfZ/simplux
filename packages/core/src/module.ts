@@ -149,6 +149,12 @@ export function createModule<TState>(
   store: SimpluxStore,
   config: SimpluxModuleConfig<TState>,
 ): SimpluxModule<TState> {
+  if (process.env.NODE_ENV !== 'production') {
+    if (!config.name) {
+      throw new Error('you must provide a module name!')
+    }
+  }
+
   const { getState, dispatch, subscribe, setReducer } = store
 
   const internals: SimpluxModuleInternals<TState> = {
