@@ -6,8 +6,9 @@ node_js:
 install:
   - npm ci
 script:
-  - npm run build-ci
-  - npm run test-ci
+  - npm run build:ci
+  - npm run lint:ci
+  - npm run test:ci
 after_success:
   - npm run report-coverage
 before_script:
