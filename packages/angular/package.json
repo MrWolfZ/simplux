@@ -11,6 +11,9 @@
     "build:ci": "npm run build -- --forceEnableColors=false",
     "lint": "tslint -c ../../tslint.json -p ./tsconfig.json --fix",
     "lint:ci": "tslint -c ../../tslint.json -p ./tsconfig.json",
+    "validate-types": "tsd",
+    "prevalidate-types": "echo // > index.d.ts",
+    "postvalidate-types": "del index.d.ts",
     "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --config=./jest.config.js",
     "test:ci": "npm run test -- --runInBand --ci --coverage",
     "report-coverage": "codecov -f ./coverage/lcov.info --disable=gcov -F angular",
@@ -39,9 +42,17 @@
   "devDependencies": {
     "jest": "24.8.0",
     "rollup": "^1.13.1",
+    "tsd": "^0.11.0",
     "tslint": "^5.17.0"
   },
   "peerDependencies": {
     "rxjs": ">=6.0.0"
+  },
+  "tsd": {
+    "compilerOptions": {
+      "types": [
+        "node"
+      ]
+    }
   }
 }

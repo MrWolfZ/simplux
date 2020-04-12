@@ -8,6 +8,7 @@ install:
 script:
   - npm run build:ci
   - npm run lint:ci
+  - npm run validate-types:ci
   - npm run test:ci
 after_success:
   - npm run report-coverage
