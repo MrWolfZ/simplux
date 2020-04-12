@@ -1,8 +1,7 @@
-import { Immutable } from 'immer'
 import { SimpluxModule } from './module'
 
 export type SelectorDefinition<TState, TReturn> = (
-  state: Immutable<TState>,
+  state: TState,
   ...args: any
 ) => TReturn
 
@@ -34,7 +33,7 @@ export interface SimpluxSelector<TState, TArgs extends any[], TReturn> {
    *
    * @returns the selected value
    */
-  readonly withState: (state: Immutable<TState>, ...args: TArgs) => TReturn
+  readonly withState: (state: TState, ...args: TArgs) => TReturn
 
   /**
    * The module this selector belongs to.
@@ -51,7 +50,7 @@ export type ResolvedSelector<
     ReturnType<TSelectorDefinition>
   >
 > = TSelectorDefinition extends (
-  state: Immutable<TState>,
+  state: TState,
   ...args: infer TArgs
 ) => infer TReturn
   ? SimpluxSelector<TState, TArgs, TReturn>

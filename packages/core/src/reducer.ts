@@ -1,10 +1,9 @@
-import { Immutable } from 'immer'
 import { Action } from 'redux'
 import { createMutationPrefix, MutationDefinitions } from './mutations'
 
 export function createModuleReducer<TState>(
   moduleName: string,
-  initialState: Immutable<TState>,
+  initialState: TState,
   moduleMutations: MutationDefinitions<TState>,
 ) {
   const mutationPrefix = createMutationPrefix(moduleName)
@@ -12,7 +11,7 @@ export function createModuleReducer<TState>(
   return <TAction extends Action<string>>(
     state = initialState,
     action: TAction,
-  ): Immutable<TState> => {
+  ): TState => {
     if (action.type.startsWith(mutationPrefix)) {
       const { mutationName, args } = action as any
       const mutation = moduleMutations[mutationName]
@@ -25,7 +24,7 @@ export function createModuleReducer<TState>(
         }
       }
 
-      return (mutation(state as TState, ...args) as Immutable<TState>) || state
+      return mutation(state as TState, ...args) || state
     }
 
     if (action.type === `@simplux/${moduleName}/setState`) {

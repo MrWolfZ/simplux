@@ -1,4 +1,3 @@
-import { Immutable } from 'immer'
 import { createStore, Store } from 'redux'
 import { createModule, SimpluxModule, SimpluxModuleConfig } from './src/module'
 import { setReduxStore, simpluxStore } from './src/store'
@@ -6,7 +5,6 @@ import { setReduxStore, simpluxStore } from './src/store'
 // we create and set a default redux store for simple scenarios
 setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
 
-export { Immutable } from 'immer'
 export {
   createEffect,
   EffectMockDefinition,
@@ -45,6 +43,7 @@ export {
   InternalReduxStoreProxy,
   SimpluxStore,
 } from './src/store'
+export { Immutable } from './src/types'
 
 // tslint:disable: max-line-length (cannot line break the links)
 
@@ -105,12 +104,12 @@ export function createSimpluxModule<TState>(
 
 export function createSimpluxModule<TState>(
   configOrName: SimpluxModuleConfig<TState> | string,
-  initialState?: Immutable<TState>,
+  initialState?: TState,
 ): SimpluxModule<TState> {
   if (typeof configOrName === 'string') {
     const config: SimpluxModuleConfig<TState> = {
       name: configOrName,
-      initialState: initialState as Immutable<TState>,
+      initialState: initialState!,
     }
 
     return createModule(simpluxStore, config)
