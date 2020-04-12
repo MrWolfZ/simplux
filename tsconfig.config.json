@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
-    "sourceMap": false,
+    "inlineSourceMap": false,
     "types": ["node"]
   },
   "include": ["scripts/**/*.ts"]

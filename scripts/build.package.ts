@@ -59,7 +59,10 @@ async function build() {
       `tslint`,
       `-c ${path.join(ROOT_DIR, 'tslint.json')}`,
       `-t stylish`,
-      `--project ${PACKAGE_DIR} ${PACKAGE_DIR}/**/*.ts`,
+      `--project ${PACKAGE_DIR}`,
+      `${PACKAGE_DIR}/src/**/*.ts`,
+      `${PACKAGE_DIR}/index.ts`,
+      `${PACKAGE_DIR}/e2e.spec.ts`,
     ),
   )
 

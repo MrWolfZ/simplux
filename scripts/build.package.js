@@ -50,7 +50,7 @@ async function build() {
         shelljs_1.default.mkdir(`-p`, UMD_DIR);
         shelljs_1.default.mkdir(`-p`, CJS_DIR);
     });
-    await executeStep(`Linting`, () => util_2.execAsync(`tslint`, `-c ${path_1.default.join(ROOT_DIR, 'tslint.json')}`, `-t stylish`, `--project ${PACKAGE_DIR} ${PACKAGE_DIR}/**/*.ts`));
+    await executeStep(`Linting`, () => util_2.execAsync(`tslint`, `-c ${path_1.default.join(ROOT_DIR, 'tslint.json')}`, `-t stylish`, `--project ${PACKAGE_DIR}`, `${PACKAGE_DIR}/src/**/*.ts`, `${PACKAGE_DIR}/index.ts`, `${PACKAGE_DIR}/e2e.spec.ts`));
     await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`));
     await executeStep(`Compiling esm5`, async () => {
         const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es5`, `--module es2015`, `--outDir ${ESM5_DIR}`, `--noLib`, `--sourceMap`, `--jsx react`);
