@@ -1,6 +1,5 @@
 import {
   getInternalReduxStoreProxy,
-  Immutable,
   InternalReduxStoreProxy,
   SimpluxModule,
 } from '@simplux/core'
@@ -18,15 +17,10 @@ import { unstable_batchedUpdates } from 'react-dom'
 export interface SimpluxContextValue {
   subscribeToModuleStateChanges: <TState>(
     simpluxModule: SimpluxModule<TState>,
-    handler: (
-      state: Immutable<TState>,
-      previousState: Immutable<TState>,
-    ) => void,
+    handler: (state: TState, previousState: TState) => void,
   ) => () => void
 
-  getModuleState: <TState>(
-    simpluxModule: SimpluxModule<TState>,
-  ) => Immutable<TState>
+  getModuleState: <TState>(simpluxModule: SimpluxModule<TState>) => TState
 }
 
 interface ModuleStates {
