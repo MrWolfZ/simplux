@@ -11,7 +11,7 @@
     "build": "node ../../scripts/build.package.js --forceEnableColors=true",
     "build:ci": "npm run build -- --forceEnableColors=false",
     "lint": "tslint -c ../../tslint.json -p ./tsconfig.json --fix",
-    "lint:ci": "npm run lint -- --fix=false",
+    "lint:ci": "tslint -c ../../tslint.json -p ./tsconfig.json",
     "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --config=./jest.config.js",
     "test:ci": "npm run test -- --runInBand --ci --coverage",
     "report-coverage": "codecov -f ./coverage/lcov.info --disable=gcov -F core",
