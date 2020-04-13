@@ -14,8 +14,6 @@ npm i @simplux/core -S
 ```
 
 ```ts
-// counter.ts
-
 import { createSimpluxModule, createMutations, createSelectors } from '@simplux/core'
 
 // state in simplux is contained in modules identified by a unique name
@@ -49,7 +47,7 @@ counter.incrementBy(5)
 console.log('incremented counter by 5:', counter.value())
 ```
 
-See this example in action [here](https://codesandbox.io/s/simpluxquickstart-ildpu). For a more detailed look into how **simplux** can make your life simple follow our recipe for [getting started](recipes/basics/getting-started#readme).
+See this example in action [here](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/quickstart/counter). For a more detailed look into how **simplux** can make your life simple follow our recipe for [getting started](recipes/basics/getting-started#readme).
 
 ### React
 
