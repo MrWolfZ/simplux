@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/MrWolfZ/simplux/compare/v0.13.0-alpha.8...v0.13.0) (2020-04-13)
+
+**Note:** Version bump only for package @simplux/recipes.advanced.composing-mutations
+
+
+
+
+
 # [0.13.0-alpha.8](https://github.com/MrWolfZ/simplux/compare/v0.13.0-alpha.7...v0.13.0-alpha.8) (2020-04-12)
 
 **Note:** Version bump only for package @simplux/recipes.advanced.composing-mutations
