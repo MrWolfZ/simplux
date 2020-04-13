@@ -18,13 +18,8 @@ npm i @simplux/core -S
 
 import { createSimpluxModule, createMutations, createSelectors } from '@simplux/core'
 
-// state in simplux is contained in modules
-const counterModule = createSimpluxModule({
-  name: 'counter',
-  initialState: {
-    value: 0,
-  },
-})
+// state in simplux is contained in modules identified by a unique name
+const counterModule = createSimpluxModule('counter', { value: 0 })
 
 export const counter = {
   ...counterModule,
