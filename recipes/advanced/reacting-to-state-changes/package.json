@@ -28,7 +28,7 @@
   "private": true,
   "dependencies": {
     "@simplux/core": "0.13.0",
-    "rxjs": "^6.5.2"
+    "rxjs": "^6.5.5"
   },
   "devDependencies": {
     "html-webpack-plugin": "^3.2.0",
