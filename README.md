@@ -56,9 +56,10 @@ npm i @simplux/core @simplux/react -S
 ```
 
 ```tsx
-import { useSimplux } from '@simplux/react'
+import { SimpluxProvider, useSimplux } from '@simplux/react'
 import React from 'react'
-import { counter } from './counter'
+import { render } from 'react-dom'
+import { counter } from './counter.module'
 
 const Counter = () => {
   const value = useSimplux(counter.value)
@@ -76,9 +77,17 @@ const Counter = () => {
     </>
   )
 }
+
+const App = () => (
+  <SimpluxProvider>
+    <Counter />
+  </SimpluxProvider>
+)
+
+render(<App />, document.getElementById('root'))
 ```
 
-See this example in action [here](https://codesandbox.io/s/simpluxquickstart-react-phtq3). For a more detailed look into how **simplux** can power up your React application follow our recipe for [using **simplux** in your React application](recipes/react/using-in-react-application#readme).
+See this example in action [here](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/quickstart/react). For a more detailed look into how **simplux** can power up your React application follow our recipe for [using **simplux** in your React application](recipes/react/using-in-react-application#readme).
 
 ### Angular
 
