@@ -8,7 +8,7 @@
 // immutable; obviously this adds a cost to compilation time, but so
 // far, I have not experienced any too adverse effects; should performance
 // become an issue in the future, simply drop the IfMutable/IfImmutable
-// branches
+// branches; in addition, we exclude some tricky cases like maps and sets
 
 type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X
   ? 1
@@ -35,8 +35,6 @@ type ReadonlyKeys<T> = {
 
 type AtomicObject =
   | Function
-  | WeakMap<any, any>
-  | WeakSet<any>
   | Promise<any>
   | Date
   | RegExp
@@ -44,13 +42,11 @@ type AtomicObject =
   | Number
   | String
 
+type MutableArray<T> = T extends (infer U)[] ? Mutable<U>[] : never
+
 type IsMutable<T> = T extends AtomicObject
   ? true
-  : T extends Map<any, any>
-  ? true
-  : T extends Set<any>
-  ? true
-  : T extends any[]
+  : T extends MutableArray<T>
   ? true
   : T extends object
   ? Exclude<keyof T, WritableKeys<T>> extends never
@@ -62,17 +58,13 @@ type IsMutable<T> = T extends AtomicObject
     : false
   : true
 
+type ImmutableArray<T> = T extends readonly (infer U)[]
+  ? readonly Immutable<U>[]
+  : any
+
 type IsImmutable<T> = T extends AtomicObject
   ? true
-  : T extends Map<any, any>
-  ? Omit<Map<any, any>, 'set' | 'delete' | 'clear'> extends T
-    ? true
-    : false
-  : T extends Set<any>
-  ? Omit<Set<any>, 'add' | 'delete' | 'clear'> extends T
-    ? true
-    : false
-  : readonly any[] extends T
+  : ImmutableArray<T> extends T
   ? true
   : T extends object
   ? Exclude<keyof T, ReadonlyKeys<T>> extends never
@@ -88,9 +80,11 @@ export type Mutable<T> = T extends AtomicObject
   ? T
   : IsMutable<T> extends true
   ? T
-  : T extends Map<infer K, infer V>
+  : T extends readonly (infer U)[]
+  ? Mutable<U>[]
+  : T extends ReadonlyMap<infer K, infer V>
   ? Map<Mutable<K>, Mutable<V>>
-  : T extends Set<infer V>
+  : T extends ReadonlySet<infer V>
   ? Set<Mutable<V>>
   : T extends object
   ? { -readonly [K in keyof T]: Mutable<T[K]> }
@@ -101,9 +95,9 @@ export type Immutable<T> = T extends AtomicObject
   : IsImmutable<T> extends true
   ? T
   : T extends Map<infer K, infer V>
-  ? Omit<Map<K, V>, 'set' | 'delete' | 'clear'>
+  ? ReadonlyMap<Immutable<K>, Immutable<V>>
   : T extends Set<infer V>
-  ? Omit<Set<V>, 'add' | 'delete' | 'clear'>
+  ? ReadonlySet<Immutable<V>>
   : T extends object
   ? { readonly [K in keyof T]: Immutable<T[K]> }
   : T
