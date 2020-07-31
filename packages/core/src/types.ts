@@ -42,7 +42,9 @@ type AtomicObject =
   | Number
   | String
 
-type MutableArray<T> = T extends (infer U)[] ? Mutable<U>[] : never
+type IsAtomicObject<T> = T extends AtomicObject ? true : false
+
+type MutableArray<T> = T extends readonly (infer U)[] ? Mutable<U>[] : never
 
 type IsMutable<T> = T extends AtomicObject
   ? true
@@ -58,23 +60,31 @@ type IsMutable<T> = T extends AtomicObject
     : false
   : true
 
-type ImmutableArray<T> = T extends readonly (infer U)[]
-  ? readonly Immutable<U>[]
-  : any
+type IsImmutableArray<T> = T extends any[]
+  ? false
+  : T extends readonly (infer U)[]
+  ? { [K in keyof T]: IsImmutable<U> }[number] extends true
+    ? true
+    : false
+  : false
 
-type IsImmutable<T> = T extends AtomicObject
-  ? true
-  : ImmutableArray<T> extends T
-  ? true
-  : T extends object
-  ? Exclude<keyof T, ReadonlyKeys<T>> extends never
+type IsImmutableObject<T> = T extends object
+  ? Exclude<keyof T, ReadonlyKeys<T>> extends false
     ? {
         [K in keyof T]: IsImmutable<T[K]> extends true ? true : false
       }[keyof T] extends true
       ? true
       : false
     : false
-  : true
+  : false
+
+type IsImmutable<T> = IsAtomicObject<T> extends true
+  ? true
+  : IsImmutableArray<T> extends true
+  ? true
+  : IsImmutableObject<T> extends true
+  ? true
+  : false
 
 export type Mutable<T> = T extends AtomicObject
   ? T
@@ -94,9 +104,9 @@ export type Immutable<T> = T extends AtomicObject
   ? T
   : IsImmutable<T> extends true
   ? T
-  : T extends Map<infer K, infer V>
+  : T extends ReadonlyMap<infer K, infer V>
   ? ReadonlyMap<Immutable<K>, Immutable<V>>
-  : T extends Set<infer V>
+  : T extends ReadonlySet<infer V>
   ? ReadonlySet<Immutable<V>>
   : T extends object
   ? { readonly [K in keyof T]: Immutable<T[K]> }

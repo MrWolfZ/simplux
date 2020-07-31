@@ -50,7 +50,6 @@ interface S4 {
 interface S5 {
   bar: {
     set: Set<string[]>
-    weakSet: WeakSet<string[]>
     map: Map<string, string[]>
   }
 }
@@ -58,7 +57,6 @@ interface S5 {
 interface S6 {
   readonly bar: {
     readonly set: ReadonlySet<readonly string[]>
-    readonly weakSet: WeakSet<readonly string[]>
     readonly map: ReadonlyMap<string, readonly string[]>
   }
 }
@@ -89,9 +87,6 @@ expectType<Set<string>>(undefined! as Mutable<ReadonlySet<string>>)
 expectType<Set<string[]>>(undefined! as Mutable<ReadonlySet<string[]>>)
 expectType<Set<string[]>>(undefined! as Mutable<ReadonlySet<readonly string[]>>)
 
-expectType<WeakSet<string[]>>(undefined! as Mutable<WeakSet<string[]>>)
-expectType<WeakSet<string[]>>(undefined! as Mutable<WeakSet<readonly string[]>>)
-
 expectType<Map<string, string>>(undefined! as Mutable<
   ReadonlyMap<string, string>
 >)
@@ -121,10 +116,10 @@ expectType<RegExp>(undefined! as Immutable<RegExp>)
 expectType<Promise<string>>(undefined! as Immutable<Promise<string>>)
 
 expectType<Immutable<string[]>>(undefined! as readonly string[])
-expectType<Immutable<{ foo: string }[]>>(undefined! as readonly {
-  foo: string
+expectType<Immutable<{ readonly foo: string }[]>>(undefined! as readonly {
+  readonly foo: string
 }[])
-expectType<Immutable<{ foo: string }[]>>(undefined! as readonly {
+expectType<Immutable<readonly { foo: string }[]>>(undefined! as readonly {
   readonly foo: string
 }[])
 
