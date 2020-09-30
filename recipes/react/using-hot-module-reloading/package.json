@@ -29,7 +29,7 @@
     "@simplux/react": "0.13.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-hot-loader": "^4.12.18"
+    "react-hot-loader": "^4.13.0"
   },
   "devDependencies": {
     "@hot-loader/react-dom": "^16.11.0",
@@ -39,7 +39,7 @@
     "react-app-rewire-hot-loader": "^2.0.1",
     "react-app-rewired": "^2.1.5",
     "react-scripts": "^3.0.1",
-    "typescript": "^3.7.2",
+    "typescript": "^3.9.0",
     "webpack": "^4.32.2",
     "webpack-dev-server": "^3.5.1"
   },
