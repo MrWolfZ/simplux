@@ -144,7 +144,7 @@ async function build() {
     });
     await executeStep(`Minifying UMD`, async () => {
         const fileName = `simplux.${PACKAGE_SIMPLE_NAME}.production.min.js`;
-        const code = await util_2.execAsync(`${path_1.default.join(ROOT_DIR, 'node_modules/.bin/uglifyjs')}`, false, `-c`, `-m`, `--comments`, `-o ${UMD_DIR}/${fileName}`, 
+        const code = await util_2.execAsync(`${path_1.default.join(ROOT_DIR, 'node_modules/.bin/uglifyjs')}`, false, `-c`, `-m`, `-o ${UMD_DIR}/${fileName}`, 
         // tslint:disable-next-line: max-line-length
         `--source-map "filename='${fileName}.map',url='./${fileName}.map',includeSources"`, `${TEMP_DIR}/bundle.umd.js`);
         if (code !== 0) {
@@ -154,7 +154,7 @@ async function build() {
     });
     await executeStep(`Minifying CJS`, async () => {
         const fileName = `simplux.${PACKAGE_SIMPLE_NAME}.production.min.js`;
-        const code = await util_2.execAsync(`${path_1.default.join(ROOT_DIR, 'node_modules/.bin/uglifyjs')}`, false, `-c`, `-m`, `--comments`, `-o ${CJS_DIR}/${fileName}`, 
+        const code = await util_2.execAsync(`${path_1.default.join(ROOT_DIR, 'node_modules/.bin/uglifyjs')}`, false, `-c`, `-m`, `-o ${CJS_DIR}/${fileName}`, 
         // tslint:disable-next-line: max-line-length
         `--source-map "filename='${fileName}.map',url='./${fileName}.map',includeSources"`, `${TEMP_DIR}/bundle.cjs.js`);
         if (code !== 0) {

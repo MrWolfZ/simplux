@@ -271,7 +271,6 @@ async function build() {
       false,
       `-c`,
       `-m`,
-      `--comments`,
       `-o ${UMD_DIR}/${fileName}`,
       // tslint:disable-next-line: max-line-length
       `--source-map "filename='${fileName}.map',url='./${fileName}.map',includeSources"`,
@@ -293,7 +292,6 @@ async function build() {
       false,
       `-c`,
       `-m`,
-      `--comments`,
       `-o ${CJS_DIR}/${fileName}`,
       // tslint:disable-next-line: max-line-length
       `--source-map "filename='${fileName}.map',url='./${fileName}.map',includeSources"`,
