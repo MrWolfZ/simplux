@@ -2,5 +2,3 @@ node_modules
 build
 dist
 coverage
-packages/**/package-lock.json
-recipes/**/package-lock.json
