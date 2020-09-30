@@ -1,8 +1,7 @@
 import { SimpluxModule } from './module'
-import { Mutable } from './types'
 
 export type MutationDefinition<TState> = (
-  state: Mutable<TState>,
+  state: TState,
   ...args: any
 ) => TState | void
 
@@ -40,10 +39,7 @@ export interface SimpluxMutation<TState, TArgs extends any[]> {
    *
    * @returns the updated state
    */
-  readonly withState: (
-    state: TState | Mutable<TState>,
-    ...args: TArgs
-  ) => TState
+  readonly withState: (state: TState, ...args: TArgs) => TState
 
   /**
    * When a mutation is called directly it updates the module's state by
@@ -65,10 +61,7 @@ type ShallowMutable<T> = { -readonly [prop in keyof T]: T[prop] }
 export type ResolvedMutation<
   TState,
   TMutation extends MutationDefinition<TState>
-> = TMutation extends (
-  state: Mutable<TState>,
-  ...args: infer TArgs
-) => TState | void
+> = TMutation extends (state: TState, ...args: infer TArgs) => TState | void
   ? SimpluxMutation<TState, TArgs>
   : never
 
@@ -186,7 +179,7 @@ export function createMutations<
 
       const extras = mutation as ShallowMutable<typeof mutation>
 
-      extras.withState = (state: TState | Mutable<TState>, ...args: any[]) => {
+      extras.withState = (state: TState, ...args: any[]) => {
         return getReducer()(state, createAction(...args))
       }
 

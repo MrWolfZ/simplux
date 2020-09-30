@@ -1,6 +1,5 @@
 import { Action } from 'redux'
 import { createMutationPrefix, MutationDefinitions } from './mutations'
-import { Mutable } from './types'
 
 export function createModuleReducer<TState>(
   moduleName: string,
@@ -25,7 +24,7 @@ export function createModuleReducer<TState>(
         }
       }
 
-      return mutation(state as Mutable<TState>, ...args) || state
+      return mutation(state, ...args) || state
     }
 
     if (action.type === `@simplux/${moduleName}/setState`) {
