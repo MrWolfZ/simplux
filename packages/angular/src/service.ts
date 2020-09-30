@@ -1,4 +1,5 @@
 import {
+  Immutable,
   MutationDefinitions,
   ResolvedMutations,
   ResolvedSelectors,
@@ -135,7 +136,7 @@ function createObservableSelectors<
 }
 
 function observeState<TState>(simpluxModule: SimpluxModule<TState>) {
-  return new Observable<TState>(sub =>
+  return new Observable<Immutable<TState>>(sub =>
     simpluxModule.subscribeToStateChanges(state => sub.next(state)),
   )
 }
