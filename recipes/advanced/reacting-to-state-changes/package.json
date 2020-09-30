@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.advanced.reacting-to-state-changes",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "This recipe shows you how simple it is to react to changes in your state with simplux",
   "main": "src/index.ts",
   "scripts": {
@@ -27,7 +27,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.13.0",
+    "@simplux/core": "0.14.0",
     "rxjs": "^6.6.3"
   },
   "devDependencies": {

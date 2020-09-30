@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/MrWolfZ/simplux/compare/v0.13.0...v0.14.0) (2020-09-30)
+
+
+### Bug Fixes
+
+* **core:** handle arrays, sets, and maps properly in utility types "Mutable" and "Immutable" ([43c266e](https://github.com/MrWolfZ/simplux/commit/43c266e1898fdfba5de3923a14531543698e7fae))
+
+
+### Features
+
+* **core:** make `getState` and selector return values immutable ([5efebfd](https://github.com/MrWolfZ/simplux/commit/5efebfd6406d850d798353fd91cb47ea992d2694))
+
+
+
+
+
 # [0.13.0](https://github.com/MrWolfZ/simplux/compare/v0.13.0-alpha.8...v0.13.0) (2020-04-13)
 
 **Note:** Version bump only for package @simplux/core

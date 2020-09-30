@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.react.using-hot-module-reloading",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "This recipe shows you how simple it is to use simplux in your React application that uses hot module reloading (HMR)",
   "scripts": {
     "start": "react-app-rewired start",
@@ -25,8 +25,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.13.0",
-    "@simplux/react": "0.13.0",
+    "@simplux/core": "0.14.0",
+    "@simplux/react": "0.14.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-hot-loader": "^4.13.0"
