@@ -19,30 +19,10 @@ const selectors = createSelectors(module, {
   plus: (s, amount: number) => s.count + amount,
 })
 
-expectAssignable<() => State>(selectors.id)
-expectType<(s: State) => State>(selectors.id.withState)
+expectAssignable<() => Immutable<State>>(selectors.id)
+expectType<(s: Immutable<State>) => Immutable<State>>(selectors.id.withState)
+expectError((selectors.id().count += 1))
 expectAssignable<() => number>(selectors.plusOne)
-expectType<(s: State) => number>(selectors.plusOne.withState)
+expectType<(s: Immutable<State>) => number>(selectors.plusOne.withState)
 expectAssignable<(a: number) => number>(selectors.plus)
-expectType<(s: State, a: number) => number>(selectors.plus.withState)
-
-const immutableModule = createModule<Immutable<State>>(simpluxStore, {
-  name: 'test',
-  initialState: { count: 0 },
-})
-
-const immutableSelectors = createSelectors(immutableModule, {
-  id: s => {
-    expectType<Immutable<State>>(s)
-    return s
-  },
-  plusOne: s => s.count + 1,
-  plus: (s, amount: number) => s.count + amount,
-})
-
-expectAssignable<() => Immutable<State>>(immutableSelectors.id)
-expectError((immutableSelectors.id().count += 1))
-expectAssignable<() => number>(immutableSelectors.plusOne)
-expectAssignable<(s: Immutable<State>) => number>(
-  immutableSelectors.plusOne.withState,
-)
+expectType<(s: Immutable<State>, a: number) => number>(selectors.plus.withState)
