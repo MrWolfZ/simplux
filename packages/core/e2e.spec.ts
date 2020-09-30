@@ -13,9 +13,9 @@ import { combineReducers, createStore } from 'redux'
 
 describe(`@simplux/core`, () => {
   interface Todo {
-    id: string
-    description: string
-    isDone: boolean
+    readonly id: string
+    readonly description: string
+    readonly isDone: boolean
   }
 
   interface TodoState {
@@ -121,8 +121,8 @@ describe(`@simplux/core`, () => {
     expect(counterModule.getState()).toBe(10)
   })
 
-  describe('mutable/immer-style mutations', () => {
-    it('work', () => {
+  describe('mutable/immer-style mutation', () => {
+    it('works', () => {
       const todosModule = createSimpluxModule({
         name: 'mutableTodosModule1',
         initialState: initialTodoState,
@@ -183,7 +183,7 @@ describe(`@simplux/core`, () => {
       cleanup()
     })
 
-    it('do not mutate the state when calling a mutation', () => {
+    it('does not mutate the state when calling a mutation', () => {
       const initialState = {
         test: 'test',
       }
@@ -205,7 +205,7 @@ describe(`@simplux/core`, () => {
       expect(initialState.test).toBe('test')
     })
 
-    it('do not mutate the state when calling a mutation with a state', () => {
+    it('does not mutate the state when calling a mutation with a state', () => {
       const initialState = {
         test: 'test',
       }
@@ -285,8 +285,8 @@ describe(`@simplux/core`, () => {
     cleanup()
   })
 
-  describe('selectors', () => {
-    it('work', () => {
+  describe('selector', () => {
+    it('works', () => {
       const todosModule = createSimpluxModule({
         name: 'selectors',
         initialState: todoStoreWithTwoTodos,
@@ -325,8 +325,8 @@ describe(`@simplux/core`, () => {
     })
   })
 
-  describe('effects', () => {
-    it('work', async () => {
+  describe('effect', () => {
+    it('works', async () => {
       const todosModule = createSimpluxModule({
         name: 'effects',
         initialState: initialTodoState,
