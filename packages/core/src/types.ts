@@ -35,7 +35,7 @@ type ReadonlyKeys<T> = {
 
 type AtomicObject =
   | Function
-  | Promise<any>
+  | Promise<unknown>
   | Date
   | RegExp
   | Boolean
@@ -60,7 +60,7 @@ type IsMutable<T> = T extends AtomicObject
     : false
   : true
 
-type IsImmutableArray<T> = T extends any[]
+type IsImmutableArray<T> = T extends unknown[]
   ? false
   : T extends readonly (infer U)[]
   ? { [K in keyof T]: IsImmutable<U> }[number] extends true
