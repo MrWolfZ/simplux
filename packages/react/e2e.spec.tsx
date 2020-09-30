@@ -8,8 +8,8 @@ import {
 import { SimpluxProvider, useSimplux } from '@simplux/react'
 import { clearAllSimpluxMocks, mockModuleState } from '@simplux/testing'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
+import { act as actHook, renderHook } from '@testing-library/react-hooks'
 import React from 'react'
-import { act as actHook, renderHook } from 'react-hooks-testing-library'
 
 describe(`@simplux/react`, () => {
   afterEach(cleanup)

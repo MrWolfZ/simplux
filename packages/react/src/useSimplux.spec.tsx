@@ -1,11 +1,11 @@
 import {
   SimpluxModule,
   SimpluxSelector,
-  StateChangeSubscription,
+  StateChangeSubscription
 } from '@simplux/core'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
+import { act as actHook, renderHook } from '@testing-library/react-hooks'
 import React, { useCallback, useLayoutEffect, useState } from 'react'
-import { act as actHook, renderHook } from 'react-hooks-testing-library'
 import { create } from 'react-test-renderer'
 import { SimpluxProvider } from './context'
 import { useSimplux } from './useSimplux'
@@ -480,8 +480,8 @@ describe(useSimplux.name, () => {
 
         // a layout effect runs before the subscription effect
         useLayoutEffect(() => {
-          if (count === 10) {
-            moduleState = { count: 11 }
+          if (count === 11) {
+            moduleState = { count: 12 }
             subscriber(moduleState)
           }
         })
@@ -489,9 +489,14 @@ describe(useSimplux.name, () => {
         return <div>{count}</div>
       }
 
-      create(<Comp />)
+      render(<Comp />)
 
-      expect(renderedItems).toEqual([10, 11])
+      act(() => {
+        moduleState = { count: 11 }
+        subscriber(moduleState)
+      })
+
+      expect(renderedItems).toEqual([10, 11, 12])
     })
 
     it('works correctly is selector changes', () => {

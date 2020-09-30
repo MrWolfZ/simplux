@@ -1,7 +1,7 @@
 import { InternalReduxStoreProxy, SimpluxModule } from '@simplux/core'
 import { cleanup, render } from '@testing-library/react'
+import { renderHook } from '@testing-library/react-hooks'
 import React, { useEffect } from 'react'
-import { renderHook } from 'react-hooks-testing-library'
 import { useSimpluxContext, useSimpluxSubscription } from './context'
 
 describe('context', () => {
