@@ -2,6 +2,7 @@
 
 import {
   createEffect,
+  createEffects,
   createMutations,
   createSimpluxModule,
 } from '@simplux/core'
@@ -264,6 +265,21 @@ describe(`@simplux/testing`, () => {
       effect('foo', 1)
       expect(spy).not.toHaveBeenCalled()
       expect(mockSpy).toHaveBeenCalledWith('foo', 1)
+
+      const spy1 = jest.fn<number, [string, number]>()
+      const spy2 = jest.fn<number, [string, number]>()
+      const { effect1, effect2 } = createEffects({
+        effect1: spy1,
+        effect2: spy2,
+      })
+
+      const [mockSpy1] = mockEffect(effect1, jest.fn())
+      effect1('foo', 1)
+      effect2('foo', 1)
+
+      expect(spy1).not.toHaveBeenCalled()
+      expect(mockSpy1).toHaveBeenCalledWith('foo', 1)
+      expect(spy2).toHaveBeenCalled()
     })
   })
 })

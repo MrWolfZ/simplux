@@ -1,4 +1,9 @@
-import { EffectMockDefinition, getMockDefinitionsInternal } from '@simplux/core'
+import {
+  Effect,
+  EffectFunction,
+  EffectMockDefinition,
+  getMockDefinitionsInternal,
+} from '@simplux/core'
 import { registerMockCleanupFunction } from './cleanup'
 
 /**
@@ -11,10 +16,10 @@ import { registerMockCleanupFunction } from './cleanup'
  *
  * @returns a function that clears the mock when called
  */
-export function mockEffect<TEffect extends Function, TMock extends TEffect>(
-  effectToMock: TEffect,
-  mockFn: TMock,
-): [TMock, () => void] {
+export function mockEffect<
+  TEffect extends Effect<any>,
+  TMock extends EffectFunction<TEffect>
+>(effectToMock: TEffect, mockFn: TMock): [TMock, () => void] {
   const mockDefinitions = getMockDefinitionsInternal()
 
   removeMock(mockDefinitions, effectToMock)
@@ -34,12 +39,12 @@ export function mockEffect<TEffect extends Function, TMock extends TEffect>(
   return [mockFn, cleanup]
 }
 
-function removeMock<TEffect extends Function>(
-  mockDefinitions: EffectMockDefinition[],
-  effectToMock: TEffect,
-) {
+function removeMock<
+  TEffect extends Effect<TEffectFunction>,
+  TEffectFunction extends (...args: any[]) => any
+>(mockDefinitions: EffectMockDefinition[], effectToMock: TEffect) {
   const idx = mockDefinitions.findIndex(
-    def => def.effectToMock === effectToMock,
+    (def) => def.effectToMock === effectToMock,
   )
 
   if (idx >= 0) {
