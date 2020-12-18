@@ -1,9 +1,9 @@
 import {
   MutationDefinitions,
-  ResolvedMutations,
-  ResolvedSelectors,
   SelectorDefinitions,
   SimpluxModule,
+  SimpluxMutations,
+  SimpluxSelectors,
   StateChangeSubscription,
 } from '@simplux/core'
 import { Observable } from 'rxjs'
@@ -36,14 +36,14 @@ describe('service', () => {
       incrementBy: (state: State, amount: number) => State
     }
 
-    let mutations: ResolvedMutations<State, Mutations>
+    let mutations: SimpluxMutations<State, Mutations>
 
     interface Selectors extends SelectorDefinitions<State> {
       selectCountPlusOne: (state: State) => number
       selectCountPlus: (state: State, amount: number) => number
     }
 
-    let selectors: ResolvedSelectors<State, Selectors>
+    let selectors: SimpluxSelectors<State, Selectors>
 
     beforeEach(() => {
       moduleState = { count: 10, metadata: '' }
@@ -51,7 +51,7 @@ describe('service', () => {
         unsubscribe: jest.fn(),
         handler: () => void 0,
       }
-      subscribeToModuleStateChangesMock = jest.fn().mockImplementation(s => {
+      subscribeToModuleStateChangesMock = jest.fn().mockImplementation((s) => {
         subscribers.push(s)
         s(moduleState)
         return subscriptionMock
@@ -115,7 +115,7 @@ describe('service', () => {
         decrement: (state: State) => State
       }
 
-      const mutations2: ResolvedMutations<State, Mutations2> = {
+      const mutations2: SimpluxMutations<State, Mutations2> = {
         decrement: (() => moduleState) as any,
       }
 
@@ -140,7 +140,7 @@ describe('service', () => {
         selectCountMinusOne: (state: State) => number
       }
 
-      const selectors2: ResolvedSelectors<State, Selectors2> = {
+      const selectors2: SimpluxSelectors<State, Selectors2> = {
         selectCountMinusOne: (() => moduleState.count - 1) as any,
       }
 
@@ -186,7 +186,7 @@ describe('service', () => {
 
         const updatedState: State = { ...moduleState, count: 20 }
 
-        subscribers.forEach(s => s(updatedState))
+        subscribers.forEach((s) => s(updatedState))
 
         expect(service.selectState()).toBeInstanceOf(Observable)
         expect(subscriber).toHaveBeenCalledTimes(2)
@@ -201,14 +201,14 @@ describe('service', () => {
         const sub = service.selectState().subscribe(subscriber, onError)
 
         let updatedState: State = { ...moduleState, count: 20 }
-        subscribers.forEach(s => s(updatedState))
+        subscribers.forEach((s) => s(updatedState))
 
         expect(subscriber).toHaveBeenCalledTimes(2)
 
         sub.unsubscribe()
 
         updatedState = { ...updatedState, count: 30 }
-        subscribers.forEach(s => s(updatedState))
+        subscribers.forEach((s) => s(updatedState))
 
         expect(subscriber).toHaveBeenCalledTimes(2)
       })
@@ -281,7 +281,7 @@ describe('service', () => {
 
             const updatedState: State = { ...moduleState, count: 20 }
 
-            subscribers.forEach(s => s(updatedState))
+            subscribers.forEach((s) => s(updatedState))
 
             expect(subscriber1).toHaveBeenCalledWith(updatedState.count + 1)
             expect(subscriber2).toHaveBeenCalledWith(updatedState.count + 5)
@@ -298,7 +298,7 @@ describe('service', () => {
 
             const updatedState: State = { ...moduleState, metadata: 'updated' }
 
-            subscribers.forEach(s => s(updatedState))
+            subscribers.forEach((s) => s(updatedState))
 
             expect(subscriber1).toHaveBeenCalledTimes(1)
             expect(subscriber2).toHaveBeenCalledTimes(1)

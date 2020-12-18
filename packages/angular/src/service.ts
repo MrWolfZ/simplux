@@ -1,10 +1,10 @@
 import {
   Immutable,
   MutationDefinitions,
-  ResolvedMutations,
-  ResolvedSelectors,
   SelectorDefinitions,
   SimpluxModule,
+  SimpluxMutations,
+  SimpluxSelectors,
 } from '@simplux/core'
 import { Observable } from 'rxjs'
 import { distinctUntilChanged, map } from 'rxjs/operators'
@@ -42,22 +42,22 @@ export type ObservableSelector<TSelector> = TSelector extends (
 export type ModuleServiceSelectors<
   TState,
   TSelectors extends SelectorDefinitions<TState>,
-  TResolvedSelectors extends ResolvedSelectors<TState, TSelectors>
+  TSimpluxSelectors extends SimpluxSelectors<TState, TSelectors>
 > = {
-  [selectorName in keyof TResolvedSelectors]: ObservableSelector<
-    TResolvedSelectors[selectorName]
+  [selectorName in keyof TSimpluxSelectors]: ObservableSelector<
+    TSimpluxSelectors[selectorName]
   >
 }
 
 export type ModuleService<
   TState,
   TMutations extends MutationDefinitions<TState>,
-  TResolvedMutations extends ResolvedMutations<TState, TMutations>,
+  TSimpluxMutations extends SimpluxMutations<TState, TMutations>,
   TSelectors extends SelectorDefinitions<TState>,
-  TResolvedSelectors extends ResolvedSelectors<TState, TSelectors>
+  TSimpluxSelectors extends SimpluxSelectors<TState, TSelectors>
 > = ModuleServiceState<TState> &
-  TResolvedMutations &
-  ModuleServiceSelectors<TState, TSelectors, TResolvedSelectors>
+  TSimpluxMutations &
+  ModuleServiceSelectors<TState, TSelectors, TSimpluxSelectors>
 
 /**
  * Create a base which contains methods for interacting with a module.
@@ -80,19 +80,19 @@ export type ModuleService<
 export function createModuleServiceBaseClass<
   TState,
   TMutations extends MutationDefinitions<TState>,
-  TResolvedMutations extends ResolvedMutations<TState, TMutations>,
+  TSimpluxMutations extends SimpluxMutations<TState, TMutations>,
   TSelectors extends SelectorDefinitions<TState>,
-  TResolvedSelectors extends ResolvedSelectors<TState, TSelectors>
+  TSimpluxSelectors extends SimpluxSelectors<TState, TSelectors>
 >(
   simpluxModule: SimpluxModule<TState>,
-  mutations: TResolvedMutations,
-  selectors: TResolvedSelectors,
+  mutations: TSimpluxMutations,
+  selectors: TSimpluxSelectors,
 ): new () => ModuleService<
   TState,
   TMutations,
-  TResolvedMutations,
+  TSimpluxMutations,
   TSelectors,
-  TResolvedSelectors
+  TSimpluxSelectors
 > {
   return class {
     getCurrentState = simpluxModule.getState
@@ -102,7 +102,7 @@ export function createModuleServiceBaseClass<
       Object.assign(this, mutations)
       Object.assign(
         this,
-        createObservableSelectors<TState, TSelectors, TResolvedSelectors>(
+        createObservableSelectors<TState, TSelectors, TSimpluxSelectors>(
           simpluxModule,
           selectors,
         ),
@@ -114,11 +114,11 @@ export function createModuleServiceBaseClass<
 function createObservableSelectors<
   TState,
   TSelectors extends SelectorDefinitions<TState>,
-  TResolvedSelectors extends ResolvedSelectors<TState, TSelectors>
+  TSimpluxSelectors extends SimpluxSelectors<TState, TSelectors>
 >(
   simpluxModule: SimpluxModule<TState>,
-  selectors: TResolvedSelectors,
-): ModuleServiceSelectors<TState, TSelectors, TResolvedSelectors> {
+  selectors: TSimpluxSelectors,
+): ModuleServiceSelectors<TState, TSelectors, TSimpluxSelectors> {
   const stateChanges$ = observeState(simpluxModule)
 
   return Object.keys(selectors).reduce(
@@ -126,17 +126,17 @@ function createObservableSelectors<
       const selector = selectors[selectorName]
       acc[selectorName] = ((...args: any[]) =>
         stateChanges$.pipe(
-          map(state => selector.withState(state, ...args)),
+          map((state) => selector.withState(state, ...args)),
           distinctUntilChanged(),
         )) as any
       return acc
     },
-    {} as ModuleServiceSelectors<TState, TSelectors, TResolvedSelectors>,
+    {} as ModuleServiceSelectors<TState, TSelectors, TSimpluxSelectors>,
   )
 }
 
 function observeState<TState>(simpluxModule: SimpluxModule<TState>) {
-  return new Observable<Immutable<TState>>(sub =>
-    simpluxModule.subscribeToStateChanges(state => sub.next(state)),
+  return new Observable<Immutable<TState>>((sub) =>
+    simpluxModule.subscribeToStateChanges((state) => sub.next(state)),
   )
 }
