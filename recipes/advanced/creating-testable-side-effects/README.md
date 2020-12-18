@@ -23,6 +23,17 @@ const setDocumentTitle = createEffect((title: string) => {
 })
 ```
 
+We can also define multiple effects at once.
+
+```ts
+const { getDocumentTitle, setDocumentTitle } = createEffects({
+  getDocumentTitle: () => document.title,
+  setDocumentTitle: (title: string) => {
+    document.title = title
+  },
+})
+```
+
 These simple looking effects provide some interesting challenges for testing. There are two scenarios to consider:
 
 #### Testing an effect itself
@@ -94,12 +105,12 @@ This allows us to mock it directly where necessary without having to mock the lo
 Let's apply this pattern for another very common scenario: loading data from a web API. We start with a minimal low level effect for making HTTP `GET` calls.
 
 ```ts
-const httpGet = createEffect(
-  <T>(url: string): Promise<T> => {
+const http = createEffects({
+  get: <T>(url: string): Promise<T> => {
     // ...use whatever library you prefer for making HTTP calls; use that library's
     // testing capabilities to test this effect
   },
-)
+})
 ```
 
 Now let's say we have a simple **simplux** module for managing a collection of books.
@@ -125,13 +136,13 @@ We want to populate the module with data from our API.
 
 ```ts
 const loadBooksFromApi = createEffect(async (authorFilter: string) => {
-  const result = await httpGet<Book[]>(`https://my.domain.com/books?authorFilter=${authorFilter}`)
+  const result = await http.get<Book[]>(`https://my.domain.com/books?authorFilter=${authorFilter}`)
   books.setAll(result)
   return result
 })
 ```
 
-Thanks to **simplux** this effect is simple to test since we can mock both the `httpGet` effect as well as the `setAll` mutation ([this recipe](../testing-code-using-mutations#readme) will help you if you are unfamiliar with mocking mutations). At the same time, all code that uses this effect (e.g. a UI component) is also easy to test.
+Thanks to **simplux** this effect is simple to test since we can mock both the `http.get` effect as well as the `setAll` mutation ([this recipe](../testing-code-using-mutations#readme) will help you if you are unfamiliar with mocking mutations). At the same time, all code that uses this effect (e.g. a UI component) is also easy to test.
 
 ```ts
 import { clearAllSimpluxMocks, mockEffect, mockMutation } from '@simplux/testing'
@@ -142,7 +153,7 @@ describe('loading books from the API', () => {
   it('uses the correct URL', () => {
     const mockData: Book[] = []
     const httpGetMock = jest.fn().mockReturnValue(Promise.resolve(mockData))
-    mockEffect(httpGet, httpGetMock)
+    mockEffect(http.get, httpGetMock)
     mockMutation(setAll, jest.fn())
 
     loadBooksFromApi('Tolkien')

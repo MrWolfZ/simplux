@@ -3,7 +3,7 @@
 
 import { clearAllSimpluxMocks, mockEffect, mockMutation } from '@simplux/testing'
 import { Book, books } from './books'
-import { httpGet } from './http'
+import { http } from './http'
 
 describe('loading books from the API', () => {
   afterEach(clearAllSimpluxMocks)
@@ -16,7 +16,7 @@ describe('loading books from the API', () => {
 
   it('uses the correct URL', () => {
     const httpGetMock = jest.fn().mockReturnValue(Promise.resolve(mockData))
-    mockEffect(httpGet, httpGetMock)
+    mockEffect(http.get, httpGetMock)
     mockMutation(books.setAll, jest.fn())
 
     books.loadFromApi('Tolkien')
@@ -27,7 +27,7 @@ describe('loading books from the API', () => {
   it('returns the result', async () => {
     const mockData: Book[] = []
     const httpGetMock = jest.fn().mockReturnValue(Promise.resolve(mockData))
-    mockEffect(httpGet, httpGetMock)
+    mockEffect(http.get, httpGetMock)
     mockMutation(books.setAll, jest.fn())
 
     const result = await books.loadFromApi('Tolkien')
@@ -37,7 +37,7 @@ describe('loading books from the API', () => {
 
   it('sets the books', async () => {
     const httpGetMock = jest.fn().mockReturnValue(Promise.resolve(mockData))
-    mockEffect(httpGet, httpGetMock)
+    mockEffect(http.get, httpGetMock)
     const [setAllMock] = mockMutation(books.setAll, jest.fn())
 
     await books.loadFromApi('Tolkien')

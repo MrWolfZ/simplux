@@ -2,7 +2,7 @@
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/advanced/creating-testable-side-effects
 
 import { createEffect, createMutations, createSimpluxModule } from '@simplux/core'
-import { httpGet } from './http'
+import { http } from './http'
 
 export interface Book {
   id: string
@@ -17,7 +17,7 @@ const booksMutations = createMutations(booksModule, {
 })
 
 const loadFromApi = createEffect(async (authorFilter: string) => {
-  const result = await httpGet<Book[]>(`https://my.domain.com/books?authorFilter=${authorFilter}`)
+  const result = await http.get<Book[]>(`https://my.domain.com/books?authorFilter=${authorFilter}`)
 
   books.setAll(result)
   return result
