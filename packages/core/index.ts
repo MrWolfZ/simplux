@@ -7,7 +7,12 @@ setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
 
 export {
   createEffect,
+  createEffects,
+  Effect,
+  EffectDefinitions,
+  EffectFunction,
   EffectMockDefinition,
+  Effects,
   getMockDefinitionsInternal,
 } from './src/effects'
 export {

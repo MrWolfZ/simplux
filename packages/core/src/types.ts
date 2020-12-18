@@ -33,14 +33,7 @@ type ReadonlyKeys<T> = {
   >
 }[keyof T]
 
-type AtomicObject =
-  | Function
-  | Promise<unknown>
-  | Date
-  | RegExp
-  | Boolean
-  | Number
-  | String
+type AtomicObject = Promise<unknown> | Date | RegExp | Boolean | Number | String
 
 type IsAtomicObject<T> = T extends AtomicObject ? true : false
 

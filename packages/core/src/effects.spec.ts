@@ -1,4 +1,8 @@
-import { createEffect, getMockDefinitionsInternal } from './effects'
+import {
+  createEffect,
+  createEffects,
+  getMockDefinitionsInternal,
+} from './effects'
 
 describe(createEffect.name, () => {
   describe(`created effect`, () => {
@@ -21,6 +25,44 @@ describe(createEffect.name, () => {
       effect('foo', 1)
       expect(spy).not.toHaveBeenCalled()
       expect(mockSpy).toHaveBeenCalledWith('foo', 1)
+      getMockDefinitionsInternal().splice(0, 1)
+    })
+  })
+})
+
+describe(createEffects.name, () => {
+  describe(`created effects`, () => {
+    it('call original effect when called', () => {
+      const spy1 = jest.fn()
+      const spy2 = jest.fn()
+      const { effect1, effect2 } = createEffects({
+        effect1: spy1,
+        effect2: spy2,
+      })
+      effect1()
+      effect2()
+      expect(spy1).toHaveBeenCalled()
+      expect(spy2).toHaveBeenCalled()
+    })
+
+    it('call mock if it is defined', () => {
+      const spy1 = jest.fn()
+      const spy2 = jest.fn()
+      const mockSpy = jest.fn()
+      const { effect1, effect2 } = createEffects({
+        effect1: spy1,
+        effect2: spy2,
+      })
+      getMockDefinitionsInternal().push({
+        effectToMock: effect1,
+        mockFn: mockSpy,
+      })
+
+      effect1('foo', 1)
+      effect2()
+      expect(spy1).not.toHaveBeenCalled()
+      expect(mockSpy).toHaveBeenCalledWith('foo', 1)
+      expect(spy2).toHaveBeenCalled()
       getMockDefinitionsInternal().splice(0, 1)
     })
   })

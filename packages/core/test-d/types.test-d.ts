@@ -68,34 +68,36 @@ expectType<undefined>(undefined! as Mutable<undefined>)
 expectType<null>(undefined! as Mutable<null>)
 expectType<string | undefined>(undefined! as Mutable<string | undefined>)
 expectType<Date>(undefined! as Mutable<Date>)
-expectType<Function>(undefined! as Mutable<Function>)
 expectType<RegExp>(undefined! as Mutable<RegExp>)
 expectType<Promise<string>>(undefined! as Mutable<Promise<string>>)
+expectType<(s: string) => string>(undefined! as Mutable<(s: string) => string>)
 
 expectType<string[]>(undefined! as Mutable<readonly string[]>)
 expectType<{ foo: string }[]>(undefined! as Mutable<readonly { foo: string }[]>)
-expectType<{ foo: string }[]>(undefined! as Mutable<
-  readonly { readonly foo: string }[]
->)
+expectType<{ foo: string }[]>(
+  undefined! as Mutable<readonly { readonly foo: string }[]>,
+)
 
 expectType<{ foo: string }>(undefined! as Mutable<{ readonly foo: string }>)
-expectType<{ foo: string[] }>(undefined! as Mutable<{
-  readonly foo: readonly string[]
-}>)
+expectType<{ foo: string[] }>(
+  undefined! as Mutable<{
+    readonly foo: readonly string[]
+  }>,
+)
 
 expectType<Set<string>>(undefined! as Mutable<ReadonlySet<string>>)
 expectType<Set<string[]>>(undefined! as Mutable<ReadonlySet<string[]>>)
 expectType<Set<string[]>>(undefined! as Mutable<ReadonlySet<readonly string[]>>)
 
-expectType<Map<string, string>>(undefined! as Mutable<
-  ReadonlyMap<string, string>
->)
-expectType<Map<string, string[]>>(undefined! as Mutable<
-  ReadonlyMap<string, string[]>
->)
-expectType<Map<string, string[]>>(undefined! as Mutable<
-  ReadonlyMap<string, readonly string[]>
->)
+expectType<Map<string, string>>(
+  undefined! as Mutable<ReadonlyMap<string, string>>,
+)
+expectType<Map<string, string[]>>(
+  undefined! as Mutable<ReadonlyMap<string, string[]>>,
+)
+expectType<Map<string, string[]>>(
+  undefined! as Mutable<ReadonlyMap<string, readonly string[]>>,
+)
 
 expectType<S>(undefined! as Mutable<S>)
 expectType<S>(undefined! as Mutable<S2>)
@@ -111,17 +113,23 @@ expectType<undefined>(undefined! as Immutable<undefined>)
 expectType<null>(undefined! as Immutable<null>)
 expectType<string | undefined>(undefined! as Immutable<string | undefined>)
 expectType<Date>(undefined! as Immutable<Date>)
-expectType<Function>(undefined! as Immutable<Function>)
 expectType<RegExp>(undefined! as Immutable<RegExp>)
 expectType<Promise<string>>(undefined! as Immutable<Promise<string>>)
+expectType<(s: string) => string>(
+  undefined! as Immutable<(s: string) => string>,
+)
 
 expectType<Immutable<string[]>>(undefined! as readonly string[])
-expectType<Immutable<{ readonly foo: string }[]>>(undefined! as readonly {
-  readonly foo: string
-}[])
-expectType<Immutable<readonly { foo: string }[]>>(undefined! as readonly {
-  readonly foo: string
-}[])
+expectType<Immutable<{ readonly foo: string }[]>>(
+  undefined! as readonly {
+    readonly foo: string
+  }[],
+)
+expectType<Immutable<readonly { foo: string }[]>>(
+  undefined! as readonly {
+    readonly foo: string
+  }[],
+)
 
 expectType<Immutable<{ foo: string }>>(undefined! as { readonly foo: string })
 expectType<
@@ -131,25 +139,22 @@ expectType<
 >(undefined! as { readonly foo: readonly string[] })
 
 expectType<Immutable<Set<string>>>(undefined! as ReadonlySet<string>)
-expectType<Immutable<Set<string[]>>>(undefined! as ReadonlySet<
-  readonly string[]
->)
-expectType<Immutable<Set<readonly string[]>>>(undefined! as ReadonlySet<
-  readonly string[]
->)
+expectType<Immutable<Set<string[]>>>(
+  undefined! as ReadonlySet<readonly string[]>,
+)
+expectType<Immutable<Set<readonly string[]>>>(
+  undefined! as ReadonlySet<readonly string[]>,
+)
 
-expectType<Immutable<Map<string, string>>>(undefined! as ReadonlyMap<
-  string,
-  string
->)
-expectType<Immutable<Map<string, string[]>>>(undefined! as ReadonlyMap<
-  string,
-  readonly string[]
->)
-expectType<Immutable<Map<string, readonly string[]>>>(undefined! as ReadonlyMap<
-  string,
-  readonly string[]
->)
+expectType<Immutable<Map<string, string>>>(
+  undefined! as ReadonlyMap<string, string>,
+)
+expectType<Immutable<Map<string, string[]>>>(
+  undefined! as ReadonlyMap<string, readonly string[]>,
+)
+expectType<Immutable<Map<string, readonly string[]>>>(
+  undefined! as ReadonlyMap<string, readonly string[]>,
+)
 
 expectType<Immutable<S>>(undefined! as S4)
 expectType<Immutable<S2>>(undefined! as S4)

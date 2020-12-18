@@ -1,3 +1,5 @@
+import { Mutable } from './types'
+
 /**
  * This interface is used for mocking support during testing.
  *
@@ -6,6 +8,41 @@
 export interface EffectMockDefinition {
   effectToMock: Function
   mockFn: Function
+}
+
+export interface EffectDefinitions {
+  [name: string]: (...args: any[]) => any
+}
+
+export interface Effect<TFunction extends (...args: any[]) => any> {
+  /**
+   * Call the effect.
+   *
+   * @param args the arguments for the effect
+   *
+   * @returns the result of the feffect
+   */
+  (...args: Parameters<TFunction>): ReturnType<TFunction>
+
+  /**
+   * The name of this effect.
+   */
+  readonly effectName: string
+}
+
+/**
+ * Helper interface to create a function with the same signature as an effect
+ */
+export interface EffectFunction<
+  TEffect extends Effect<(...args: any[]) => any>
+> {
+  (...args: Parameters<TEffect>): ReturnType<TEffect>
+}
+
+export type Effects<TEffectDefinitions extends EffectDefinitions> = {
+  [effectName in keyof TEffectDefinitions]: Effect<
+    TEffectDefinitions[effectName]
+  >
 }
 
 const mockDefinitions: EffectMockDefinition[] = []
@@ -19,12 +56,37 @@ const mockDefinitions: EffectMockDefinition[] = []
  *
  * @returns a function that calls the provided effect and can be mocked
  */
-export function createEffect<TEffect extends Function>(
-  effect: TEffect,
-): TEffect {
-  const wrappedEffect: TEffect = ((...args: any[]) => {
+export function createEffect<TEffectFunction extends (...args: any[]) => any>(
+  effect: TEffectFunction,
+): Effect<TEffectFunction> {
+  return createEffectInternal(effect, 'unknown')
+}
+
+/**
+ * Create new effects. An effect is any function that has side effects.
+ * The main purpose of this function is to allow simple mocking of the
+ * effect.
+ *
+ * @param effects the effects to create
+ *
+ * @returns functions that call the provided effects and can be mocked
+ */
+export function createEffects<TEffectDefinitions extends EffectDefinitions>(
+  effects: TEffectDefinitions,
+): Effects<TEffectDefinitions> {
+  return Object.keys(effects).reduce(
+    (res, key) => ({ ...res, [key]: createEffectInternal(effects[key], key) }),
+    {} as Effects<TEffectDefinitions>,
+  )
+}
+
+function createEffectInternal<TEffectFunction extends (...args: any[]) => any>(
+  effect: TEffectFunction,
+  effectName: string,
+): Effect<TEffectFunction> {
+  const effectFn = (...args: any[]) => {
     const mockDef = mockDefinitions.find(
-      ({ effectToMock }) => effectToMock === wrappedEffect,
+      ({ effectToMock }) => effectToMock === effectFn,
     )
 
     if (mockDef) {
@@ -32,9 +94,12 @@ export function createEffect<TEffect extends Function>(
     }
 
     return effect(...args)
-  }) as any
+  }
 
-  return wrappedEffect
+  const result = (effectFn as unknown) as Mutable<Effect<TEffectFunction>>
+  result.effectName = effectName
+
+  return result as Effect<TEffectFunction>
 }
 
 /**

@@ -2,6 +2,7 @@
 
 import {
   createEffect,
+  createEffects,
   createMutations,
   createSelectors,
   createSimpluxModule,
@@ -347,6 +348,24 @@ describe(`@simplux/core`, () => {
       await addTodoEffect()
 
       expect(todosModule.getState()).toEqual(todoStoreWithOneTodo)
+
+      todosModule.setState(initialTodoState)
+
+      const { addTodoEffect1, addTodoEffect2 } = createEffects({
+        addTodoEffect1: async () => {
+          await new Promise((resolve) => resolve())
+          addTodo(todo1)
+        },
+        addTodoEffect2: async () => {
+          await new Promise((resolve) => resolve())
+          addTodo(todo2)
+        },
+      })
+
+      await addTodoEffect1()
+      await addTodoEffect2()
+
+      expect(todosModule.getState()).toEqual(todoStoreWithTwoTodos)
     })
   })
 })
