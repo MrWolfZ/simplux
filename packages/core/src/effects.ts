@@ -14,21 +14,15 @@ export interface EffectDefinitions {
   [name: string]: (...args: any[]) => any
 }
 
-export interface Effect<TFunction extends (...args: any[]) => any> {
-  /**
-   * Call the effect.
-   *
-   * @param args the arguments for the effect
-   *
-   * @returns the result of the feffect
-   */
-  (...args: Parameters<TFunction>): ReturnType<TFunction>
-
+export interface EffectMetadata {
   /**
    * The name of this effect.
    */
   readonly effectName: string
 }
+
+export type Effect<TFunction extends (...args: any[]) => any> = TFunction &
+  EffectMetadata
 
 /**
  * Helper interface to create a function with the same signature as an effect

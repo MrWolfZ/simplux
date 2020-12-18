@@ -5,6 +5,10 @@ expectType<Effect<(s: string) => string>>(createEffect((s: string) => s))
 expectType<Effect<(s: string) => Promise<string>>>(
   createEffect(async (s: string) => s),
 )
+
+const effect = createEffect(<T>(s: T) => s)
+expectType<string>(effect<string>(''))
+
 expectError(createEffect(''))
 
 // tslint:disable: type-literal-delimiter
