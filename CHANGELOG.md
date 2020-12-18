@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.16.0](https://github.com/MrWolfZ/simplux/compare/v0.15.0...v0.16.0) (2020-12-18)
+
+
+### Bug Fixes
+
+* **core:** fix generic effects not working properly ([f089ccd](https://github.com/MrWolfZ/simplux/commit/f089ccdaa0cb7abf6ea1d51486f62929c0075444))
+
+
+### Features
+
+* **recipes:** update recipe for creating testable side effects to use new `createEffects` function ([d678f1c](https://github.com/MrWolfZ/simplux/commit/d678f1c25d1c463dd6059a4ff018265cdd7d44cd))
+
+
+
+
+
 # [0.15.0](https://github.com/MrWolfZ/simplux/compare/v0.14.0...v0.15.0) (2020-12-18)
 
 
