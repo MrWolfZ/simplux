@@ -65,7 +65,7 @@ export type ResolvedMutation<
   ? SimpluxMutation<TState, TArgs>
   : never
 
-export type ResolvedMutations<
+export type SimpluxMutations<
   TState,
   TMutations extends MutationDefinitions<TState>
 > = {
@@ -107,7 +107,7 @@ export function createMutations<
 >(
   simpluxModule: SimpluxModule<TState>,
   mutationDefinitions: TMutations,
-): ResolvedMutations<TState, TMutations> {
+): SimpluxMutations<TState, TMutations> {
   const {
     name: moduleName,
     dispatch,
@@ -140,7 +140,7 @@ export function createMutations<
         const args = filterEventArgs(allArgs)
 
         if (process.env.NODE_ENV !== 'production') {
-          if (args.some(arg => typeof arg === 'function')) {
+          if (args.some((arg) => typeof arg === 'function')) {
             throw new Error(
               // tslint:disable-next-line: max-line-length
               `mutation '${mutationName}' was called with a function argument; mutation arguments must be serializable, therefore functions are not supported`,
@@ -192,7 +192,7 @@ export function createMutations<
 
       return acc
     },
-    {} as ShallowMutable<ResolvedMutations<TState, TMutations>>,
+    {} as ShallowMutable<SimpluxMutations<TState, TMutations>>,
   )
 
   return resolvedMutations

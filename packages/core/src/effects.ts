@@ -21,18 +21,19 @@ export interface EffectMetadata {
   readonly effectName: string
 }
 
-export type Effect<TFunction extends (...args: any[]) => any> = TFunction &
-  EffectMetadata
+export type SimpluxEffect<
+  TFunction extends (...args: any[]) => any
+> = TFunction & EffectMetadata
 
 /**
  * Helper interface to create a function with the same signature as an effect
  */
-export type EffectFunction<TEffect extends Effect<(...args: any[]) => any>> = (
-  ...args: Parameters<TEffect>
-) => ReturnType<TEffect>
+export type EffectFunction<
+  TEffect extends SimpluxEffect<(...args: any[]) => any>
+> = (...args: Parameters<TEffect>) => ReturnType<TEffect>
 
-export type Effects<TEffectDefinitions extends EffectDefinitions> = {
-  [effectName in keyof TEffectDefinitions]: Effect<
+export type SimpluxEffects<TEffectDefinitions extends EffectDefinitions> = {
+  [effectName in keyof TEffectDefinitions]: SimpluxEffect<
     TEffectDefinitions[effectName]
   >
 }
@@ -50,7 +51,7 @@ const mockDefinitions: EffectMockDefinition[] = []
  */
 export function createEffect<TEffectFunction extends (...args: any[]) => any>(
   effect: TEffectFunction,
-): Effect<TEffectFunction> {
+): SimpluxEffect<TEffectFunction> {
   return createEffectInternal(effect, 'unknown')
 }
 
@@ -65,17 +66,17 @@ export function createEffect<TEffectFunction extends (...args: any[]) => any>(
  */
 export function createEffects<TEffectDefinitions extends EffectDefinitions>(
   effects: TEffectDefinitions,
-): Effects<TEffectDefinitions> {
+): SimpluxEffects<TEffectDefinitions> {
   return Object.keys(effects).reduce(
     (res, key) => ({ ...res, [key]: createEffectInternal(effects[key], key) }),
-    {} as Effects<TEffectDefinitions>,
+    {} as SimpluxEffects<TEffectDefinitions>,
   )
 }
 
 function createEffectInternal<TEffectFunction extends (...args: any[]) => any>(
   effect: TEffectFunction,
   effectName: string,
-): Effect<TEffectFunction> {
+): SimpluxEffect<TEffectFunction> {
   const effectFn = (...args: any[]) => {
     const mockDef = mockDefinitions.find(
       ({ effectToMock }) => effectToMock === effectFn,
@@ -88,10 +89,12 @@ function createEffectInternal<TEffectFunction extends (...args: any[]) => any>(
     return effect(...args)
   }
 
-  const result = (effectFn as unknown) as Mutable<Effect<TEffectFunction>>
+  const result = (effectFn as unknown) as Mutable<
+    SimpluxEffect<TEffectFunction>
+  >
   result.effectName = effectName
 
-  return result as Effect<TEffectFunction>
+  return result as SimpluxEffect<TEffectFunction>
 }
 
 /**

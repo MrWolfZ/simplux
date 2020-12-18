@@ -57,7 +57,7 @@ export type ResolvedSelector<
   ? SimpluxSelector<TState, TArgs, TReturn>
   : never
 
-export type ResolvedSelectors<
+export type SimpluxSelectors<
   TState,
   TSelectorDefinitions extends SelectorDefinitions<TState>
 > = {
@@ -99,7 +99,7 @@ export function createSelectors<
 >(
   simpluxModule: SimpluxModule<TState>,
   selectorDefinitions: TSelectorDefinitions,
-): ResolvedSelectors<TState, TSelectorDefinitions> {
+): SimpluxSelectors<TState, TSelectorDefinitions> {
   const { name: moduleName, selectors } = simpluxModule.$simpluxInternals
 
   if (process.env.NODE_ENV !== 'production') {
@@ -137,7 +137,7 @@ export function createSelectors<
 
       return acc
     },
-    {} as Mutable<ResolvedSelectors<TState, TSelectorDefinitions>>,
+    {} as Mutable<SimpluxSelectors<TState, TSelectorDefinitions>>,
   )
 
   return resolvedSelectors

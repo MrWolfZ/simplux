@@ -8,12 +8,12 @@ setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
 export {
   createEffect,
   createEffects,
-  Effect,
   EffectDefinitions,
   EffectFunction,
   EffectMockDefinition,
-  Effects,
   getMockDefinitionsInternal,
+  SimpluxEffect,
+  SimpluxEffects,
 } from './src/effects'
 export {
   isSimpluxModule,
@@ -32,16 +32,16 @@ export {
   MutationDefinition,
   MutationDefinitions,
   ResolvedMutation,
-  ResolvedMutations,
   SimpluxMutation,
+  SimpluxMutations,
 } from './src/mutations'
 export {
   createSelectors,
   ResolvedSelector,
-  ResolvedSelectors,
   SelectorDefinition,
   SelectorDefinitions,
   SimpluxSelector,
+  SimpluxSelectors,
 } from './src/selectors'
 export {
   getInternalReduxStoreProxy,
