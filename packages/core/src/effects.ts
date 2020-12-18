@@ -33,11 +33,9 @@ export interface Effect<TFunction extends (...args: any[]) => any> {
 /**
  * Helper interface to create a function with the same signature as an effect
  */
-export interface EffectFunction<
-  TEffect extends Effect<(...args: any[]) => any>
-> {
-  (...args: Parameters<TEffect>): ReturnType<TEffect>
-}
+export type EffectFunction<TEffect extends Effect<(...args: any[]) => any>> = (
+  ...args: Parameters<TEffect>
+) => ReturnType<TEffect>
 
 export type Effects<TEffectDefinitions extends EffectDefinitions> = {
   [effectName in keyof TEffectDefinitions]: Effect<
