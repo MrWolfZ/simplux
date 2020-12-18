@@ -1,6 +1,6 @@
 {
   "name": "@simplux/core",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "The core package of simplux. Contains everything to manage your application state in a simple way.",
   "module": "./esm5/index.js",
   "es2015": "./esm2015/index.js",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/MrWolfZ/simplux/compare/v0.14.0...v0.15.0) (2020-12-18)
+
+
+### Features
+
+* **core:** add function for creating multiple named effects at once ([042c93a](https://github.com/MrWolfZ/simplux/commit/042c93a2ad16a02ba4d9b535843ee786d675c817))
+
+
+
+
+
 # [0.14.0](https://github.com/MrWolfZ/simplux/compare/v0.13.0...v0.14.0) (2020-09-30)
 
 
