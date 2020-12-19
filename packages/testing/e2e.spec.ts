@@ -34,17 +34,17 @@ describe(`@simplux/testing`, () => {
   }
 
   const todoStoreWithTodo1: TodoState = {
-    todosById: { '1': todo1 },
+    todosById: { 1: todo1 },
     todoIds: ['1'],
   }
 
   const todoStoreWithTodo2: TodoState = {
-    todosById: { '2': todo2 },
+    todosById: { 2: todo2 },
     todoIds: ['2'],
   }
 
   const todoStoreWithBothTodos: TodoState = {
-    todosById: { '1': todo1, '2': todo2 },
+    todosById: { 1: todo1, 2: todo2 },
     todoIds: ['1', '2'],
   }
 

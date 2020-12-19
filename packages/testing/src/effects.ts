@@ -1,8 +1,8 @@
 import {
   EffectFunction,
-  EffectMockDefinition,
-  getMockDefinitionsInternal,
   SimpluxEffect,
+  _EffectMockDefinition,
+  _getEffectMockDefinitionsInternal,
 } from '@simplux/core'
 import { registerMockCleanupFunction } from './cleanup'
 
@@ -11,16 +11,18 @@ import { registerMockCleanupFunction } from './cleanup'
  * effect. The effect will stay mocked indefinitely until either
  * the clear callback or `clearAllSimpluxMocks` is called.
  *
- * @param effect the effect to mock
- * @param mockFn the mock function to use
+ * @param effect - the effect to mock
+ * @param mockFn - the mock function to use
  *
  * @returns a function that clears the mock when called
+ *
+ * @public
  */
 export function mockEffect<
   TEffect extends SimpluxEffect<(...args: any[]) => any>,
   TMock extends EffectFunction<TEffect>
 >(effectToMock: TEffect, mockFn: TMock): [TMock, () => void] {
-  const mockDefinitions = getMockDefinitionsInternal()
+  const mockDefinitions = _getEffectMockDefinitionsInternal()
 
   removeMock(mockDefinitions, effectToMock)
 
@@ -42,7 +44,7 @@ export function mockEffect<
 function removeMock<
   TEffect extends SimpluxEffect<TEffectFunction>,
   TEffectFunction extends (...args: any[]) => any
->(mockDefinitions: EffectMockDefinition[], effectToMock: TEffect) {
+>(mockDefinitions: _EffectMockDefinition[], effectToMock: TEffect) {
   const idx = mockDefinitions.findIndex(
     (def) => def.effectToMock === effectToMock,
   )

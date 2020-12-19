@@ -27,10 +27,12 @@ function setupMutationMock<
  * mutation.The mutation will stay mocked indefinitely until either
  * the clear callback or `clearAllSimpluxMocks` is called.
  *
- * @param mutation the mutation to mock
- * @param mockFn the mock function to use
+ * @param mutation - the mutation to mock
+ * @param mockFn - the mock function to use
  *
  * @returns a function that clears the mock when called
+ *
+ * @public
  */
 export function mockMutation<
   TState,

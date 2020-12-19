@@ -12,11 +12,13 @@ import { registerMockCleanupFunction } from './cleanup'
  * The mocked state value will stay active indefinitely until either
  * the clear callback or `clearAllSimpluxMocks` is called.
  *
- * @param simpluxModule the module to mock the state for
- * @param mockStateValue the mock state value to return when the
+ * @param simpluxModule - the module to mock the state for
+ * @param mockStateValue - the mock state value to return when the
  * module's state is accessed
  *
  * @returns a function that clears the mock state when called
+ *
+ * @public
  */
 export function mockModuleState<TState>(
   simpluxModule: SimpluxModule<TState>,
