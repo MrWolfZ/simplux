@@ -16,7 +16,7 @@
     "ban-types": false,
     "binary-expression-operand-order": false,
     "callable-types": true,
-    "class-name": true,
+    "class-name": false,
     "comment-format": [true, "check-space"],
     "completed-docs": false,
     "curly": true,
