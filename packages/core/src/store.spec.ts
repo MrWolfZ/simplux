@@ -1,11 +1,11 @@
 import { combineReducers, createStore } from 'redux'
 import {
-  createReduxStoreProxy,
-  createSimpluxStore,
-  getInternalReduxStoreProxy,
-  setReduxStore,
   simpluxStore,
-  transferConfigurationToNewStore,
+  _createReduxStoreProxy,
+  _createSimpluxStore,
+  _getInternalReduxStoreProxy,
+  _setReduxStore,
+  _transferConfigurationToNewStore,
 } from './store'
 
 describe('store', () => {
@@ -25,34 +25,40 @@ describe('store', () => {
     process.env.NODE_ENV = nodeEnv
   })
 
-  describe(getInternalReduxStoreProxy.name, () => {
+  describe(_getInternalReduxStoreProxy.name, () => {
     it(`returns the proxy`, () => {
-      cleanup = setReduxStore(createStore((c: number = 10) => c), s => s)
-      const proxy = getInternalReduxStoreProxy()
+      cleanup = _setReduxStore(
+        createStore((c: number = 10) => c),
+        (s) => s,
+      )
+      const proxy = _getInternalReduxStoreProxy()
 
       expect(proxy.getState()).toBe(10)
     })
 
     it(`throws if proxy is not set`, () => {
-      expect(getInternalReduxStoreProxy).toThrow()
+      expect(_getInternalReduxStoreProxy).toThrow()
     })
 
     it(`does not throw if proxy is not set in production`, () => {
       process.env.NODE_ENV = 'production'
-      expect(getInternalReduxStoreProxy).not.toThrow()
+      expect(_getInternalReduxStoreProxy).not.toThrow()
     })
   })
 
-  describe(setReduxStore.name, () => {
+  describe(_setReduxStore.name, () => {
     it(`sets the store`, () => {
-      cleanup = setReduxStore(createStore((c: number = 10) => c + 1), s => s)
+      cleanup = _setReduxStore(
+        createStore((c: number = 10) => c + 1),
+        (s) => s,
+      )
       expect(simpluxStore.getState()).toBe(11)
     })
 
     it(`does not throw if store is cleaned up multiple times`, () => {
-      const cleanup1 = setReduxStore(
+      const cleanup1 = _setReduxStore(
         createStore((c: number = 10) => c + 1),
-        s => s,
+        (s) => s,
       )
 
       expect(() => {
@@ -62,14 +68,14 @@ describe('store', () => {
     })
 
     it(`throws if trying to clean up outdated store`, () => {
-      const cleanup1 = setReduxStore(
+      const cleanup1 = _setReduxStore(
         createStore((c: number = 10) => c + 1),
-        s => s,
+        (s) => s,
       )
 
-      const cleanup2 = setReduxStore(
+      const cleanup2 = _setReduxStore(
         createStore((c: number = 10) => c + 1),
-        s => s,
+        (s) => s,
       )
 
       expect(cleanup1).toThrowError('cannot cleanup store')
@@ -79,14 +85,14 @@ describe('store', () => {
     it(`does not throw if trying to clean up outdated store in production`, () => {
       process.env.NODE_ENV = 'production'
 
-      const cleanup1 = setReduxStore(
+      const cleanup1 = _setReduxStore(
         createStore((c: number = 10) => c + 1),
-        s => s,
+        (s) => s,
       )
 
-      const cleanup2 = setReduxStore(
+      const cleanup2 = _setReduxStore(
         createStore((c: number = 10) => c + 1),
-        s => s,
+        (s) => s,
       )
 
       expect(cleanup1).not.toThrowError('cannot cleanup store')
@@ -95,29 +101,29 @@ describe('store', () => {
   })
 
   it(`exports a root reducer`, () => {
-    const { rootReducer } = createSimpluxStore(() => undefined!)
+    const { rootReducer } = _createSimpluxStore(() => undefined!)
     const state = {}
     expect(rootReducer(state, { type: '' })).toBe(state)
   })
 
   it(`allows setting and getting a reducer`, () => {
-    const storeProxy = createReduxStoreProxy(
+    const storeProxy = _createReduxStoreProxy(
       createStore(simpluxStore.rootReducer),
-      s => s,
+      (s) => s,
       1,
       [],
     )
 
-    const { setReducer, getReducer } = createSimpluxStore(() => storeProxy)
+    const { setReducer, getReducer } = _createSimpluxStore(() => storeProxy)
     const reducer = (s = {}) => s
     setReducer('test', reducer)
     expect(getReducer('test')).toBe(reducer)
   })
 
   it(`allows dispatching actions`, () => {
-    cleanup = setReduxStore(
+    cleanup = _setReduxStore(
       createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
-      s => s,
+      (s) => s,
     )
     expect(simpluxStore.getState()).toBe(10)
     simpluxStore.dispatch({ type: 'INC' })
@@ -125,9 +131,9 @@ describe('store', () => {
   })
 
   it(`allows subscribing to store state changes`, () => {
-    cleanup = setReduxStore(
+    cleanup = _setReduxStore(
       createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
-      s => s,
+      (s) => s,
     )
 
     const handler = jest.fn()
@@ -138,9 +144,9 @@ describe('store', () => {
   })
 
   it(`unsubscribes from store state changes`, () => {
-    cleanup = setReduxStore(
+    cleanup = _setReduxStore(
       createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
-      s => s,
+      (s) => s,
     )
 
     const handler = jest.fn()
@@ -152,7 +158,10 @@ describe('store', () => {
   })
 
   it(`does not throw when unsubscribing twice from store subscription`, () => {
-    cleanup = setReduxStore(createStore((c: number = 10) => c), s => s)
+    cleanup = _setReduxStore(
+      createStore((c: number = 10) => c),
+      (s) => s,
+    )
 
     const unsubscribe = simpluxStore.subscribe(jest.fn())
 
@@ -163,9 +172,9 @@ describe('store', () => {
   })
 
   it(`persists subscriptions through store changes`, () => {
-    setReduxStore(
+    _setReduxStore(
       createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
-      s => s,
+      (s) => s,
     )
 
     const handler = jest.fn()
@@ -174,9 +183,9 @@ describe('store', () => {
     simpluxStore.dispatch({ type: 'INC' })
     expect(handler).toHaveBeenCalledTimes(1)
 
-    cleanup = setReduxStore(
+    cleanup = _setReduxStore(
       createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
-      s => s,
+      (s) => s,
     )
 
     simpluxStore.dispatch({ type: 'INC' })
@@ -190,7 +199,7 @@ describe('store', () => {
       type === 'INC' ? c + 1 : c,
     )
 
-    setReduxStore(store1, s => s)
+    _setReduxStore(store1, (s) => s)
 
     const handler = jest.fn()
     const unsubscribe = simpluxStore.subscribe(handler)
@@ -198,9 +207,9 @@ describe('store', () => {
     simpluxStore.dispatch({ type: 'INC' })
     expect(handler).toHaveBeenCalledTimes(1)
 
-    cleanup = setReduxStore(
+    cleanup = _setReduxStore(
       createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
-      s => s,
+      (s) => s,
     )
 
     store1.dispatch({ type: 'INC' })
@@ -210,14 +219,14 @@ describe('store', () => {
   })
 
   it(`initializes simplux state on store change`, () => {
-    const storeProxy = createReduxStoreProxy(
+    const storeProxy = _createReduxStoreProxy(
       createStore(simpluxStore.rootReducer),
-      s => s,
+      (s) => s,
       1,
       [],
     )
 
-    const store = createSimpluxStore(() => storeProxy)
+    const store = _createSimpluxStore(() => storeProxy)
     const initialState = { prop: 'value' }
 
     store.setReducer('test', (s = initialState) => s)
@@ -226,20 +235,20 @@ describe('store', () => {
       simplux: store.rootReducer,
     })
 
-    const newStoreProxy = createReduxStoreProxy(
+    const newStoreProxy = _createReduxStoreProxy(
       createStore(rootReducer),
       (s: any) => s.simplux,
       2,
       [],
     )
 
-    transferConfigurationToNewStore(storeProxy, newStoreProxy)
+    _transferConfigurationToNewStore(storeProxy, newStoreProxy)
 
     expect(newStoreProxy.getState().test).toBe(initialState)
   })
 
   it(`throws if store is not set when accessing state`, () => {
-    const cleanup = setReduxStore(undefined!, s => s)
+    const cleanup = _setReduxStore(undefined!, (s) => s)
 
     expect(() => simpluxStore.getState()).toThrowError(
       'simplux must be initialized with a redux store',

@@ -7,8 +7,8 @@ import {
   createSelectors,
   createSimpluxModule,
   getSimpluxReducer,
-  isSimpluxModule,
   setReduxStoreForSimplux,
+  _isSimpluxModule,
 } from '@simplux/core'
 import { combineReducers, createStore } from 'redux'
 
@@ -33,12 +33,12 @@ describe(`@simplux/core`, () => {
   const todo2: Todo = { id: '2', description: 'clean house', isDone: false }
 
   const todoStoreWithOneTodo: TodoState = {
-    todosById: { '1': todo1 },
+    todosById: { 1: todo1 },
     todoIds: ['1'],
   }
 
   const todoStoreWithTwoTodos: TodoState = {
-    todosById: { '1': todo1, '2': todo2 },
+    todosById: { 1: todo1, 2: todo2 },
     todoIds: ['1', '2'],
   }
 
@@ -80,7 +80,7 @@ describe(`@simplux/core`, () => {
 
     const cleanup = setReduxStoreForSimplux(
       createStore(getSimpluxReducer()),
-      s => s,
+      (s) => s,
     )
 
     const handler = jest.fn()
@@ -110,8 +110,8 @@ describe(`@simplux/core`, () => {
 
     expect(handler).toHaveBeenCalledTimes(6)
 
-    expect(isSimpluxModule(todosModule)).toBe(true)
-    expect(isSimpluxModule('string')).toBe(false)
+    expect(_isSimpluxModule(todosModule)).toBe(true)
+    expect(_isSimpluxModule('string')).toBe(false)
 
     subscription.unsubscribe()
     cleanup()
@@ -137,7 +137,7 @@ describe(`@simplux/core`, () => {
           todoIds.push(todo.id)
         },
         addTodos(state, ...todos: Todo[]) {
-          todos.forEach(t => addTodo.withState(state, t))
+          todos.forEach((t) => addTodo.withState(state, t))
         },
       })
 
@@ -150,7 +150,7 @@ describe(`@simplux/core`, () => {
 
       const cleanup = setReduxStoreForSimplux(
         createStore(getSimpluxReducer()),
-        s => s,
+        (s) => s,
       )
 
       const handler = jest.fn()
@@ -236,7 +236,7 @@ describe(`@simplux/core`, () => {
     })
 
     const { increment } = createMutations(testModule, {
-      increment: c => c + 1,
+      increment: (c) => c + 1,
     })
 
     expect(increment()).toBe(1)
@@ -299,14 +299,14 @@ describe(`@simplux/core`, () => {
           nrOfTodos: ({ todoIds }) => todoIds.length,
           getTodosWithDoneState({ todoIds, todosById }, isDone: boolean) {
             return todoIds
-              .map(id => todosById[id])
-              .filter(t => t.isDone === isDone)
+              .map((id) => todosById[id])
+              .filter((t) => t.isDone === isDone)
           },
         },
       )
 
       const { nrOfTodosTimes2 } = createSelectors(todosModule, {
-        nrOfTodosTimes2: s => nrOfTodos.withState(s) * 2,
+        nrOfTodosTimes2: (s) => nrOfTodos.withState(s) * 2,
       })
 
       expect(nrOfTodos()).toBe(2)
@@ -317,7 +317,7 @@ describe(`@simplux/core`, () => {
 
       const cleanup = setReduxStoreForSimplux(
         createStore(getSimpluxReducer()),
-        s => s,
+        (s) => s,
       )
 
       expect(nrOfTodos()).toBe(2)
@@ -341,7 +341,7 @@ describe(`@simplux/core`, () => {
       })
 
       const addTodoEffect = createEffect(async () => {
-        await new Promise(resolve => resolve())
+        await new Promise((resolve) => resolve())
         addTodo(todo1)
       })
 

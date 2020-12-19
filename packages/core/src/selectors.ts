@@ -1,20 +1,35 @@
 import { SimpluxModule } from './module'
 import { Immutable } from './types'
 
+/**
+ * A function to turn into a selector.
+ *
+ * @public
+ */
 export type SelectorDefinition<TState, TReturn> = (
   state: Immutable<TState>,
   ...args: any
 ) => TReturn
 
+/**
+ * The functions to turn into selectors.
+ *
+ * @public
+ */
 export interface SelectorDefinitions<TState> {
   [name: string]: SelectorDefinition<TState, any>
 }
 
+/**
+ * A simplux selector is a function that projects a module's state to some value.
+ *
+ * @public
+ */
 export interface SimpluxSelector<TState, TArgs extends any[], TReturn> {
   /**
    * Evalute the selector with the module's latest state.
    *
-   * @param args the arguments for the selector
+   * @param args - the arguments for the selector
    *
    * @returns the selected value
    */
@@ -29,8 +44,8 @@ export interface SimpluxSelector<TState, TArgs extends any[], TReturn> {
    * By default a selector is evaluated with the module's latest state.
    * This function evaluates the selector with the given state instead.
    *
-   * @param state the state to use when evaluating the selector
-   * @param args the arguments for the selector
+   * @param state - the state to use when evaluating the selector
+   * @param args - the arguments for the selector
    *
    * @returns the selected value
    */
@@ -38,12 +53,20 @@ export interface SimpluxSelector<TState, TArgs extends any[], TReturn> {
 
   /**
    * The module this selector belongs to.
+   *
+   * @internal
    */
   readonly owningModule: SimpluxModule<TState>
 }
 
 type Mutable<T> = { -readonly [prop in keyof T]: T[prop] }
 
+/**
+ * A simplux selector is a function that projects a module's state to some value.
+ * {@link SimpluxSelector}
+ *
+ * @public
+ */
 export type ResolvedSelector<
   TState,
   TSelectorDefinition extends SelectorDefinition<
@@ -57,6 +80,11 @@ export type ResolvedSelector<
   ? SimpluxSelector<TState, TArgs, TReturn>
   : never
 
+/**
+ * A collection of simplux selectors.
+ *
+ * @public
+ */
 export type SimpluxSelectors<
   TState,
   TSelectorDefinitions extends SelectorDefinitions<TState>
@@ -87,11 +115,13 @@ function nameFunction<T extends (...args: any[]) => any>(
  * The selector must be a pure function. Its result is memoized
  * for the latest state and parameters.
  *
- * @param simpluxModule the module to create selectors for
- * @param selectorDefinitions the selectors to create
+ * @param simpluxModule - the module to create selectors for
+ * @param selectorDefinitions - the selectors to create
  *
  * @returns an object that contains a function for each provided
  * selector
+ *
+ * @public
  */
 export function createSelectors<
   TState,

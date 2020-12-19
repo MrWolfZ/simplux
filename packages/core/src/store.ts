@@ -1,6 +1,9 @@
 import { combineReducers, Reducer, Store as ReduxStore } from 'redux'
 
-export interface InternalReduxStoreProxy {
+/**
+ * @internal
+ */
+export interface _InternalReduxStoreProxy {
   id: number
   getState: () => any
   dispatch: ReduxStore['dispatch']
@@ -9,17 +12,20 @@ export interface InternalReduxStoreProxy {
 }
 
 let latestReduxStoreId = 0
-let reduxStoreProxy: InternalReduxStoreProxy | undefined
+let reduxStoreProxy: _InternalReduxStoreProxy | undefined
 
-export const simpluxStore = createSimpluxStore(getInternalReduxStoreProxy)
+/**
+ * @internal
+ */
+export const simpluxStore = _createSimpluxStore(_getInternalReduxStoreProxy)
 
 /**
  * This function is part of the internal simplux API that should only ever
  * be used by its extension packages.
  *
- * @private
+ * @internal
  */
-export function getInternalReduxStoreProxy() {
+export function _getInternalReduxStoreProxy() {
   if (process.env.NODE_ENV !== 'production') {
     if (!reduxStoreProxy) {
       throw new Error(
@@ -31,7 +37,10 @@ export function getInternalReduxStoreProxy() {
   return reduxStoreProxy!
 }
 
-export function setReduxStore<TState>(
+/**
+ * @internal
+ */
+export function _setReduxStore<TState>(
   storeToUse: ReduxStore<TState>,
   simpluxStateGetter: (rootState: TState) => any,
 ) {
@@ -47,9 +56,9 @@ export function setReduxStore<TState>(
   const id = latestReduxStoreId
   latestReduxStoreId += 1
 
-  const subscribers: InternalReduxStoreProxy['subscribers'] = []
+  const subscribers: _InternalReduxStoreProxy['subscribers'] = []
 
-  reduxStoreProxy = createReduxStoreProxy(
+  reduxStoreProxy = _createReduxStoreProxy(
     storeToUse,
     simpluxStateGetter,
     id,
@@ -57,7 +66,7 @@ export function setReduxStore<TState>(
   )
 
   if (previousStoreProxy) {
-    transferConfigurationToNewStore(previousStoreProxy, reduxStoreProxy)
+    _transferConfigurationToNewStore(previousStoreProxy, reduxStoreProxy)
   }
 
   return () => {
@@ -75,9 +84,12 @@ export function setReduxStore<TState>(
   }
 }
 
-export function transferConfigurationToNewStore(
-  previousStoreProxy: InternalReduxStoreProxy,
-  newReduxStoreProxy: InternalReduxStoreProxy,
+/**
+ * @internal
+ */
+export function _transferConfigurationToNewStore(
+  previousStoreProxy: _InternalReduxStoreProxy,
+  newReduxStoreProxy: _InternalReduxStoreProxy,
 ) {
   for (const subscriber of previousStoreProxy.subscribers) {
     subscriber.unsubscribe()
@@ -85,18 +97,21 @@ export function transferConfigurationToNewStore(
   }
 }
 
-export function createReduxStoreProxy<TState>(
+/**
+ * @internal
+ */
+export function _createReduxStoreProxy<TState>(
   storeToUse: ReduxStore<TState>,
   simpluxStateGetter: (rootState: TState) => any,
   id: number,
-  subscribers: InternalReduxStoreProxy['subscribers'],
-): InternalReduxStoreProxy {
+  subscribers: _InternalReduxStoreProxy['subscribers'],
+): _InternalReduxStoreProxy {
   return {
     id,
     subscribers,
     ...storeToUse,
     getState: () => simpluxStateGetter(storeToUse.getState()),
-    subscribe: handler => {
+    subscribe: (handler) => {
       const unsubscribe = storeToUse.subscribe(handler)
       const subscriber = { handler, unsubscribe }
       subscribers.push(subscriber)
@@ -113,7 +128,10 @@ export function createReduxStoreProxy<TState>(
   }
 }
 
-export interface SimpluxStore {
+/**
+ * @internal
+ */
+export interface _SimpluxStore {
   rootReducer: Reducer
   getState: () => any
   dispatch: ReduxStore['dispatch']
@@ -122,9 +140,12 @@ export interface SimpluxStore {
   getReducer: <T = any>(name: string) => Reducer<T>
 }
 
-export function createSimpluxStore(
-  getReduxStoreProxy: () => InternalReduxStoreProxy,
-): SimpluxStore {
+/**
+ * @internal
+ */
+export function _createSimpluxStore(
+  getReduxStoreProxy: () => _InternalReduxStoreProxy,
+): _SimpluxStore {
   const reducers: { [name: string]: Reducer } = {}
   let reducer: Reducer | undefined
 
@@ -134,8 +155,8 @@ export function createSimpluxStore(
   return {
     rootReducer,
     getState: () => getReduxStoreProxy().getState(),
-    dispatch: action => getReduxStoreProxy().dispatch(action),
-    subscribe: listener => getReduxStoreProxy().subscribe(listener),
+    dispatch: (action) => getReduxStoreProxy().dispatch(action),
+    subscribe: (listener) => getReduxStoreProxy().subscribe(listener),
 
     setReducer: (name, reducerToAdd) => {
       reducers[name] = reducerToAdd
@@ -144,6 +165,6 @@ export function createSimpluxStore(
       getReduxStoreProxy().dispatch({ type: `@simplux/setReducer/${name}` })
     },
 
-    getReducer: name => reducers[name],
+    getReducer: (name) => reducers[name],
   }
 }

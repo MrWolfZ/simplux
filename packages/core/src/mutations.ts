@@ -1,19 +1,34 @@
 import { SimpluxModule } from './module'
 
+/**
+ * A function to turn into a mutation.
+ *
+ * @public
+ */
 export type MutationDefinition<TState> = (
   state: TState,
   ...args: any
 ) => TState | void
 
+/**
+ * The functions to turn into mutations.
+ *
+ * @public
+ */
 export interface MutationDefinitions<TState> {
   [name: string]: MutationDefinition<TState>
 }
 
+/**
+ * A simplux mutation is a function that updates a module's state.
+ *
+ * @public
+ */
 export interface SimpluxMutation<TState, TArgs extends any[]> {
   /**
    * Execute the mutation on the module's latest state.
    *
-   * @param args the arguments for the mutation
+   * @param args - the arguments for the mutation
    *
    * @returns the updated state
    */
@@ -21,6 +36,8 @@ export interface SimpluxMutation<TState, TArgs extends any[]> {
 
   /**
    * A unique identifier for this type of mutation.
+   *
+   * @internal
    */
   readonly type: string
 
@@ -34,8 +51,8 @@ export interface SimpluxMutation<TState, TArgs extends any[]> {
    * Sometimes (e.g. for testing) it is useful to call the mutation
    * with a given state. In this case no changes are made to the module.
    *
-   * @param state the state to use when executing the mutation
-   * @param args the arguments for the mutation
+   * @param state - the state to use when executing the mutation
+   * @param args - the arguments for the mutation
    *
    * @returns the updated state
    */
@@ -47,17 +64,29 @@ export interface SimpluxMutation<TState, TArgs extends any[]> {
    * instead handle the action yourself instead of having simplux dispatch
    * it automatically. This function returns the redux action instead of
    * dispatching it.
+   *
+   * @param args - the arguments for the mutation
+   *
+   * @returns a redux action object
    */
   readonly asAction: (...args: TArgs) => { type: string; args: TArgs }
 
   /**
    * The module this mutation belongs to.
+   *
+   * @internal
    */
   readonly owningModule: SimpluxModule<TState>
 }
 
 type ShallowMutable<T> = { -readonly [prop in keyof T]: T[prop] }
 
+/**
+ * A simplux mutation is a function that updates a module's state.
+ * {@link SimpluxMutation}
+ *
+ * @public
+ */
 export type ResolvedMutation<
   TState,
   TMutation extends MutationDefinition<TState>
@@ -65,6 +94,11 @@ export type ResolvedMutation<
   ? SimpluxMutation<TState, TArgs>
   : never
 
+/**
+ * A collection of simplux mutations.
+ *
+ * @public
+ */
 export type SimpluxMutations<
   TState,
   TMutations extends MutationDefinitions<TState>
@@ -75,6 +109,9 @@ export type SimpluxMutations<
   >
 }
 
+/**
+ * @internal
+ */
 export const createMutationPrefix = (moduleName: string) =>
   `@simplux/${moduleName}/mutation/`
 
@@ -95,11 +132,13 @@ function nameFunction<T extends (...args: any[]) => any>(
  * that takes the module state and optionally additional parameters
  * and updates the state.
  *
- * @param simpluxModule the module to create mutations for
- * @param mutationDefinitions the mutations to create
+ * @param simpluxModule - the module to create mutations for
+ * @param mutationDefinitions - the mutations to create
  *
  * @returns an object that contains a function for each provided
  * mutation which when called will execute the mutation on the module
+ *
+ * @public
  */
 export function createMutations<
   TState,

@@ -8,6 +8,9 @@ import { AnyAction } from 'redux';
 import { Reducer } from 'redux';
 import { Store } from 'redux';
 
+// @public (undocumented)
+export type _AtomicObject = Promise<unknown> | Date | RegExp | Boolean | Number | String;
+
 // @public
 export function createEffect<TEffectFunction extends (...args: any[]) => any>(effect: TEffectFunction): SimpluxEffect<TEffectFunction>;
 
@@ -26,42 +29,47 @@ export function createSimpluxModule<TState>(config: SimpluxModuleConfig<TState>)
 // @public
 export function createSimpluxModule<TState>(name: string, initialState: TState): SimpluxModule<TState>;
 
-// @public (undocumented)
+// @public
 export interface EffectDefinitions {
     // (undocumented)
-    [name: string]: (...args: any[]) => any;
+    readonly [name: string]: (...args: any[]) => any;
 }
 
 // @public
 export type EffectFunction<TEffect extends SimpluxEffect<(...args: any[]) => any>> = (...args: Parameters<TEffect>) => ReturnType<TEffect>;
 
-// @public
-export interface EffectMockDefinition {
-    // (undocumented)
-    effectToMock: Function;
-    // (undocumented)
-    mockFn: Function;
+// @public (undocumented)
+export interface EffectMetadata {
+    readonly effectName: string;
 }
 
-// @public
-export function getInternalReduxStoreProxy(): InternalReduxStoreProxy;
+// @internal
+export interface _EffectMockDefinition {
+    // (undocumented)
+    readonly effectToMock: Function;
+    // (undocumented)
+    readonly mockFn: Function;
+}
 
-// @public
-export function getMockDefinitionsInternal(): EffectMockDefinition[];
+// @internal
+export function _getEffectMockDefinitionsInternal(): _EffectMockDefinition[];
+
+// @internal
+export function _getInternalReduxStoreProxy(): _InternalReduxStoreProxy;
 
 // @public
 export function getSimpluxReducer(): Reducer;
 
-// Warning: (ae-forgotten-export) The symbol "AtomicObject" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "IsImmutable" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export type Immutable<T> = T extends AtomicObject ? T : IsImmutable<T> extends true ? T : T extends ReadonlyMap<infer K, infer V> ? ReadonlyMap<Immutable<K>, Immutable<V>> : T extends ReadonlySet<infer V> ? ReadonlySet<Immutable<V>> : T extends object ? {
+export type _IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
+
+// @public
+export type Immutable<T> = T extends _AtomicObject ? T : _IsImmutable<T> extends true ? T : T extends ReadonlyMap<infer K, infer V> ? ReadonlyMap<Immutable<K>, Immutable<V>> : T extends ReadonlySet<infer V> ? ReadonlySet<Immutable<V>> : T extends object ? {
     readonly [K in keyof T]: Immutable<T[K]>;
 } : T;
 
-// @public (undocumented)
-export interface InternalReduxStoreProxy {
+// @internal (undocumented)
+export interface _InternalReduxStoreProxy {
     // (undocumented)
     dispatch: Store['dispatch'];
     // (undocumented)
@@ -77,38 +85,69 @@ export interface InternalReduxStoreProxy {
     }[];
 }
 
-// @public
-export function isSimpluxModule<TState, TOther>(object: SimpluxModule<TState> | TOther): object is SimpluxModule<TState>;
-
-// Warning: (ae-forgotten-export) The symbol "IsMutable" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export type Mutable<T> = T extends AtomicObject ? T : IsMutable<T> extends true ? T : T extends readonly (infer U)[] ? Mutable<U>[] : T extends ReadonlyMap<infer K, infer V> ? Map<Mutable<K>, Mutable<V>> : T extends ReadonlySet<infer V> ? Set<Mutable<V>> : T extends object ? {
+export type _IsAtomicObject<T> = T extends _AtomicObject ? true : false;
+
+// @public (undocumented)
+export type _IsImmutable<T> = _IsAtomicObject<T> extends true ? true : _IsImmutableArray<T> extends true ? true : _IsImmutableObject<T> extends true ? true : false;
+
+// @public (undocumented)
+export type _IsImmutableArray<T> = T extends unknown[] ? false : T extends readonly (infer U)[] ? {
+    [K in keyof T]: _IsImmutable<U>;
+}[number] extends true ? true : false : false;
+
+// @public (undocumented)
+export type _IsImmutableObject<T> = T extends object ? Exclude<keyof T, _ReadonlyKeys<T>> extends false ? {
+    [K in keyof T]: _IsImmutable<T[K]> extends true ? true : false;
+}[keyof T] extends true ? true : false : false : false;
+
+// @public (undocumented)
+export type _IsMutable<T> = T extends _AtomicObject ? true : T extends _MutableArray<T> ? true : T extends object ? Exclude<keyof T, _WritableKeys<T>> extends never ? {
+    [K in keyof T]: _IsMutable<T[K]> extends true ? true : false;
+}[keyof T] extends true ? true : false : false : true;
+
+// @internal
+export function _isSimpluxModule<TState, TOther>(object: SimpluxModule<TState> | TOther): object is SimpluxModule<TState>;
+
+// @public
+export type Mutable<T> = T extends _AtomicObject ? T : _IsMutable<T> extends true ? T : T extends readonly (infer U)[] ? Mutable<U>[] : T extends ReadonlyMap<infer K, infer V> ? Map<Mutable<K>, Mutable<V>> : T extends ReadonlySet<infer V> ? Set<Mutable<V>> : T extends object ? {
     -readonly [K in keyof T]: Mutable<T[K]>;
 } : T;
 
 // @public (undocumented)
+export type _MutableArray<T> = T extends readonly (infer U)[] ? Mutable<U>[] : never;
+
+// @public
 export type MutationDefinition<TState> = (state: TState, ...args: any) => TState | void;
 
-// @public (undocumented)
+// @public
 export interface MutationDefinitions<TState> {
     // (undocumented)
     [name: string]: MutationDefinition<TState>;
 }
 
 // @public (undocumented)
+export type _ReadonlyKeys<T> = {
+    [P in keyof T]-?: _IfEquals<{
+        [Q in P]: T[P];
+    }, {
+        -readonly [Q in P]: T[P];
+    }, never, P>;
+}[keyof T];
+
+// @public
 export type ResolvedMutation<TState, TMutation extends MutationDefinition<TState>> = TMutation extends (state: TState, ...args: infer TArgs) => TState | void ? SimpluxMutation<TState, TArgs> : never;
 
-// @public (undocumented)
+// @public
 export type ResolvedSelector<TState, TSelectorDefinition extends SelectorDefinition<TState, ReturnType<TSelectorDefinition>>> = TSelectorDefinition extends (state: Immutable<TState>, ...args: infer TArgs) => infer TReturn ? SimpluxSelector<TState, TArgs, TReturn> : never;
 
-// @public (undocumented)
+// @public
 export type ResolvedStateChangeHandler<TState, THandler> = THandler extends (state: Immutable<TState>) => void ? (state: Immutable<TState>) => void : StateChangeHandler<TState>;
 
-// @public (undocumented)
+// @public
 export type SelectorDefinition<TState, TReturn> = (state: Immutable<TState>, ...args: any) => TReturn;
 
-// @public (undocumented)
+// @public
 export interface SelectorDefinitions<TState> {
     // (undocumented)
     [name: string]: SelectorDefinition<TState, any>;
@@ -117,34 +156,33 @@ export interface SelectorDefinitions<TState> {
 // @public
 export function setReduxStoreForSimplux<TState>(storeToUse: Store<TState>, simpluxStateGetter: (rootState: TState) => any): () => void;
 
-// Warning: (ae-forgotten-export) The symbol "EffectMetadata" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
+// @public
 export type SimpluxEffect<TFunction extends (...args: any[]) => any> = TFunction & EffectMetadata;
 
-// @public (undocumented)
+// @public
 export type SimpluxEffects<TEffectDefinitions extends EffectDefinitions> = {
     [effectName in keyof TEffectDefinitions]: SimpluxEffect<TEffectDefinitions[effectName]>;
 };
 
-// @public (undocumented)
+// @public
 export interface SimpluxModule<TState> {
-    readonly $simpluxInternals: SimpluxModuleInternals<TState>;
+    // @internal
+    readonly $simpluxInternals: _SimpluxModuleInternals<TState>;
     readonly getState: () => Immutable<TState>;
     readonly setState: (state: Immutable<TState>) => void;
     readonly subscribeToStateChanges: SubscribeToStateChanges<TState>;
 }
 
-// @public (undocumented)
+// @public
 export interface SimpluxModuleConfig<TState> {
     // (undocumented)
-    initialState: TState;
+    readonly initialState: TState;
     // (undocumented)
-    name: string;
+    readonly name: string;
 }
 
-// @public
-export interface SimpluxModuleInternals<TState> {
+// @internal
+export interface _SimpluxModuleInternals<TState> {
     readonly dispatch: (action: AnyAction) => void;
     readonly getReducer: () => Reducer;
     mockStateValue: TState | undefined;
@@ -156,7 +194,7 @@ export interface SimpluxModuleInternals<TState> {
     readonly selectors: SelectorDefinitions<TState>;
 }
 
-// @public (undocumented)
+// @public
 export interface SimpluxMutation<TState, TArgs extends any[]> {
     (...args: TArgs): TState;
     readonly asAction: (...args: TArgs) => {
@@ -164,31 +202,34 @@ export interface SimpluxMutation<TState, TArgs extends any[]> {
         args: TArgs;
     };
     readonly mutationName: string;
+    // @internal
     readonly owningModule: SimpluxModule<TState>;
+    // @internal
     readonly type: string;
     readonly withState: (state: TState, ...args: TArgs) => TState;
 }
 
-// @public (undocumented)
+// @public
 export type SimpluxMutations<TState, TMutations extends MutationDefinitions<TState>> = {
     readonly [name in keyof TMutations]: ResolvedMutation<TState, TMutations[name]>;
 };
 
-// @public (undocumented)
+// @public
 export interface SimpluxSelector<TState, TArgs extends any[], TReturn> {
     (...args: TArgs): TReturn;
+    // @internal
     readonly owningModule: SimpluxModule<TState>;
     readonly selectorName: string;
     readonly withState: (state: Immutable<TState>, ...args: TArgs) => TReturn;
 }
 
-// @public (undocumented)
+// @public
 export type SimpluxSelectors<TState, TSelectorDefinitions extends SelectorDefinitions<TState>> = {
     readonly [name in keyof TSelectorDefinitions]: ResolvedSelector<TState, TSelectorDefinitions[name]>;
 };
 
-// @public (undocumented)
-export interface SimpluxStore {
+// @internal (undocumented)
+export interface _SimpluxStore {
     // (undocumented)
     dispatch: Store['dispatch'];
     // (undocumented)
@@ -203,29 +244,35 @@ export interface SimpluxStore {
     subscribe: Store['subscribe'];
 }
 
-// @public (undocumented)
+// @public
 export type StateChangeHandler<TState> = (state: Immutable<TState>, previousState: Immutable<TState>) => void;
 
-// @public (undocumented)
+// @public
 export interface StateChangeHandlerOptions {
-    // (undocumented)
-    shouldSkipInitialInvocation?: boolean;
+    readonly shouldSkipInitialInvocation?: boolean;
 }
 
-// @public (undocumented)
+// @public
 export interface StateChangeSubscription<TState, THandler extends StateChangeHandler<TState>> extends Subscription {
-    // (undocumented)
-    handler: ResolvedStateChangeHandler<TState, THandler>;
+    readonly handler: ResolvedStateChangeHandler<TState, THandler>;
 }
 
-// @public (undocumented)
+// @public
 export type SubscribeToStateChanges<TState> = <THandler extends StateChangeHandler<TState>>(handler: THandler, options?: StateChangeHandlerOptions) => StateChangeSubscription<TState, THandler>;
 
-// @public (undocumented)
+// @public
 export interface Subscription {
-    // (undocumented)
-    unsubscribe: () => void;
+    readonly unsubscribe: () => void;
 }
+
+// @public (undocumented)
+export type _WritableKeys<T> = {
+    [P in keyof T]-?: _IfEquals<{
+        [Q in P]: T[P];
+    }, {
+        -readonly [Q in P]: T[P];
+    }, P>;
+}[keyof T];
 
 
 // (No @packageDocumentation comment for this package)

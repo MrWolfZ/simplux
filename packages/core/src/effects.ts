@@ -3,17 +3,25 @@ import { Mutable } from './types'
 /**
  * This interface is used for mocking support during testing.
  *
- * @private
+ * @internal
  */
-export interface EffectMockDefinition {
-  effectToMock: Function
-  mockFn: Function
+export interface _EffectMockDefinition {
+  readonly effectToMock: Function
+  readonly mockFn: Function
 }
 
+/**
+ * The functions to turn into effects.
+ *
+ * @public
+ */
 export interface EffectDefinitions {
-  [name: string]: (...args: any[]) => any
+  readonly [name: string]: (...args: any[]) => any
 }
 
+/**
+ * @public
+ */
 export interface EffectMetadata {
   /**
    * The name of this effect.
@@ -21,33 +29,47 @@ export interface EffectMetadata {
   readonly effectName: string
 }
 
+/**
+ * A function with side-effects that can be easily mocked for testing.
+ *
+ * @public
+ */
 export type SimpluxEffect<
   TFunction extends (...args: any[]) => any
 > = TFunction & EffectMetadata
 
 /**
- * Helper interface to create a function with the same signature as an effect
+ * Helper type to create a function type with the same signature as an effect
+ *
+ * @public
  */
 export type EffectFunction<
   TEffect extends SimpluxEffect<(...args: any[]) => any>
 > = (...args: Parameters<TEffect>) => ReturnType<TEffect>
 
+/**
+ * A collection of functions with side-effects that can be easily mocked for testing.
+ *
+ * @public
+ */
 export type SimpluxEffects<TEffectDefinitions extends EffectDefinitions> = {
   [effectName in keyof TEffectDefinitions]: SimpluxEffect<
     TEffectDefinitions[effectName]
   >
 }
 
-const mockDefinitions: EffectMockDefinition[] = []
+const mockDefinitions: _EffectMockDefinition[] = []
 
 /**
  * Create a new effect. An effect is any function that has side effects.
  * The main purpose of this function is to allow simple mocking of the
  * effect.
  *
- * @param effect the effect to create
+ * @param effect - the effect to create
  *
  * @returns a function that calls the provided effect and can be mocked
+ *
+ * @public
  */
 export function createEffect<TEffectFunction extends (...args: any[]) => any>(
   effect: TEffectFunction,
@@ -60,9 +82,11 @@ export function createEffect<TEffectFunction extends (...args: any[]) => any>(
  * The main purpose of this function is to allow simple mocking of the
  * effect.
  *
- * @param effects the effects to create
+ * @param effects - the effects to create
  *
  * @returns functions that call the provided effects and can be mocked
+ *
+ * @public
  */
 export function createEffects<TEffectDefinitions extends EffectDefinitions>(
   effects: TEffectDefinitions,
@@ -102,8 +126,8 @@ function createEffectInternal<TEffectFunction extends (...args: any[]) => any>(
  * It is part of the internal simplux API and should not be
  * used directly by application code.
  *
- * @private
+ * @internal
  */
-export function getMockDefinitionsInternal() {
+export function _getEffectMockDefinitionsInternal() {
   return mockDefinitions
 }

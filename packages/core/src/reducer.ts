@@ -1,6 +1,9 @@
 import { Action } from 'redux'
 import { createMutationPrefix, MutationDefinitions } from './mutations'
 
+/**
+ * @internal
+ */
 export function createModuleReducer<TState>(
   moduleName: string,
   initialState: TState,

@@ -1,7 +1,7 @@
 import {
   createEffect,
   createEffects,
-  getMockDefinitionsInternal,
+  _getEffectMockDefinitionsInternal,
 } from './effects'
 
 describe(createEffect.name, () => {
@@ -17,7 +17,7 @@ describe(createEffect.name, () => {
       const spy = jest.fn()
       const mockSpy = jest.fn()
       const effect = createEffect(spy)
-      getMockDefinitionsInternal().push({
+      _getEffectMockDefinitionsInternal().push({
         effectToMock: effect,
         mockFn: mockSpy,
       })
@@ -25,7 +25,7 @@ describe(createEffect.name, () => {
       effect('foo', 1)
       expect(spy).not.toHaveBeenCalled()
       expect(mockSpy).toHaveBeenCalledWith('foo', 1)
-      getMockDefinitionsInternal().splice(0, 1)
+      _getEffectMockDefinitionsInternal().splice(0, 1)
     })
   })
 })
@@ -53,7 +53,7 @@ describe(createEffects.name, () => {
         effect1: spy1,
         effect2: spy2,
       })
-      getMockDefinitionsInternal().push({
+      _getEffectMockDefinitionsInternal().push({
         effectToMock: effect1,
         mockFn: mockSpy,
       })
@@ -63,7 +63,7 @@ describe(createEffects.name, () => {
       expect(spy1).not.toHaveBeenCalled()
       expect(mockSpy).toHaveBeenCalledWith('foo', 1)
       expect(spy2).toHaveBeenCalled()
-      getMockDefinitionsInternal().splice(0, 1)
+      _getEffectMockDefinitionsInternal().splice(0, 1)
     })
   })
 })

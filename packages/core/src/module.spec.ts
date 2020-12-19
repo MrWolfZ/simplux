@@ -2,27 +2,27 @@ import { setAutoFreeze } from 'immer'
 import { combineReducers, createStore, Store } from 'redux'
 import {
   createModule,
-  isSimpluxModule,
   SimpluxModule,
   StateChangeSubscription,
+  _isSimpluxModule,
 } from './module'
 import {
-  createReduxStoreProxy,
-  createSimpluxStore,
-  SimpluxStore,
+  _createReduxStoreProxy,
+  _createSimpluxStore,
+  _SimpluxStore,
 } from './store'
 
 describe('module', () => {
   describe('creating module', () => {
     let nodeEnv = ''
     let setReducerSpy: jest.SpyInstance
-    let simpluxStore: SimpluxStore
+    let simpluxStore: _SimpluxStore
     let reduxStore: Store
 
     beforeEach(() => {
       const getReduxStoreProxy = () =>
-        createReduxStoreProxy(reduxStore, s => s, 1, [])
-      simpluxStore = createSimpluxStore(getReduxStoreProxy)
+        _createReduxStoreProxy(reduxStore, (s) => s, 1, [])
+      simpluxStore = _createSimpluxStore(getReduxStoreProxy)
       reduxStore = createStore(simpluxStore.rootReducer)
       setReducerSpy = jest.spyOn(simpluxStore, 'setReducer')
       nodeEnv = process.env.NODE_ENV
@@ -110,12 +110,12 @@ describe('module', () => {
 
   describe('created module', () => {
     let subscribeSpy: jest.SpyInstance
-    let simpluxStore: SimpluxStore
+    let simpluxStore: _SimpluxStore
 
     beforeEach(() => {
       const getReduxStoreProxy = () =>
-        createReduxStoreProxy(reduxStore, s => s, 1, [])
-      simpluxStore = createSimpluxStore(getReduxStoreProxy)
+        _createReduxStoreProxy(reduxStore, (s) => s, 1, [])
+      simpluxStore = _createSimpluxStore(getReduxStoreProxy)
       const reduxStore = createStore(simpluxStore.rootReducer)
       subscribeSpy = jest.spyOn(reduxStore, 'subscribe')
     })
@@ -345,7 +345,7 @@ describe('module', () => {
 
       it('returns a subscription with the handler of the correct type', () => {
         const mock = jest.fn()
-        const { handler } = subscribeToStateChanges(state => {
+        const { handler } = subscribeToStateChanges((state) => {
           expect(state.prop).toBe('value')
           mock()
         })
@@ -357,12 +357,12 @@ describe('module', () => {
   })
 
   describe('isSimpluxModule', () => {
-    let simpluxStore: SimpluxStore
+    let simpluxStore: _SimpluxStore
 
     beforeEach(() => {
       const getReduxStoreProxy = () =>
-        createReduxStoreProxy(reduxStore, s => s, 1, [])
-      simpluxStore = createSimpluxStore(getReduxStoreProxy)
+        _createReduxStoreProxy(reduxStore, (s) => s, 1, [])
+      simpluxStore = _createSimpluxStore(getReduxStoreProxy)
       const reduxStore = createStore(simpluxStore.rootReducer)
     })
 
@@ -372,19 +372,19 @@ describe('module', () => {
         initialState: '',
       })
 
-      expect(isSimpluxModule(isSimpluxModuleTestModule)).toBe(true)
+      expect(_isSimpluxModule(isSimpluxModuleTestModule)).toBe(true)
     })
 
     it('returns false for a string value', () => {
-      expect(isSimpluxModule('string')).toBe(false)
+      expect(_isSimpluxModule('string')).toBe(false)
     })
 
     it('returns false for a number value', () => {
-      expect(isSimpluxModule(10)).toBe(false)
+      expect(_isSimpluxModule(10)).toBe(false)
     })
 
     it('returns false for an object value', () => {
-      expect(isSimpluxModule({})).toBe(false)
+      expect(_isSimpluxModule({})).toBe(false)
     })
   })
 })

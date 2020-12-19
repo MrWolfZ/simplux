@@ -3,42 +3,100 @@ import { createImmerReducer } from './immer'
 import { MutationDefinitions } from './mutations'
 import { createModuleReducer } from './reducer'
 import { SelectorDefinitions } from './selectors'
-import { SimpluxStore, simpluxStore } from './store'
+import { simpluxStore, _SimpluxStore } from './store'
 import { Immutable } from './types'
 
+/**
+ * Configuration object for creating simplux modules.
+ *
+ * @public
+ */
 export interface SimpluxModuleConfig<TState> {
-  name: string
-  initialState: TState
+  readonly name: string
+  readonly initialState: TState
 }
 
+/**
+ * A function that can be registered in a module to be notified of
+ * module state changes.
+ *
+ * @param state - the current state of the module
+ * @param previousState - the previous state of the module
+ *
+ * @public
+ */
 export type StateChangeHandler<TState> = (
   state: Immutable<TState>,
   previousState: Immutable<TState>,
 ) => void
 
+/**
+ * Configuration object for registering state change handlers.
+ *
+ * @public
+ */
 export interface StateChangeHandlerOptions {
-  shouldSkipInitialInvocation?: boolean
+  /**
+   * By default a state change handler will be called with the module's
+   * current state immediately after being registered. Setting this
+   * property to true will skip that invocation and will only call the
+   * handler as soon as the state changes.
+   *
+   * @defaultValue `false`
+   */
+  readonly shouldSkipInitialInvocation?: boolean
 }
 
-// this type exists to get the concrete type of the handler, i.e. to return
-// a handler with the correct number or parameters
+/**
+ * This type exists to get the concrete type of the handler, i.e. to return
+ * a handler with the correct number or parameters
+ *
+ * @public
+ */
 export type ResolvedStateChangeHandler<TState, THandler> = THandler extends (
   state: Immutable<TState>,
 ) => void
   ? (state: Immutable<TState>) => void
   : StateChangeHandler<TState>
 
+/**
+ * An object that can be used to unsubscribe from a subscription (e.g. for a
+ * state change handler).
+ *
+ * @public
+ */
 export interface Subscription {
-  unsubscribe: () => void
+  /**
+   * Unsubscribe from the subscription.
+   */
+  readonly unsubscribe: () => void
 }
 
+/**
+ * A subscription for a state change handler.
+ *
+ * @public
+ */
 export interface StateChangeSubscription<
   TState,
   THandler extends StateChangeHandler<TState>
 > extends Subscription {
-  handler: ResolvedStateChangeHandler<TState, THandler>
+  /**
+   * The handler function. Useful for testing.
+   */
+  readonly handler: ResolvedStateChangeHandler<TState, THandler>
 }
 
+/**
+ * Subscribe to state changes.
+ *
+ * @param handler - the handler function to be called whenever the state changes
+ * @param options - configuration for the subscription
+ *
+ * @returns a subscription that can be used to unsubscribe from state changes
+ *
+ * @public
+ */
 export type SubscribeToStateChanges<TState> = <
   THandler extends StateChangeHandler<TState>
 >(
@@ -50,45 +108,35 @@ export type SubscribeToStateChanges<TState> = <
  * This is part of the simplux internal API and should not be accessed
  * except by simplux extensions.
  *
- * @private
+ * @internal
  */
-export interface SimpluxModuleInternals<TState> {
+export interface _SimpluxModuleInternals<TState> {
   /**
    * The unique name of the module.
-   *
-   * @private
    */
   readonly name: string
 
   /**
    * This is part of the simplux internal API and should not be accessed
    * except by simplux extensions.
-   *
-   * @private
    */
   mockStateValue: TState | undefined
 
   /**
    * This is part of the simplux internal API and should not be accessed
    * except by simplux extensions.
-   *
-   * @private
    */
   readonly mutations: MutationDefinitions<TState>
 
   /**
    * This is part of the simplux internal API and should not be accessed
    * except by simplux extensions.
-   *
-   * @private
    */
   readonly mutationMocks: { [mutationName: string]: (...args: any[]) => TState }
 
   /**
    * This is part of the simplux internal API and should not be accessed
    * except by simplux extensions.
-   *
-   * @private
    */
   readonly selectors: SelectorDefinitions<TState>
 
@@ -96,8 +144,6 @@ export interface SimpluxModuleInternals<TState> {
    * A proxy to the Redux store's dispatch function. This is part of the
    * simplux internal API and should not be accessed except by simplux
    * extensions.
-   *
-   * @private
    */
   readonly dispatch: (action: AnyAction) => void
 
@@ -105,12 +151,16 @@ export interface SimpluxModuleInternals<TState> {
    * A proxy to the Redux store's dispatch function. This is part of the
    * simplux internal API and should not be accessed except by simplux
    * extensions.
-   *
-   * @private
    */
   readonly getReducer: () => Reducer
 }
 
+/**
+ * A simplux module that contains some state and allows controlled modification
+ * and observation of the state.
+ *
+ * @public
+ */
 export interface SimpluxModule<TState> {
   /**
    * Get the current module state.
@@ -122,18 +172,19 @@ export interface SimpluxModule<TState> {
   /**
    * Replace the whole module state.
    *
-   * @param state the state to set for the module
+   * @param state - the state to set for the module
    */
   readonly setState: (state: Immutable<TState>) => void
 
   /**
    * Register a handler to be called whenever the module's state
    * changes. The handler will be called immediately with the module's
-   * current state when subscribing.
+   * current state when subscribing (can be changed by providing custom
+   * options).
    *
-   * @param handler the function to call whenever the module's state changes
+   * @param handler - the function to call whenever the module's state changes
    *
-   * @returns an unsubscribe function that will remove the handler
+   * @returns a subscription that can be unsubscribed from to remove the handler
    */
   readonly subscribeToStateChanges: SubscribeToStateChanges<TState>
 
@@ -141,13 +192,19 @@ export interface SimpluxModule<TState> {
    * Internal state that is used by simplux. This is part of the simplux
    * internal API and should not be accessed except by simplux extensions.
    *
-   * @private
+   * @internal
    */
-  readonly $simpluxInternals: SimpluxModuleInternals<TState>
+  readonly $simpluxInternals: _SimpluxModuleInternals<TState>
 }
 
+/**
+ * This is part of the simplux internal API and should not be accessed
+ * except by simplux extensions.
+ *
+ * @internal
+ */
 export function createModule<TState>(
-  store: SimpluxStore,
+  store: _SimpluxStore,
   config: SimpluxModuleConfig<TState>,
 ): SimpluxModule<TState> {
   if (process.env.NODE_ENV !== 'production') {
@@ -158,7 +215,7 @@ export function createModule<TState>(
 
   const { getState, dispatch, subscribe, setReducer } = store
 
-  const internals: SimpluxModuleInternals<TState> = {
+  const internals: _SimpluxModuleInternals<TState> = {
     name: config.name,
     mockStateValue: undefined,
     mutations: {},
@@ -184,9 +241,7 @@ export function createModule<TState>(
 
   type Required<T> = { [prop in keyof T]-?: T[prop] }
 
-  const defaultStateChangeHandlerOptions: Required<
-    StateChangeHandlerOptions
-  > = {
+  const defaultStateChangeHandlerOptions: Required<StateChangeHandlerOptions> = {
     shouldSkipInitialInvocation: false,
   }
 
@@ -265,11 +320,13 @@ export function createModule<TState>(
 /**
  * Checks if an object is a simplux module.
  *
- * @param object the object to check
+ * @param object - the object to check
  *
  * @returns true if the object is a simplux module
+ *
+ * @internal
  */
-export function isSimpluxModule<TState, TOther>(
+export function _isSimpluxModule<TState, TOther>(
   object: SimpluxModule<TState> | TOther,
 ): object is SimpluxModule<TState> {
   return object && !!(object as SimpluxModule<any>).$simpluxInternals

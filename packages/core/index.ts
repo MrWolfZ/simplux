@@ -1,31 +1,32 @@
 import { createStore, Reducer, Store } from 'redux'
 import { createModule, SimpluxModule, SimpluxModuleConfig } from './src/module'
-import { setReduxStore, simpluxStore } from './src/store'
+import { simpluxStore, _setReduxStore } from './src/store'
 
 // we create and set a default redux store for simple scenarios
-setReduxStoreForSimplux(createStore(getSimpluxReducer()), s => s)
+setReduxStoreForSimplux(createStore(getSimpluxReducer()), (s) => s)
 
 export {
   createEffect,
   createEffects,
   EffectDefinitions,
   EffectFunction,
-  EffectMockDefinition,
-  getMockDefinitionsInternal,
+  EffectMetadata,
   SimpluxEffect,
   SimpluxEffects,
+  _EffectMockDefinition,
+  _getEffectMockDefinitionsInternal,
 } from './src/effects'
 export {
-  isSimpluxModule,
   ResolvedStateChangeHandler,
   SimpluxModule,
   SimpluxModuleConfig,
-  SimpluxModuleInternals,
   StateChangeHandler,
   StateChangeHandlerOptions,
   StateChangeSubscription,
   SubscribeToStateChanges,
   Subscription,
+  _isSimpluxModule,
+  _SimpluxModuleInternals,
 } from './src/module'
 export {
   createMutations,
@@ -44,11 +45,11 @@ export {
   SimpluxSelectors,
 } from './src/selectors'
 export {
-  getInternalReduxStoreProxy,
-  InternalReduxStoreProxy,
-  SimpluxStore,
+  _getInternalReduxStoreProxy,
+  _InternalReduxStoreProxy,
+  _SimpluxStore,
 } from './src/store'
-export { Immutable, Mutable } from './src/types'
+export * from './src/types'
 
 // tslint:disable: max-line-length (cannot line break the links)
 
@@ -60,6 +61,8 @@ export { Immutable, Mutable } from './src/types'
  * To learn more, have a look at the [getting started recipe](https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
  *
  * @returns the simplux root reducer
+ *
+ * @public
  */
 export function getSimpluxReducer(): Reducer {
   return simpluxStore.rootReducer
@@ -78,9 +81,11 @@ export function getSimpluxReducer(): Reducer {
  *
  * To learn more, have a look at the [getting started recipe](https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
  *
- * @param config the configuration values for the module
+ * @param config - the configuration values for the module
  *
  * @returns the created module
+ *
+ * @public
  */
 export function createSimpluxModule<TState>(
   config: SimpluxModuleConfig<TState>,
@@ -97,10 +102,12 @@ export function createSimpluxModule<TState>(
  *
  * To learn more, have a look at the [getting started recipe](https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
  *
- * @param name the unique name of the module
- * @param initialState the initial state of the module
+ * @param name - the unique name of the module
+ * @param initialState - the initial state of the module
  *
  * @returns the created module
+ *
+ * @public
  */
 export function createSimpluxModule<TState>(
   name: string,
@@ -137,16 +144,18 @@ export function createSimpluxModule<TState>(
  *
  * To learn more, have a look at the [getting started recipe](https://github.com/MrWolfZ/simplux/tree/master/recipes/basics/getting-started).
  *
- * @param storeToUse the redux store that simplux should use
- * @param simpluxStateGetter a mapper function from the redux root state
+ * @param storeToUse - the redux store that simplux should use
+ * @param simpluxStateGetter - a mapper function from the redux root state
  * to the simplux root state
  *
  * @returns a cleanup function that when called disconnects simplux from the
  * redux store (but it does not remove any of the simplux state from the store)
+ *
+ * @public
  */
 export function setReduxStoreForSimplux<TState>(
   storeToUse: Store<TState>,
   simpluxStateGetter: (rootState: TState) => any,
 ) {
-  return setReduxStore(storeToUse, simpluxStateGetter)
+  return _setReduxStore(storeToUse, simpluxStateGetter)
 }

@@ -10,22 +10,31 @@
 // become an issue in the future, simply drop the IfMutable/IfImmutable
 // branches; in addition, we exclude some tricky cases like maps and sets
 
-type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X
+/**
+ * @public
+ */
+export type _IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X
   ? 1
-  : 2) extends (<T>() => T extends Y ? 1 : 2)
+  : 2) extends <T>() => T extends Y ? 1 : 2
   ? A
   : B
 
-type WritableKeys<T> = {
-  [P in keyof T]-?: IfEquals<
+/**
+ * @public
+ */
+export type _WritableKeys<T> = {
+  [P in keyof T]-?: _IfEquals<
     { [Q in P]: T[P] },
     { -readonly [Q in P]: T[P] },
     P
   >
 }[keyof T]
 
-type ReadonlyKeys<T> = {
-  [P in keyof T]-?: IfEquals<
+/**
+ * @public
+ */
+export type _ReadonlyKeys<T> = {
+  [P in keyof T]-?: _IfEquals<
     { [Q in P]: T[P] },
     { -readonly [Q in P]: T[P] },
     never,
@@ -33,55 +42,90 @@ type ReadonlyKeys<T> = {
   >
 }[keyof T]
 
-type AtomicObject = Promise<unknown> | Date | RegExp | Boolean | Number | String
+/**
+ * @public
+ */
+export type _AtomicObject =
+  | Promise<unknown>
+  | Date
+  | RegExp
+  | Boolean
+  | Number
+  | String
 
-type IsAtomicObject<T> = T extends AtomicObject ? true : false
+/**
+ * @public
+ */
+export type _IsAtomicObject<T> = T extends _AtomicObject ? true : false
 
-type MutableArray<T> = T extends readonly (infer U)[] ? Mutable<U>[] : never
+/**
+ * @public
+ */
+export type _MutableArray<T> = T extends readonly (infer U)[]
+  ? Mutable<U>[]
+  : never
 
-type IsMutable<T> = T extends AtomicObject
+/**
+ * @public
+ */
+export type _IsMutable<T> = T extends _AtomicObject
   ? true
-  : T extends MutableArray<T>
+  : T extends _MutableArray<T>
   ? true
   : T extends object
-  ? Exclude<keyof T, WritableKeys<T>> extends never
+  ? Exclude<keyof T, _WritableKeys<T>> extends never
     ? {
-        [K in keyof T]: IsMutable<T[K]> extends true ? true : false
+        [K in keyof T]: _IsMutable<T[K]> extends true ? true : false
       }[keyof T] extends true
       ? true
       : false
     : false
   : true
 
-type IsImmutableArray<T> = T extends unknown[]
+/**
+ * @public
+ */
+export type _IsImmutableArray<T> = T extends unknown[]
   ? false
   : T extends readonly (infer U)[]
-  ? { [K in keyof T]: IsImmutable<U> }[number] extends true
+  ? { [K in keyof T]: _IsImmutable<U> }[number] extends true
     ? true
     : false
   : false
 
-type IsImmutableObject<T> = T extends object
-  ? Exclude<keyof T, ReadonlyKeys<T>> extends false
+/**
+ * @public
+ */
+export type _IsImmutableObject<T> = T extends object
+  ? Exclude<keyof T, _ReadonlyKeys<T>> extends false
     ? {
-        [K in keyof T]: IsImmutable<T[K]> extends true ? true : false
+        [K in keyof T]: _IsImmutable<T[K]> extends true ? true : false
       }[keyof T] extends true
       ? true
       : false
     : false
   : false
 
-type IsImmutable<T> = IsAtomicObject<T> extends true
+/**
+ * @public
+ */
+export type _IsImmutable<T> = _IsAtomicObject<T> extends true
   ? true
-  : IsImmutableArray<T> extends true
+  : _IsImmutableArray<T> extends true
   ? true
-  : IsImmutableObject<T> extends true
+  : _IsImmutableObject<T> extends true
   ? true
   : false
 
-export type Mutable<T> = T extends AtomicObject
+/**
+ * A type that recursively converts another type to be mutable, i.e.
+ * all readonly modifiers are removed from properties and arrays.
+ *
+ * @public
+ */
+export type Mutable<T> = T extends _AtomicObject
   ? T
-  : IsMutable<T> extends true
+  : _IsMutable<T> extends true
   ? T
   : T extends readonly (infer U)[]
   ? Mutable<U>[]
@@ -93,9 +137,15 @@ export type Mutable<T> = T extends AtomicObject
   ? { -readonly [K in keyof T]: Mutable<T[K]> }
   : T
 
-export type Immutable<T> = T extends AtomicObject
+/**
+ * A type that recursively converts another type to be immutable, i.e.
+ * all properties and arrays become readonly.
+ *
+ * @public
+ */
+export type Immutable<T> = T extends _AtomicObject
   ? T
-  : IsImmutable<T> extends true
+  : _IsImmutable<T> extends true
   ? T
   : T extends ReadonlyMap<infer K, infer V>
   ? ReadonlyMap<Immutable<K>, Immutable<V>>
