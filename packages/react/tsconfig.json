@@ -5,10 +5,8 @@
     "outDir": "./dist",
     "jsx": "react",
     "paths": {
-      "@simplux/core": ["../core/dist"],
-      "@simplux/core/*": ["../core/dist/*"],
-      "@simplux/testing": ["../testing/dist"],
-      "@simplux/testing/*": ["../testing/dist/*"],
+      "@simplux/core": ["../core/dist/core.internal.d.ts"],
+      "@simplux/testing": ["../testing/dist/testing.internal.d.ts"],
       "@simplux/react": ["."]
     },
     "lib": ["dom", "esnext"]

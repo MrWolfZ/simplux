@@ -1,4 +1,4 @@
-import { InternalReduxStoreProxy, SimpluxModule } from '@simplux/core'
+import { SimpluxModule, _InternalReduxStoreProxy } from '@simplux/core'
 import { cleanup, render } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import React, { useEffect } from 'react'
@@ -21,7 +21,7 @@ describe('context', () => {
 
   let moduleMock: SimpluxModule<typeof moduleState>
   let moduleMock2: SimpluxModule<typeof moduleState2>
-  let reduxStoreProxyMock: InternalReduxStoreProxy
+  let reduxStoreProxyMock: _InternalReduxStoreProxy
 
   beforeEach(() => {
     moduleState = { count: 10 }
@@ -36,7 +36,7 @@ describe('context', () => {
       .fn()
       .mockImplementation(() => ({ test: moduleState, test2: moduleState2 }))
 
-    subscribeToReduxStoreProxyMock = jest.fn().mockImplementation(s => {
+    subscribeToReduxStoreProxyMock = jest.fn().mockImplementation((s) => {
       subscriber = s
       return unsubscribeMock
     })

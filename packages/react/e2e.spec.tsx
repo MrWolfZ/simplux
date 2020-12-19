@@ -30,12 +30,12 @@ describe(`@simplux/react`, () => {
   const todo2: Todo = { id: '2', description: 'clean house', isDone: false }
 
   const todoStoreWithOneTodo: TodoState = {
-    todosById: { '1': todo1 },
+    todosById: { 1: todo1 },
     todoIds: ['1'],
   }
 
   const todoStoreWithTwoTodos: TodoState = {
-    todosById: { '1': todo1, '2': todo2 },
+    todosById: { 1: todo1, 2: todo2 },
     todoIds: ['1', '2'],
   }
 

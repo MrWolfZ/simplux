@@ -1,13 +1,13 @@
 import {
-  getInternalReduxStoreProxy,
   Immutable,
-  InternalReduxStoreProxy,
   SimpluxModule,
+  _getInternalReduxStoreProxy,
+  _InternalReduxStoreProxy,
 } from '@simplux/core'
 import React, {
   Context,
   createContext as createContextReact,
-  FC,
+  FunctionComponent,
   useCallback,
   useContext,
   useEffect,
@@ -49,7 +49,7 @@ const defaultContextValue: SimpluxContextValue = {
   subscribeToModuleStateChanges(simpluxModule, handler) {
     return simpluxModule.subscribeToStateChanges(handler).unsubscribe
   },
-  getModuleState: simpluxModule => simpluxModule.getState(),
+  getModuleState: (simpluxModule) => simpluxModule.getState(),
 }
 
 // by always returning 0 for `calculateChangedBits` we prevent components
@@ -65,7 +65,7 @@ delete (SimpluxContext as Partial<typeof SimpluxContext>).Consumer
 export const useSimpluxContext = () => useContext(SimpluxContext)
 
 export const useSimpluxSubscription = (
-  getStoreProxy: () => InternalReduxStoreProxy,
+  getStoreProxy: () => _InternalReduxStoreProxy,
 ): SimpluxContextValue => {
   const [moduleStates, setModuleStates] = useState<ModuleStates>(() =>
     getStoreProxy().getState(),
@@ -92,7 +92,7 @@ export const useSimpluxSubscription = (
           const prevState = previousModuleStates[moduleName]
 
           if (currentState !== prevState) {
-            moduleSubscribers.forEach(sub => sub(currentState, prevState))
+            moduleSubscribers.forEach((sub) => sub(currentState, prevState))
           }
         })
       })
@@ -132,8 +132,15 @@ export const useSimpluxSubscription = (
   }
 }
 
-export const SimpluxProvider: FC = ({ children }) => {
-  const contextValue = useSimpluxSubscription(getInternalReduxStoreProxy)
+/**
+ * A provider for allowing components to use state from simplux modules.
+ *
+ * It is recommended to wrap your entire application with a single provider.
+ *
+ * @public
+ */
+export const SimpluxProvider: FunctionComponent = ({ children }) => {
+  const contextValue = useSimpluxSubscription(_getInternalReduxStoreProxy)
 
   return (
     <SimpluxContext.Provider value={contextValue}>
