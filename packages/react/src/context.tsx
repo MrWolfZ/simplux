@@ -5,7 +5,8 @@ import {
   SimpluxModule,
 } from '@simplux/core'
 import React, {
-  createContext,
+  Context,
+  createContext as createContextReact,
   FC,
   useCallback,
   useContext,
@@ -14,6 +15,14 @@ import React, {
   useState,
 } from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
+
+// required since React typings to not include the second parameter
+type CreateContextFn = <T>(
+  defaultValue: T,
+  calculateChangedBits: () => number,
+) => Context<T>
+
+const createContext = createContextReact as CreateContextFn
 
 export interface SimpluxContextValue {
   subscribeToModuleStateChanges: <TState>(
@@ -51,7 +60,7 @@ const defaultContextValue: SimpluxContextValue = {
 const SimpluxContext = createContext(defaultContextValue, () => 0)
 
 // we only support accessing the context via the useSimplux hook
-delete SimpluxContext.Consumer
+delete (SimpluxContext as Partial<typeof SimpluxContext>).Consumer
 
 export const useSimpluxContext = () => useContext(SimpluxContext)
 
