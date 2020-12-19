@@ -1,3 +1,8 @@
+import {
+  Extractor,
+  ExtractorConfig,
+  ExtractorLogLevel,
+} from '@microsoft/api-extractor'
 import chalk, { Level } from 'chalk'
 import fs from 'fs'
 import glob from 'glob'
@@ -12,9 +17,15 @@ import { execAsync, ExecReturnValue } from './util'
 const argv = yargs
   .scriptName('build-pacakge')
   .option('packageDir', {
+    type: 'string',
     default: process.cwd(),
   })
   .option('forceEnableColors', {
+    type: 'boolean',
+    default: false,
+  })
+  .option('ci', {
+    type: 'boolean',
     default: false,
   }).argv
 
@@ -27,7 +38,7 @@ if (argv.forceEnableColors) {
 // tslint:disable: no-require-imports
 
 // tslint:disable-next-line: no-floating-promises
-build().catch(err => {
+build().catch((err) => {
   shell.echo(chalk.red(`Error while building: ${err}`))
   shell.exit(1)
 })
@@ -57,6 +68,63 @@ async function build() {
   await executeStep(`Compiling`, () =>
     execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`),
   )
+
+  const configPath = path.join(PACKAGE_DIR, 'api-extractor.json')
+
+  if (fs.existsSync(configPath)) {
+    await executeStep(`Bundling type definitions`, () => {
+      const extractorConfig = ExtractorConfig.loadFileAndPrepare(configPath)
+
+      const extractorResult = Extractor.invoke(extractorConfig, {
+        localBuild: !argv.ci,
+        showVerboseMessages: true,
+
+        messageCallback: (message) => {
+          let text = message.text
+
+          switch (message.logLevel) {
+            case ExtractorLogLevel.Error:
+              text = chalk.red(text)
+              break
+
+            case ExtractorLogLevel.Warning:
+              text = chalk.yellow(text)
+              break
+
+            case ExtractorLogLevel.Info:
+              text = chalk.white(text)
+              break
+
+            case ExtractorLogLevel.Verbose:
+              text = chalk.gray(text)
+              break
+
+            default:
+              break
+          }
+
+          shell.echo(text)
+
+          message.handled = true
+        },
+      })
+
+      if (!extractorResult.succeeded) {
+        shell.echo(
+          `API Extractor completed with ${chalk.yellow(
+            `${extractorResult.errorCount}`,
+          )} ${chalk.red('errors')} and ${chalk.yellow(
+            `${extractorResult.warningCount}`,
+          )} ${chalk.cyan('warnings')}`,
+        )
+
+        return 1
+      }
+
+      const indexDefContent = `export * from './${PACKAGE_SIMPLE_NAME}'\n`
+      fs.writeFileSync(path.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent)
+    })
+  }
 
   await executeStep(`Compiling esm5`, async () => {
     const ret = await execAsync(
@@ -166,7 +234,7 @@ async function build() {
 
   const globalsArg =
     externalsArr.length > 0
-      ? `-g ${externalsArr.map(e => `${e}:${GLOBALS[e] || e}`).join(',')}`
+      ? `-g ${externalsArr.map((e) => `${e}:${GLOBALS[e] || e}`).join(',')}`
       : ''
 
   await executeStep(`Bundling UMD (DEV)`, async () => {
@@ -324,14 +392,14 @@ if (process.env.NODE_ENV !== 'production') {
     const globPromise = promisify(glob)
     const bundleMapFiles = await globPromise(`${OUTPUT_DIR}/**/*.map`)
     await Promise.all(
-      bundleMapFiles.map(async mapFile => {
+      bundleMapFiles.map(async (mapFile) => {
         const fileContent = await promisify(fs.readFile)(mapFile)
         const fileContentJson = JSON.parse(fileContent.toString()) as {
           // tslint:disable-next-line:trailing-comma type-literal-delimiter
           sources: string[]
         }
 
-        fileContentJson.sources = fileContentJson.sources.map(s => {
+        fileContentJson.sources = fileContentJson.sources.map((s) => {
           const sourcePath = path.resolve(path.join(path.dirname(mapFile), s))
           const packagePrefixSourcePath = sourcePath.replace(
             PACKAGE_DIR,
@@ -358,7 +426,7 @@ if (process.env.NODE_ENV !== 'production') {
       .concat(developmentMapFiles)
 
     await Promise.all(
-      bundleMapFiles.map(async mapFile => {
+      bundleMapFiles.map(async (mapFile) => {
         const sourceFile = mapFile.replace(/\.map$/, '')
         const mapFileContent = await promisify(fs.readFile)(mapFile)
         const sourceFileContent = await promisify(fs.readFile)(sourceFile)
@@ -379,11 +447,11 @@ if (process.env.NODE_ENV !== 'production') {
 
   await executeStep(`Cleaning build files`, () => {
     shell.rm(`-Rf`, `${OUTPUT_DIR}/*.js.map`)
+    shell.rm(`-Rf`, `${OUTPUT_DIR}/*.d.ts.map`)
     shell.rm(`-Rf`, `${OUTPUT_DIR}/*.spec.js`)
     shell.rm(`-Rf`, `${OUTPUT_DIR}/*.spec.d.ts`)
-    shell.rm(`-Rf`, `${OUTPUT_DIR}/src/**/*.js`)
-    shell.rm(`-Rf`, `${OUTPUT_DIR}/src/**/*.js.map`)
-    shell.rm(`-Rf`, `${OUTPUT_DIR}/src/**/*.spec.d.ts`)
+    shell.rm(`-Rf`, `${OUTPUT_DIR}/*.api.json`)
+    shell.rm(`-Rf`, `${OUTPUT_DIR}/src`)
     shell.rm(`-Rf`, TEMP_DIR)
   })
 

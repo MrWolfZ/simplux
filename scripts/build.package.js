@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const api_extractor_1 = require("@microsoft/api-extractor");
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
 const glob_1 = __importDefault(require("glob"));
@@ -16,9 +17,15 @@ const util_2 = require("./util");
 const argv = yargs_1.default
     .scriptName('build-pacakge')
     .option('packageDir', {
+    type: 'string',
     default: process.cwd(),
 })
     .option('forceEnableColors', {
+    type: 'boolean',
+    default: false,
+})
+    .option('ci', {
+    type: 'boolean',
     default: false,
 }).argv;
 if (argv.forceEnableColors) {
@@ -28,7 +35,7 @@ if (argv.forceEnableColors) {
 // tslint:disable: no-var-requires
 // tslint:disable: no-require-imports
 // tslint:disable-next-line: no-floating-promises
-build().catch(err => {
+build().catch((err) => {
     shelljs_1.default.echo(chalk_1.default.red(`Error while building: ${err}`));
     shelljs_1.default.exit(1);
 });
@@ -51,6 +58,43 @@ async function build() {
         shelljs_1.default.mkdir(`-p`, CJS_DIR);
     });
     await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`));
+    const configPath = path_1.default.join(PACKAGE_DIR, 'api-extractor.json');
+    if (fs_1.default.existsSync(configPath)) {
+        await executeStep(`Bundling type definitions`, () => {
+            const extractorConfig = api_extractor_1.ExtractorConfig.loadFileAndPrepare(configPath);
+            const extractorResult = api_extractor_1.Extractor.invoke(extractorConfig, {
+                localBuild: !argv.ci,
+                showVerboseMessages: true,
+                messageCallback: (message) => {
+                    let text = message.text;
+                    switch (message.logLevel) {
+                        case "error" /* Error */:
+                            text = chalk_1.default.red(text);
+                            break;
+                        case "warning" /* Warning */:
+                            text = chalk_1.default.yellow(text);
+                            break;
+                        case "info" /* Info */:
+                            text = chalk_1.default.white(text);
+                            break;
+                        case "verbose" /* Verbose */:
+                            text = chalk_1.default.gray(text);
+                            break;
+                        default:
+                            break;
+                    }
+                    shelljs_1.default.echo(text);
+                    message.handled = true;
+                },
+            });
+            if (!extractorResult.succeeded) {
+                shelljs_1.default.echo(`API Extractor completed with ${chalk_1.default.yellow(`${extractorResult.errorCount}`)} ${chalk_1.default.red('errors')} and ${chalk_1.default.yellow(`${extractorResult.warningCount}`)} ${chalk_1.default.cyan('warnings')}`);
+                return 1;
+            }
+            const indexDefContent = `export * from './${PACKAGE_SIMPLE_NAME}'\n`;
+            fs_1.default.writeFileSync(path_1.default.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent);
+        });
+    }
     await executeStep(`Compiling esm5`, async () => {
         const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es5`, `--module es2015`, `--outDir ${ESM5_DIR}`, `--noLib`, `--sourceMap`, `--jsx react`);
         // 2 indicates failure with output still being generated
@@ -108,7 +152,7 @@ async function build() {
         return await mapSources(`${TEMP_DIR}/bundle.es5.js`);
     });
     const globalsArg = externalsArr.length > 0
-        ? `-g ${externalsArr.map(e => `${e}:${globals_1.GLOBALS[e] || e}`).join(',')}`
+        ? `-g ${externalsArr.map((e) => `${e}:${globals_1.GLOBALS[e] || e}`).join(',')}`
         : '';
     await executeStep(`Bundling UMD (DEV)`, async () => {
         const ret = await util_2.execAsync(`rollup`, `-c ${path_1.default.join(ROOT_DIR, 'rollup.config.dev.js')}`, `-f umd`, `-i ${TEMP_DIR}/bundle.es5.js`, `-o ${UMD_DIR}/simplux.${PACKAGE_SIMPLE_NAME}.development.js`, `-n ${PACKAGE.name}`, `-m`, `--exports named`, externalsArg, globalsArg);
@@ -179,7 +223,7 @@ if (process.env.NODE_ENV !== 'production') {
         await Promise.all(bundleMapFiles.map(async (mapFile) => {
             const fileContent = await util_1.promisify(fs_1.default.readFile)(mapFile);
             const fileContentJson = JSON.parse(fileContent.toString());
-            fileContentJson.sources = fileContentJson.sources.map(s => {
+            fileContentJson.sources = fileContentJson.sources.map((s) => {
                 const sourcePath = path_1.default.resolve(path_1.default.join(path_1.default.dirname(mapFile), s));
                 const packagePrefixSourcePath = sourcePath.replace(PACKAGE_DIR, PACKAGE.name);
                 return packagePrefixSourcePath.replace(/\\/g, '/');
@@ -209,11 +253,11 @@ if (process.env.NODE_ENV !== 'production') {
     });
     await executeStep(`Cleaning build files`, () => {
         shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*.js.map`);
+        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*.d.ts.map`);
         shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*.spec.js`);
         shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*.spec.d.ts`);
-        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/src/**/*.js`);
-        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/src/**/*.js.map`);
-        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/src/**/*.spec.d.ts`);
+        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*.api.json`);
+        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/src`);
         shelljs_1.default.rm(`-Rf`, TEMP_DIR);
     });
     await executeStep(`Copying static assets`, () => {
