@@ -1,5 +1,10 @@
 {
   "extends": ["tslint-react"],
+  "linterOptions": {
+    "exclude": [
+      "**/dist/**/*.d.ts"
+    ]
+  },
   "rules": {
     "adjacent-overload-signatures": true,
     "align": false,
