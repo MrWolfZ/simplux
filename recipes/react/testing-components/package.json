@@ -28,18 +28,18 @@
     "@simplux/core": "0.16.0",
     "@simplux/react": "0.16.0",
     "@simplux/testing": "0.16.0",
-    "@testing-library/react": "^9.3.2",
+    "@testing-library/react": "^11.2.2",
     "enzyme-adapter-react-16": "^1.14.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
   },
   "devDependencies": {
     "@types/enzyme": "^3.9.3",
-    "@types/jest": "^26.0.14",
-    "@types/react": "^16.8.6",
-    "@types/react-dom": "^16.8.6",
+    "@types/jest": "^26.0.19",
+    "@types/react": "^16.14.2",
+    "@types/react-dom": "^16.9.10",
     "enzyme": "^3.10.0",
-    "react-scripts": "^3.0.1",
+    "react-scripts": "^3.4.4",
     "typescript": "^3.9.0"
   },
   "browserslist": {
