@@ -1,8 +1,8 @@
 {
   "name": "@simplux/platform",
   "scripts": {
-    "build": "lerna run build --no-bail --ignore @simplux/recipes.*",
-    "build:ci": "lerna run build:ci --no-bail --ignore @simplux/recipes.*",
+    "build": "lerna run build --no-bail --stream --ignore @simplux/recipes.*",
+    "build:ci": "lerna run build:ci --no-bail --stream --ignore @simplux/recipes.*",
     "lint": "lerna run lint --no-bail --parallel --ignore @simplux/recipes.*",
     "lint:ci": "lerna run lint:ci --no-bail --parallel --ignore @simplux/recipes.*",
     "validate-types": "lerna run validate-types --stream --concurrency 1 --no-sort --no-bail --ignore @simplux/recipes.*",
