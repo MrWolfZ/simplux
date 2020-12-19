@@ -1,4 +1,4 @@
-import { createStore, Store } from 'redux'
+import { createStore, Reducer, Store } from 'redux'
 import { createModule, SimpluxModule, SimpluxModuleConfig } from './src/module'
 import { setReduxStore, simpluxStore } from './src/store'
 
@@ -61,7 +61,7 @@ export { Immutable, Mutable } from './src/types'
  *
  * @returns the simplux root reducer
  */
-export function getSimpluxReducer() {
+export function getSimpluxReducer(): Reducer {
   return simpluxStore.rootReducer
 }
 
