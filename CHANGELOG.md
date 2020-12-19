@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.17.0](https://github.com/MrWolfZ/simplux/compare/v0.16.1-alpha.0...v0.17.0) (2020-12-19)
+
+
+### Features
+
+* **core:** remove internal types and functions from public API definitions ([c1e5adb](https://github.com/MrWolfZ/simplux/commit/c1e5adb669f3d483f577467c93327b7aaeeea820))
+
+
+
+
+
 ## [0.16.1-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.16.0...v0.16.1-alpha.0) (2020-12-19)
 
 **Note:** Version bump only for package @simplux/platform
