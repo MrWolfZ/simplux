@@ -127,7 +127,7 @@ export function useSimpluxInternal<TState, TArgs extends any[], TResult>(
         hadError = true
       }
 
-      forceRender({})
+      forceRender()
     }
 
     return context.subscribeToModuleStateChanges(module, checkForUpdates)
