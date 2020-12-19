@@ -11,6 +11,8 @@ import { distinctUntilChanged, map } from 'rxjs/operators'
 
 /**
  * The basic methods for a module service.
+ *
+ * @public
  */
 export interface ModuleServiceState<TState> {
   /**
@@ -33,12 +35,23 @@ export interface ModuleServiceState<TState> {
   selectState: () => Observable<TState>
 }
 
+/**
+ * Helper type to transform a selector into a function that returns
+ * an observable of the selected value.
+ *
+ * @public
+ */
 export type ObservableSelector<TSelector> = TSelector extends (
   ...args: infer TArgs
 ) => infer TReturn
   ? (...args: TArgs) => Observable<TReturn>
   : never
 
+/**
+ * A collection of observable module selectors.
+ *
+ * @public
+ */
 export type ModuleServiceSelectors<
   TState,
   TSelectors extends SelectorDefinitions<TState>,
@@ -49,6 +62,11 @@ export type ModuleServiceSelectors<
   >
 }
 
+/**
+ * A service for interacting with a module.
+ *
+ * @public
+ */
 export type ModuleService<
   TState,
   TMutations extends MutationDefinitions<TState>,
@@ -71,11 +89,13 @@ export type ModuleService<
  * emitted whenever the state and the selector's result for that state
  * change.
  *
- * @param simpluxModule the module to create the base class for
- * @param mutations the mutations to add to the class
- * @param selectors the selectors to add to the class
+ * @param simpluxModule - the module to create the base class for
+ * @param mutations - the mutations to add to the class
+ * @param selectors - the selectors to add to the class
  *
  * @returns a base class that should be extended from an Angular service
+ *
+ * @public
  */
 export function createModuleServiceBaseClass<
   TState,

@@ -28,17 +28,17 @@ describe(`@simplux/angular`, () => {
   const todo2: Todo = { id: '2', description: 'clean house', isDone: true }
 
   const todoStoreWithTodo1: TodoState = {
-    todosById: { '1': todo1 },
+    todosById: { 1: todo1 },
     todoIds: ['1'],
   }
 
   const todoStoreWithTodo2: TodoState = {
-    todosById: { '2': todo2 },
+    todosById: { 2: todo2 },
     todoIds: ['2'],
   }
 
   const todoStoreWithBothTodos: TodoState = {
-    todosById: { '1': todo1, '2': todo2 },
+    todosById: { 1: todo1, 2: todo2 },
     todoIds: ['1', '2'],
   }
 
@@ -74,7 +74,9 @@ describe(`@simplux/angular`, () => {
 
     const selectors2 = createSelectors(todosModule, {
       selectTodosWithDoneState({ todoIds, todosById }, isDone: boolean) {
-        return todoIds.map(id => todosById[id]).filter(t => t.isDone === isDone)
+        return todoIds
+          .map((id) => todosById[id])
+          .filter((t) => t.isDone === isDone)
       },
     })
 

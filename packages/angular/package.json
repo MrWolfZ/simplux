@@ -8,7 +8,7 @@
   "types": "./index.d.ts",
   "scripts": {
     "build": "node ../../scripts/build.package.js --forceEnableColors=true",
-    "build:ci": "npm run build -- --forceEnableColors=false",
+    "build:ci": "npm run build -- --forceEnableColors=false --ci",
     "lint": "tslint -c ../../tslint.json -p ./tsconfig.json --fix",
     "lint:ci": "tslint -c ../../tslint.json -p ./tsconfig.json",
     "validate-types": "npm-run-all validate-types:run validate-types:clean --continue-on-error",
