@@ -6,6 +6,7 @@
     { "path": "./packages/angular/tsconfig.composite.build.json" },
     { "path": "./packages/core/tsconfig.composite.build.json" },
     { "path": "./packages/react/tsconfig.composite.build.json" },
+    { "path": "./packages/router/tsconfig.composite.build.json" },
     { "path": "./packages/testing/tsconfig.composite.build.json" }
   ]
 }

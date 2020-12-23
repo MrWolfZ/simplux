@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.composite.test.base.json",
+  "include": ["e2e.spec.ts", "src/**/*.spec.ts", "test-d/**/*.test-d.ts"],
+  "references": [{ "path": "./tsconfig.composite.build.json" }]
+}

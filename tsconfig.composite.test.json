@@ -6,6 +6,7 @@
     { "path": "./packages/angular/tsconfig.composite.test.json" },
     { "path": "./packages/core/tsconfig.composite.test.json" },
     { "path": "./packages/react/tsconfig.composite.test.json" },
+    { "path": "./packages/router/tsconfig.composite.test.json" },
     { "path": "./packages/testing/tsconfig.composite.test.json" }
   ]
 }
