@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.lib.json",
   "compilerOptions": {
+    "baseUrl": "./",
     "paths": {
       "@simplux/core": ["../core"],
       "@simplux/angular": ["."]

@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.lib.json",
   "compilerOptions": {
+    "baseUrl": "./",
     "jsx": "react",
     "paths": {
       "@simplux/core": ["../core"],
