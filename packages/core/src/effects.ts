@@ -15,14 +15,14 @@ export interface _EffectMockDefinition {
  *
  * @public
  */
-export interface EffectDefinitions {
+export interface SimpluxEffectDefinitions {
   readonly [name: string]: (...args: any[]) => any
 }
 
 /**
  * @public
  */
-export interface EffectMetadata {
+export interface SimpluxEffectMetadata {
   /**
    * The name of this effect.
    */
@@ -36,14 +36,16 @@ export interface EffectMetadata {
  */
 export type SimpluxEffect<
   TFunction extends (...args: any[]) => any
-> = FunctionSignature<TFunction> & EffectMetadata
+> = FunctionSignature<TFunction> & SimpluxEffectMetadata
 
 /**
  * A collection of functions with side-effects that can be easily mocked for testing.
  *
  * @public
  */
-export type SimpluxEffects<TEffectDefinitions extends EffectDefinitions> = {
+export type SimpluxEffects<
+  TEffectDefinitions extends SimpluxEffectDefinitions
+> = {
   [effectName in keyof TEffectDefinitions]: SimpluxEffect<
     TEffectDefinitions[effectName]
   >
@@ -79,9 +81,9 @@ export function createEffect<TEffectFunction extends (...args: any[]) => any>(
  *
  * @public
  */
-export function createEffects<TEffectDefinitions extends EffectDefinitions>(
-  effects: TEffectDefinitions,
-): SimpluxEffects<TEffectDefinitions> {
+export function createEffects<
+  TEffectDefinitions extends SimpluxEffectDefinitions
+>(effects: TEffectDefinitions): SimpluxEffects<TEffectDefinitions> {
   return Object.keys(effects).reduce(
     (res, key) => ({ ...res, [key]: createEffectInternal(effects[key], key) }),
     {} as SimpluxEffects<TEffectDefinitions>,

@@ -15,7 +15,7 @@ export type _AtomicObject = Promise<unknown> | Date | RegExp | Boolean | Number 
 export function createEffect<TEffectFunction extends (...args: any[]) => any>(effect: TEffectFunction): SimpluxEffect<TEffectFunction>;
 
 // @public
-export function createEffects<TEffectDefinitions extends EffectDefinitions>(effects: TEffectDefinitions): SimpluxEffects<TEffectDefinitions>;
+export function createEffects<TEffectDefinitions extends SimpluxEffectDefinitions>(effects: TEffectDefinitions): SimpluxEffects<TEffectDefinitions>;
 
 // @public
 export function createMutations<TState, TMutations extends MutationDefinitions<TState>>(simpluxModule: SimpluxModule<TState>, mutationDefinitions: TMutations): SimpluxMutations<TState, TMutations>;
@@ -28,17 +28,6 @@ export function createSimpluxModule<TState>(config: SimpluxModuleConfig<TState>)
 
 // @public
 export function createSimpluxModule<TState>(name: string, initialState: TState): SimpluxModule<TState>;
-
-// @public
-export interface EffectDefinitions {
-    // (undocumented)
-    readonly [name: string]: (...args: any[]) => any;
-}
-
-// @public (undocumented)
-export interface EffectMetadata {
-    readonly effectName: string;
-}
 
 // @internal
 export interface _EffectMockDefinition {
@@ -160,10 +149,21 @@ export interface SelectorDefinitions<TState> {
 export function setReduxStoreForSimplux<TState>(storeToUse: Store<TState>, simpluxStateGetter: (rootState: TState) => any): () => void;
 
 // @public
-export type SimpluxEffect<TFunction extends (...args: any[]) => any> = FunctionSignature<TFunction> & EffectMetadata;
+export type SimpluxEffect<TFunction extends (...args: any[]) => any> = FunctionSignature<TFunction> & SimpluxEffectMetadata;
 
 // @public
-export type SimpluxEffects<TEffectDefinitions extends EffectDefinitions> = {
+export interface SimpluxEffectDefinitions {
+    // (undocumented)
+    readonly [name: string]: (...args: any[]) => any;
+}
+
+// @public (undocumented)
+export interface SimpluxEffectMetadata {
+    readonly effectName: string;
+}
+
+// @public
+export type SimpluxEffects<TEffectDefinitions extends SimpluxEffectDefinitions> = {
     [effectName in keyof TEffectDefinitions]: SimpluxEffect<TEffectDefinitions[effectName]>;
 };
 

@@ -8,9 +8,9 @@ setReduxStoreForSimplux(createStore(getSimpluxReducer()), (s) => s)
 export {
   createEffect,
   createEffects,
-  EffectDefinitions,
-  EffectMetadata,
   SimpluxEffect,
+  SimpluxEffectDefinitions,
+  SimpluxEffectMetadata,
   SimpluxEffects,
   _EffectMockDefinition,
   _getEffectMockDefinitionsInternal,
