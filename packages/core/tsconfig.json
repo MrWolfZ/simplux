@@ -5,6 +5,5 @@
       "@simplux/core": ["."]
     }
   },
-  "include": ["index.ts", "src/**/*.ts"],
-  "exclude": ["src/**/*.spec.ts"]
+  "include": ["index.ts", "e2e.spec.ts", "src/**/*.ts"]
 }
