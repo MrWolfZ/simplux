@@ -34,7 +34,7 @@ export const counter = {
 
   // use selectors to access the state
   ...createSelectors(counterModule, {
-    value: state => state.value,
+    value: (state) => state.value,
     plus: (state, amount: number) => state.value + amount,
   }),
 }
@@ -157,6 +157,12 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
+- router: clean up tests to have less redudancy
+- router: add type tests
+- router: add tests that specify the parameter shape directly
+- router: remove default parameter values
+- url-router: create package
+- testing: add functions to throw when calling unmocked mutations or effects
 - entities: create package for managing collections of entities
 - entities: create default set of entity management mutations
 - entities: allow creating custom mutations that act on one entity
