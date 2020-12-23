@@ -37,6 +37,9 @@ expectType<{
   }),
 )
 
+const effects = createEffects({ genericEffect: <T>(s: T) => s })
+expectType<string>(effects.genericEffect<string>(''))
+
 // @ts-expect-error
 expectError(createEffects(''))
 
