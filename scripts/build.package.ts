@@ -51,6 +51,7 @@ async function build() {
   const UMD_DIR = path.join(OUTPUT_DIR, `umd`)
   const CJS_DIR = path.join(OUTPUT_DIR, `cjs`)
   const TEMP_DIR = path.join(OUTPUT_DIR, `temp`)
+  const TEST_D_DIR = path.join(OUTPUT_DIR, `test-d`)
   const ROOT_DIR = path.resolve(path.join(__dirname, `..`))
   const PACKAGE = require(path.join(PACKAGE_DIR, 'package.json'))
   const PACKAGE_SIMPLE_NAME = PACKAGE.name.split('/')[1]
@@ -71,60 +72,78 @@ async function build() {
 
   const configPath = path.join(PACKAGE_DIR, 'api-extractor.json')
 
-  if (fs.existsSync(configPath)) {
-    await executeStep(`Bundling type definitions`, () => {
-      const extractorConfig = ExtractorConfig.loadFileAndPrepare(configPath)
+  await executeStep(`Bundling type definitions`, () => {
+    const extractorConfig = ExtractorConfig.loadFileAndPrepare(configPath)
 
-      const extractorResult = Extractor.invoke(extractorConfig, {
-        localBuild: !argv.ci,
-        showVerboseMessages: true,
+    const extractorResult = Extractor.invoke(extractorConfig, {
+      localBuild: !argv.ci,
+      showVerboseMessages: true,
 
-        messageCallback: (message) => {
-          let text = message.text
+      messageCallback: (message) => {
+        let text = message.text
 
-          switch (message.logLevel) {
-            case ExtractorLogLevel.Error:
-              text = chalk.red(text)
-              break
+        switch (message.logLevel) {
+          case ExtractorLogLevel.Error:
+            text = chalk.red(text)
+            break
 
-            case ExtractorLogLevel.Warning:
-              text = chalk.yellow(text)
-              break
+          case ExtractorLogLevel.Warning:
+            text = chalk.yellow(text)
+            break
 
-            case ExtractorLogLevel.Info:
-              text = chalk.white(text)
-              break
+          case ExtractorLogLevel.Info:
+            text = chalk.white(text)
+            break
 
-            case ExtractorLogLevel.Verbose:
-              text = chalk.gray(text)
-              break
+          case ExtractorLogLevel.Verbose:
+            text = chalk.gray(text)
+            break
 
-            default:
-              break
-          }
+          default:
+            break
+        }
 
-          shell.echo(text)
+        shell.echo(text)
 
-          message.handled = true
-        },
-      })
-
-      if (!extractorResult.succeeded) {
-        shell.echo(
-          `API Extractor completed with ${chalk.yellow(
-            `${extractorResult.errorCount}`,
-          )} ${chalk.red('errors')} and ${chalk.yellow(
-            `${extractorResult.warningCount}`,
-          )} ${chalk.cyan('warnings')}`,
-        )
-
-        return 1
-      }
-
-      const indexDefContent = `export * from './${PACKAGE_SIMPLE_NAME}'\n`
-      fs.writeFileSync(path.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent)
+        message.handled = true
+      },
     })
-  }
+
+    if (!extractorResult.succeeded) {
+      shell.echo(
+        `API Extractor completed with ${chalk.yellow(
+          `${extractorResult.errorCount}`,
+        )} ${chalk.red('errors')} and ${chalk.yellow(
+          `${extractorResult.warningCount}`,
+        )} ${chalk.cyan('warnings')}`,
+      )
+
+      return 1
+    }
+
+    const indexDefContent = `export * from './${PACKAGE_SIMPLE_NAME}'\n`
+    fs.writeFileSync(path.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent)
+  })
+
+  await executeStep(`Verify type definitions`, async () => {
+    shell.mkdir(`-p`, TEST_D_DIR)
+    shell.cp(`-r`, `${PACKAGE_DIR}/test-d/*.ts`, TEST_D_DIR)
+    shell.cp(`${PACKAGE_DIR}/package.json`, OUTPUT_DIR)
+
+    const testFiles = await promisify(glob)(`${TEST_D_DIR}/**/*.ts`)
+    await Promise.all(testFiles.map(removeTypeScriptDirectives))
+
+    const result = await execAsync(`tsd ${OUTPUT_DIR}`)
+    shell.rm(`${OUTPUT_DIR}/package.json`)
+    shell.rm(`-Rf`, TEST_D_DIR)
+    return result
+
+    async function removeTypeScriptDirectives(filePath: string) {
+      const fileContent = await promisify(fs.readFile)(filePath, 'utf-8')
+      const newFileContent = fileContent.replace(/\/\/ @ts.*/g, '')
+      await promisify(fs.writeFile)(filePath, newFileContent)
+    }
+  })
 
   await executeStep(`Compiling esm5`, async () => {
     const ret = await execAsync(

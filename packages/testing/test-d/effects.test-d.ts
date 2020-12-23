@@ -1,6 +1,6 @@
 import { createEffect } from '@simplux/core'
+import { mockEffect } from '@simplux/testing'
 import { expectError, expectType } from 'tsd'
-import { mockEffect } from '../src/effects'
 
 const syncEffect = createEffect((s: string) => s)
 const asyncEffect = createEffect(async (s: string) => s)

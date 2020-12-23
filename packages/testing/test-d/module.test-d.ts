@@ -1,6 +1,6 @@
 import { createSimpluxModule } from '@simplux/core'
+import { mockModuleState } from '@simplux/testing'
 import { expectError, expectType } from 'tsd'
-import { mockModuleState } from '../src/module'
 
 interface State {
   count: number

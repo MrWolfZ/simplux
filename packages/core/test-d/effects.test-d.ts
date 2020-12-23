@@ -1,5 +1,5 @@
-import { expectError, expectType } from 'tsd'
-import { createEffect, createEffects, SimpluxEffect } from '../src/effects'
+import { createEffect, createEffects, SimpluxEffect } from '@simplux/core'
+import { expectAssignable, expectError, expectType } from 'tsd'
 
 expectType<SimpluxEffect<(s: string) => string>>(createEffect((s: string) => s))
 expectType<SimpluxEffect<(s: string) => Promise<string>>>(
@@ -8,9 +8,9 @@ expectType<SimpluxEffect<(s: string) => Promise<string>>>(
 
 const genericEffect = createEffect(<T>(s: T) => s)
 expectType<SimpluxEffect<<T>(s: T) => T>>(genericEffect)
-expectType<SimpluxEffect<(s: string) => string>>(genericEffect)
-expectType<<T>(s: T) => T>(genericEffect)
-expectType<(s: string) => string>(genericEffect)
+expectAssignable<SimpluxEffect<(s: string) => string>>(genericEffect)
+expectAssignable<<T>(s: T) => T>(genericEffect)
+expectAssignable<(s: string) => string>(genericEffect)
 expectType<string>(genericEffect<string>(''))
 
 // @ts-expect-error
@@ -26,7 +26,7 @@ const functionWithProps: FunctionWithProps = undefined!
 
 const effectWithProps = createEffect(functionWithProps)
 expectType<SimpluxEffect<(s: string) => string>>(effectWithProps)
-expectType<(s: string) => string>(effectWithProps)
+expectAssignable<(s: string) => string>(effectWithProps)
 
 // @ts-expect-error
 expectError(effectWithProps.someProp)
@@ -40,22 +40,22 @@ const effects = createEffects({
 })
 
 expectType<SimpluxEffect<(s: string) => string>>(effects.one)
-expectType<(s: string) => string>(effects.one)
+expectAssignable<(s: string) => string>(effects.one)
 
 expectType<SimpluxEffect<(n: number) => number>>(effects.two)
-expectType<(n: number) => number>(effects.two)
+expectAssignable<(n: number) => number>(effects.two)
 
 expectType<SimpluxEffect<(s: string) => Promise<string>>>(effects.three)
-expectType<(s: string) => Promise<string>>(effects.three)
+expectAssignable<(s: string) => Promise<string>>(effects.three)
 
 expectType<SimpluxEffect<<T>(s: T) => T>>(effects.genericEffect)
-expectType<SimpluxEffect<(s: string) => string>>(effects.genericEffect)
-expectType<<T>(s: T) => T>(effects.genericEffect)
-expectType<(s: string) => string>(effects.genericEffect)
+expectAssignable<SimpluxEffect<(s: string) => string>>(effects.genericEffect)
+expectAssignable<<T>(s: T) => T>(effects.genericEffect)
+expectAssignable<(s: string) => string>(effects.genericEffect)
 expectType<string>(effects.genericEffect('' as string))
 
 expectType<SimpluxEffect<(s: string) => string>>(effects.functionWithProps)
-expectType<(s: string) => string>(effects.functionWithProps)
+expectAssignable<(s: string) => string>(effects.functionWithProps)
 
 // @ts-expect-error
 expectError(createEffects({ functionWithProps }).functionWithProps.someProp)

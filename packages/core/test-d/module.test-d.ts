@@ -1,13 +1,11 @@
+import { createSimpluxModule, Immutable } from '@simplux/core'
 import { expectError, expectType } from 'tsd'
-import { createModule } from '../src/module'
-import { simpluxStore } from '../src/store'
-import { Immutable } from '../src/types'
 
 interface State {
   count: number
 }
 
-const module = createModule<State>(simpluxStore, {
+const module = createSimpluxModule<State>({
   name: 'test',
   initialState: { count: 0 },
 })
@@ -30,4 +28,4 @@ expectType<(_1: Immutable<State>, _2: Immutable<State>) => void>(
 expectType<() => void>(module.subscribeToStateChanges((_) => {}).unsubscribe)
 
 // @ts-expect-error
-expectError(createModule(simpluxStore, { name: 0, initialState: 0 }))
+expectError(createSimpluxModule({ name: 0, initialState: 0 }))

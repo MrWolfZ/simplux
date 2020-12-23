@@ -47,6 +47,7 @@ async function build() {
     const UMD_DIR = path_1.default.join(OUTPUT_DIR, `umd`);
     const CJS_DIR = path_1.default.join(OUTPUT_DIR, `cjs`);
     const TEMP_DIR = path_1.default.join(OUTPUT_DIR, `temp`);
+    const TEST_D_DIR = path_1.default.join(OUTPUT_DIR, `test-d`);
     const ROOT_DIR = path_1.default.resolve(path_1.default.join(__dirname, `..`));
     const PACKAGE = require(path_1.default.join(PACKAGE_DIR, 'package.json'));
     const PACKAGE_SIMPLE_NAME = PACKAGE.name.split('/')[1];
@@ -59,42 +60,56 @@ async function build() {
     });
     await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.build.json`));
     const configPath = path_1.default.join(PACKAGE_DIR, 'api-extractor.json');
-    if (fs_1.default.existsSync(configPath)) {
-        await executeStep(`Bundling type definitions`, () => {
-            const extractorConfig = api_extractor_1.ExtractorConfig.loadFileAndPrepare(configPath);
-            const extractorResult = api_extractor_1.Extractor.invoke(extractorConfig, {
-                localBuild: !argv.ci,
-                showVerboseMessages: true,
-                messageCallback: (message) => {
-                    let text = message.text;
-                    switch (message.logLevel) {
-                        case "error" /* Error */:
-                            text = chalk_1.default.red(text);
-                            break;
-                        case "warning" /* Warning */:
-                            text = chalk_1.default.yellow(text);
-                            break;
-                        case "info" /* Info */:
-                            text = chalk_1.default.white(text);
-                            break;
-                        case "verbose" /* Verbose */:
-                            text = chalk_1.default.gray(text);
-                            break;
-                        default:
-                            break;
-                    }
-                    shelljs_1.default.echo(text);
-                    message.handled = true;
-                },
-            });
-            if (!extractorResult.succeeded) {
-                shelljs_1.default.echo(`API Extractor completed with ${chalk_1.default.yellow(`${extractorResult.errorCount}`)} ${chalk_1.default.red('errors')} and ${chalk_1.default.yellow(`${extractorResult.warningCount}`)} ${chalk_1.default.cyan('warnings')}`);
-                return 1;
-            }
-            const indexDefContent = `export * from './${PACKAGE_SIMPLE_NAME}'\n`;
-            fs_1.default.writeFileSync(path_1.default.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent);
+    await executeStep(`Bundling type definitions`, () => {
+        const extractorConfig = api_extractor_1.ExtractorConfig.loadFileAndPrepare(configPath);
+        const extractorResult = api_extractor_1.Extractor.invoke(extractorConfig, {
+            localBuild: !argv.ci,
+            showVerboseMessages: true,
+            messageCallback: (message) => {
+                let text = message.text;
+                switch (message.logLevel) {
+                    case "error" /* Error */:
+                        text = chalk_1.default.red(text);
+                        break;
+                    case "warning" /* Warning */:
+                        text = chalk_1.default.yellow(text);
+                        break;
+                    case "info" /* Info */:
+                        text = chalk_1.default.white(text);
+                        break;
+                    case "verbose" /* Verbose */:
+                        text = chalk_1.default.gray(text);
+                        break;
+                    default:
+                        break;
+                }
+                shelljs_1.default.echo(text);
+                message.handled = true;
+            },
         });
-    }
+        if (!extractorResult.succeeded) {
+            shelljs_1.default.echo(`API Extractor completed with ${chalk_1.default.yellow(`${extractorResult.errorCount}`)} ${chalk_1.default.red('errors')} and ${chalk_1.default.yellow(`${extractorResult.warningCount}`)} ${chalk_1.default.cyan('warnings')}`);
+            return 1;
+        }
+        const indexDefContent = `export * from './${PACKAGE_SIMPLE_NAME}'\n`;
+        fs_1.default.writeFileSync(path_1.default.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent);
+    });
+    await executeStep(`Verify type definitions`, async () => {
+        shelljs_1.default.mkdir(`-p`, TEST_D_DIR);
+        shelljs_1.default.cp(`-r`, `${PACKAGE_DIR}/test-d/*.ts`, TEST_D_DIR);
+        shelljs_1.default.cp(`${PACKAGE_DIR}/package.json`, OUTPUT_DIR);
+        const testFiles = await util_1.promisify(glob_1.default)(`${TEST_D_DIR}/**/*.ts`);
+        await Promise.all(testFiles.map(removeTypeScriptDirectives));
+        const result = await util_2.execAsync(`tsd ${OUTPUT_DIR}`);
+        shelljs_1.default.rm(`${OUTPUT_DIR}/package.json`);
+        shelljs_1.default.rm(`-Rf`, TEST_D_DIR);
+        return result;
+        async function removeTypeScriptDirectives(filePath) {
+            const fileContent = await util_1.promisify(fs_1.default.readFile)(filePath, 'utf-8');
+            const newFileContent = fileContent.replace(/\/\/ @ts.*/g, '');
+            await util_1.promisify(fs_1.default.writeFile)(filePath, newFileContent);
+        }
+    });
     await executeStep(`Compiling esm5`, async () => {
         const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es5`, `--module es2015`, `--outDir ${ESM5_DIR}`, `--noLib`, `--sourceMap`, `--jsx react`);
         // 2 indicates failure with output still being generated

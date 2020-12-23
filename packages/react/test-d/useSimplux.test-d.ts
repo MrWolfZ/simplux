@@ -1,6 +1,6 @@
 import { createSelectors, createSimpluxModule, Immutable } from '@simplux/core'
+import { useSimplux } from '@simplux/react'
 import { expectError, expectType } from 'tsd'
-import { useSimplux } from '../src/useSimplux'
 
 interface State {
   count: number

@@ -1,6 +1,6 @@
 import { createMutations, createSimpluxModule } from '@simplux/core'
+import { mockMutation } from '@simplux/testing'
 import { expectError, expectType } from 'tsd'
-import { mockMutation } from '../src/mutations'
 
 interface State {
   count: number

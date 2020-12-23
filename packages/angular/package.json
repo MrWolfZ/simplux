@@ -17,9 +17,6 @@
     "build:ci": "npm run build -- --forceEnableColors=false --ci",
     "lint": "tslint -c ../../tslint.json -p ./tsconfig.json --fix",
     "lint:ci": "tslint -c ../../tslint.json -p ./tsconfig.json",
-    "validate-types": "npm-run-all validate-types:run validate-types:clean --continue-on-error",
-    "validate-types:run": "echo // > index.d.ts && tsd",
-    "validate-types:clean": "rimraf index.d.ts",
     "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --config=./jest.config.js",
     "test:ci": "npm run test -- --runInBand --ci --coverage",
     "report-coverage": "codecov -f ./coverage/lcov.info --disable=gcov -F angular",
@@ -59,9 +56,16 @@
   },
   "tsd": {
     "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@simplux/angular": [
+          "./index.d.ts"
+        ]
+      },
       "types": [
         "node"
-      ]
+      ],
+      "skipLibCheck": true
     }
   }
 }

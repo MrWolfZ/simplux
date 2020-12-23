@@ -1,6 +1,6 @@
+import { createModuleServiceBaseClass } from '@simplux/angular'
 import { createMutations, createSimpluxModule } from '@simplux/core'
 import { expectType } from 'tsd'
-import { createModuleServiceBaseClass } from '../src/service'
 
 interface State {
   count: number

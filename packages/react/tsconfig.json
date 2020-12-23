@@ -10,5 +10,11 @@
     },
     "lib": ["dom", "esnext"]
   },
-  "include": ["index.ts", "e2e.spec.tsx", "src/**/*.ts", "src/**/*.tsx"]
+  "include": [
+    "index.ts",
+    "e2e.spec.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "test-d/**/*.ts"
+  ]
 }
