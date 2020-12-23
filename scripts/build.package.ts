@@ -72,7 +72,7 @@ async function build() {
 
   const configPath = path.join(PACKAGE_DIR, 'api-extractor.json')
 
-  await executeStep(`Bundling type definitions`, () => {
+  await executeStep(`Bundling type definitions`, async () => {
     const extractorConfig = ExtractorConfig.loadFileAndPrepare(configPath)
 
     const extractorResult = Extractor.invoke(extractorConfig, {
@@ -121,8 +121,17 @@ async function build() {
       return 1
     }
 
-    const indexDefContent = `export * from './${PACKAGE_SIMPLE_NAME}'\n`
-    fs.writeFileSync(path.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent)
+    shell.mv(
+      path.join(OUTPUT_DIR, `${PACKAGE_SIMPLE_NAME}.d.ts`),
+      path.join(OUTPUT_DIR, `simplux-${PACKAGE_SIMPLE_NAME}.d.ts`),
+    )
+
+    const indexDefContent = `export * from './simplux-${PACKAGE_SIMPLE_NAME}'\n`
+
+    await promisify(fs.writeFile)(
+      path.join(OUTPUT_DIR, 'index.d.ts'),
+      indexDefContent,
+    )
   })
 
   await executeStep(`Verify type definitions`, async () => {

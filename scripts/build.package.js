@@ -60,7 +60,7 @@ async function build() {
     });
     await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.build.json`));
     const configPath = path_1.default.join(PACKAGE_DIR, 'api-extractor.json');
-    await executeStep(`Bundling type definitions`, () => {
+    await executeStep(`Bundling type definitions`, async () => {
         const extractorConfig = api_extractor_1.ExtractorConfig.loadFileAndPrepare(configPath);
         const extractorResult = api_extractor_1.Extractor.invoke(extractorConfig, {
             localBuild: !argv.ci,
@@ -91,8 +91,9 @@ async function build() {
             shelljs_1.default.echo(`API Extractor completed with ${chalk_1.default.yellow(`${extractorResult.errorCount}`)} ${chalk_1.default.red('errors')} and ${chalk_1.default.yellow(`${extractorResult.warningCount}`)} ${chalk_1.default.cyan('warnings')}`);
             return 1;
         }
-        const indexDefContent = `export * from './${PACKAGE_SIMPLE_NAME}'\n`;
-        fs_1.default.writeFileSync(path_1.default.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent);
+        shelljs_1.default.mv(path_1.default.join(OUTPUT_DIR, `${PACKAGE_SIMPLE_NAME}.d.ts`), path_1.default.join(OUTPUT_DIR, `simplux-${PACKAGE_SIMPLE_NAME}.d.ts`));
+        const indexDefContent = `export * from './simplux-${PACKAGE_SIMPLE_NAME}'\n`;
+        await util_1.promisify(fs_1.default.writeFile)(path_1.default.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent);
     });
     await executeStep(`Verify type definitions`, async () => {
         shelljs_1.default.mkdir(`-p`, TEST_D_DIR);
