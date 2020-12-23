@@ -154,3 +154,25 @@ export type Immutable<T> = T extends _AtomicObject
   : T extends object
   ? { readonly [K in keyof T]: Immutable<T[K]> }
   : T
+
+/**
+ * @public
+ */
+export type _NonFunctionProperties<TFunction extends Function> = Exclude<
+  keyof TFunction,
+  keyof Function
+>
+
+/**
+ * Helper type to create a function type with the same signature as a given function
+ *
+ * @public
+ */
+export type FunctionSignature<TFunction extends (...args: any[]) => any> =
+  // if the function is a raw function object we return its type directly to preserve
+  // its generic parameters (if any)
+  _NonFunctionProperties<TFunction> extends never
+    ? TFunction
+    : TFunction extends (...args: infer TArgs) => infer TReturn
+    ? (...args: TArgs) => TReturn
+    : never

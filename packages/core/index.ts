@@ -9,7 +9,6 @@ export {
   createEffect,
   createEffects,
   EffectDefinitions,
-  EffectFunction,
   EffectMetadata,
   SimpluxEffect,
   SimpluxEffects,

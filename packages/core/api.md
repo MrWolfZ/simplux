@@ -35,9 +35,6 @@ export interface EffectDefinitions {
     readonly [name: string]: (...args: any[]) => any;
 }
 
-// @public
-export type EffectFunction<TEffect extends SimpluxEffect<(...args: any[]) => any>> = (...args: Parameters<TEffect>) => ReturnType<TEffect>;
-
 // @public (undocumented)
 export interface EffectMetadata {
     readonly effectName: string;
@@ -50,6 +47,9 @@ export interface _EffectMockDefinition {
     // (undocumented)
     readonly mockFn: Function;
 }
+
+// @public
+export type FunctionSignature<TFunction extends (...args: any[]) => any> = _NonFunctionProperties<TFunction> extends never ? TFunction : TFunction extends (...args: infer TArgs) => infer TReturn ? (...args: TArgs) => TReturn : never;
 
 // @internal
 export function _getEffectMockDefinitionsInternal(): _EffectMockDefinition[];
@@ -127,6 +127,9 @@ export interface MutationDefinitions<TState> {
 }
 
 // @public (undocumented)
+export type _NonFunctionProperties<TFunction extends Function> = Exclude<keyof TFunction, keyof Function>;
+
+// @public (undocumented)
 export type _ReadonlyKeys<T> = {
     [P in keyof T]-?: _IfEquals<{
         [Q in P]: T[P];
@@ -157,7 +160,7 @@ export interface SelectorDefinitions<TState> {
 export function setReduxStoreForSimplux<TState>(storeToUse: Store<TState>, simpluxStateGetter: (rootState: TState) => any): () => void;
 
 // @public
-export type SimpluxEffect<TFunction extends (...args: any[]) => any> = TFunction & EffectMetadata;
+export type SimpluxEffect<TFunction extends (...args: any[]) => any> = FunctionSignature<TFunction> & EffectMetadata;
 
 // @public
 export type SimpluxEffects<TEffectDefinitions extends EffectDefinitions> = {

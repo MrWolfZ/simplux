@@ -1,4 +1,4 @@
-import { Mutable } from './types'
+import { FunctionSignature, Mutable } from './types'
 
 /**
  * This interface is used for mocking support during testing.
@@ -36,16 +36,7 @@ export interface EffectMetadata {
  */
 export type SimpluxEffect<
   TFunction extends (...args: any[]) => any
-> = TFunction & EffectMetadata
-
-/**
- * Helper type to create a function type with the same signature as an effect
- *
- * @public
- */
-export type EffectFunction<
-  TEffect extends SimpluxEffect<(...args: any[]) => any>
-> = (...args: Parameters<TEffect>) => ReturnType<TEffect>
+> = FunctionSignature<TFunction> & EffectMetadata
 
 /**
  * A collection of functions with side-effects that can be easily mocked for testing.
@@ -116,6 +107,7 @@ function createEffectInternal<TEffectFunction extends (...args: any[]) => any>(
   const result = (effectFn as unknown) as Mutable<
     SimpluxEffect<TEffectFunction>
   >
+
   result.effectName = effectName
 
   return result as SimpluxEffect<TEffectFunction>

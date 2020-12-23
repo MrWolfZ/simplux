@@ -1,5 +1,5 @@
 import {
-  EffectFunction,
+  FunctionSignature,
   SimpluxEffect,
   _EffectMockDefinition,
   _getEffectMockDefinitionsInternal,
@@ -20,7 +20,7 @@ import { registerMockCleanupFunction } from './cleanup'
  */
 export function mockEffect<
   TEffect extends SimpluxEffect<(...args: any[]) => any>,
-  TMock extends EffectFunction<TEffect>
+  TMock extends FunctionSignature<TEffect>
 >(effectToMock: TEffect, mockFn: TMock): [TMock, () => void] {
   const mockDefinitions = _getEffectMockDefinitionsInternal()
 

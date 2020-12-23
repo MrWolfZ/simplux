@@ -12,6 +12,17 @@ expectType<string>(effect<string>(''))
 // @ts-expect-error
 expectError(createEffect(''))
 
+interface FunctionWithProps {
+  (s: string): string
+
+  someProp: string
+}
+
+const functionWithProps: FunctionWithProps = undefined!
+
+// @ts-expect-error
+expectError(createEffect(functionWithProps).someProp)
+
 // tslint:disable: type-literal-delimiter
 // tslint:disable: trailing-comma
 expectType<{
@@ -28,3 +39,6 @@ expectType<{
 
 // @ts-expect-error
 expectError(createEffects(''))
+
+// @ts-expect-error
+expectError(createEffects({ functionWithProps }).functionWithProps.someProp)
