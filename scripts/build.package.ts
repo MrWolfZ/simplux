@@ -1,9 +1,5 @@
-import {
-  Extractor,
-  ExtractorConfig,
-  ExtractorLogLevel,
-} from '@microsoft/api-extractor'
-import chalk, { Level } from 'chalk'
+import { Extractor, ExtractorConfig } from '@microsoft/api-extractor'
+import chalk from 'chalk'
 import fs from 'fs'
 import glob from 'glob'
 import path from 'path'
@@ -31,7 +27,7 @@ const argv = yargs
 
 if (argv.forceEnableColors) {
   chalk.enabled = true
-  chalk.level = Level.TrueColor
+  chalk.level = 3 // Level.TrueColor
 }
 
 // tslint:disable: no-var-requires
@@ -83,19 +79,19 @@ async function build() {
         let text = message.text
 
         switch (message.logLevel) {
-          case ExtractorLogLevel.Error:
+          case 'error': // ExtractorLogLevel.Error:
             text = chalk.red(text)
             break
 
-          case ExtractorLogLevel.Warning:
+          case 'warning': // ExtractorLogLevel.Warning:
             text = chalk.yellow(text)
             break
 
-          case ExtractorLogLevel.Info:
+          case 'info': // ExtractorLogLevel.Info:
             text = chalk.white(text)
             break
 
-          case ExtractorLogLevel.Verbose:
+          case 'verbose': // ExtractorLogLevel.Verbose:
             text = chalk.gray(text)
             break
 

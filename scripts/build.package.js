@@ -30,7 +30,7 @@ const argv = yargs_1.default
 }).argv;
 if (argv.forceEnableColors) {
     chalk_1.default.enabled = true;
-    chalk_1.default.level = 3 /* TrueColor */;
+    chalk_1.default.level = 3; // Level.TrueColor
 }
 // tslint:disable: no-var-requires
 // tslint:disable: no-require-imports
@@ -68,16 +68,16 @@ async function build() {
             messageCallback: (message) => {
                 let text = message.text;
                 switch (message.logLevel) {
-                    case "error" /* Error */:
+                    case 'error': // ExtractorLogLevel.Error:
                         text = chalk_1.default.red(text);
                         break;
-                    case "warning" /* Warning */:
+                    case 'warning': // ExtractorLogLevel.Warning:
                         text = chalk_1.default.yellow(text);
                         break;
-                    case "info" /* Info */:
+                    case 'info': // ExtractorLogLevel.Info:
                         text = chalk_1.default.white(text);
                         break;
-                    case "verbose" /* Verbose */:
+                    case 'verbose': // ExtractorLogLevel.Verbose:
                         text = chalk_1.default.gray(text);
                         break;
                     default:
