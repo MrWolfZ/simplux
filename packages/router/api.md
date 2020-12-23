@@ -5,6 +5,7 @@
 ```ts
 
 import type { Immutable } from '@simplux/core';
+import { SimpluxEffect } from '@simplux/core';
 import { SimpluxSelector } from '@simplux/core';
 
 // @public
@@ -14,7 +15,7 @@ export function createSimpluxRouter(): SimpluxRouter;
 export interface SimpluxRoute<TName extends SimpluxRouteName, TParameters> {
     readonly isActive: SimpluxSelector<SimpluxRouterState, [], boolean>;
     readonly name: TName;
-    readonly navigateTo: (parameters: TParameters) => void;
+    readonly navigateTo: SimpluxEffect<(parameters: TParameters) => void>;
     readonly parameterValues: SimpluxSelector<SimpluxRouterState, [], TParameters>;
 }
 
@@ -32,7 +33,7 @@ export type SimpluxRouteName = string;
 
 // @public
 export interface SimpluxRouter {
-    readonly addRoute: <TName extends SimpluxRouteName, TParameters = {}>(name: TName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TName, TParameters>;
+    readonly addRoute: <TName extends SimpluxRouteName, TParameters extends Record<string, unknown> = {}>(name: TName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TName, TParameters>;
     readonly state: SimpluxSelector<SimpluxRouterState, [], Immutable<SimpluxRouterState>>;
 }
 
