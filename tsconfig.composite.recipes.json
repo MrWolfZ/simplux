@@ -2,6 +2,30 @@
   "files": [],
   "references": [
     {
+      "path": "./recipes/advanced/communicating-between-modules/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/advanced/composing-mutations/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/advanced/composing-selectors/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/advanced/creating-non-trivial-modules/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/advanced/creating-testable-side-effects/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/advanced/debugging-with-redux-devtools/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/advanced/reacting-to-state-changes/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/advanced/testing-code-using-mutations/tsconfig.composite.json"
+    },
+    {
       "path": "./recipes/basics/computing-derived-state/tsconfig.composite.json"
     },
     {
