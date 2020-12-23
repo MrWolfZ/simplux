@@ -6,7 +6,7 @@
 
 import { FunctionSignature } from '@simplux/core';
 import { SimpluxEffect } from '@simplux/core';
-import type { SimpluxModule } from '@simplux/core';
+import type { SimpluxModuleLike } from '@simplux/core';
 import type { SimpluxMutation } from '@simplux/core';
 
 // @public
@@ -16,7 +16,7 @@ export function clearAllSimpluxMocks(): void;
 export function mockEffect<TEffect extends SimpluxEffect<(...args: any[]) => any>, TMock extends FunctionSignature<TEffect>>(effectToMock: TEffect, mockFn: TMock): [TMock, () => void];
 
 // @public
-export function mockModuleState<TState>(simpluxModule: SimpluxModule<TState>, mockStateValue: TState): () => void;
+export function mockModuleState<TState>(simpluxModule: SimpluxModuleLike<TState>, mockStateValue: TState): () => void;
 
 // @public
 export function mockMutation<TState, TArgs extends any[], TMock extends (...args: TArgs) => TState>(mutation: SimpluxMutation<TState, TArgs>, mockFn: TMock): [TMock, () => void];

@@ -197,7 +197,6 @@ export interface _SimpluxModuleInternals<TState> {
     };
     readonly mutations: MutationDefinitions<TState>;
     readonly name: string;
-    readonly selectors: SelectorDefinitions<TState>;
 }
 
 // @public
