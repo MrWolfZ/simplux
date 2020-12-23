@@ -88,7 +88,9 @@ describe(createEffects.name, () => {
         effect2: jest.fn(),
       })
 
+      expect(effect1.name).toBe('effect1')
       expect(effect1.effectName).toBe('effect1')
+      expect(effect2.name).toBe('effect2')
       expect(effect2.effectName).toBe('effect2')
     })
   })
