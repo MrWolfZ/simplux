@@ -1,4 +1,4 @@
-import { SimpluxModule } from '@simplux/core'
+import type { SimpluxModule } from '@simplux/core'
 import { clearAllSimpluxMocks } from './cleanup.js'
 import { mockModuleState } from './module.js'
 

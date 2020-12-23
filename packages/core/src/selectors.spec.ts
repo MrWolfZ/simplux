@@ -1,4 +1,4 @@
-import { SimpluxModule } from './module.js'
+import type { SimpluxModule } from './module.js'
 import { createSelectors } from './selectors.js'
 
 describe('selectors', () => {

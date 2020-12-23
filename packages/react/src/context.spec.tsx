@@ -1,4 +1,4 @@
-import { SimpluxModule, _InternalReduxStoreProxy } from '@simplux/core'
+import type { SimpluxModule, _InternalReduxStoreProxy } from '@simplux/core'
 import { cleanup, render } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import React, { useEffect } from 'react'

@@ -1,4 +1,4 @@
-import { Reducer } from 'redux'
+import type { Reducer } from 'redux'
 import { createImmerReducer } from './immer.js'
 
 describe(createImmerReducer.name, () => {

@@ -1,5 +1,5 @@
 import { createImmerReducer } from './immer.js'
-import { SimpluxModule } from './module.js'
+import type { SimpluxModule } from './module.js'
 import { createMutations, MutationDefinitions } from './mutations.js'
 import { createModuleReducer } from './reducer.js'
 

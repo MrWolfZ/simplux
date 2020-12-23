@@ -6,8 +6,8 @@
 
 import { FunctionSignature } from '@simplux/core';
 import { SimpluxEffect } from '@simplux/core';
-import { SimpluxModule } from '@simplux/core';
-import { SimpluxMutation } from '@simplux/core';
+import type { SimpluxModule } from '@simplux/core';
+import type { SimpluxMutation } from '@simplux/core';
 
 // @public
 export function clearAllSimpluxMocks(): void;

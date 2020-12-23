@@ -1,7 +1,7 @@
-import {
+import type {
   SimpluxModule,
   SimpluxSelector,
-  StateChangeSubscription
+  StateChangeSubscription,
 } from '@simplux/core'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { act as actHook, renderHook } from '@testing-library/react-hooks'
@@ -44,7 +44,7 @@ describe(useSimplux.name, () => {
     }
 
     getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
-    subscribeToModuleStateChangesMock = jest.fn().mockImplementation(s => {
+    subscribeToModuleStateChangesMock = jest.fn().mockImplementation((s) => {
       subscriber = s
       subscriber(getModuleStateMock())
       return subscriptionMock
@@ -71,7 +71,7 @@ describe(useSimplux.name, () => {
   afterEach(cleanup)
 
   it('selects the module state on initial render', () => {
-    const selector = createSelector(s => s.count)
+    const selector = createSelector((s) => s.count)
     const { result } = renderHook(() => useSimplux(selector))
     expect(result.current).toEqual(10)
   })
@@ -83,7 +83,7 @@ describe(useSimplux.name, () => {
   })
 
   it('selects the state and renders the component when the store updates', () => {
-    const selector = createSelector(s => s.count)
+    const selector = createSelector((s) => s.count)
     const { result } = renderHook(() => useSimplux(selector))
 
     expect(result.current).toEqual(10)
@@ -132,12 +132,16 @@ describe(useSimplux.name, () => {
 
   describe('with inline selector', () => {
     it('selects the module state on initial render', () => {
-      const { result } = renderHook(() => useSimplux(moduleMock, s => s.count))
+      const { result } = renderHook(() =>
+        useSimplux(moduleMock, (s) => s.count),
+      )
       expect(result.current).toBe(10)
     })
 
     it('selects the state and renders the component when the store updates', () => {
-      const { result } = renderHook(() => useSimplux(moduleMock, s => s.count))
+      const { result } = renderHook(() =>
+        useSimplux(moduleMock, (s) => s.count),
+      )
 
       expect(result.current).toBe(10)
 
@@ -153,7 +157,7 @@ describe(useSimplux.name, () => {
   describe('with provider', () => {
     it('selects the module state on initial render', () => {
       const renderedItems: number[] = []
-      const selector = createSelector(s => s.count)
+      const selector = createSelector((s) => s.count)
 
       const Comp = () => {
         const count = useSimplux(selector)
@@ -193,7 +197,7 @@ describe(useSimplux.name, () => {
 
     it('selects the state and renders the component when the store updates', () => {
       const renderedItems: number[] = []
-      const selector = createSelector(s => s.count)
+      const selector = createSelector((s) => s.count)
 
       const Comp = () => {
         const count = useSimplux(selector)
@@ -248,7 +252,7 @@ describe(useSimplux.name, () => {
 
   describe('lifeycle interactions', () => {
     it('subscribes when the component is mounted', () => {
-      const selector = createSelector(s => s.count)
+      const selector = createSelector((s) => s.count)
 
       const Comp = () => {
         const count = useSimplux(selector)
@@ -261,7 +265,7 @@ describe(useSimplux.name, () => {
     })
 
     it('unsubscribes when the component is unmounted', () => {
-      const selector = createSelector(s => s.count)
+      const selector = createSelector((s) => s.count)
 
       const Parent = () => {
         const count = useSimplux(selector)
@@ -289,7 +293,7 @@ describe(useSimplux.name, () => {
   describe('performance', () => {
     it('does not cause a re-render initially', () => {
       let renderCount = 0
-      const selector = createSelector(s => s)
+      const selector = createSelector((s) => s)
 
       const Comp = () => {
         useSimplux(selector)
@@ -304,7 +308,7 @@ describe(useSimplux.name, () => {
 
     it('does not re-render if the selected state does not change (based on ref equality)', () => {
       let renderCount = 0
-      const selector = createSelector(s => s)
+      const selector = createSelector((s) => s)
 
       const Comp = () => {
         useSimplux(selector)
@@ -325,7 +329,7 @@ describe(useSimplux.name, () => {
 
     it('renders once on state update', () => {
       let renderCount = 0
-      const selector = createSelector(s => s)
+      const selector = createSelector((s) => s)
 
       const Comp = () => {
         useSimplux(selector)
@@ -347,8 +351,8 @@ describe(useSimplux.name, () => {
 
     it('renders once on selector update', () => {
       let renderCount = 0
-      const selector1 = createSelector(s => s.count)
-      const selector2 = createSelector(s => s.count * 2)
+      const selector1 = createSelector((s) => s.count)
+      const selector2 = createSelector((s) => s.count * 2)
 
       const Parent = () => {
         const [useFirst, set] = useState(true)
@@ -441,7 +445,7 @@ describe(useSimplux.name, () => {
 
   describe('mocking', () => {
     it('selects the mocked module state if set', () => {
-      const selector = createSelector(s => s.count)
+      const selector = createSelector((s) => s.count)
 
       getModuleStateMock.mockReturnValue({ count: 11 })
 
@@ -451,7 +455,7 @@ describe(useSimplux.name, () => {
     })
 
     it('selects the mock when subscriber is called', () => {
-      const selector = createSelector(s => s.count)
+      const selector = createSelector((s) => s.count)
 
       getModuleStateMock.mockReturnValue({ count: 11 })
 
@@ -472,7 +476,7 @@ describe(useSimplux.name, () => {
   describe('edge cases', () => {
     it('notices store updates between render and store subscription effect', () => {
       const renderedItems: number[] = []
-      const selector = createSelector(s => s.count)
+      const selector = createSelector((s) => s.count)
 
       const Comp = () => {
         const count = useSimplux(selector)
@@ -501,8 +505,8 @@ describe(useSimplux.name, () => {
 
     it('works correctly is selector changes', () => {
       const renderedItems: number[] = []
-      const selector1 = createSelector(s => s.count)
-      const selector2 = createSelector(s => s.count * 2)
+      const selector1 = createSelector((s) => s.count)
+      const selector2 = createSelector((s) => s.count * 2)
 
       const Parent = () => {
         const [useFirst, set] = useState(true)
@@ -561,7 +565,7 @@ describe(useSimplux.name, () => {
     })
 
     it('ignores transient errors in selector (e.g. due to stale props)', () => {
-      const selector = createSelector(s => s.count)
+      const selector = createSelector((s) => s.count)
       const consistencyCheckSelector = createSelector(
         ({ count }, parentCount: number) => {
           if (count !== parentCount) {
@@ -655,7 +659,7 @@ describe(useSimplux.name, () => {
 
     it('re-subscribes on change with an unstable inline selector', () => {
       const Comp = () => {
-        const count = useSimplux(moduleMock, s => s.count + 1)
+        const count = useSimplux(moduleMock, (s) => s.count + 1)
         return <div>{count}</div>
       }
 

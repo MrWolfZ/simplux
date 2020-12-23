@@ -1,4 +1,4 @@
-import { Immutable, Mutable } from '@simplux/core'
+import type { Immutable, Mutable } from '@simplux/core'
 import { expectType } from 'tsd'
 
 // tslint:disable:trailing-comma type-literal-delimiter

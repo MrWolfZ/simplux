@@ -1,4 +1,4 @@
-import { FunctionSignature, Mutable } from './types.js'
+import type { FunctionSignature, Mutable } from './types.js'
 
 /**
  * This interface is used for mocking support during testing.

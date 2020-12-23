@@ -12,14 +12,17 @@ setReduxStoreForSimplux(createStore(getSimpluxReducer()), (s) => s)
 export {
   createEffect,
   createEffects,
+  _getEffectMockDefinitionsInternal,
+} from './src/effects.js'
+export type {
   SimpluxEffect,
   SimpluxEffectDefinitions,
   SimpluxEffectMetadata,
   SimpluxEffects,
   _EffectMockDefinition,
-  _getEffectMockDefinitionsInternal,
 } from './src/effects.js'
-export {
+export { _isSimpluxModule } from './src/module.js'
+export type {
   ResolvedStateChangeHandler,
   SimpluxModule,
   SimpluxModuleConfig,
@@ -28,30 +31,26 @@ export {
   StateChangeSubscription,
   SubscribeToStateChanges,
   Subscription,
-  _isSimpluxModule,
   _SimpluxModuleInternals,
 } from './src/module.js'
-export {
-  createMutations,
+export { createMutations } from './src/mutations.js'
+export type {
   MutationDefinition,
   MutationDefinitions,
   ResolvedMutation,
   SimpluxMutation,
   SimpluxMutations,
 } from './src/mutations.js'
-export {
-  createSelectors,
+export { createSelectors } from './src/selectors.js'
+export type {
   ResolvedSelector,
   SelectorDefinition,
   SelectorDefinitions,
   SimpluxSelector,
   SimpluxSelectors,
 } from './src/selectors.js'
-export {
-  _getInternalReduxStoreProxy,
-  _InternalReduxStoreProxy,
-  _SimpluxStore,
-} from './src/store.js'
+export { _getInternalReduxStoreProxy } from './src/store.js'
+export type { _InternalReduxStoreProxy, _SimpluxStore } from './src/store.js'
 export * from './src/types.js'
 
 // tslint:disable: max-line-length (cannot line break the links)

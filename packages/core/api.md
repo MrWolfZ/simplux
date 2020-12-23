@@ -4,7 +4,7 @@
 
 ```ts
 
-import { AnyAction } from 'redux';
+import type { AnyAction } from 'redux';
 import { Reducer } from 'redux';
 import { Store } from 'redux';
 

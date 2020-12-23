@@ -4,12 +4,12 @@
 
 ```ts
 
-import { MutationDefinitions } from '@simplux/core';
+import type { MutationDefinitions } from '@simplux/core';
 import { Observable } from 'rxjs';
-import { SelectorDefinitions } from '@simplux/core';
-import { SimpluxModule } from '@simplux/core';
-import { SimpluxMutations } from '@simplux/core';
-import { SimpluxSelectors } from '@simplux/core';
+import type { SelectorDefinitions } from '@simplux/core';
+import type { SimpluxModule } from '@simplux/core';
+import type { SimpluxMutations } from '@simplux/core';
+import type { SimpluxSelectors } from '@simplux/core';
 
 // @public
 export function createModuleServiceBaseClass<TState, TMutations extends MutationDefinitions<TState>, TSimpluxMutations extends SimpluxMutations<TState, TMutations>, TSelectors extends SelectorDefinitions<TState>, TSimpluxSelectors extends SimpluxSelectors<TState, TSelectors>>(simpluxModule: SimpluxModule<TState>, mutations: TSimpluxMutations, selectors: TSimpluxSelectors): new () => ModuleService<TState, TMutations, TSimpluxMutations, TSelectors, TSimpluxSelectors>;

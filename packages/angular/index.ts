@@ -1,5 +1,5 @@
-export {
-  createModuleServiceBaseClass,
+export { createModuleServiceBaseClass } from './src/service.js'
+export type {
   ModuleService,
   ModuleServiceSelectors,
   ModuleServiceState,

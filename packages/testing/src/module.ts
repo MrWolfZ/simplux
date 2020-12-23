@@ -1,4 +1,4 @@
-import { SimpluxModule } from '@simplux/core'
+import type { SimpluxModule } from '@simplux/core'
 import { registerMockCleanupFunction } from './cleanup.js'
 
 /**

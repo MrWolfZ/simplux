@@ -1,5 +1,5 @@
 import { produce } from 'immer'
-import { Reducer } from 'redux'
+import type { Reducer } from 'redux'
 
 /**
  * @internal

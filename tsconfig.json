@@ -11,6 +11,8 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": false,
     "strict": true,
+    "isolatedModules": true,
+    "importsNotUsedAsValues": "error",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "skipLibCheck": true,
