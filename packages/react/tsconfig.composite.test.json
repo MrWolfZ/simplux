@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.composite.test.base.json",
+  "compilerOptions": {
+    "lib": ["dom", "esnext"]
+  },
+  "include": [
+    "e2e.spec.tsx",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx",
+    "test-d/**/*.spec.ts"
+  ],
+  "references": [{ "path": "./tsconfig.composite.build.json" }]
+}

@@ -1,7 +1,7 @@
 import { createModuleReducer } from './reducer'
 
 describe(`reducer`, () => {
-  let nodeEnv = ''
+  let nodeEnv: string | undefined
 
   beforeEach(() => {
     nodeEnv = process.env.NODE_ENV
@@ -56,7 +56,7 @@ describe(`reducer`, () => {
       'test',
       { test: 'test' },
       {
-        update: state => {
+        update: (state) => {
           state.test = 'updated'
         },
       },

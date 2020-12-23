@@ -14,7 +14,7 @@ import {
 
 describe('module', () => {
   describe('creating module', () => {
-    let nodeEnv = ''
+    let nodeEnv: string | undefined
     let setReducerSpy: jest.SpyInstance
     let simpluxStore: _SimpluxStore
     let reduxStore: Store
@@ -356,7 +356,7 @@ describe('module', () => {
     })
   })
 
-  describe('isSimpluxModule', () => {
+  describe(_isSimpluxModule.name, () => {
     let simpluxStore: _SimpluxStore
 
     beforeEach(() => {

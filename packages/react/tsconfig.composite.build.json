@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.composite.build.base.json",
+  "include": ["index.ts", "src/**/*.ts", "src/**/*.tsx"],
+  "references": [
+    { "path": "../core/tsconfig.composite.build.json" },
+    { "path": "../testing/tsconfig.composite.build.json" }
+  ]
+}

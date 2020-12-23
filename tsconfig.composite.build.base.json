@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.lib.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./build",
+    "composite": true,
+    "incremental": true,
+    "inlineSources": false
+  },
+  "exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.js"
+  ]
+}

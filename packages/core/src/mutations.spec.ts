@@ -10,8 +10,8 @@ declare class Event {
 declare const window: any
 
 describe('mutations', () => {
-  let nodeEnv = ''
-  const dispatchMock = jest.fn().mockImplementation(a => a)
+  let nodeEnv: string | undefined
+  const dispatchMock = jest.fn().mockImplementation((a) => a)
   const getReducerMock = jest.fn()
 
   let moduleState = 0
@@ -66,7 +66,7 @@ describe('mutations', () => {
 
     it('creates the mutation mocks extension state container', () => {
       createMutations(moduleMock, {
-        increment: c => c + 1,
+        increment: (c) => c + 1,
       })
 
       expect(moduleMock.$simpluxInternals.mutationMocks).toBeDefined()
@@ -74,12 +74,12 @@ describe('mutations', () => {
 
     it('throws when existing mutation is declared again', () => {
       createMutations(moduleMock, {
-        increment: c => c + 1,
+        increment: (c) => c + 1,
       })
 
       expect(() =>
         createMutations(moduleMock, {
-          increment: c => c + 2,
+          increment: (c) => c + 2,
         }),
       ).toThrowError(
         `mutation 'increment' is already defined for module 'test'`,
@@ -90,12 +90,12 @@ describe('mutations', () => {
       process.env.NODE_ENV = 'production'
 
       createMutations(moduleMock, {
-        increment: c => c + 1,
+        increment: (c) => c + 1,
       })
 
       expect(() =>
         createMutations(moduleMock, {
-          increment: c => c + 2,
+          increment: (c) => c + 2,
         }),
       ).not.toThrowError()
     })
@@ -103,7 +103,7 @@ describe('mutations', () => {
     describe(`returned mutations`, () => {
       it('dispatch action when called without args', () => {
         const { increment } = createMutations(moduleMock, {
-          increment: c => c + 1,
+          increment: (c) => c + 1,
         })
 
         increment()
@@ -131,7 +131,7 @@ describe('mutations', () => {
 
       it('returns the updated store state', () => {
         const { increment } = createMutations(moduleMock, {
-          increment: c => c + 1,
+          increment: (c) => c + 1,
         })
 
         moduleState = 1
@@ -226,7 +226,7 @@ describe('mutations', () => {
 
       it('has the same name as the mutation', () => {
         const { increment } = createMutations(moduleMock, {
-          increment: c => c,
+          increment: (c) => c,
         })
 
         expect(increment.name).toBe('increment')
@@ -234,8 +234,8 @@ describe('mutations', () => {
 
       it('has the type of the mutation', () => {
         const { increment, incrementBy } = createMutations(moduleMock, {
-          increment: c => c,
-          incrementBy: c => c,
+          increment: (c) => c,
+          incrementBy: (c) => c,
         })
 
         expect(increment.type).toBe('@simplux/test/mutation/increment')
@@ -244,7 +244,7 @@ describe('mutations', () => {
 
       it('has the same mutationName as the mutation', () => {
         const { increment } = createMutations(moduleMock, {
-          increment: c => c,
+          increment: (c) => c,
         })
 
         expect(increment.mutationName).toBe('increment')
@@ -252,7 +252,7 @@ describe('mutations', () => {
 
       it('has a reference to the owning module', () => {
         const { increment } = createMutations(moduleMock, {
-          increment: c => c,
+          increment: (c) => c,
         })
 
         expect(increment.owningModule).toBe(moduleMock)
@@ -260,7 +260,7 @@ describe('mutations', () => {
 
       it('ignores event arg in first position', () => {
         const { increment } = createMutations(moduleMock, {
-          increment: c => c + 1,
+          increment: (c) => c + 1,
         })
 
         const incrementAny = increment as any
@@ -275,7 +275,7 @@ describe('mutations', () => {
 
       it('ignores event-like arg in first position', () => {
         const { increment } = createMutations(moduleMock, {
-          increment: c => c + 1,
+          increment: (c) => c + 1,
         })
 
         const incrementAny = increment as any
@@ -294,7 +294,7 @@ describe('mutations', () => {
 
       it('works in environments where Event is not defined', () => {
         const { increment } = createMutations(moduleMock, {
-          increment: c => c + 1,
+          increment: (c) => c + 1,
         })
 
         const Evt = window.Event
@@ -311,7 +311,7 @@ describe('mutations', () => {
 
       it('throws an error for function arguments', () => {
         const { increment } = createMutations(moduleMock, {
-          increment: c => c + 1,
+          increment: (c) => c + 1,
         })
 
         const incrementAny = increment as any
@@ -325,7 +325,7 @@ describe('mutations', () => {
         process.env.NODE_ENV = 'production'
 
         const { increment } = createMutations(moduleMock, {
-          increment: c => c + 1,
+          increment: (c) => c + 1,
         })
 
         const incrementAny = increment as any
@@ -343,7 +343,7 @@ describe('mutations', () => {
         })
 
         const { increment, increment2 } = createMutations(moduleMock, {
-          increment: c => c + 1,
+          increment: (c) => c + 1,
           increment2: () => {
             increment()
             increment()

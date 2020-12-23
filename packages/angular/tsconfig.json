@@ -4,7 +4,7 @@
     "baseUrl": "./",
     "outDir": "./dist",
     "paths": {
-      "@simplux/core": ["../core/dist/core.internal.d.ts"],
+      "@simplux/core": ["../core"],
       "@simplux/angular": ["."]
     },
     "lib": ["dom", "esnext"]

@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig.composite.build.base.json",
+  "include": ["index.ts", "src/**/*.ts"]
+}

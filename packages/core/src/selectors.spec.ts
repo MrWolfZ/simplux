@@ -2,7 +2,7 @@ import { SimpluxModule } from './module'
 import { createSelectors } from './selectors'
 
 describe('selectors', () => {
-  let nodeEnv = ''
+  let nodeEnv: string | undefined
   let moduleState = 0
   const getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
   const setModuleStateMock = jest.fn()
@@ -40,12 +40,12 @@ describe('selectors', () => {
   describe(`factory`, () => {
     it('throws when existing selector is declared again', () => {
       createSelectors(moduleMock, {
-        plus: c => c + 1,
+        plus: (c) => c + 1,
       })
 
       expect(() =>
         createSelectors(moduleMock, {
-          plus: c => c + 2,
+          plus: (c) => c + 2,
         }),
       ).toThrowError(`selector 'plus' is already defined for module 'test'`)
     })
@@ -54,12 +54,12 @@ describe('selectors', () => {
       process.env.NODE_ENV = 'production'
 
       createSelectors(moduleMock, {
-        plus: c => c + 1,
+        plus: (c) => c + 1,
       })
 
       expect(() =>
         createSelectors(moduleMock, {
-          plus: c => c + 2,
+          plus: (c) => c + 2,
         }),
       ).not.toThrowError()
     })
@@ -73,7 +73,7 @@ describe('selectors', () => {
         const { plus, plus2, minusOne } = createSelectors(moduleMock, {
           plus: (c, amount: number) => c + amount,
           plus2: (c, arg1: number, arg2: number) => c + arg1 + arg2,
-          minusOne: c => c - 1,
+          minusOne: (c) => c - 1,
         })
 
         expect(plus(5)).toBe(25)
@@ -93,7 +93,7 @@ describe('selectors', () => {
 
       it('can be composed', () => {
         const { plusOne, plus } = createSelectors(moduleMock, {
-          plusOne: c => c + 1,
+          plusOne: (c) => c + 1,
           plus: (c, amount: number) => {
             for (let i = 0; i < amount; i += 1) {
               c = plusOne.withState(c)
@@ -104,7 +104,7 @@ describe('selectors', () => {
         })
 
         const { plusTwo } = createSelectors(moduleMock, {
-          plusTwo: c => plusOne.withState(plusOne.withState(c)),
+          plusTwo: (c) => plusOne.withState(plusOne.withState(c)),
         })
 
         expect(plusTwo()).toBe(22)
@@ -139,7 +139,7 @@ describe('selectors', () => {
         const mock = jest.fn()
 
         const { value } = createSelectors(moduleMock, {
-          value: c => mock(c)!,
+          value: (c) => mock(c)!,
         })
 
         value()

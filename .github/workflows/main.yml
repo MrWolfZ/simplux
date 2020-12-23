@@ -19,6 +19,7 @@ jobs:
           node-version: 14.x
 
       - run: npm ci
+      - run: npm run build:composite
       - run: npm run build:ci
 
   lint:

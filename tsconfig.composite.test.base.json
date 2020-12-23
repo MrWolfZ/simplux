@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.lib.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./build",
+    "composite": true,
+    "incremental": true,
+    "inlineSources": false,
+    "types": ["node", "jest"]
+  },
+  "exclude": ["**/node_modules/**", "**/dist/**", "**/*.js"]
+}

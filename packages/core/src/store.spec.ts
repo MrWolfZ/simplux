@@ -10,7 +10,7 @@ import {
 
 describe('store', () => {
   let cleanup: (() => void) | undefined
-  let nodeEnv = ''
+  let nodeEnv: string | undefined
 
   beforeEach(() => {
     nodeEnv = process.env.NODE_ENV

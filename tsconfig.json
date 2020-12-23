@@ -15,7 +15,7 @@
     "noUnusedParameters": true,
     "skipLibCheck": true,
     "pretty": true,
-    "types": ["webpack-env", "jest"],
+    "types": ["node", "jest"],
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
     "paths": {
       "@simplux/*": ["./packages/*"]

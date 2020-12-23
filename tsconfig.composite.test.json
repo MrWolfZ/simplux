@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.lib.json",
+  "files": [],
+  "include": [],
+  "references": [
+    { "path": "./packages/angular/tsconfig.composite.test.json" },
+    { "path": "./packages/core/tsconfig.composite.test.json" },
+    { "path": "./packages/react/tsconfig.composite.test.json" },
+    { "path": "./packages/testing/tsconfig.composite.test.json" }
+  ]
+}
