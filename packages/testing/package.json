@@ -6,6 +6,12 @@
   "es2015": "./esm2015/index.js",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./index.js",
+      "import": "./esm2015/index.js"
+    }
+  },
   "scripts": {
     "build": "node ../../scripts/build.package.js --forceEnableColors=true",
     "build:ci": "npm run build -- --forceEnableColors=false --ci",
