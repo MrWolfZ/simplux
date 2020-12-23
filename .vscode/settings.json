@@ -8,6 +8,7 @@
   "tslint.ignoreDefinitionFiles": false,
   "tslint.exclude": "**/node_modules/**/*",
   "typescript.tsdk": "node_modules\\typescript\\lib",
+  "typescript.preferences.useAliasesForRenames": false,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": true,
