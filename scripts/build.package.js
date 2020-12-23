@@ -123,6 +123,7 @@ async function build() {
         for (const file of jsFiles) {
             code += await mapSources(file, false);
         }
+        await util_1.promisify(fs_1.default.writeFile)(path_1.default.join(ESM5_DIR, 'package.json'), `{"type":"module"}\n`);
         return code;
     });
     await executeStep(`Compiling esm2015`, async () => {
@@ -137,6 +138,7 @@ async function build() {
         for (const file of jsFiles) {
             code += await mapSources(file, false);
         }
+        await util_1.promisify(fs_1.default.writeFile)(path_1.default.join(ESM2015_DIR, 'package.json'), `{"type":"module"}\n`);
         return code;
     });
     const externalsArr = Object.keys(PACKAGE.dependencies || {})

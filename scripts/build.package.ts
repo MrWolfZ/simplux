@@ -178,6 +178,11 @@ async function build() {
       code += await mapSources(file, false)
     }
 
+    await promisify(fs.writeFile)(
+      path.join(ESM5_DIR, 'package.json'),
+      `{"type":"module"}\n`,
+    )
+
     return code
   })
 
@@ -204,6 +209,11 @@ async function build() {
     for (const file of jsFiles) {
       code += await mapSources(file, false)
     }
+
+    await promisify(fs.writeFile)(
+      path.join(ESM2015_DIR, 'package.json'),
+      `{"type":"module"}\n`,
+    )
 
     return code
   })
