@@ -4,5 +4,6 @@
     "baseUrl": "./",
     "outDir": "./dist"
   },
-  "include": ["index.ts", "e2e.spec.ts", "src/**/*.ts"]
+  "include": ["index.ts", "src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"]
 }
