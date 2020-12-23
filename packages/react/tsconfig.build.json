@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.lib.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "jsx": "react",
+    "lib": ["dom", "esnext"]
+  },
+  "include": ["index.ts", "src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["src/**/*.spec.ts, src/**/*.spec.tsx"]
+}

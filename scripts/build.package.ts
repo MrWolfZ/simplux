@@ -66,7 +66,7 @@ async function build() {
   })
 
   await executeStep(`Compiling`, () =>
-    execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`),
+    execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.build.json`),
   )
 
   const configPath = path.join(PACKAGE_DIR, 'api-extractor.json')

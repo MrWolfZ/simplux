@@ -1,10 +1,8 @@
 {
   "extends": "../../tsconfig.lib.json",
   "compilerOptions": {
-    "paths": {
-      "@simplux/core": ["../core"],
-      "@simplux/testing": ["."]
-    }
+    "baseUrl": "./",
+    "outDir": "./dist"
   },
   "include": ["index.ts", "e2e.spec.ts", "src/**/*.ts"]
 }

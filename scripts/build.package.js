@@ -57,7 +57,7 @@ async function build() {
         shelljs_1.default.mkdir(`-p`, UMD_DIR);
         shelljs_1.default.mkdir(`-p`, CJS_DIR);
     });
-    await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.json`));
+    await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.build.json`));
     const configPath = path_1.default.join(PACKAGE_DIR, 'api-extractor.json');
     if (fs_1.default.existsSync(configPath)) {
         await executeStep(`Bundling type definitions`, () => {
