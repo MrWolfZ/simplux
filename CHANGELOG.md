@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.0](https://github.com/MrWolfZ/simplux/compare/v0.17.0...v0.18.0-alpha.0) (2020-12-23)
+
+
+### Bug Fixes
+
+* **core:** allow mutations and selectors to have their own tsdoc comments ([48a7a2c](https://github.com/MrWolfZ/simplux/commit/48a7a2cc46c48044e12be24535f932777622bcef))
+* **core:** ensure effect type only uses function signature of passed effect function ([6f03c3e](https://github.com/MrWolfZ/simplux/commit/6f03c3e228c8bac52e25dc7b45916b3569f040e9))
+
+
+### Features
+
+* add export specifications to package definitions to allow direct esm imports ([05c11a2](https://github.com/MrWolfZ/simplux/commit/05c11a262434bb6deac7809f7d6a62012e18560a))
+
+
+
+
+
 # [0.17.0](https://github.com/MrWolfZ/simplux/compare/v0.16.1-alpha.0...v0.17.0) (2020-12-19)
 
 
