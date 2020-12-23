@@ -22,6 +22,12 @@ expectType<() => State>(mockMutation(incrementBy, () => ({ count: 0 }))[0])
 expectType<(a: number) => State>(
   mockMutation(incrementBy, (a: number) => ({ count: a }))[0],
 )
+
+// @ts-expect-error
 expectError(mockMutation(incrementBy, (a: number) => a))
+
+// @ts-expect-error
 expectError(mockMutation(incrementBy, (s: string) => ({ count: 0 })))
+
+// @ts-expect-error
 expectError(mockMutation(incrementBy, (a: number, b: number) => ({ count: a })))

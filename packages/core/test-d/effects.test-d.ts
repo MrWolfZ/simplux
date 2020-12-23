@@ -9,6 +9,7 @@ expectType<SimpluxEffect<(s: string) => Promise<string>>>(
 const effect = createEffect(<T>(s: T) => s)
 expectType<string>(effect<string>(''))
 
+// @ts-expect-error
 expectError(createEffect(''))
 
 // tslint:disable: type-literal-delimiter
@@ -25,4 +26,5 @@ expectType<{
   }),
 )
 
+// @ts-expect-error
 expectError(createEffects(''))

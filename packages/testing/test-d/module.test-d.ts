@@ -9,4 +9,6 @@ interface State {
 const module = createSimpluxModule<State>('module', { count: 0 })
 
 expectType<() => void>(mockModuleState(module, { count: 0 }))
+
+// @ts-expect-error
 expectError(mockModuleState(module, { count: '' }))

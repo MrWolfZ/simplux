@@ -17,4 +17,6 @@ expectType<Immutable<State>>(useSimplux(module))
 expectType<Immutable<State>>(useSimplux(selectors.id))
 expectType<number>(useSimplux(selectors.plusOne))
 expectType<number>(useSimplux(selectors.plus, 1))
+
+// @ts-expect-error
 expectError(useSimplux(selectors.plus, ''))

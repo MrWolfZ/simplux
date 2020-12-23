@@ -14,14 +14,17 @@ const module = createModule<State>(simpluxStore, {
 })
 
 const selectors = createSelectors(module, {
-  id: s => s,
-  plusOne: s => s.count + 1,
+  id: (s) => s,
+  plusOne: (s) => s.count + 1,
   plus: (s, amount: number) => s.count + amount,
 })
 
 expectAssignable<() => Immutable<State>>(selectors.id)
 expectType<(s: Immutable<State>) => Immutable<State>>(selectors.id.withState)
+
+// @ts-expect-error
 expectError((selectors.id().count += 1))
+
 expectAssignable<() => number>(selectors.plusOne)
 expectType<(s: Immutable<State>) => number>(selectors.plusOne.withState)
 expectAssignable<(a: number) => number>(selectors.plus)

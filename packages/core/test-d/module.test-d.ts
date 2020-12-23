@@ -12,12 +12,22 @@ const module = createModule<State>(simpluxStore, {
   initialState: { count: 0 },
 })
 
+// @ts-expect-error
 expectError((module.getState().count += 1))
-expectType<(s: Immutable<State>) => void>(module.subscribeToStateChanges(s => {}).handler)
-expectType<(s: Immutable<State>) => void>(module.subscribeToStateChanges(() => {}).handler)
-expectType<(s1: Immutable<State>, s2: Immutable<State>) => void>(
-  module.subscribeToStateChanges((s1, s2) => {}).handler,
-)
-expectType<() => void>(module.subscribeToStateChanges(s => {}).unsubscribe)
 
+expectType<(_: Immutable<State>) => void>(
+  module.subscribeToStateChanges((_) => {}).handler,
+)
+
+expectType<(s: Immutable<State>) => void>(
+  module.subscribeToStateChanges(() => {}).handler,
+)
+
+expectType<(_1: Immutable<State>, _2: Immutable<State>) => void>(
+  module.subscribeToStateChanges((_1, _2) => {}).handler,
+)
+
+expectType<() => void>(module.subscribeToStateChanges((_) => {}).unsubscribe)
+
+// @ts-expect-error
 expectError(createModule(simpluxStore, { name: 0, initialState: 0 }))
