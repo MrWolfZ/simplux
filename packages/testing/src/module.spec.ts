@@ -24,7 +24,6 @@ describe('module', () => {
         mockStateValue: undefined,
         mutations: {},
         mutationMocks: {},
-        selectors: {},
         dispatch: dispatchMock,
         getReducer: undefined!,
       },

@@ -60,7 +60,6 @@ describe(useSimplux.name, () => {
         mockStateValue: undefined,
         mutations: {},
         mutationMocks: {},
-        selectors: {},
         dispatch: undefined!,
         getReducer: undefined!,
       },

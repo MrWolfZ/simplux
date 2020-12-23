@@ -23,7 +23,6 @@ describe('selectors', () => {
         mockStateValue: undefined,
         mutations: {},
         mutationMocks: {},
-        selectors: {},
         dispatch: undefined!,
         getReducer: undefined!,
       },
@@ -39,32 +38,6 @@ describe('selectors', () => {
   })
 
   describe(`factory`, () => {
-    it('throws when existing selector is declared again', () => {
-      createSelectors(moduleMock, {
-        plus: (c) => c + 1,
-      })
-
-      expect(() =>
-        createSelectors(moduleMock, {
-          plus: (c) => c + 2,
-        }),
-      ).toThrowError(`selector 'plus' is already defined for module 'test'`)
-    })
-
-    it('does not throw when existing selector is declared again in production', () => {
-      process.env.NODE_ENV = 'production'
-
-      createSelectors(moduleMock, {
-        plus: (c) => c + 1,
-      })
-
-      expect(() =>
-        createSelectors(moduleMock, {
-          plus: (c) => c + 2,
-        }),
-      ).not.toThrowError()
-    })
-
     describe(`returned selectors`, () => {
       beforeEach(() => {
         moduleState = 20

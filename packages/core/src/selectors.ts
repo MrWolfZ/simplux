@@ -128,23 +128,9 @@ export function createSelectors<
 ): SimpluxSelectors<TState, TSelectorDefinitions> {
   const module = simpluxModule as SimpluxModule<TState>
 
-  const { name: moduleName, selectors } = module.$simpluxInternals
-
-  if (process.env.NODE_ENV !== 'production') {
-    for (const selectorName of Object.keys(selectorDefinitions)) {
-      if (selectors[selectorName]) {
-        throw new Error(
-          `selector '${selectorName}' is already defined for module '${moduleName}'`,
-        )
-      }
-    }
-  }
-
-  Object.assign(selectors, selectorDefinitions)
-
   const resolvedSelectors = Object.keys(selectorDefinitions).reduce(
     (acc, selectorName: keyof TSelectorDefinitions) => {
-      const definition = selectors[selectorName as string]
+      const definition = selectorDefinitions[selectorName as string]
       const memoizedDefinition = memoize(definition)
 
       const namedSelector = nameFunction(

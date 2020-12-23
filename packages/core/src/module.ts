@@ -2,7 +2,6 @@ import type { AnyAction, Reducer } from 'redux'
 import { createImmerReducer } from './immer.js'
 import type { MutationDefinitions } from './mutations.js'
 import { createModuleReducer } from './reducer.js'
-import type { SelectorDefinitions } from './selectors.js'
 import { simpluxStore, _SimpluxStore } from './store.js'
 import type { Immutable } from './types.js'
 
@@ -142,12 +141,6 @@ export interface _SimpluxModuleInternals<TState> {
   readonly mutationMocks: { [mutationName: string]: (...args: any[]) => TState }
 
   /**
-   * This is part of the simplux internal API and should not be accessed
-   * except by simplux extensions.
-   */
-  readonly selectors: SelectorDefinitions<TState>
-
-  /**
    * A proxy to the Redux store's dispatch function. This is part of the
    * simplux internal API and should not be accessed except by simplux
    * extensions.
@@ -244,7 +237,6 @@ export function createModule<TState>(
     mockStateValue: undefined,
     mutations: {},
     mutationMocks: {},
-    selectors: {},
     dispatch,
     getReducer: () => simpluxStore.getReducer(config.name),
   }
