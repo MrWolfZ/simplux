@@ -57,7 +57,7 @@
     "compilerOptions": {
       "baseUrl": ".",
       "paths": {
-        "@simplux/testing": [
+        "@simplux/router": [
           "./index.d.ts"
         ]
       },
