@@ -1,4 +1,4 @@
-import type { SimpluxModule } from './module.js'
+import type { SimpluxModule, SimpluxModuleLike } from './module.js'
 
 /**
  * A function to turn into a mutation.
@@ -140,16 +140,18 @@ export function createMutations<
   TState,
   TMutations extends MutationDefinitions<TState>
 >(
-  simpluxModule: SimpluxModule<TState>,
+  simpluxModule: SimpluxModuleLike<TState>,
   mutationDefinitions: TMutations,
 ): SimpluxMutations<TState, TMutations> {
+  const module = simpluxModule as SimpluxModule<TState>
+
   const {
     name: moduleName,
     dispatch,
     getReducer,
     mutations,
     mutationMocks,
-  } = simpluxModule.$simpluxInternals
+  } = module.$simpluxInternals
 
   const mutationPrefix = createMutationPrefix(moduleName)
 
@@ -206,7 +208,7 @@ export function createMutations<
           currentlyDispatchingMutationName = mutationName as string
           dispatch(createAction(...args))
           currentlyDispatchingMutationName = undefined
-          return simpluxModule.getState()
+          return module.getState()
         },
       ) as ResolvedMutation<TState, TMutations[typeof mutationName]>
 
@@ -223,7 +225,7 @@ export function createMutations<
       extras.type = type
 
       extras.mutationName = mutationName as string
-      extras.owningModule = simpluxModule
+      extras.owningModule = module
 
       return acc
     },

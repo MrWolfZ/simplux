@@ -1,4 +1,8 @@
-import type { SimpluxModule, _InternalReduxStoreProxy } from '@simplux/core'
+import {
+  SimpluxModule,
+  SIMPLUX_MODULE,
+  _InternalReduxStoreProxy,
+} from '@simplux/core'
 import { cleanup, render } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import React, { useEffect } from 'react'
@@ -58,6 +62,7 @@ describe('context', () => {
         dispatch: undefined!,
         getReducer: undefined!,
       },
+      [SIMPLUX_MODULE]: undefined!,
     }
 
     moduleMock2 = {
@@ -73,6 +78,7 @@ describe('context', () => {
         dispatch: undefined!,
         getReducer: undefined!,
       },
+      [SIMPLUX_MODULE]: undefined!,
     }
 
     reduxStoreProxyMock = {

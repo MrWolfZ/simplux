@@ -1,9 +1,10 @@
-import type {
+import {
   MutationDefinitions,
   SelectorDefinitions,
   SimpluxModule,
   SimpluxMutations,
   SimpluxSelectors,
+  SIMPLUX_MODULE,
   StateChangeSubscription,
 } from '@simplux/core'
 import { Observable } from 'rxjs'
@@ -70,6 +71,7 @@ describe('service', () => {
           dispatch: undefined!,
           getReducer: undefined!,
         },
+        [SIMPLUX_MODULE]: undefined!,
       }
 
       mutations = {

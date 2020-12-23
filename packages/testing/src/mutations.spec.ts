@@ -1,4 +1,4 @@
-import { createMutations, SimpluxModule } from '@simplux/core'
+import { createMutations, SimpluxModule, SIMPLUX_MODULE } from '@simplux/core'
 import { clearAllSimpluxMocks } from './cleanup.js'
 import { mockMutation } from './mutations.js'
 
@@ -28,6 +28,7 @@ describe('mutations', () => {
         dispatch: dispatchMock,
         getReducer: undefined!,
       },
+      [SIMPLUX_MODULE]: undefined!,
     }
 
     jest.clearAllMocks()
@@ -128,6 +129,7 @@ describe('mutations', () => {
           dispatch: dispatchMock,
           getReducer: undefined!,
         },
+        [SIMPLUX_MODULE]: undefined!,
       }
 
       const { increment, incrementBy } = createMutations(moduleMock, {

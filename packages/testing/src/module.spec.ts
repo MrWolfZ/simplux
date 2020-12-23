@@ -1,4 +1,4 @@
-import type { SimpluxModule } from '@simplux/core'
+import { SimpluxModule, SIMPLUX_MODULE } from '@simplux/core'
 import { clearAllSimpluxMocks } from './cleanup.js'
 import { mockModuleState } from './module.js'
 
@@ -28,6 +28,7 @@ describe('module', () => {
         dispatch: dispatchMock,
         getReducer: undefined!,
       },
+      [SIMPLUX_MODULE]: undefined!,
     }
 
     jest.clearAllMocks()

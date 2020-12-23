@@ -21,11 +21,12 @@ export type {
   SimpluxEffects,
   _EffectMockDefinition,
 } from './src/effects.js'
-export { _isSimpluxModule } from './src/module.js'
+export { SIMPLUX_MODULE, _isSimpluxModule } from './src/module.js'
 export type {
   ResolvedStateChangeHandler,
   SimpluxModule,
   SimpluxModuleConfig,
+  SimpluxModuleLike,
   StateChangeHandler,
   StateChangeHandlerOptions,
   StateChangeSubscription,

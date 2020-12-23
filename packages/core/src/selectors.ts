@@ -1,4 +1,4 @@
-import type { SimpluxModule } from './module.js'
+import type { SimpluxModule, SimpluxModuleLike } from './module.js'
 import type { Immutable } from './types.js'
 
 /**
@@ -123,10 +123,12 @@ export function createSelectors<
   TState,
   TSelectorDefinitions extends SelectorDefinitions<TState>
 >(
-  simpluxModule: SimpluxModule<TState>,
+  simpluxModule: SimpluxModuleLike<TState>,
   selectorDefinitions: TSelectorDefinitions,
 ): SimpluxSelectors<TState, TSelectorDefinitions> {
-  const { name: moduleName, selectors } = simpluxModule.$simpluxInternals
+  const module = simpluxModule as SimpluxModule<TState>
+
+  const { name: moduleName, selectors } = module.$simpluxInternals
 
   if (process.env.NODE_ENV !== 'production') {
     for (const selectorName of Object.keys(selectorDefinitions)) {
@@ -148,7 +150,7 @@ export function createSelectors<
       const namedSelector = nameFunction(
         selectorName as string,
         (...args: any[]) => {
-          return memoizedDefinition(simpluxModule.getState(), ...args)
+          return memoizedDefinition(module.getState(), ...args)
         },
       ) as ResolvedSelector<TState, TSelectorDefinitions[typeof selectorName]>
 
@@ -159,7 +161,7 @@ export function createSelectors<
       extras.withState = memoizedDefinition
 
       extras.selectorName = selectorName as string
-      extras.owningModule = simpluxModule
+      extras.owningModule = module
 
       return acc
     },

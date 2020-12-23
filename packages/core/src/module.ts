@@ -7,6 +7,13 @@ import { simpluxStore, _SimpluxStore } from './store.js'
 import type { Immutable } from './types.js'
 
 /**
+ * Helper symbol used for identifying simplux module objects.
+ *
+ * @public
+ */
+export const SIMPLUX_MODULE = Symbol()
+
+/**
  * Configuration object for creating simplux modules.
  *
  * @public
@@ -156,12 +163,29 @@ export interface _SimpluxModuleInternals<TState> {
 }
 
 /**
+ * Interface for efficiently identifying simplux module objects at compile time.
+ *
+ * @public
+ */
+export interface SimpluxModuleLike<TState> {
+  /**
+   * A symbol that allows efficient compile-time and run-time identification
+   * of simplux module objects.
+   *
+   * This property will have an `undefined` value at runtime.
+   *
+   * @public
+   */
+  readonly [SIMPLUX_MODULE]: TState
+}
+
+/**
  * A simplux module that contains some state and allows controlled modification
  * and observation of the state.
  *
  * @public
  */
-export interface SimpluxModule<TState> {
+export interface SimpluxModule<TState> extends SimpluxModuleLike<TState> {
   /**
    * Get the current module state.
    *
@@ -312,6 +336,7 @@ export function createModule<TState>(
     setState: setModuleState,
     subscribeToStateChanges,
     $simpluxInternals: internals,
+    [SIMPLUX_MODULE]: undefined!,
   }
 
   return result
@@ -327,7 +352,7 @@ export function createModule<TState>(
  * @internal
  */
 export function _isSimpluxModule<TState, TOther>(
-  object: SimpluxModule<TState> | TOther,
+  object: SimpluxModuleLike<TState> | TOther,
 ): object is SimpluxModule<TState> {
-  return object && !!(object as SimpluxModule<any>).$simpluxInternals
+  return object && Object.prototype.hasOwnProperty.call(object, SIMPLUX_MODULE)
 }

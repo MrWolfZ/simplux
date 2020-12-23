@@ -18,10 +18,10 @@ export function createEffect<TEffectFunction extends (...args: any[]) => any>(ef
 export function createEffects<TEffectDefinitions extends SimpluxEffectDefinitions>(effects: TEffectDefinitions): SimpluxEffects<TEffectDefinitions>;
 
 // @public
-export function createMutations<TState, TMutations extends MutationDefinitions<TState>>(simpluxModule: SimpluxModule<TState>, mutationDefinitions: TMutations): SimpluxMutations<TState, TMutations>;
+export function createMutations<TState, TMutations extends MutationDefinitions<TState>>(simpluxModule: SimpluxModuleLike<TState>, mutationDefinitions: TMutations): SimpluxMutations<TState, TMutations>;
 
 // @public
-export function createSelectors<TState, TSelectorDefinitions extends SelectorDefinitions<TState>>(simpluxModule: SimpluxModule<TState>, selectorDefinitions: TSelectorDefinitions): SimpluxSelectors<TState, TSelectorDefinitions>;
+export function createSelectors<TState, TSelectorDefinitions extends SelectorDefinitions<TState>>(simpluxModule: SimpluxModuleLike<TState>, selectorDefinitions: TSelectorDefinitions): SimpluxSelectors<TState, TSelectorDefinitions>;
 
 // @public
 export function createSimpluxModule<TState>(config: SimpluxModuleConfig<TState>): SimpluxModule<TState>;
@@ -96,7 +96,7 @@ export type _IsMutable<T> = T extends _AtomicObject ? true : T extends _MutableA
 }[keyof T] extends true ? true : false : false : true;
 
 // @internal
-export function _isSimpluxModule<TState, TOther>(object: SimpluxModule<TState> | TOther): object is SimpluxModule<TState>;
+export function _isSimpluxModule<TState, TOther>(object: SimpluxModuleLike<TState> | TOther): object is SimpluxModule<TState>;
 
 // @public
 export type Mutable<T> = T extends _AtomicObject ? T : _IsMutable<T> extends true ? T : T extends readonly (infer U)[] ? Mutable<U>[] : T extends ReadonlyMap<infer K, infer V> ? Map<Mutable<K>, Mutable<V>> : T extends ReadonlySet<infer V> ? Set<Mutable<V>> : T extends object ? {
@@ -149,6 +149,9 @@ export interface SelectorDefinitions<TState> {
 export function setReduxStoreForSimplux<TState>(storeToUse: Store<TState>, simpluxStateGetter: (rootState: TState) => any): () => void;
 
 // @public
+export const SIMPLUX_MODULE: unique symbol;
+
+// @public
 export type SimpluxEffect<TFunction extends (...args: any[]) => any> = FunctionSignature<TFunction> & SimpluxEffectMetadata;
 
 // @public
@@ -168,7 +171,7 @@ export type SimpluxEffects<TEffectDefinitions extends SimpluxEffectDefinitions> 
 };
 
 // @public
-export interface SimpluxModule<TState> {
+export interface SimpluxModule<TState> extends SimpluxModuleLike<TState> {
     // @internal
     readonly $simpluxInternals: _SimpluxModuleInternals<TState>;
     readonly getState: () => Immutable<TState>;
@@ -195,6 +198,11 @@ export interface _SimpluxModuleInternals<TState> {
     readonly mutations: MutationDefinitions<TState>;
     readonly name: string;
     readonly selectors: SelectorDefinitions<TState>;
+}
+
+// @public
+export interface SimpluxModuleLike<TState> {
+    readonly [SIMPLUX_MODULE]: TState;
 }
 
 // @public

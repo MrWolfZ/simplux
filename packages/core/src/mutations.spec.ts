@@ -1,5 +1,5 @@
 import { createImmerReducer } from './immer.js'
-import type { SimpluxModule } from './module.js'
+import { SimpluxModule, SIMPLUX_MODULE } from './module.js'
 import { createMutations, MutationDefinitions } from './mutations.js'
 import { createModuleReducer } from './reducer.js'
 
@@ -38,6 +38,7 @@ describe('mutations', () => {
         dispatch: dispatchMock,
         getReducer: getReducerMock,
       },
+      [SIMPLUX_MODULE]: undefined!,
     }
     jest.clearAllMocks()
     nodeEnv = process.env.NODE_ENV

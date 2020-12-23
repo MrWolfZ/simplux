@@ -1,6 +1,7 @@
-import type {
+import {
   SimpluxModule,
   SimpluxSelector,
+  SIMPLUX_MODULE,
   StateChangeSubscription,
 } from '@simplux/core'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
@@ -63,6 +64,7 @@ describe(useSimplux.name, () => {
         dispatch: undefined!,
         getReducer: undefined!,
       },
+      [SIMPLUX_MODULE]: undefined!,
     }
 
     jest.clearAllMocks()

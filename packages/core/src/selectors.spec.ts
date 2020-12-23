@@ -1,4 +1,4 @@
-import type { SimpluxModule } from './module.js'
+import { SimpluxModule, SIMPLUX_MODULE } from './module.js'
 import { createSelectors } from './selectors.js'
 
 describe('selectors', () => {
@@ -27,6 +27,7 @@ describe('selectors', () => {
         dispatch: undefined!,
         getReducer: undefined!,
       },
+      [SIMPLUX_MODULE]: undefined!,
     }
 
     jest.clearAllMocks()
