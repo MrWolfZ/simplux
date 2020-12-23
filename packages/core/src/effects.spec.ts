@@ -9,7 +9,9 @@ describe(createEffect.name, () => {
     it('calls original effect when called', () => {
       const spy = jest.fn()
       const effect = createEffect(spy)
+
       effect()
+
       expect(spy).toHaveBeenCalled()
     })
 
@@ -17,15 +19,23 @@ describe(createEffect.name, () => {
       const spy = jest.fn()
       const mockSpy = jest.fn()
       const effect = createEffect(spy)
+
       _getEffectMockDefinitionsInternal().push({
         effectToMock: effect,
         mockFn: mockSpy,
       })
 
       effect('foo', 1)
+
       expect(spy).not.toHaveBeenCalled()
       expect(mockSpy).toHaveBeenCalledWith('foo', 1)
+
       _getEffectMockDefinitionsInternal().splice(0, 1)
+    })
+
+    it('has name n/a', () => {
+      const effect = createEffect(jest.fn())
+      expect(effect.effectName).toBe('n/a')
     })
   })
 })
@@ -35,12 +45,15 @@ describe(createEffects.name, () => {
     it('call original effect when called', () => {
       const spy1 = jest.fn()
       const spy2 = jest.fn()
+
       const { effect1, effect2 } = createEffects({
         effect1: spy1,
         effect2: spy2,
       })
+
       effect1()
       effect2()
+
       expect(spy1).toHaveBeenCalled()
       expect(spy2).toHaveBeenCalled()
     })
@@ -49,10 +62,12 @@ describe(createEffects.name, () => {
       const spy1 = jest.fn()
       const spy2 = jest.fn()
       const mockSpy = jest.fn()
+
       const { effect1, effect2 } = createEffects({
         effect1: spy1,
         effect2: spy2,
       })
+
       _getEffectMockDefinitionsInternal().push({
         effectToMock: effect1,
         mockFn: mockSpy,
@@ -60,10 +75,21 @@ describe(createEffects.name, () => {
 
       effect1('foo', 1)
       effect2()
+
       expect(spy1).not.toHaveBeenCalled()
       expect(mockSpy).toHaveBeenCalledWith('foo', 1)
       expect(spy2).toHaveBeenCalled()
       _getEffectMockDefinitionsInternal().splice(0, 1)
+    })
+
+    it('have correct name', () => {
+      const { effect1, effect2 } = createEffects({
+        effect1: jest.fn(),
+        effect2: jest.fn(),
+      })
+
+      expect(effect1.effectName).toBe('effect1')
+      expect(effect2.effectName).toBe('effect2')
     })
   })
 })

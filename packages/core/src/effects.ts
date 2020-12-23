@@ -74,7 +74,7 @@ const mockDefinitions: _EffectMockDefinition[] = []
 export function createEffect<TEffectFunction extends (...args: any[]) => any>(
   effect: TEffectFunction,
 ): SimpluxEffect<TEffectFunction> {
-  return createEffectInternal(effect, 'unknown')
+  return createEffectInternal(effect, 'n/a')
 }
 
 /**
