@@ -1,6 +1,6 @@
 {
   "name": "@simplux/router",
-  "version": "0.18.0-alpha.0",
+  "version": "0.18.0-alpha.1",
   "description": "The router package for simplux. Can be used to provide routing capabilities to an app. If you are building a web app you should use @simplux/url-router instead.",
   "module": "./esm5/index.js",
   "es2015": "./esm2015/index.js",
@@ -42,7 +42,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/core": "0.18.0-alpha.0"
+    "@simplux/core": "0.18.0-alpha.1"
   },
   "devDependencies": {
     "jest": "^26.6.3",
