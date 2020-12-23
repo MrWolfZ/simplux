@@ -26,6 +26,12 @@
       "path": "./recipes/advanced/testing-code-using-mutations/tsconfig.composite.json"
     },
     {
+      "path": "./recipes/angular/testing-components/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/angular/using-in-angular-application/tsconfig.composite.json"
+    },
+    {
       "path": "./recipes/basics/computing-derived-state/tsconfig.composite.json"
     },
     {

@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig.composite.recipes.base.json",
+  "compilerOptions": {
+    "experimentalDecorators": true
+  },
+  "references": [
+    { "path": "../../../packages/angular/tsconfig.composite.build.json" },
+    { "path": "../../../packages/core/tsconfig.composite.build.json" }
+  ]
+}
