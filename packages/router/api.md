@@ -4,8 +4,50 @@
 
 ```ts
 
+import type { Immutable } from '@simplux/core';
+import { SimpluxSelector } from '@simplux/core';
+
 // @public
-export function createSimpluxRouter(): {};
+export function createSimpluxRouter(): SimpluxRouter;
+
+// @public
+export interface SimpluxRoute<TName extends SimpluxRouteName, TParameters> {
+    readonly isActive: SimpluxSelector<SimpluxRouterState, [], boolean>;
+    readonly name: TName;
+    readonly navigateTo: (parameters: TParameters) => void;
+    readonly parameterValues: SimpluxSelector<SimpluxRouterState, [], TParameters>;
+}
+
+// @public
+export interface SimpluxRouteConfiguration<TParameters> {
+    // (undocumented)
+    readonly parameterDefaults?: TParameters;
+}
+
+// @public
+export type SimpluxRouteId = number;
+
+// @public
+export type SimpluxRouteName = string;
+
+// @public
+export interface SimpluxRouter {
+    readonly addRoute: <TName extends SimpluxRouteName, TParameters = {}>(name: TName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TName, TParameters>;
+    readonly state: SimpluxSelector<SimpluxRouterState, [], Immutable<SimpluxRouterState>>;
+}
+
+// @public
+export interface SimpluxRouterState {
+    readonly routes: SimpluxRouteState[];
+}
+
+// @public
+export interface SimpluxRouteState {
+    isActive: boolean;
+    readonly name: string;
+    readonly parameterDefaults: Record<string, unknown>;
+    parameterValues: Record<string, unknown>;
+}
 
 
 // (No @packageDocumentation comment for this package)

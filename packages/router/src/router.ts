@@ -1,14 +1,58 @@
-import { createSimpluxModule } from '@simplux/core'
+import type { Immutable, SimpluxSelector } from '@simplux/core'
+import { SimpluxRouteName, SimpluxRouterState, _module } from './module.js'
+import {
+  SimpluxRoute,
+  SimpluxRouteConfiguration,
+  _createRoute,
+} from './route.js'
 
 /**
- * TODO
- *
- * @returns a router
+ * A router that allows navigating between different routes.
  *
  * @public
  */
-export function createSimpluxRouter() {
-  createSimpluxModule
+export interface SimpluxRouter {
+  /**
+   * A selector to get the current router state.
+   *
+   * @returns the router state
+   *
+   * @public
+   */
+  readonly state: SimpluxSelector<
+    SimpluxRouterState,
+    [],
+    Immutable<SimpluxRouterState>
+  >
 
-  return {}
+  /**
+   * Add a new route to the router.
+   *
+   * @param name - the name of the route
+   * @param routeConfiguration - configuration for the route
+   *
+   * @returns a route object for interacting with the route
+   *
+   * @public
+   */
+  readonly addRoute: <
+    TName extends SimpluxRouteName,
+    TParameters extends Record<string, unknown> = {}
+  >(
+    name: TName,
+    routeConfiguration?: SimpluxRouteConfiguration<TParameters>,
+  ) => SimpluxRoute<TName, TParameters>
+}
+
+/**
+ * Create the simplux router (this creates a global singleton,
+ * therefore calling this method multiple times is not recommended).
+ *
+ * @public
+ */
+export function createSimpluxRouter(): SimpluxRouter {
+  return {
+    state: _module.state,
+    addRoute: _createRoute,
+  }
 }
