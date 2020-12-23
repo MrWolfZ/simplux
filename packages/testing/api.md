@@ -4,7 +4,7 @@
 
 ```ts
 
-import { EffectFunction } from '@simplux/core';
+import { FunctionSignature } from '@simplux/core';
 import { SimpluxEffect } from '@simplux/core';
 import { SimpluxModule } from '@simplux/core';
 import { SimpluxMutation } from '@simplux/core';
@@ -13,7 +13,7 @@ import { SimpluxMutation } from '@simplux/core';
 export function clearAllSimpluxMocks(): void;
 
 // @public
-export function mockEffect<TEffect extends SimpluxEffect<(...args: any[]) => any>, TMock extends EffectFunction<TEffect>>(effectToMock: TEffect, mockFn: TMock): [TMock, () => void];
+export function mockEffect<TEffect extends SimpluxEffect<(...args: any[]) => any>, TMock extends FunctionSignature<TEffect>>(effectToMock: TEffect, mockFn: TMock): [TMock, () => void];
 
 // @public
 export function mockModuleState<TState>(simpluxModule: SimpluxModule<TState>, mockStateValue: TState): () => void;
