@@ -1,14 +1,16 @@
+import {
+  createSelectors,
+  createSimpluxModule,
+  Immutable,
+  SimpluxSelector,
+} from '@simplux/core'
 import { expectAssignable, expectError, expectType } from 'tsd'
-import { createModule } from '../src/module'
-import { createSelectors, SimpluxSelector } from '../src/selectors'
-import { simpluxStore } from '../src/store'
-import { Immutable } from '../src/types'
 
 interface State {
   count: number
 }
 
-const module = createModule<State>(simpluxStore, {
+const module = createSimpluxModule<State>({
   name: 'test',
   initialState: { count: 0 },
 })

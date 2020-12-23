@@ -5,12 +5,12 @@ import {
   SimpluxModule,
   StateChangeSubscription,
   _isSimpluxModule,
-} from './module'
+} from './module.js'
 import {
   _createReduxStoreProxy,
   _createSimpluxStore,
   _SimpluxStore,
-} from './store'
+} from './store.js'
 
 describe('module', () => {
   describe('creating module', () => {

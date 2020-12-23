@@ -1,6 +1,6 @@
 import { createEffect } from '@simplux/core'
-import { clearAllSimpluxMocks } from './cleanup'
-import { mockEffect } from './effects'
+import { clearAllSimpluxMocks } from './cleanup.js'
+import { mockEffect } from './effects.js'
 
 describe(mockEffect.name, () => {
   describe(`created effect`, () => {

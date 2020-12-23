@@ -1,7 +1,7 @@
-import { createImmerReducer } from './immer'
-import { SimpluxModule } from './module'
-import { createMutations, MutationDefinitions } from './mutations'
-import { createModuleReducer } from './reducer'
+import { createImmerReducer } from './immer.js'
+import { SimpluxModule } from './module.js'
+import { createMutations, MutationDefinitions } from './mutations.js'
+import { createModuleReducer } from './reducer.js'
 
 declare class Event {
   constructor(arg: any)

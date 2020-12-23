@@ -2,7 +2,7 @@ import {
   createEffect,
   createEffects,
   _getEffectMockDefinitionsInternal,
-} from './effects'
+} from './effects.js'
 
 describe(createEffect.name, () => {
   describe(`created effect`, () => {

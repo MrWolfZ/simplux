@@ -1,5 +1,5 @@
 import { SimpluxModule, SimpluxMutation } from '@simplux/core'
-import { registerMockCleanupFunction } from './cleanup'
+import { registerMockCleanupFunction } from './cleanup.js'
 
 function setupMutationMock<
   TState,

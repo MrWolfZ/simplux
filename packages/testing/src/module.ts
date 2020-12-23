@@ -1,5 +1,5 @@
 import { SimpluxModule } from '@simplux/core'
-import { registerMockCleanupFunction } from './cleanup'
+import { registerMockCleanupFunction } from './cleanup.js'
 
 /**
  * Set a value that should be returned whenever the module's state

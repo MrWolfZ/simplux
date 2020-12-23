@@ -1,6 +1,6 @@
 import { SimpluxModule } from '@simplux/core'
-import { clearAllSimpluxMocks } from './cleanup'
-import { mockModuleState } from './module'
+import { clearAllSimpluxMocks } from './cleanup.js'
+import { mockModuleState } from './module.js'
 
 describe('module', () => {
   let moduleState = 0

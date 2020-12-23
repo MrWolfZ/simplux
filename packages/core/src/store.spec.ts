@@ -6,7 +6,7 @@ import {
   _getInternalReduxStoreProxy,
   _setReduxStore,
   _transferConfigurationToNewStore,
-} from './store'
+} from './store.js'
 
 describe('store', () => {
   let cleanup: (() => void) | undefined

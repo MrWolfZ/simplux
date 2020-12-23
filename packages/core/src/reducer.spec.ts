@@ -1,4 +1,4 @@
-import { createModuleReducer } from './reducer'
+import { createModuleReducer } from './reducer.js'
 
 describe(`reducer`, () => {
   let nodeEnv: string | undefined

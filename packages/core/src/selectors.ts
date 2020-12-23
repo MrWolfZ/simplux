@@ -1,5 +1,5 @@
-import { SimpluxModule } from './module'
-import { Immutable } from './types'
+import { SimpluxModule } from './module.js'
+import { Immutable } from './types.js'
 
 /**
  * A function to turn into a selector.

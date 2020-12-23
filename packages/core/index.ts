@@ -1,6 +1,10 @@
 import { createStore, Reducer, Store } from 'redux'
-import { createModule, SimpluxModule, SimpluxModuleConfig } from './src/module'
-import { simpluxStore, _setReduxStore } from './src/store'
+import {
+  createModule,
+  SimpluxModule,
+  SimpluxModuleConfig,
+} from './src/module.js'
+import { simpluxStore, _setReduxStore } from './src/store.js'
 
 // we create and set a default redux store for simple scenarios
 setReduxStoreForSimplux(createStore(getSimpluxReducer()), (s) => s)
@@ -14,7 +18,7 @@ export {
   SimpluxEffects,
   _EffectMockDefinition,
   _getEffectMockDefinitionsInternal,
-} from './src/effects'
+} from './src/effects.js'
 export {
   ResolvedStateChangeHandler,
   SimpluxModule,
@@ -26,7 +30,7 @@ export {
   Subscription,
   _isSimpluxModule,
   _SimpluxModuleInternals,
-} from './src/module'
+} from './src/module.js'
 export {
   createMutations,
   MutationDefinition,
@@ -34,7 +38,7 @@ export {
   ResolvedMutation,
   SimpluxMutation,
   SimpluxMutations,
-} from './src/mutations'
+} from './src/mutations.js'
 export {
   createSelectors,
   ResolvedSelector,
@@ -42,13 +46,13 @@ export {
   SelectorDefinitions,
   SimpluxSelector,
   SimpluxSelectors,
-} from './src/selectors'
+} from './src/selectors.js'
 export {
   _getInternalReduxStoreProxy,
   _InternalReduxStoreProxy,
   _SimpluxStore,
-} from './src/store'
-export * from './src/types'
+} from './src/store.js'
+export * from './src/types.js'
 
 // tslint:disable: max-line-length (cannot line break the links)
 

@@ -1,5 +1,5 @@
-import { SimpluxModule } from './module'
-import { createSelectors } from './selectors'
+import { SimpluxModule } from './module.js'
+import { createSelectors } from './selectors.js'
 
 describe('selectors', () => {
   let nodeEnv: string | undefined

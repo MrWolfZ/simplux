@@ -4,4 +4,4 @@ export {
   ModuleServiceSelectors,
   ModuleServiceState,
   ObservableSelector,
-} from './src/service'
+} from './src/service.js'

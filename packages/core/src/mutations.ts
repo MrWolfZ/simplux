@@ -1,4 +1,4 @@
-import { SimpluxModule } from './module'
+import { SimpluxModule } from './module.js'
 
 /**
  * A function to turn into a mutation.

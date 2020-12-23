@@ -1,6 +1,6 @@
 import { createMutations, SimpluxModule } from '@simplux/core'
-import { clearAllSimpluxMocks } from './cleanup'
-import { mockMutation } from './mutations'
+import { clearAllSimpluxMocks } from './cleanup.js'
+import { mockMutation } from './mutations.js'
 
 describe('mutations', () => {
   let moduleState = 0
@@ -51,7 +51,7 @@ describe('mutations', () => {
 
   it('can be mocked', () => {
     const { increment, incrementBy } = createMutations(moduleMock, {
-      increment: c => c + 1,
+      increment: (c) => c + 1,
       incrementBy: (c, amount: number) => c + amount,
     })
 
@@ -93,7 +93,7 @@ describe('mutations', () => {
 
     it('can be removed all at once', () => {
       const { increment, incrementBy } = createMutations(moduleMock, {
-        increment: c => c + 1,
+        increment: (c) => c + 1,
         incrementBy: (c, amount: number) => c + amount,
       })
 
@@ -131,7 +131,7 @@ describe('mutations', () => {
       }
 
       const { increment, incrementBy } = createMutations(moduleMock, {
-        increment: c => c + 1,
+        increment: (c) => c + 1,
         incrementBy: (c, amount: number) => c + amount,
       })
 
@@ -139,7 +139,7 @@ describe('mutations', () => {
         increment: increment2,
         incrementBy: incrementBy2,
       } = createMutations(moduleMock2, {
-        increment: c => c + 1,
+        increment: (c) => c + 1,
         incrementBy: (c, amount: number) => c + amount,
       })
 

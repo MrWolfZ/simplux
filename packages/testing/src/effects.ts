@@ -4,7 +4,7 @@ import {
   _EffectMockDefinition,
   _getEffectMockDefinitionsInternal,
 } from '@simplux/core'
-import { registerMockCleanupFunction } from './cleanup'
+import { registerMockCleanupFunction } from './cleanup.js'
 
 /**
  * Specify a mock function that should be called instead of the

@@ -5,7 +5,7 @@ import {
   _isSimpluxModule,
 } from '@simplux/core'
 import { useEffect, useMemo, useReducer } from 'react'
-import { useSimpluxContext } from './context'
+import { useSimpluxContext } from './context.js'
 
 /**
  * A react hook that allows accessing a module's state inside

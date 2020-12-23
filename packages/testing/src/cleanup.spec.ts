@@ -1,4 +1,4 @@
-import { clearAllSimpluxMocks, registerMockCleanupFunction } from './cleanup'
+import { clearAllSimpluxMocks, registerMockCleanupFunction } from './cleanup.js'
 
 describe('mock cleanup', () => {
   describe(registerMockCleanupFunction.name, () => {

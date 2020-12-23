@@ -1,10 +1,10 @@
 import { AnyAction, Reducer } from 'redux'
-import { createImmerReducer } from './immer'
-import { MutationDefinitions } from './mutations'
-import { createModuleReducer } from './reducer'
-import { SelectorDefinitions } from './selectors'
-import { simpluxStore, _SimpluxStore } from './store'
-import { Immutable } from './types'
+import { createImmerReducer } from './immer.js'
+import { MutationDefinitions } from './mutations.js'
+import { createModuleReducer } from './reducer.js'
+import { SelectorDefinitions } from './selectors.js'
+import { simpluxStore, _SimpluxStore } from './store.js'
+import { Immutable } from './types.js'
 
 /**
  * Configuration object for creating simplux modules.

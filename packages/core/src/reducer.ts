@@ -1,5 +1,5 @@
 import { Action } from 'redux'
-import { createMutationPrefix, MutationDefinitions } from './mutations'
+import { createMutationPrefix, MutationDefinitions } from './mutations.js'
 
 /**
  * @internal

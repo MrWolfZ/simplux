@@ -6,7 +6,7 @@ module.exports = {
     '^@simplux/testing$': '<rootDir>/index.ts',
   },
   transform: {
-    '^.+\\.ts$': 'ts-jest',
+    '\\.tsx?$': '../../jest.transform.cjs',
   },
   testMatch: ['<rootDir>/src/**/*.spec.ts?(x)', '<rootDir>/e2e.spec.ts'],
   testPathIgnorePatterns: ['node_modules'],

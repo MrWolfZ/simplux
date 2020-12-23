@@ -1,5 +1,5 @@
 import { Reducer } from 'redux'
-import { createImmerReducer } from './immer'
+import { createImmerReducer } from './immer.js'
 
 describe(createImmerReducer.name, () => {
   describe(`created reducer`, () => {

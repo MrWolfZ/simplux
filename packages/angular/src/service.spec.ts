@@ -7,7 +7,7 @@ import {
   StateChangeSubscription,
 } from '@simplux/core'
 import { Observable } from 'rxjs'
-import { createModuleServiceBaseClass } from './service'
+import { createModuleServiceBaseClass } from './service.js'
 
 type Mutable<T> = { -readonly [prop in keyof T]: T[prop] }
 const asMutable = <T>(t: T): Mutable<T> => t

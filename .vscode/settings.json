@@ -9,6 +9,7 @@
   "tslint.exclude": "**/node_modules/**/*",
   "typescript.tsdk": "node_modules\\typescript\\lib",
   "typescript.preferences.useAliasesForRenames": false,
+  "typescript.preferences.importModuleSpecifierEnding": "js",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": true,

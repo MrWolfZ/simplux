@@ -1,2 +1,2 @@
-export { SimpluxProvider } from './src/context'
-export { useSimplux } from './src/useSimplux'
+export { SimpluxProvider } from './src/context.js'
+export { useSimplux } from './src/useSimplux.js'
