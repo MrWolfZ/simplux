@@ -1,4 +1,4 @@
-import type { SimpluxModule } from '@simplux/core'
+import type { SimpluxModule, SimpluxModuleLike } from '@simplux/core'
 import { registerMockCleanupFunction } from './cleanup.js'
 
 /**
@@ -21,13 +21,14 @@ import { registerMockCleanupFunction } from './cleanup.js'
  * @public
  */
 export function mockModuleState<TState>(
-  simpluxModule: SimpluxModule<TState>,
+  simpluxModule: SimpluxModuleLike<TState>,
   mockStateValue: TState,
 ) {
-  simpluxModule.$simpluxInternals.mockStateValue = mockStateValue
+  const module = simpluxModule as SimpluxModule<TState>
+  module.$simpluxInternals.mockStateValue = mockStateValue
 
   const cleanup = () => {
-    delete simpluxModule.$simpluxInternals.mockStateValue
+    delete module.$simpluxInternals.mockStateValue
     clearCleanup()
   }
 
