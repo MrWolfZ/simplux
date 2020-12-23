@@ -42,6 +42,18 @@
     },
     {
       "path": "./recipes/quickstart/react/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/react/testing-components/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/react/using-hot-module-reloading/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/react/using-in-react-application/tsconfig.composite.json"
+    },
+    {
+      "path": "./recipes/react/using-lazy-loading-code-splitting/tsconfig.composite.json"
     }
   ]
 }
