@@ -1,4 +1,4 @@
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { expectError, expectType } from 'tsd'
 import { createModule } from '../src/module'
 import { createSelectors } from '../src/selectors'
 import { simpluxStore } from '../src/store'
@@ -19,13 +19,14 @@ const selectors = createSelectors(module, {
   plus: (s, amount: number) => s.count + amount,
 })
 
-expectAssignable<() => Immutable<State>>(selectors.id)
+expectType<() => Immutable<State>>(selectors.id)
 expectType<(s: Immutable<State>) => Immutable<State>>(selectors.id.withState)
 
 // @ts-expect-error
 expectError((selectors.id().count += 1))
 
-expectAssignable<() => number>(selectors.plusOne)
+expectType<() => number>(selectors.plusOne)
 expectType<(s: Immutable<State>) => number>(selectors.plusOne.withState)
-expectAssignable<(a: number) => number>(selectors.plus)
+
+expectType<(a: number) => number>(selectors.plus)
 expectType<(s: Immutable<State>, a: number) => number>(selectors.plus.withState)

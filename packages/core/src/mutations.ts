@@ -25,13 +25,9 @@ export interface MutationDefinitions<TState> {
  * @public
  */
 export interface SimpluxMutation<TState, TArgs extends any[]> {
-  /**
-   * Execute the mutation on the module's latest state.
-   *
-   * @param args - the arguments for the mutation
-   *
-   * @returns the updated state
-   */
+  // this signature does not have a TSDoc comment on purpose to allow
+  // consumers to define their own docs for their mutations (which would
+  // be overwritten if this signature had a TSDoc comment)
   (...args: TArgs): TState
 
   /**

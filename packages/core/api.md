@@ -199,6 +199,7 @@ export interface _SimpluxModuleInternals<TState> {
 
 // @public
 export interface SimpluxMutation<TState, TArgs extends any[]> {
+    // (undocumented)
     (...args: TArgs): TState;
     readonly asAction: (...args: TArgs) => {
         type: string;
@@ -219,6 +220,7 @@ export type SimpluxMutations<TState, TMutations extends MutationDefinitions<TSta
 
 // @public
 export interface SimpluxSelector<TState, TArgs extends any[], TReturn> {
+    // (undocumented)
     (...args: TArgs): TReturn;
     // @internal
     readonly owningModule: SimpluxModule<TState>;
