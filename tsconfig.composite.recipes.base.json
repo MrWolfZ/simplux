@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./build",
+    "composite": true,
+    "incremental": true,
+    "inlineSources": false,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "types": ["jest"],
+    "lib": ["dom", "es2015"]
+  },
+  "exclude": ["**/node_modules/**", "**/dist/**"]
+}

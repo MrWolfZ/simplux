@@ -1,0 +1,13 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./recipes/basics/computing-derived-state/tsconfig.composite.json"
+    },
+    { "path": "./recipes/basics/getting-started/tsconfig.composite.json" },
+    {
+      "path": "./recipes/basics/testing-derived-state/tsconfig.composite.json"
+    },
+    { "path": "./recipes/basics/testing-state-changes/tsconfig.composite.json" }
+  ]
+}
