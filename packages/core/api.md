@@ -149,7 +149,7 @@ export interface SelectorDefinitions<TState> {
 export function setReduxStoreForSimplux<TState>(storeToUse: Store<TState>, simpluxStateGetter: (rootState: TState) => any): () => void;
 
 // @public
-export const SIMPLUX_MODULE: unique symbol;
+export const SIMPLUX_MODULE = "[SIMPLUX_MODULE]";
 
 // @public
 export type SimpluxEffect<TFunction extends (...args: any[]) => any> = FunctionSignature<TFunction> & SimpluxEffectMetadata;
