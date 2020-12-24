@@ -166,13 +166,13 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - router: allow creating child routes
 - router: remove default parameter values
 - router: add type tests
-- url-router: create package
-- url-router: abstract url interaction into separate module
-- url-router: store url routes in separate module and create route in router module
-- url-router: store url template as segments in module
-- url-router: parse url template to extract parameters
-- url-router: allow defining global query parameters
-- url-router: throw when creating conflicting route definition
+- browser-router: create package
+- browser-router: abstract url interaction into separate module
+- browser-router: store url routes in separate module and create route in router module
+- browser-router: store url template as segments in module
+- browser-router: parse url template to extract parameters
+- browser-router: allow defining global query parameters
+- browser-router: throw when creating conflicting route definition
 - testing: add functions to throw when calling unmocked mutations or effects
 - entities: create package for managing collections of entities
 - entities: create default set of entity management mutations
@@ -181,6 +181,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - docs: create website
 - recipes: add advanced recipe for `mixing in mutations and selectors`
 - create root jest config to run tests of all projects at once
+- switch to eslint
 
 ## Contributing
 
