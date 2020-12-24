@@ -1,5 +1,5 @@
 import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
-import { _module } from './module.js'
+import { _routeEffects } from './route.js'
 import { _router } from './router.js'
 import { routeName1, routeName2 } from './testdata.js'
 
@@ -7,19 +7,18 @@ describe(`router`, () => {
   afterEach(clearAllSimpluxMocks)
 
   describe('created router', () => {
-    it('allows creating route without parameters', () => {
-      const [registerMock] = mockEffect(_module.registerRoute, jest.fn())
+    it('adds route without parameters', () => {
+      const [addMock] = mockEffect(_routeEffects.addRoute, jest.fn())
 
-      const testRoute = _router.addRoute(routeName1)
+      _router.addRoute(routeName1)
 
-      expect(testRoute.name).toBe(routeName1)
-      expect(registerMock).toHaveBeenCalled()
+      expect(addMock).toHaveBeenCalledWith(routeName1)
     })
 
-    it('allows creating route with parameters', () => {
-      const [registerMock] = mockEffect(_module.registerRoute, jest.fn())
+    it('adds route with parameters', () => {
+      const [addMock] = mockEffect(_routeEffects.addRoute, jest.fn())
 
-      const testRoute = _router.addRoute(routeName2, {
+      _router.addRoute(routeName2, {
         parameterDefaults: {
           stringParam: 'string',
           numberParam: 100,
@@ -27,12 +26,17 @@ describe(`router`, () => {
         },
       })
 
-      expect(testRoute.name).toBe(routeName2)
-      expect(registerMock).toHaveBeenCalled()
+      expect(addMock).toHaveBeenCalledWith(routeName2, {
+        parameterDefaults: {
+          stringParam: 'string',
+          numberParam: 100,
+          booleanParam: true,
+        },
+      })
     })
 
-    it('allows creating multiple routes', () => {
-      const [registerMock] = mockEffect(_module.registerRoute, jest.fn())
+    it('adds multiple routes', () => {
+      const [addMock] = mockEffect(_routeEffects.addRoute, jest.fn())
 
       _router.addRoute(routeName1)
 
@@ -44,7 +48,14 @@ describe(`router`, () => {
         },
       })
 
-      expect(registerMock).toHaveBeenCalledTimes(2)
+      expect(addMock).toHaveBeenCalledWith(routeName1)
+      expect(addMock).toHaveBeenCalledWith(routeName2, {
+        parameterDefaults: {
+          stringParam: 'string',
+          numberParam: 100,
+          booleanParam: true,
+        },
+      })
     })
   })
 })
