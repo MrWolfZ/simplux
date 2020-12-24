@@ -4,7 +4,12 @@ import {
   SimpluxEffect,
   SimpluxSelector,
 } from '@simplux/core'
-import { SimpluxRouteName, SimpluxRouterState, _module } from './module.js'
+import {
+  SimpluxRouteId,
+  SimpluxRouteName,
+  SimpluxRouterState,
+  _module,
+} from './module.js'
 
 /**
  * The configuration for a route.
@@ -42,6 +47,13 @@ export type NavigateToFn<TParameters> = keyof TParameters extends never
  */
 export interface SimpluxRoute<TParameters = {}> {
   /**
+   * The id of the route.
+   *
+   * @internal
+   */
+  readonly id: SimpluxRouteId
+
+  /**
    * The name of the route.
    */
   readonly name: SimpluxRouteName
@@ -73,7 +85,7 @@ export interface SimpluxRoute<TParameters = {}> {
 export const _routeEffects = createEffects({
   addRoute: <TParameters extends Record<string, any> = {}>(
     name: SimpluxRouteName,
-    configuration: SimpluxRouteConfiguration<TParameters> | undefined,
+    configuration?: SimpluxRouteConfiguration<TParameters>,
   ): SimpluxRoute<TParameters> => {
     const routeId = _module.registerRoute(name, configuration)
 
@@ -92,6 +104,7 @@ export const _routeEffects = createEffects({
     })
 
     return {
+      id: routeId,
       name,
       ...selectors,
       navigateTo: navigateTo as SimpluxEffect<NavigateToFn<TParameters>>,

@@ -21,6 +21,8 @@ export type _RequiredPropertyNames<T> = {
 
 // @public
 export interface SimpluxRoute<TParameters = {}> {
+    // @internal
+    readonly id: SimpluxRouteId;
     readonly isActive: SimpluxSelector<SimpluxRouterState, [], boolean>;
     readonly name: SimpluxRouteName;
     readonly navigateTo: SimpluxEffect<NavigateToFn<TParameters>>;

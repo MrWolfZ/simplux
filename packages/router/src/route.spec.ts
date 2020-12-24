@@ -17,15 +17,22 @@ describe(`route`, () => {
 
   describe(addRoute, () => {
     it('allows creating route without parameters', () => {
-      const [registerMock] = mockEffect(_module.registerRoute, jest.fn())
+      const [registerMock] = mockEffect(
+        _module.registerRoute,
+        jest.fn().mockReturnValue(1),
+      )
 
-      const testRoute = addRoute(routeName1, undefined)
+      const testRoute = addRoute(routeName1)
+      expect(testRoute.id).toBe(1)
       expect(testRoute.name).toBe(routeName1)
       expect(registerMock).toHaveBeenCalledWith(routeName1, undefined)
     })
 
     it('allows creating route with parameters', () => {
-      const [registerMock] = mockEffect(_module.registerRoute, jest.fn())
+      const [registerMock] = mockEffect(
+        _module.registerRoute,
+        jest.fn().mockReturnValue(1),
+      )
 
       const parameterDefaults = {
         stringParam: 'string',
@@ -37,6 +44,7 @@ describe(`route`, () => {
         parameterDefaults,
       })
 
+      expect(testRoute.id).toBe(1)
       expect(testRoute.name).toBe(routeName2)
       expect(registerMock).toHaveBeenCalledWith(routeName2, {
         parameterDefaults,
@@ -44,7 +52,10 @@ describe(`route`, () => {
     })
 
     it('allows creating route with explicit parameters type', () => {
-      const [registerMock] = mockEffect(_module.registerRoute, jest.fn())
+      const [registerMock] = mockEffect(
+        _module.registerRoute,
+        jest.fn().mockReturnValue(1),
+      )
 
       const parameterDefaults: Partial<RouteParameters3> = {
         opt: '',
@@ -54,6 +65,7 @@ describe(`route`, () => {
         parameterDefaults,
       })
 
+      expect(testRoute.id).toBe(1)
       expect(testRoute.name).toBe(routeName3)
       expect(registerMock).toHaveBeenCalledWith(routeName3, {
         parameterDefaults,
@@ -69,14 +81,14 @@ describe(`route`, () => {
 
         it('returns true if route is active', () => {
           mockEffect(_module.registerRoute, () => 1)
-          const testRoute = addRoute(routeName1, undefined)
+          const testRoute = addRoute(routeName1)
           const isActive = testRoute.isActive.withState(stateWithActiveRoute)
           expect(isActive).toBe(true)
         })
 
         it('returns false if route is inactive', () => {
           mockEffect(_module.registerRoute, () => 2)
-          const testRoute = addRoute(routeName2, undefined)
+          const testRoute = addRoute(routeName2)
           const isActive = testRoute.isActive.withState(stateWithActiveRoute)
           expect(isActive).toBe(false)
         })
@@ -92,7 +104,7 @@ describe(`route`, () => {
 
         it('returns parameter values for an active route', () => {
           mockEffect(_module.registerRoute, () => 1)
-          const testRoute = addRoute(routeName1, undefined)
+          const testRoute = addRoute(routeName1)
           const result = testRoute.parameterValues.withState(
             stateWithActiveRoute,
           )
@@ -107,7 +119,7 @@ describe(`route`, () => {
           }
 
           mockEffect(_module.registerRoute, () => 2)
-          const testRoute = addRoute(routeName2, undefined)
+          const testRoute = addRoute(routeName2)
 
           const result = testRoute.parameterValues.withState(state)
 
@@ -126,7 +138,7 @@ describe(`route`, () => {
             bool: true,
           }
 
-          const testRoute = addRoute<RouteParameters3>(routeName3, undefined)
+          const testRoute = addRoute<RouteParameters3>(routeName3)
 
           const result = testRoute.parameterValues.withState({
             ...stateWithActiveRoute,
@@ -141,7 +153,7 @@ describe(`route`, () => {
 
         it('throws if route is inactive', () => {
           mockEffect(_module.registerRoute, () => 2)
-          const testRoute = addRoute(routeName2, undefined)
+          const testRoute = addRoute(routeName2)
           expect(() =>
             testRoute.parameterValues.withState(stateWithActiveRoute),
           ).toThrow()
@@ -172,7 +184,7 @@ describe(`route`, () => {
             bool: true,
           }
 
-          const testRoute = addRoute<RouteParameters3>(routeName1, undefined)
+          const testRoute = addRoute<RouteParameters3>(routeName1)
 
           testRoute.navigateTo(parameterValues)
 
@@ -183,7 +195,7 @@ describe(`route`, () => {
           mockEffect(_module.registerRoute, () => 1)
           const [mock] = mockEffect(_module.navigateToRoute, jest.fn())
 
-          const testRoute = addRoute(routeName1, undefined)
+          const testRoute = addRoute(routeName1)
 
           testRoute.navigateTo()
 
@@ -198,7 +210,7 @@ describe(`route`, () => {
             opt?: string
           }
 
-          const testRoute = addRoute<Parameters>(routeName1, undefined)
+          const testRoute = addRoute<Parameters>(routeName1)
 
           testRoute.navigateTo()
 
