@@ -41,7 +41,7 @@ export type SimpluxRouteName = string;
 
 // @public
 export interface SimpluxRouter {
-    readonly addRoute: <TParameters extends Record<string, any> = {}>(name: SimpluxRouteName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TParameters>;
+    readonly addRoute: SimpluxEffect<(<TParameters extends Record<string, any> = {}>(name: SimpluxRouteName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TParameters>)>;
     readonly state: SimpluxSelector<SimpluxRouterState, [
     ], Immutable<SimpluxRouterState>>;
 }
@@ -55,7 +55,7 @@ export interface SimpluxRouterState {
 
 // @public
 export interface SimpluxRouteState {
-    readonly name: string;
+    readonly name: SimpluxRouteName;
     readonly parameterDefaults: Readonly<Record<string, unknown>>;
 }
 

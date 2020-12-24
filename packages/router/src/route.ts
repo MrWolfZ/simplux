@@ -48,47 +48,53 @@ export interface SimpluxRoute<TParameters = {}> {
 
   /**
    * A selector for checking if the route is active.
+   *
+   * @returns `true` if the route is active, otherwise `false`
    */
   readonly isActive: SimpluxSelector<SimpluxRouterState, [], boolean>
 
   /**
-   * A selector for getting the parameter values for this route. Will throw
-   * when called while the route is not active.
+   * A selector for getting the parameter values for this route.
+   * Throws an error if the route is not active.
+   *
+   * @returns the current parameters for the route (if it is active)
    */
   readonly parameterValues: SimpluxSelector<SimpluxRouterState, [], TParameters>
 
   /**
    * Navigate to this route with the given parameters.
+   *
+   * @param parameters - the parameters for the navigation
    */
   readonly navigateTo: SimpluxEffect<NavigateToFn<TParameters>>
 }
 
-/**
- * @internal
- */
-export function _createRoute<TParameters extends Record<string, any> = {}>(
-  name: SimpluxRouteName,
-  configuration: SimpluxRouteConfiguration<TParameters> | undefined,
-): SimpluxRoute<TParameters> {
-  const routeId = _module.registerRoute(name, configuration)
+// tslint:disable-next-line:variable-name (internal export)
+export const _routeEffects = createEffects({
+  addRoute: <TParameters extends Record<string, any> = {}>(
+    name: SimpluxRouteName,
+    configuration: SimpluxRouteConfiguration<TParameters> | undefined,
+  ): SimpluxRoute<TParameters> => {
+    const routeId = _module.registerRoute(name, configuration)
 
-  const selectors = createSelectors(_module, {
-    isActive: (state) => _module.routeIsActive.withState(state, routeId),
+    const selectors = createSelectors(_module, {
+      isActive: (state) => _module.routeIsActive.withState(state, routeId),
 
-    parameterValues: (state) => {
-      const values = _module.routeParameterValues.withState(state, routeId)
-      return values as TParameters
-    },
-  })
+      parameterValues: (state) => {
+        const values = _module.routeParameterValues.withState(state, routeId)
+        return values as TParameters
+      },
+    })
 
-  const { navigateTo } = createEffects({
-    navigateTo: (parameters?: TParameters) =>
-      _module.navigateToRoute(routeId, parameters || {}),
-  })
+    const { navigateTo } = createEffects({
+      navigateTo: (parameters?: TParameters) =>
+        _module.navigateToRoute(routeId, parameters || {}),
+    })
 
-  return {
-    name,
-    ...selectors,
-    navigateTo: navigateTo as SimpluxEffect<NavigateToFn<TParameters>>,
-  }
-}
+    return {
+      name,
+      ...selectors,
+      navigateTo: navigateTo as SimpluxEffect<NavigateToFn<TParameters>>,
+    }
+  },
+})

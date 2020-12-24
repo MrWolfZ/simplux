@@ -29,7 +29,7 @@ export interface SimpluxRouteState {
   /**
    * The name of the route.
    */
-  readonly name: string
+  readonly name: SimpluxRouteName
 
   /**
    * The default parameter values.
