@@ -20,11 +20,11 @@ export interface SimpluxRouteConfiguration<TParameters> {
  *
  * @public
  */
-export interface SimpluxRoute<TName extends SimpluxRouteName, TParameters> {
+export interface SimpluxRoute<TParameters = {}> {
   /**
    * The name of the route.
    */
-  readonly name: TName
+  readonly name: SimpluxRouteName
 
   /**
    * A selector for checking if the route is active.
@@ -46,13 +46,10 @@ export interface SimpluxRoute<TName extends SimpluxRouteName, TParameters> {
 /**
  * @internal
  */
-export function _createRoute<
-  TName extends SimpluxRouteName,
-  TParameters extends Record<string, unknown> = {}
->(
-  name: TName,
+export function _createRoute<TParameters extends Record<string, unknown> = {}>(
+  name: SimpluxRouteName,
   configuration: SimpluxRouteConfiguration<TParameters> | undefined,
-): SimpluxRoute<TName, TParameters> {
+): SimpluxRoute<TParameters> {
   const routeId = _module.registerRoute(name, configuration)
 
   const selectors = createSelectors(_module, {

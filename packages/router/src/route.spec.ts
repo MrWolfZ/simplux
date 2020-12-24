@@ -38,7 +38,7 @@ describe(`route`, () => {
     })
 
     describe('created route', () => {
-      describe(keyOf<SimpluxRoute<string, {}>>('isActive'), () => {
+      describe(keyOf<SimpluxRoute>('isActive'), () => {
         const stateWithActiveRoute: SimpluxRouterState = {
           routes: [{ ...routeState1, isActive: true }, routeState2],
         }
@@ -58,7 +58,7 @@ describe(`route`, () => {
         })
       })
 
-      describe(keyOf<SimpluxRoute<string, {}>>('parameterValues'), () => {
+      describe(keyOf<SimpluxRoute>('parameterValues'), () => {
         const parameterValues = { param: 1 }
         const stateWithActiveRoute: SimpluxRouterState = {
           routes: [
@@ -102,7 +102,7 @@ describe(`route`, () => {
         })
       })
 
-      describe(keyOf<SimpluxRoute<string, {}>>('navigateTo'), () => {
+      describe(keyOf<SimpluxRoute>('navigateTo'), () => {
         it('navigates to the route', () => {
           mockEffect(_module.registerRoute, () => 1)
           const [mock] = mockEffect(_module.navigateToRoute, jest.fn())

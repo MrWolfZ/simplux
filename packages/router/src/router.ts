@@ -35,13 +35,10 @@ export interface SimpluxRouter {
    *
    * @public
    */
-  readonly addRoute: <
-    TName extends SimpluxRouteName,
-    TParameters extends Record<string, unknown> = {}
-  >(
-    name: TName,
+  readonly addRoute: <TParameters extends Record<string, unknown> = {}>(
+    name: SimpluxRouteName,
     routeConfiguration?: SimpluxRouteConfiguration<TParameters>,
-  ) => SimpluxRoute<TName, TParameters>
+  ) => SimpluxRoute<TParameters>
 }
 
 /**
