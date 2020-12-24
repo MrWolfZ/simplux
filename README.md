@@ -117,6 +117,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [managing collections of entities](recipes/advanced/managing-entity-collections#readme) (work-in-progress)
 - [composing my mutations](recipes/advanced/composing-mutations#readme)
 - [composing my selectors](recipes/advanced/composing-selectors#readme)
+- [routing between different views in my web application](recipes/advanced/routing-in-web-application#readme) (work-in-progress)
 - [using **simplux** in my application together with Redux](recipes/advanced/using-in-redux-application#readme)
 - [debugging with Redux DevTools](recipes/advanced/debugging-with-redux-devtools#readme)
 
@@ -127,8 +128,10 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [building non-trivial React applications](recipes/react/building-non-trivial-applications#readme) (work-in-progress)
 - [using lazy loaded components/code splitting](recipes/react/using-lazy-loading-code-splitting#readme)
 - [using hot module reloading (HMR)](recipes/react/using-hot-module-reloading#readme)
+- [routing between different views in my React application](recipes/react/routing-in-react-application#readme) (work-in-progress)
 - [using server-side rendering (SSR)](recipes/react/using-server-side-rendering#readme) (work-in-progress)
 - [using **simplux** in my React Native application](recipes/react/using-in-react-native-application#readme) (work-in-progress)
+- [routing between different views in my React Native application](recipes/react/routing-in-react-native-application#readme) (work-in-progress)
 
 ### Angular
 
@@ -136,6 +139,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 - [testing my Angular components](recipes/angular/testing-components#readme)
 - [building non-trivial Angular applications](recipes/angular/building-non-trivial-applications#readme) (work-in-progress)
 - [using lazy loaded routes/code splitting](recipes/angular/using-lazy-loading-code-splitting#readme) (work-in-progress)
+- [routing between different views in my Angular application](recipes/angular/routing-in-angular-application#readme) (work-in-progress)
 
 ## Motivation
 
