@@ -3,7 +3,6 @@ import {
   mockModuleState,
   mockMutation,
 } from '@simplux/testing'
-import type { SimpluxModuleLike } from '../../core/index.js'
 import { SimpluxRouterState, _module } from './module.js'
 import {
   emptyRouterState,
@@ -283,11 +282,7 @@ describe(`module`, () => {
     }
 
     it('activates the route', () => {
-      mockModuleState(
-        // cast is workaround for issue with composite builds
-        (_module as unknown) as SimpluxModuleLike<SimpluxRouterState>,
-        state,
-      )
+      mockModuleState(_module, state)
 
       const [mock] = mockMutation(_module.activateRoute, jest.fn())
 

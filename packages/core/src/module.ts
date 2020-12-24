@@ -10,7 +10,11 @@ import type { Immutable } from './types.js'
  *
  * @public
  */
-export const SIMPLUX_MODULE = Symbol()
+// should really be a symbol, but as of TypeScript 4.1 there is a bug
+// that causes the symbol to not be properly re-exported in type
+// definitions when spreading a module object onto an export, which can
+// cause issues with composite builds
+export const SIMPLUX_MODULE = '[SIMPLUX_MODULE]'
 
 /**
  * Configuration object for creating simplux modules.
