@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.lib.json",
   "compilerOptions": {
     "baseUrl": "./",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "lib": ["dom", "esnext"]
   },
   "include": ["index.ts", "src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts", "src/testdata.ts"]
