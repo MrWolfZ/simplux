@@ -157,11 +157,22 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- router: clean up tests to have less redudancy
-- router: add type tests
-- router: add tests that specify the parameter shape directly
+- router: method `addRoutes` on `SimpluxRouter` to create multiple routes at once
+- router: make navigation async
+- router: add interceptor `onNavigateTo` to route configuration
+- router: explicitly specify what happened in return value of `navigateTo`
+- router: capture navigation history
+- router: allow going back to previously active route
+- router: allow creating child routes
 - router: remove default parameter values
+- router: add type tests
 - url-router: create package
+- url-router: abstract url interaction into separate module
+- url-router: store url routes in separate module and create route in router module
+- url-router: store url template as segments in module
+- url-router: parse url template to extract parameters
+- url-router: allow defining global query parameters
+- url-router: throw when creating conflicting route definition
 - testing: add functions to throw when calling unmocked mutations or effects
 - entities: create package for managing collections of entities
 - entities: create default set of entity management mutations
@@ -169,7 +180,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - entities: create default set of selectors for entities
 - docs: create website
 - recipes: add advanced recipe for `mixing in mutations and selectors`
-- move quickstart recipes to repository
+- create root jest config to run tests of all projects at once
 
 ## Contributing
 
