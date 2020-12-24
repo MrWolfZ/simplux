@@ -16,6 +16,26 @@ export interface SimpluxRouteConfiguration<TParameters> {
 }
 
 /**
+ * Helper type to extract the required property names from an object
+ *
+ * @public
+ */
+export type _RequiredPropertyNames<T> = {
+  [K in keyof T]-?: undefined extends T[K] ? never : K
+}[keyof T]
+
+/**
+ * Navigate to the route.
+ *
+ * @public
+ */
+export type NavigateToFn<TParameters> = keyof TParameters extends never
+  ? () => void
+  : _RequiredPropertyNames<TParameters> extends never
+  ? (parameters?: TParameters) => void
+  : (parameters: TParameters) => void
+
+/**
  * A simplux route.
  *
  * @public
@@ -40,7 +60,7 @@ export interface SimpluxRoute<TParameters = {}> {
   /**
    * Navigate to this route with the given parameters.
    */
-  readonly navigateTo: SimpluxEffect<(parameters: TParameters) => void>
+  readonly navigateTo: SimpluxEffect<NavigateToFn<TParameters>>
 }
 
 /**
@@ -61,14 +81,14 @@ export function _createRoute<TParameters extends Record<string, any> = {}>(
     },
   })
 
-  const effects = createEffects({
-    navigateTo: (parameters: TParameters) =>
-      _module.navigateToRoute(routeId, parameters),
+  const { navigateTo } = createEffects({
+    navigateTo: (parameters?: TParameters) =>
+      _module.navigateToRoute(routeId, parameters || {}),
   })
 
   return {
     name,
     ...selectors,
-    ...effects,
+    navigateTo: navigateTo as SimpluxEffect<NavigateToFn<TParameters>>,
   }
 }

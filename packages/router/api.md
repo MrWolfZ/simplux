@@ -12,17 +12,25 @@ import { SimpluxSelector } from '@simplux/core';
 export function createSimpluxRouter(): SimpluxRouter;
 
 // @public
+export type NavigateToFn<TParameters> = keyof TParameters extends never ? () => void : _RequiredPropertyNames<TParameters> extends never ? (parameters?: TParameters) => void : (parameters: TParameters) => void;
+
+// @public
+export type _RequiredPropertyNames<T> = {
+    [K in keyof T]-?: undefined extends T[K] ? never : K;
+}[keyof T];
+
+// @public
 export interface SimpluxRoute<TParameters = {}> {
     readonly isActive: SimpluxSelector<SimpluxRouterState, [], boolean>;
     readonly name: SimpluxRouteName;
-    readonly navigateTo: SimpluxEffect<(parameters: TParameters) => void>;
+    readonly navigateTo: SimpluxEffect<NavigateToFn<TParameters>>;
     readonly parameterValues: SimpluxSelector<SimpluxRouterState, [], TParameters>;
 }
 
 // @public
 export interface SimpluxRouteConfiguration<TParameters> {
     // (undocumented)
-    readonly parameterDefaults?: TParameters;
+    readonly parameterDefaults?: Partial<TParameters>;
 }
 
 // @public
@@ -33,22 +41,22 @@ export type SimpluxRouteName = string;
 
 // @public
 export interface SimpluxRouter {
-    readonly addRoute: <TParameters extends Record<string, unknown> = {}>(name: SimpluxRouteName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TParameters>;
+    readonly addRoute: <TParameters extends Record<string, any> = {}>(name: SimpluxRouteName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TParameters>;
     readonly state: SimpluxSelector<SimpluxRouterState, [
     ], Immutable<SimpluxRouterState>>;
 }
 
 // @public
 export interface SimpluxRouterState {
+    activeRouteId: SimpluxRouteId | undefined;
+    activeRouteParameterValues: Readonly<Record<string, any>>;
     readonly routes: SimpluxRouteState[];
 }
 
 // @public
 export interface SimpluxRouteState {
-    isActive: boolean;
     readonly name: string;
-    readonly parameterDefaults: Record<string, unknown>;
-    parameterValues: Record<string, unknown>;
+    readonly parameterDefaults: Readonly<Record<string, unknown>>;
 }
 
 

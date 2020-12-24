@@ -154,8 +154,12 @@ describe(`route`, () => {
         it('navigates to the route', () => {
           mockEffect(_module.registerRoute, () => 1)
           const [mock] = mockEffect(_module.navigateToRoute, jest.fn())
-          const testRoute = _createRoute(routeName1, undefined)
           const parameterValues = { param: 'value' }
+          const testRoute = _createRoute<typeof parameterValues>(
+            routeName1,
+            undefined,
+          )
+
           testRoute.navigateTo(parameterValues)
           expect(mock).toHaveBeenCalledWith(1, parameterValues)
         })
@@ -178,6 +182,32 @@ describe(`route`, () => {
           testRoute.navigateTo(parameterValues)
 
           expect(mock).toHaveBeenCalledWith(1, parameterValues)
+        })
+
+        it('does not take parameters if route has none', () => {
+          mockEffect(_module.registerRoute, () => 1)
+          const [mock] = mockEffect(_module.navigateToRoute, jest.fn())
+
+          const testRoute = _createRoute(routeName1, undefined)
+
+          testRoute.navigateTo()
+
+          expect(mock).toHaveBeenCalledWith(1, {})
+        })
+
+        it('makes parameters optional if route has only optional parameters', () => {
+          mockEffect(_module.registerRoute, () => 1)
+          const [mock] = mockEffect(_module.navigateToRoute, jest.fn())
+
+          interface Parameters {
+            opt?: string
+          }
+
+          const testRoute = _createRoute<Parameters>(routeName1, undefined)
+
+          testRoute.navigateTo()
+
+          expect(mock).toHaveBeenCalledWith(1, {})
         })
       })
     })
