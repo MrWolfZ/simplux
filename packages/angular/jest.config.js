@@ -1,13 +1,17 @@
 module.exports = {
   roots: ['<rootDir>/src', '<rootDir>'],
-  moduleFileExtensions: ['js', 'ts'],
+  moduleFileExtensions: ['ts', 'tsx', 'js'],
   moduleNameMapper: {
     '^@simplux/core$': '<rootDir>/../core/index.ts',
     '^@simplux/angular$': '<rootDir>/index.ts',
   },
+  modulePathIgnorePatterns: [
+    '<rootDir>/node_modules',
+    '<rootDir>/test-d',
+    '<rootDir>/dist',
+  ],
   transform: {
     '\\.tsx?$': '../../jest.transform.cjs',
   },
-  testMatch: ['<rootDir>/src/**/*.spec.ts', '<rootDir>/e2e.spec.ts'],
-  testPathIgnorePatterns: ['node_modules'],
+  testMatch: ['<rootDir>/src/**/*.spec.ts?(x)', '<rootDir>/e2e.spec.ts?(x)'],
 }
