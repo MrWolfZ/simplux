@@ -54,7 +54,7 @@ describe(`@simplux/angular`, () => {
         todoIds.push(todo.id)
       },
       markAsDone({ todosById }, todoId: string) {
-        todosById[todoId].isDone = true
+        todosById[todoId]!.isDone = true
       },
     })
 
@@ -75,7 +75,7 @@ describe(`@simplux/angular`, () => {
     const selectors2 = createSelectors(todosModule, {
       selectTodosWithDoneState({ todoIds, todosById }, isDone: boolean) {
         return todoIds
-          .map((id) => todosById[id])
+          .map((id) => todosById[id]!)
           .filter((t) => t.isDone === isDone)
       },
     })

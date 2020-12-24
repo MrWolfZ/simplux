@@ -299,7 +299,7 @@ describe(`@simplux/core`, () => {
           nrOfTodos: ({ todoIds }) => todoIds.length,
           getTodosWithDoneState({ todoIds, todosById }, isDone: boolean) {
             return todoIds
-              .map((id) => todosById[id])
+              .map((id) => todosById[id]!)
               .filter((t) => t.isDone === isDone)
           },
         },

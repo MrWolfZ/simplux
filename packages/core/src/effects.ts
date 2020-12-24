@@ -85,7 +85,7 @@ export function createEffects<
   TEffectDefinitions extends SimpluxEffectDefinitions
 >(effects: TEffectDefinitions): SimpluxEffects<TEffectDefinitions> {
   return Object.keys(effects).reduce(
-    (res, key) => ({ ...res, [key]: createEffectInternal(effects[key], key) }),
+    (res, key) => ({ ...res, [key]: createEffectInternal(effects[key]!, key) }),
     {} as SimpluxEffects<TEffectDefinitions>,
   )
 }

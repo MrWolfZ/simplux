@@ -338,7 +338,7 @@ describe('mutations', () => {
       it('throws an error when calling a nested mutation directly', () => {
         dispatchMock.mockImplementation(({ mutationName }) => {
           const moduleMutations = moduleMock.$simpluxInternals.mutations
-          const mutation = moduleMutations[mutationName]
+          const mutation = moduleMutations[mutationName]!
           mutation(moduleMock.getState())
         })
 

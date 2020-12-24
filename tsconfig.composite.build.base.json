@@ -5,7 +5,8 @@
     "outDir": "./build",
     "composite": true,
     "incremental": true,
-    "inlineSources": false
+    "inlineSources": false,
+    "noUncheckedIndexedAccess": true
   },
   "exclude": [
     "**/node_modules/**",

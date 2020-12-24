@@ -165,6 +165,6 @@ export function _createSimpluxStore(
       getReduxStoreProxy().dispatch({ type: `@simplux/setReducer/${name}` })
     },
 
-    getReducer: (name) => reducers[name],
+    getReducer: (name) => reducers[name]!,
   }
 }

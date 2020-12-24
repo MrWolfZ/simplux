@@ -6,6 +6,7 @@
     "composite": true,
     "incremental": true,
     "inlineSources": false,
+    "noUncheckedIndexedAccess": true,
     "types": ["node", "jest"]
   },
   "exclude": ["**/node_modules/**", "**/dist/**", "**/*.js"]

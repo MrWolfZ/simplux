@@ -27,7 +27,7 @@ export function createModuleReducer<TState>(
         }
       }
 
-      return mutation(state, ...args) || state
+      return mutation?.(state, ...args) || state
     }
 
     if (action.type === `@simplux/${moduleName}/setState`) {

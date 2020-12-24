@@ -130,7 +130,7 @@ export function createSelectors<
 
   const resolvedSelectors = Object.keys(selectorDefinitions).reduce(
     (acc, selectorName: keyof TSelectorDefinitions) => {
-      const definition = selectorDefinitions[selectorName as string]
+      const definition = selectorDefinitions[selectorName as string]!
       const memoizedDefinition = memoize(definition)
 
       const namedSelector = nameFunction(
