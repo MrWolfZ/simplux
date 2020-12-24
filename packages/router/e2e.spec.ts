@@ -30,5 +30,23 @@ describe(`@simplux/router`, () => {
 
     expect(testRoute2.name).toBe(routeName2)
     expect(router.state()).toEqual(routerStateWithTwoRoutes)
+
+    testRoute1.navigateTo({})
+
+    expect(testRoute1.isActive()).toBe(true)
+    expect(testRoute1.parameterValues()).toEqual({})
+
+    testRoute2.navigateTo({
+      stringParam: 'a',
+      numberParam: 1,
+      booleanParam: false,
+    })
+
+    expect(testRoute2.isActive()).toBe(true)
+    expect(testRoute2.parameterValues()).toEqual({
+      stringParam: 'a',
+      numberParam: 1,
+      booleanParam: false,
+    })
   })
 })
