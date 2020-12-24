@@ -1,6 +1,6 @@
 // this file contains an end-to-end test for the public API
 
-import { createSimpluxRouter } from '@simplux/router'
+import { getSimpluxRouter } from '@simplux/router'
 import {
   emptyRouterState,
   routeName1,
@@ -13,7 +13,7 @@ import {
 
 describe(`@simplux/router`, () => {
   it('works', () => {
-    const router = createSimpluxRouter()
+    const router = getSimpluxRouter()
 
     expect(router.state()).toEqual(emptyRouterState)
 

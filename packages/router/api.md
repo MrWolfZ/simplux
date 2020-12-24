@@ -9,7 +9,7 @@ import { SimpluxEffect } from '@simplux/core';
 import { SimpluxSelector } from '@simplux/core';
 
 // @public
-export function createSimpluxRouter(): SimpluxRouter;
+export function getSimpluxRouter(): SimpluxRouter;
 
 // @public
 export type NavigateToFn<TParameters> = keyof TParameters extends never ? () => void : _RequiredPropertyNames<TParameters> extends never ? (parameters?: TParameters) => void : (parameters: TParameters) => void;

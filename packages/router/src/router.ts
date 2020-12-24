@@ -41,15 +41,8 @@ export interface SimpluxRouter {
   ) => SimpluxRoute<TParameters>
 }
 
-/**
- * Create the simplux router (this creates a global singleton,
- * therefore calling this method multiple times is not recommended).
- *
- * @public
- */
-export function createSimpluxRouter(): SimpluxRouter {
-  return {
-    state: _module.state,
-    addRoute: _createRoute,
-  }
+// tslint:disable-next-line:variable-name (internal export)
+export const _router: SimpluxRouter = {
+  state: _module.state,
+  addRoute: _createRoute,
 }

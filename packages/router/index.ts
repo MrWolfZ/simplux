@@ -1,3 +1,5 @@
+import { SimpluxRouter, _router } from './src/router.js'
+
 export type {
   SimpluxRouteId,
   SimpluxRouteName,
@@ -10,5 +12,13 @@ export type {
   SimpluxRouteConfiguration,
   _RequiredPropertyNames,
 } from './src/route.js'
-export { createSimpluxRouter } from './src/router.js'
 export type { SimpluxRouter } from './src/router.js'
+
+/**
+ * Get the simplux router.
+ *
+ * @public
+ */
+export function getSimpluxRouter(): SimpluxRouter {
+  return _router
+}
