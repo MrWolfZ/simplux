@@ -12,7 +12,7 @@ import { SimpluxRouteName, SimpluxRouterState, _module } from './module.js'
  * @public
  */
 export interface SimpluxRouteConfiguration<TParameters> {
-  readonly parameterDefaults?: TParameters // TODO: infer optional parameters
+  readonly parameterDefaults?: Partial<TParameters> // TODO: infer optional parameters
 }
 
 /**
@@ -46,7 +46,7 @@ export interface SimpluxRoute<TParameters = {}> {
 /**
  * @internal
  */
-export function _createRoute<TParameters extends Record<string, unknown> = {}>(
+export function _createRoute<TParameters extends Record<string, any> = {}>(
   name: SimpluxRouteName,
   configuration: SimpluxRouteConfiguration<TParameters> | undefined,
 ): SimpluxRoute<TParameters> {

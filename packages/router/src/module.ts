@@ -59,7 +59,7 @@ export interface SimpluxRouterState {
    * The parameter values for the currently active route. Will
    * be `{}` while no route is active.
    */
-  activeRouteParameterValues: Readonly<Record<string, unknown>>
+  activeRouteParameterValues: Readonly<Record<string, any>>
 }
 
 const initialState: SimpluxRouterState = {

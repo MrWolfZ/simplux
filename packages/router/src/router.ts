@@ -35,7 +35,7 @@ export interface SimpluxRouter {
    *
    * @public
    */
-  readonly addRoute: <TParameters extends Record<string, unknown> = {}>(
+  readonly addRoute: <TParameters extends Record<string, any> = {}>(
     name: SimpluxRouteName,
     routeConfiguration?: SimpluxRouteConfiguration<TParameters>,
   ) => SimpluxRoute<TParameters>
