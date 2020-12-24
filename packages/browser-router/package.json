@@ -1,7 +1,7 @@
 {
-  "name": "@simplux/router",
+  "name": "@simplux/browser-router",
   "version": "0.18.0-alpha.1",
-  "description": "The router package for simplux. Can be used to provide routing capabilities to an app. If you are building a web app you should use @simplux/browser-router instead.",
+  "description": "The browser router package for simplux. Can be used to provide routing capabilities to a web app.",
   "module": "./esm5/index.js",
   "es2015": "./esm2015/index.js",
   "main": "./index.js",
@@ -19,7 +19,7 @@
     "lint:ci": "tslint -c ../../tslint.json -p ./tsconfig.json",
     "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --config=./jest.config.js",
     "test:ci": "npm run test -- --runInBand --ci --coverage",
-    "report-coverage": "codecov -f ./coverage/lcov.info --disable=gcov -F router",
+    "report-coverage": "codecov -f ./coverage/lcov.info --disable=gcov -F browser-router",
     "publish:custom": "npm publish ./dist --access public"
   },
   "repository": {
@@ -29,12 +29,14 @@
   "bugs": {
     "url": "https://github.com/MrWolfZ/simplux/issues"
   },
-  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/packages/router#readme",
+  "homepage": "https://github.com/MrWolfZ/simplux/tree/master/packages/browser-router#readme",
   "keywords": [
     "redux",
     "simplux",
     "state",
     "typescript",
+    "browser",
+    "browser-router",
     "router",
     "routing"
   ],
@@ -42,7 +44,8 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@simplux/core": "0.18.0-alpha.1"
+    "@simplux/core": "0.18.0-alpha.1",
+    "@simplux/router": "0.18.0-alpha.1"
   },
   "devDependencies": {
     "@simplux/testing": "0.18.0-alpha.1",
@@ -58,7 +61,7 @@
     "compilerOptions": {
       "baseUrl": ".",
       "paths": {
-        "@simplux/router": [
+        "@simplux/browser-router": [
           "./index.d.ts"
         ]
       },

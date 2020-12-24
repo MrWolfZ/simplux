@@ -4,6 +4,7 @@
   "include": [],
   "references": [
     { "path": "./packages/angular/tsconfig.composite.test.json" },
+    { "path": "./packages/browser-router/tsconfig.composite.test.json" },
     { "path": "./packages/core/tsconfig.composite.test.json" },
     { "path": "./packages/react/tsconfig.composite.test.json" },
     { "path": "./packages/router/tsconfig.composite.test.json" },

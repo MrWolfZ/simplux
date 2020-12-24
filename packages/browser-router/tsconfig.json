@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.lib.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@simplux/browser-router": ["."],
+      "@simplux/core": ["../core"],
+      "@simplux/router": ["../router"],
+      "@simplux/testing": ["../testing"]
+    }
+  },
+  "include": ["index.ts", "e2e.spec.ts", "src/**/*.ts", "test-d/**/*.ts"]
+}
