@@ -341,7 +341,7 @@ describe(`@simplux/core`, () => {
       })
 
       const addTodoEffect = createEffect(async () => {
-        await new Promise((resolve) => resolve())
+        await new Promise<void>((resolve) => resolve())
         addTodo(todo1)
       })
 
@@ -353,11 +353,11 @@ describe(`@simplux/core`, () => {
 
       const { addTodoEffect1, addTodoEffect2 } = createEffects({
         addTodoEffect1: async () => {
-          await new Promise((resolve) => resolve())
+          await new Promise<void>((resolve) => resolve())
           addTodo(todo1)
         },
         addTodoEffect2: async () => {
-          await new Promise((resolve) => resolve())
+          await new Promise<void>((resolve) => resolve())
           addTodo(todo2)
         },
       })
