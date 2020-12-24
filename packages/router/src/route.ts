@@ -55,11 +55,10 @@ export function _createRoute<TParameters extends Record<string, unknown> = {}>(
   const selectors = createSelectors(_module, {
     isActive: (state) => _module.routeIsActive.withState(state, routeId),
 
-    parameterValues: (state) =>
-      (_module.routeParameterValues.withState(
-        state,
-        routeId,
-      ) as unknown) as TParameters,
+    parameterValues: (state) => {
+      const values = _module.routeParameterValues.withState(state, routeId)
+      return values as TParameters
+    },
   })
 
   const effects = createEffects({

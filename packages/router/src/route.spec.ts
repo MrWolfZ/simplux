@@ -1,7 +1,7 @@
 import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
 import { SimpluxRouterState, _module } from './module.js'
 import { SimpluxRoute, _createRoute } from './route.js'
-import { routeState1, routeState2 } from './testdata.js'
+import { routerStateWithTwoRoutes, routeState2 } from './testdata.js'
 
 describe(`route`, () => {
   const routeName1 = 'testRoute1'
@@ -40,7 +40,8 @@ describe(`route`, () => {
     describe('created route', () => {
       describe(keyOf<SimpluxRoute>('isActive'), () => {
         const stateWithActiveRoute: SimpluxRouterState = {
-          routes: [{ ...routeState1, isActive: true }, routeState2],
+          ...routerStateWithTwoRoutes,
+          activeRouteId: 1,
         }
 
         it('returns true if route is active', () => {
@@ -61,10 +62,9 @@ describe(`route`, () => {
       describe(keyOf<SimpluxRoute>('parameterValues'), () => {
         const parameterValues = { param: 1 }
         const stateWithActiveRoute: SimpluxRouterState = {
-          routes: [
-            { ...routeState1, isActive: true, parameterValues },
-            routeState2,
-          ],
+          ...routerStateWithTwoRoutes,
+          activeRouteId: 1,
+          activeRouteParameterValues: parameterValues,
         }
 
         it('returns parameter values for an active route', () => {
@@ -79,10 +79,11 @@ describe(`route`, () => {
 
         it('returns default values for missing values', () => {
           const state: SimpluxRouterState = {
-            routes: [{ ...routeState2, isActive: true, parameterValues }],
+            ...stateWithActiveRoute,
+            activeRouteId: 2,
           }
 
-          mockEffect(_module.registerRoute, () => 1)
+          mockEffect(_module.registerRoute, () => 2)
           const testRoute = _createRoute(routeName2, undefined)
 
           const result = testRoute.parameterValues.withState(state)

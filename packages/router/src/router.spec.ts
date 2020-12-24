@@ -1,11 +1,9 @@
 import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
 import { _module } from './module.js'
 import { createSimpluxRouter } from './router.js'
+import { routeName1, routeName2 } from './testdata.js'
 
 describe(`router`, () => {
-  const routeName1 = 'testRoute1'
-  const routeName2 = 'testRoute2'
-
   afterEach(clearAllSimpluxMocks)
 
   describe('created router', () => {

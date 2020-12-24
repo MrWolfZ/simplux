@@ -34,18 +34,7 @@ export interface SimpluxRouteState {
   /**
    * The default parameter values.
    */
-  readonly parameterDefaults: Record<string, unknown>
-
-  /**
-   * Whether the route is active.
-   */
-  isActive: boolean
-
-  /**
-   * The parameter values for the route. Will be `{}`
-   * while the route is not active.
-   */
-  parameterValues: Record<string, unknown>
+  readonly parameterDefaults: Readonly<Record<string, unknown>>
 }
 
 /**
@@ -58,10 +47,25 @@ export interface SimpluxRouterState {
    * All registered routes.
    */
   readonly routes: SimpluxRouteState[]
+
+  /**
+   * The id of the currently active route (or `undefined` if
+   * no route is currently active, e.g. after creating the
+   * router).
+   */
+  activeRouteId: SimpluxRouteId | undefined
+
+  /**
+   * The parameter values for the currently active route. Will
+   * be `{}` while no route is active.
+   */
+  activeRouteParameterValues: Readonly<Record<string, unknown>>
 }
 
 const initialState: SimpluxRouterState = {
   routes: [],
+  activeRouteId: undefined,
+  activeRouteParameterValues: {},
 }
 
 const routerModule = createSimpluxModule('router', initialState)
@@ -75,37 +79,29 @@ const mutations = createMutations(routerModule, {
     routes.push({
       name,
       parameterDefaults: configuration?.parameterDefaults || {},
-      isActive: false,
-      parameterValues: {},
     })
   },
 
   activateRoute: (
-    { routes },
+    state,
     routeId: SimpluxRouteId,
-    parameters: Record<string, unknown>,
+    parameters: Readonly<Record<string, unknown>>,
   ) => {
-    const idx = routeId - 1
-
-    routes[idx].isActive = true
-    routes[idx].parameterValues = parameters
-
-    for (let i = 0; i < routes.length; i += 1) {
-      if (i !== idx) {
-        routes[i].isActive = false
-        routes[i].parameterValues = {}
-      }
-    }
+    state.activeRouteId = routeId
+    state.activeRouteParameterValues = parameters
   },
 })
 
 const selectors = createSelectors(routerModule, {
   state: (s) => s,
 
-  routeIsActive: ({ routes }, routeId: SimpluxRouteId) =>
-    routes[routeId - 1]?.isActive ?? false,
+  routeIsActive: ({ activeRouteId }, routeId: SimpluxRouteId) =>
+    activeRouteId === routeId,
 
-  routeParameterValues: ({ routes }, routeId: SimpluxRouteId) => {
+  routeParameterValues: (
+    { routes, activeRouteId, activeRouteParameterValues },
+    routeId: SimpluxRouteId,
+  ) => {
     const route = routes[routeId - 1]
 
     if (process.env.NODE_ENV !== 'production') {
@@ -113,16 +109,16 @@ const selectors = createSelectors(routerModule, {
         throw new Error(`route with ID ${routeId} does not exist`)
       }
 
-      if (!route.isActive) {
+      if (activeRouteId !== routeId) {
         throw new Error(`route ${route.name} with ID ${routeId} is not active`)
       }
     }
 
-    if (!route?.isActive) {
-      return undefined
+    if (!route || activeRouteId !== routeId) {
+      return {}
     }
 
-    return { ...route.parameterDefaults, ...route.parameterValues }
+    return { ...route.parameterDefaults, ...activeRouteParameterValues }
   },
 })
 
@@ -137,7 +133,7 @@ const effects = createEffects({
 
   navigateToRoute: (
     routeId: SimpluxRouteId,
-    parameters: Record<string, unknown>,
+    parameters: Readonly<Record<string, unknown>>,
   ) => {
     mutations.activateRoute(routeId, parameters)
   },
