@@ -32,7 +32,7 @@ export interface SimpluxRoute<TParameters = {}> {
 // @public
 export interface SimpluxRouteConfiguration<TParameters> {
     // (undocumented)
-    readonly parameterDefaults?: Partial<TParameters>;
+    readonly never?: TParameters;
 }
 
 // @public
@@ -58,7 +58,6 @@ export interface SimpluxRouterState {
 // @public
 export interface SimpluxRouteState {
     readonly name: SimpluxRouteName;
-    readonly parameterDefaults: Readonly<Record<string, unknown>>;
 }
 
 

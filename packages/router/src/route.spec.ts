@@ -7,7 +7,6 @@ import {
   routeName3,
   RouteParameters3,
   routerStateWithTwoRoutes,
-  routeState2,
 } from './testdata.js'
 
 const addRoute = _routeEffects.addRoute
@@ -16,7 +15,7 @@ describe(`route`, () => {
   afterEach(clearAllSimpluxMocks)
 
   describe(addRoute, () => {
-    it('allows creating route without parameters', () => {
+    it('allows creating route without configuration', () => {
       const [registerMock] = mockEffect(
         _module.registerRoute,
         jest.fn().mockReturnValue(1),
@@ -28,27 +27,17 @@ describe(`route`, () => {
       expect(registerMock).toHaveBeenCalledWith(routeName1, undefined)
     })
 
-    it('allows creating route with parameters', () => {
+    it('allows creating route with configuration', () => {
       const [registerMock] = mockEffect(
         _module.registerRoute,
         jest.fn().mockReturnValue(1),
       )
 
-      const parameterDefaults = {
-        stringParam: 'string',
-        numberParam: 100,
-        booleanParam: true,
-      }
-
-      const testRoute = addRoute(routeName2, {
-        parameterDefaults,
-      })
+      const testRoute = addRoute(routeName2, {})
 
       expect(testRoute.id).toBe(1)
       expect(testRoute.name).toBe(routeName2)
-      expect(registerMock).toHaveBeenCalledWith(routeName2, {
-        parameterDefaults,
-      })
+      expect(registerMock).toHaveBeenCalledWith(routeName2, {})
     })
 
     it('allows creating route with explicit parameters type', () => {
@@ -57,19 +46,11 @@ describe(`route`, () => {
         jest.fn().mockReturnValue(1),
       )
 
-      const parameterDefaults: Partial<RouteParameters3> = {
-        opt: '',
-      }
-
-      const testRoute = addRoute<RouteParameters3>(routeName3, {
-        parameterDefaults,
-      })
+      const testRoute = addRoute<RouteParameters3>(routeName3, {})
 
       expect(testRoute.id).toBe(1)
       expect(testRoute.name).toBe(routeName3)
-      expect(registerMock).toHaveBeenCalledWith(routeName3, {
-        parameterDefaults,
-      })
+      expect(registerMock).toHaveBeenCalledWith(routeName3, {})
     })
 
     describe('created route', () => {
@@ -110,23 +91,6 @@ describe(`route`, () => {
           )
 
           expect(result).toEqual(parameterValues)
-        })
-
-        it('returns default values for missing values', () => {
-          const state: SimpluxRouterState = {
-            ...stateWithActiveRoute,
-            activeRouteId: 2,
-          }
-
-          mockEffect(_module.registerRoute, () => 2)
-          const testRoute = addRoute(routeName2)
-
-          const result = testRoute.parameterValues.withState(state)
-
-          expect(result).toEqual({
-            ...parameterValues,
-            ...routeState2.parameterDefaults,
-          })
         })
 
         it('returns parameter values of the correct type', () => {

@@ -17,7 +17,7 @@ import {
  * @public
  */
 export interface SimpluxRouteConfiguration<TParameters> {
-  readonly parameterDefaults?: Partial<TParameters> // TODO: infer optional parameters
+  readonly never?: TParameters
 }
 
 /**

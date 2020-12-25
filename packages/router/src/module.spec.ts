@@ -9,9 +9,7 @@ import {
   routeName1,
   routeName2,
   routerStateWithRoute1,
-  routerStateWithRoute2,
   routerStateWithTwoRoutes,
-  routeState2,
 } from './testdata.js'
 
 describe(`module`, () => {
@@ -33,28 +31,13 @@ describe(`module`, () => {
 
   describe('mutations', () => {
     describe(_module.addRoute, () => {
-      it('allows registering route without parameters', () => {
+      it('allows registering route', () => {
         const updatedState = _module.addRoute.withState(
           emptyRouterState,
           routeName1,
         )
+
         expect(updatedState).toEqual(routerStateWithRoute1)
-      })
-
-      it('allows registering route with parameters', () => {
-        const updatedState = _module.addRoute.withState(
-          emptyRouterState,
-          routeName2,
-          {
-            parameterDefaults: {
-              stringParam: 'string',
-              numberParam: 100,
-              booleanParam: true,
-            },
-          },
-        )
-
-        expect(updatedState).toEqual(routerStateWithRoute2)
       })
 
       it('allows registering multiple routes', () => {
@@ -63,13 +46,7 @@ describe(`module`, () => {
           routeName1,
         )
 
-        updatedState = _module.addRoute.withState(updatedState, routeName2, {
-          parameterDefaults: {
-            stringParam: 'string',
-            numberParam: 100,
-            booleanParam: true,
-          },
-        })
+        updatedState = _module.addRoute.withState(updatedState, routeName2)
 
         expect(updatedState).toEqual(routerStateWithTwoRoutes)
       })
@@ -204,20 +181,6 @@ describe(`module`, () => {
         expect(result).toEqual(parameterValues)
       })
 
-      it('returns default values for missing values', () => {
-        const state: SimpluxRouterState = {
-          ...stateWithActiveRoute,
-          activeRouteId: 2,
-        }
-
-        const result = _module.routeParameterValues.withState(state, 2)
-
-        expect(result).toEqual({
-          ...parameterValues,
-          ...routeState2.parameterDefaults,
-        })
-      })
-
       it('throws for an inactive route', () => {
         expect(() =>
           _module.routeParameterValues.withState(stateWithActiveRoute, 2),
@@ -256,23 +219,9 @@ describe(`module`, () => {
 
   describe('effects', () => {
     describe(_module.registerRoute, () => {
-      it('allows registering route without parameters', () => {
+      it('allows registering route', () => {
         mockMutation(_module.addRoute, () => routerStateWithRoute1)
         const routeId = _module.registerRoute(routeName1)
-        expect(routeId).toEqual(1)
-      })
-
-      it('allows registering route with parameters', () => {
-        mockMutation(_module.addRoute, () => routerStateWithRoute2)
-
-        const routeId = _module.registerRoute(routeName2, {
-          parameterDefaults: {
-            stringParam: 'string',
-            numberParam: 100,
-            booleanParam: true,
-          },
-        })
-
         expect(routeId).toEqual(1)
       })
 
@@ -287,13 +236,7 @@ describe(`module`, () => {
 
         const routeId1 = _module.registerRoute(routeName1)
 
-        const routeId2 = _module.registerRoute(routeName2, {
-          parameterDefaults: {
-            stringParam: 'string',
-            numberParam: 100,
-            booleanParam: true,
-          },
-        })
+        const routeId2 = _module.registerRoute(routeName2, {})
 
         expect(routeId1).toEqual(1)
         expect(routeId2).toEqual(2)

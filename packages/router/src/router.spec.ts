@@ -7,7 +7,7 @@ describe(`router`, () => {
   afterEach(clearAllSimpluxMocks)
 
   describe('created router', () => {
-    it('adds route without parameters', () => {
+    it('adds route without configuration', () => {
       const [addMock] = mockEffect(_routeEffects.addRoute, jest.fn())
 
       _router.addRoute(routeName1)
@@ -15,24 +15,12 @@ describe(`router`, () => {
       expect(addMock).toHaveBeenCalledWith(routeName1)
     })
 
-    it('adds route with parameters', () => {
+    it('adds route with configuration', () => {
       const [addMock] = mockEffect(_routeEffects.addRoute, jest.fn())
 
-      _router.addRoute(routeName2, {
-        parameterDefaults: {
-          stringParam: 'string',
-          numberParam: 100,
-          booleanParam: true,
-        },
-      })
+      _router.addRoute(routeName2, {})
 
-      expect(addMock).toHaveBeenCalledWith(routeName2, {
-        parameterDefaults: {
-          stringParam: 'string',
-          numberParam: 100,
-          booleanParam: true,
-        },
-      })
+      expect(addMock).toHaveBeenCalledWith(routeName2, {})
     })
 
     it('adds multiple routes', () => {
@@ -40,22 +28,10 @@ describe(`router`, () => {
 
       _router.addRoute(routeName1)
 
-      _router.addRoute(routeName2, {
-        parameterDefaults: {
-          stringParam: 'string',
-          numberParam: 100,
-          booleanParam: true,
-        },
-      })
+      _router.addRoute(routeName2, {})
 
       expect(addMock).toHaveBeenCalledWith(routeName1)
-      expect(addMock).toHaveBeenCalledWith(routeName2, {
-        parameterDefaults: {
-          stringParam: 'string',
-          numberParam: 100,
-          booleanParam: true,
-        },
-      })
+      expect(addMock).toHaveBeenCalledWith(routeName2, {})
     })
   })
 })

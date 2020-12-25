@@ -22,13 +22,7 @@ describe(`@simplux/router`, () => {
     expect(testRoute1.name).toBe(routeName1)
     expect(router.state()).toEqual(routerStateWithRoute1)
 
-    const testRoute2 = router.addRoute(routeName2, {
-      parameterDefaults: {
-        stringParam: 'string',
-        numberParam: 100,
-        booleanParam: true,
-      },
-    })
+    const testRoute2 = router.addRoute(routeName2, {})
 
     expect(testRoute2.name).toBe(routeName2)
     expect(router.state()).toEqual(routerStateWithTwoRoutes)
@@ -42,18 +36,10 @@ describe(`@simplux/router`, () => {
     expect(testRoute1.isActive()).toBe(true)
     expect(testRoute1.parameterValues()).toEqual({})
 
-    testRoute2.navigateTo({
-      stringParam: 'a',
-      numberParam: 1,
-      booleanParam: false,
-    })
+    testRoute2.navigateTo()
 
     expect(testRoute2.isActive()).toBe(true)
-    expect(testRoute2.parameterValues()).toEqual({
-      stringParam: 'a',
-      numberParam: 1,
-      booleanParam: false,
-    })
+    expect(testRoute2.parameterValues()).toEqual({})
 
     testRoute3.navigateTo({
       str: 'a',

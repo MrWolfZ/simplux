@@ -30,11 +30,6 @@ export interface SimpluxRouteState {
    * The name of the route.
    */
   readonly name: SimpluxRouteName
-
-  /**
-   * The default parameter values.
-   */
-  readonly parameterDefaults: Readonly<Record<string, unknown>>
 }
 
 /**
@@ -71,14 +66,9 @@ const initialState: SimpluxRouterState = {
 const routerModule = createSimpluxModule('router', initialState)
 
 const mutations = createMutations(routerModule, {
-  addRoute: (
-    { routes },
-    name: SimpluxRouteName,
-    configuration?: SimpluxRouteConfiguration<any>,
-  ) => {
+  addRoute: ({ routes }, name: SimpluxRouteName) => {
     routes.push({
       name,
-      parameterDefaults: configuration?.parameterDefaults || {},
     })
   },
 
@@ -118,7 +108,7 @@ const selectors = createSelectors(routerModule, {
       return {}
     }
 
-    return { ...route.parameterDefaults, ...activeRouteParameterValues }
+    return activeRouteParameterValues
   },
 })
 
@@ -127,7 +117,8 @@ const effects = createEffects({
     name: SimpluxRouteName,
     configuration?: SimpluxRouteConfiguration<any>,
   ): SimpluxRouteId => {
-    const updatedState = mutations.addRoute(name, configuration)
+    configuration // TODO: use
+    const updatedState = mutations.addRoute(name)
     return updatedState.routes.length
   },
 

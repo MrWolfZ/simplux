@@ -12,16 +12,10 @@ export const emptyRouterState: SimpluxRouterState = {
 
 export const routeState1: SimpluxRouteState = {
   name: routeName1,
-  parameterDefaults: {},
 }
 
 export const routeState2: SimpluxRouteState = {
   name: routeName2,
-  parameterDefaults: {
-    stringParam: 'string',
-    numberParam: 100,
-    booleanParam: true,
-  },
 }
 
 export interface RouteParameters3 {
@@ -33,9 +27,6 @@ export interface RouteParameters3 {
 
 export const routeState3: SimpluxRouteState = {
   name: routeName3,
-  parameterDefaults: {
-    opt: '',
-  },
 }
 
 export const routerStateWithRoute1: SimpluxRouterState = {
