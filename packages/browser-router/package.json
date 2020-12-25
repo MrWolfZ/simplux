@@ -18,7 +18,8 @@
     "lint": "tslint -c ../../tslint.json -p ./tsconfig.json --fix",
     "lint:ci": "tslint -c ../../tslint.json -p ./tsconfig.json",
     "test": "jest --forceExit --verbose --detectOpenHandles --no-cache --colors --config=./jest.config.js",
-    "test:ci": "npm run test -- --runInBand --ci --coverage",
+    "test:watch": "npm run test -- --watchAll",
+    "test:ci": "npm run test -- --runInBand --ci --coverage --reporters default",
     "report-coverage": "codecov -f ./coverage/lcov.info --disable=gcov -F browser-router",
     "publish:custom": "npm publish ./dist --access public"
   },

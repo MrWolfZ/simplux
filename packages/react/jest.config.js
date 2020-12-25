@@ -15,4 +15,8 @@ module.exports = {
     '\\.tsx?$': '../../jest.transform.cjs',
   },
   testMatch: ['<rootDir>/src/**/*.spec.ts?(x)', '<rootDir>/e2e.spec.ts?(x)'],
+  reporters: [
+    '@jest/reporters/build/SummaryReporter.js',
+    ['jest-silent-reporter', { useDots: true, showWarnings: true }],
+  ],
 }
