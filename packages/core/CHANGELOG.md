@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.2](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.1...v0.18.0-alpha.2) (2020-12-25)
+
+
+### Bug Fixes
+
+* **core:** ensure effect functions have the correct name ([4d6051e](https://github.com/MrWolfZ/simplux/commit/4d6051e8716d20296d2ae5e05875a77409351fcf))
+* **core:** fix falsy first mutation argument being swallowed ([f5a0b70](https://github.com/MrWolfZ/simplux/commit/f5a0b70000507b4ea9fd5d9673de96ea22f7a191))
+
+
+
+
+
 # [0.18.0-alpha.1](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.0...v0.18.0-alpha.1) (2020-12-23)
 
 **Note:** Version bump only for package @simplux/core

@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.2](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.1...v0.18.0-alpha.2) (2020-12-25)
+
+
+### Bug Fixes
+
+* **core:** ensure effect functions have the correct name ([4d6051e](https://github.com/MrWolfZ/simplux/commit/4d6051e8716d20296d2ae5e05875a77409351fcf))
+* **core:** fix falsy first mutation argument being swallowed ([f5a0b70](https://github.com/MrWolfZ/simplux/commit/f5a0b70000507b4ea9fd5d9673de96ea22f7a191))
+
+
+### Features
+
+* **browser-router:** basic implementation for parsing templates and generating href strings ([9e3b586](https://github.com/MrWolfZ/simplux/commit/9e3b586da0b4f8bc2e7ece2d7612b6532c7f4ec5))
+* **browser-router:** listen to browser location changes and push history entries ([fb54212](https://github.com/MrWolfZ/simplux/commit/fb542125afdcfa3494e1045ed7c0b6b48314047b))
+* **browser-router:** navigate to route by URL ([9e5a2dd](https://github.com/MrWolfZ/simplux/commit/9e5a2dd50fd338e833f623b34263d8836d7c12cd))
+* **router:** basic router implementation ([c226d20](https://github.com/MrWolfZ/simplux/commit/c226d206d770950adc9588ddf25da7e79eca5bba))
+* **router:** make parameters for `navigateTo` optional if possible ([ea00dc5](https://github.com/MrWolfZ/simplux/commit/ea00dc5d777da96c7538050323f720c603fc6a78))
+
+
+
+
+
 # [0.18.0-alpha.1](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.0...v0.18.0-alpha.1) (2020-12-23)
 
 **Note:** Version bump only for package @simplux/platform
