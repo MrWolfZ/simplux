@@ -1,5 +1,8 @@
 {
   "extends": "../../tsconfig.composite.test.base.json",
+  "compilerOptions": {
+    "lib": ["dom", "esnext"]
+  },
   "include": [
     "e2e.spec.ts",
     "src/testdata.ts",

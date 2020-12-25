@@ -5,7 +5,7 @@ import type {
 
 export const emptyRouterState: SimpluxBrowserRouterState = {
   routes: [],
-  isActive: false,
+  currentNavigationUrl: undefined,
 }
 
 export const rootRouteTemplate = 'root'
@@ -157,6 +157,6 @@ export function makeBrowserRouterState(
 ): SimpluxBrowserRouterState {
   return {
     routes,
-    isActive: false,
+    currentNavigationUrl: undefined,
   }
 }

@@ -9,6 +9,7 @@ import {
   NavigationResult,
   SimpluxRouteId,
 } from '@simplux/router'
+import { _locationModule, _Url } from './location.js'
 import type {
   _ParameterName,
   _ParameterType,
@@ -88,15 +89,14 @@ export interface SimpluxBrowserRouterState {
   readonly routes: SimpluxBrowserRouteState[]
 
   /**
-   * Whether the router is active, i.e. whether it interacts with the
-   * browser location mechanism.
+   * The URL of the current navigation.
    */
-  isActive: boolean
+  currentNavigationUrl: _Url | undefined
 }
 
 const initialState: SimpluxBrowserRouterState = {
   routes: [],
-  isActive: false,
+  currentNavigationUrl: undefined,
 }
 
 const browserRouterModule = createSimpluxModule('browserRouter', initialState)
@@ -115,6 +115,10 @@ const mutations = createMutations(browserRouterModule, {
       pathTemplateSegments,
       queryParameters,
     }
+  },
+
+  setCurrentNavigationUrl: (state, url: _Url | undefined) => {
+    state.currentNavigationUrl = url
   },
 })
 
@@ -159,14 +163,34 @@ const selectors = createSelectors(browserRouterModule, {
 
 const effects = createEffects({
   navigateToRouteByUrl: (url: _Href): NavigationResult => {
+    url = !url ? '/' : url.startsWith('/') ? url : `/${url}`
+
+    if (url === selectors.state().currentNavigationUrl) {
+      return
+    }
+
     const result = selectors.routeIdAndParametersByUrl(url)
 
     if (result) {
       const [routeId, parameters] = result
       simpluxRouter.navigateToRouteById(routeId, parameters)
+      mutations.setCurrentNavigationUrl(url)
+      _locationModule.pushNewUrl(url)
+      mutations.setCurrentNavigationUrl(undefined)
+    } else {
+      // should this throw?
     }
   },
 })
+
+const sub = _locationModule.subscribeToStateChanges(({ isActive, url }) => {
+  if (isActive) {
+    effects.navigateToRouteByUrl(url)
+  }
+})
+
+// tslint:disable-next-line:variable-name (internal export)
+export const _onLocationStateChange = sub.handler
 
 // tslint:disable-next-line:variable-name (internal export)
 export const _module = {

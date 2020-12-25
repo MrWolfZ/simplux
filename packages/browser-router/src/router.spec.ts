@@ -1,4 +1,5 @@
 import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
+import { _locationModule } from './location.js'
 import { _module } from './module.js'
 import { _routeEffects } from './route.js'
 import { _router } from './router.js'
@@ -55,12 +56,20 @@ describe(`router`, () => {
       })
     })
 
-    it('delegations navigation to module', () => {
+    it('delegates navigation to module', () => {
       const [navMock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
 
       _router.navigateToUrl('/root/123')
 
       expect(navMock).toHaveBeenCalledWith('/root/123')
+    })
+
+    it('delegates activation to location module', () => {
+      const [activationMock] = mockEffect(_locationModule.activate, jest.fn())
+
+      _router.activate(window)
+
+      expect(activationMock).toHaveBeenCalledWith(window)
     })
   })
 })

@@ -2,9 +2,15 @@ import {
   clearAllSimpluxMocks,
   mockEffect,
   mockModuleState,
+  mockMutation,
 } from '@simplux/testing'
 import { getSimpluxRouter } from '../../router/index.js'
-import { _module } from './module.js'
+import { _locationModule } from './location.js'
+import {
+  SimpluxBrowserRouterState,
+  _module,
+  _onLocationStateChange,
+} from './module.js'
 import { emptyRouterState, makeBrowserRouterState } from './testdata.js'
 
 describe(`module`, () => {
@@ -169,6 +175,18 @@ describe(`module`, () => {
         )
 
         expect(updateState).toEqual(state)
+      })
+    })
+
+    describe(_module.setCurrentNavigationUrl, () => {
+      it('sets the url', () => {
+        const newUrl = '/root/nested'
+        const updatedState = _module.setCurrentNavigationUrl.withState(
+          { routes: [], currentNavigationUrl: undefined },
+          newUrl,
+        )
+
+        expect(updatedState.currentNavigationUrl).toBe(newUrl)
       })
     })
   })
@@ -816,10 +834,14 @@ describe(`module`, () => {
 
   describe('effects', () => {
     const navByIdMock = jest.fn()
+    const setCurrentNavigationUrlMock = jest.fn()
+    const pushUrlMock = jest.fn()
 
     beforeEach(() => {
       jest.clearAllMocks()
       mockEffect(getSimpluxRouter().navigateToRouteById, navByIdMock)
+      mockMutation(_module.setCurrentNavigationUrl, setCurrentNavigationUrlMock)
+      mockEffect(_locationModule.pushNewUrl, pushUrlMock)
     })
 
     // TODO: all of these test can be replaced with a single test once selectors can be mocked
@@ -934,9 +956,14 @@ describe(`module`, () => {
             ],
             queryParameters: [
               {
-                parameterName: 'queryParam',
-                parameterType: 'string',
+                parameterName: 'falseParam',
+                parameterType: 'boolean',
                 isOptional: false,
+              },
+              {
+                parameterName: 'trueParam',
+                parameterType: 'boolean',
+                isOptional: true,
               },
             ],
           },
@@ -944,13 +971,14 @@ describe(`module`, () => {
 
         const parameterValues = {
           pathParam: 'pathValue',
-          queryParam: 'queryValue',
+          falseParam: false,
+          trueParam: true,
         }
 
         mockModuleState(_module, state)
 
         _module.navigateToRouteByUrl(
-          `/root/${parameterValues.pathParam}?queryParam=${parameterValues.queryParam}`,
+          `/root/${parameterValues.pathParam}?falseParam=${parameterValues.falseParam}&trueParam=${parameterValues.trueParam}`,
         )
 
         expect(navByIdMock).toHaveBeenCalledWith(2, parameterValues)
@@ -1091,7 +1119,7 @@ describe(`module`, () => {
         expect(navByIdMock).toHaveBeenCalledWith(2, parameterValues)
       })
 
-      it('does nothing if no matching route path is found', () => {
+      it('ignores the navigation if no matching route path is found', () => {
         const state = makeBrowserRouterState(
           {
             pathTemplateSegments: ['other'],
@@ -1110,7 +1138,7 @@ describe(`module`, () => {
         expect(navByIdMock).not.toHaveBeenCalled()
       })
 
-      it('does nothing if a required query is missing', () => {
+      it('ignores the navigation if a required query is missing', () => {
         const state = makeBrowserRouterState(
           {
             pathTemplateSegments: ['other'],
@@ -1133,6 +1161,113 @@ describe(`module`, () => {
         _module.navigateToRouteByUrl('/root')
 
         expect(navByIdMock).not.toHaveBeenCalled()
+      })
+
+      it('prefixes the url with /', () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: ['root', 'nested'],
+          queryParameters: [],
+        })
+
+        mockModuleState(_module, state)
+
+        _module.navigateToRouteByUrl(`root/nested`)
+
+        expect(pushUrlMock).toHaveBeenCalledWith(`/root/nested`)
+      })
+
+      it('sets the url to / if empty', () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [''],
+          queryParameters: [],
+        })
+
+        mockModuleState(_module, state)
+
+        _module.navigateToRouteByUrl('')
+
+        expect(pushUrlMock).toHaveBeenCalledWith(`/`)
+      })
+
+      it('pushes the new url to the location module', () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: ['root', 'nested'],
+          queryParameters: [],
+        })
+
+        mockModuleState(_module, state)
+
+        _module.navigateToRouteByUrl(`/root/nested`)
+
+        expect(pushUrlMock).toHaveBeenCalledWith(`/root/nested`)
+      })
+
+      it('sets the current navigation url at the start of the navigation', () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: ['root', 'nested'],
+          queryParameters: [],
+        })
+
+        mockModuleState(_module, state)
+
+        _module.navigateToRouteByUrl(`/root/nested`)
+
+        expect(setCurrentNavigationUrlMock).toHaveBeenCalledWith(`/root/nested`)
+      })
+
+      it('clears the current navigation url at the end of the navigation', () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: ['root', 'nested'],
+          queryParameters: [],
+        })
+
+        mockModuleState(_module, state)
+
+        _module.navigateToRouteByUrl(`/root/nested`)
+
+        expect(setCurrentNavigationUrlMock).toHaveBeenCalledWith(undefined)
+      })
+
+      it('ignores the navigation if the url is equal to the current navigation URL', () => {
+        const currentNavigationUrl = `/root/nested`
+
+        const state: SimpluxBrowserRouterState = {
+          ...makeBrowserRouterState({
+            pathTemplateSegments: ['root', 'nested'],
+            queryParameters: [],
+          }),
+          currentNavigationUrl,
+        }
+
+        mockModuleState(_module, state)
+
+        _module.navigateToRouteByUrl(currentNavigationUrl)
+
+        expect(navByIdMock).not.toHaveBeenCalled()
+      })
+    })
+  })
+
+  describe('state change handlers', () => {
+    describe('on location changes', () => {
+      it('navigates to the new URL if active', () => {
+        const url = '/root/nested'
+
+        const [mock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
+
+        _onLocationStateChange({ isActive: true, url })
+
+        expect(mock).toHaveBeenCalledWith(url)
+      })
+
+      it('does not navigate to the new URL if inactive', () => {
+        const url = '/root/nested'
+
+        const [mock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
+
+        _onLocationStateChange({ isActive: false, url })
+
+        expect(mock).not.toHaveBeenCalled()
       })
     })
   })

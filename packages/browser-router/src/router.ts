@@ -1,5 +1,6 @@
 import type { Immutable, SimpluxEffect, SimpluxSelector } from '@simplux/core'
 import type { NavigationResult } from '@simplux/router'
+import { _locationModule } from './location.js'
 import {
   SimpluxBrowserRouterState,
   _Href,
@@ -81,7 +82,8 @@ export interface SimpluxBrowserRouter {
 
   /**
    * Navigate to a URL. Does the same as if the URL was entered in the
-   * browser address bar. The URL must be relative to your site root.
+   * browser address bar. The URL is treated as relative to your site root,
+   * i.e. the URL is always prefixed with `/` if it is not already.
    *
    * @param url - URL to navigate to
    *
@@ -90,15 +92,15 @@ export interface SimpluxBrowserRouter {
   navigateToUrl: SimpluxEffect<(url: _Href) => NavigationResult>
 
   /**
-   * Connect the router to the browser location mechanism. The router will
-   * start listening to location changes and will update the location on
+   * Connect the router to the browser window. The router will start
+   * listening to location changes and will update the location on
    * route navigations.
    *
-   * @param location - the location mechanism to use (e.g. `window.location`)
+   * @param window - the window object
    *
    * @returns a function that can be called to deactivate the router
    */
-  activate: SimpluxEffect<(location: Location) => () => void>
+  activate: SimpluxEffect<(window: Window) => () => void>
 }
 
 // tslint:disable-next-line:variable-name (internal export)
@@ -106,5 +108,5 @@ export const _router: SimpluxBrowserRouter = {
   state: _module.state,
   addRoute: _routeEffects.addRoute,
   navigateToUrl: _module.navigateToRouteByUrl,
-  activate: undefined!,
+  activate: _locationModule.activate,
 }
