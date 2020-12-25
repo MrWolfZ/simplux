@@ -258,6 +258,48 @@ describe('mutations', () => {
         expect(increment.owningModule).toBe(moduleMock)
       })
 
+      it('can take false as an argument', () => {
+        const { increment } = createMutations(moduleMock, {
+          increment: (c, _: boolean) => c + 1,
+        })
+
+        increment(false)
+
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
+          args: [false],
+        })
+      })
+
+      it('can take empty string as an argument', () => {
+        const { increment } = createMutations(moduleMock, {
+          increment: (c, _: string) => c + 1,
+        })
+
+        increment('')
+
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
+          args: [''],
+        })
+      })
+
+      it('can take null as an argument', () => {
+        const { increment } = createMutations(moduleMock, {
+          increment: (c, _: null) => c + 1,
+        })
+
+        increment(null)
+
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
+          args: [null],
+        })
+      })
+
       it('ignores event arg in first position', () => {
         const { increment } = createMutations(moduleMock, {
           increment: (c) => c + 1,

@@ -266,6 +266,10 @@ function isEvent(arg: any) {
     return true
   }
 
+  if (arg === null) {
+    return false
+  }
+
   // check if it looks like an event
   if (
     hasProp(arg, 'target') &&
@@ -275,7 +279,7 @@ function isEvent(arg: any) {
     return true
   }
 
-  return !arg
+  return false
 }
 
 function hasProp(arg: any, name: string) {
