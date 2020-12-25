@@ -17,6 +17,9 @@ import {
  * @public
  */
 export interface SimpluxRouteConfiguration<TParameters> {
+  /**
+   * @internal
+   */
   readonly never?: TParameters
 }
 

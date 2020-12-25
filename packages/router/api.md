@@ -31,7 +31,7 @@ export interface SimpluxRoute<TParameters = {}> {
 
 // @public
 export interface SimpluxRouteConfiguration<TParameters> {
-    // (undocumented)
+    // @internal (undocumented)
     readonly never?: TParameters;
 }
 
