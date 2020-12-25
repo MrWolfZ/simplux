@@ -108,12 +108,19 @@ export const routeStateWithOptionalQueryParameters: SimpluxBrowserRouteState = {
 export const routeTemplateWithOnlyOptionalQueryParameter =
   'root[?optionalParam]'
 
-export interface RouteWithPathAndQueryParameters {
+export interface RouteWithPathAndQueryParametersPathPart {
   pathStringParam: string
   pathNumberParam: number
+}
+
+export interface RouteWithPathAndQueryParametersQueryPart {
   queryStringParam: string
   queryNumberParam: number
 }
+
+export interface RouteWithPathAndQueryParameters
+  extends RouteWithPathAndQueryParametersPathPart,
+    RouteWithPathAndQueryParametersQueryPart {}
 
 export const routeTemplateWithPathAndQueryParameters =
   'root/:pathStringParam/intermediate/:pathNumberParam:number?queryStringParam&queryNumberParam:number'

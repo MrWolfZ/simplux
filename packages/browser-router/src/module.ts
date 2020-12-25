@@ -1,12 +1,22 @@
 import {
+  createEffects,
   createMutations,
   createSelectors,
   createSimpluxModule,
 } from '@simplux/core'
-import type { SimpluxRouteId } from '@simplux/router'
-import type { _ParameterType, _ParameterValueType } from './parameter.js'
+import {
+  getSimpluxRouter,
+  NavigationResult,
+  SimpluxRouteId,
+} from '@simplux/router'
+import type {
+  _ParameterName,
+  _ParameterType,
+  _ParameterValueType,
+} from './parameter.js'
 import type { _RoutePathTemplateSegment } from './path.js'
-import type { _RouteQueryParameter } from './query.js'
+
+const simpluxRouter = getSimpluxRouter()
 
 /**
  * Helper type to distinguish url template values.
@@ -14,6 +24,40 @@ import type { _RouteQueryParameter } from './query.js'
  * @public
  */
 export type _UrlTemplate = string
+
+/**
+ * Helper type to distinguish href values.
+ *
+ * @public
+ */
+export type _Href = string
+
+/**
+ * @internal
+ */
+export type _QueryParameterValues = Readonly<
+  Record<_ParameterName, string | undefined>
+>
+
+/**
+ * Helper type to distinguish navigation parameter values.
+ *
+ * @public
+ */
+export type _NavigationParameters<
+  TParameterValueType = _ParameterValueType
+> = Readonly<Record<string, TParameterValueType>>
+
+/**
+ * A query parameter for a route.
+ *
+ * @public
+ */
+export interface _RouteQueryParameterState {
+  readonly parameterName: _ParameterName
+  readonly parameterType: _ParameterType
+  readonly isOptional: boolean
+}
 
 /**
  * The state of a simplux browser route.
@@ -29,7 +73,7 @@ export interface SimpluxBrowserRouteState {
   /**
    * The query parameters of the route.
    */
-  readonly queryParameters: readonly _RouteQueryParameter[]
+  readonly queryParameters: readonly _RouteQueryParameterState[]
 }
 
 /**
@@ -80,7 +124,7 @@ const selectors = createSelectors(browserRouterModule, {
   href: (
     { routes },
     routeId: SimpluxRouteId,
-    parameterValues?: Record<string, _ParameterValueType>,
+    parameterValues?: _NavigationParameters,
   ) => {
     const { pathTemplateSegments, queryParameters } = routes[routeId - 1]!
 
@@ -89,6 +133,39 @@ const selectors = createSelectors(browserRouterModule, {
 
     return `/${path}${query}`
   },
+
+  routeIdAndParametersByUrl: (
+    { routes },
+    url: _Href,
+  ): [SimpluxRouteId, _NavigationParameters] | undefined => {
+    const [path, query] = url.replace(/^\//g, '').split('?')
+
+    const pathSegments = path!.split('/').map(decodeURIComponent)
+    const queryParameters = query
+      ?.split('&')
+      .map((p) => p.split('='))
+      .reduce(
+        (v, [name, value]) => ({ ...v, [decodeURIComponent(name!)]: value }),
+        {} as _QueryParameterValues,
+      )
+
+    return findRouteForPathSegmentsAndQuery(
+      routes,
+      pathSegments,
+      queryParameters || {},
+    )
+  },
+})
+
+const effects = createEffects({
+  navigateToRouteByUrl: (url: _Href): NavigationResult => {
+    const result = selectors.routeIdAndParametersByUrl(url)
+
+    if (result) {
+      const [routeId, parameters] = result
+      simpluxRouter.navigateToRouteById(routeId, parameters)
+    }
+  },
 })
 
 // tslint:disable-next-line:variable-name (internal export)
@@ -96,6 +173,7 @@ export const _module = {
   ...browserRouterModule,
   ...mutations,
   ...selectors,
+  ...effects,
 }
 
 function parsePathTemplate(
@@ -119,7 +197,7 @@ function parsePathTemplate(
 
 function parseQueryTemplate(
   template: string | undefined,
-): readonly _RouteQueryParameter[] {
+): readonly _RouteQueryParameterState[] {
   if (!template) {
     return []
   }
@@ -140,7 +218,7 @@ function parseQueryTemplate(
   function parseParameter(
     parameter: string,
     isOptional: boolean,
-  ): _RouteQueryParameter {
+  ): _RouteQueryParameterState {
     const [name, type] = parameter.split(':')
 
     return {
@@ -153,7 +231,7 @@ function parseQueryTemplate(
 
 function createPathForHref(
   segments: readonly _RoutePathTemplateSegment[],
-  parameterValues?: Record<string, _ParameterValueType>,
+  parameterValues?: _NavigationParameters,
 ) {
   return segments.map(renderSegment).join('/')
 
@@ -165,8 +243,8 @@ function createPathForHref(
 }
 
 function createQueryForHref(
-  parameters: readonly _RouteQueryParameter[],
-  parameterValues?: Record<string, _ParameterValueType>,
+  parameters: readonly _RouteQueryParameterState[],
+  parameterValues?: _NavigationParameters,
 ) {
   const formattedValues = parameters.map(renderParameter).filter((p) => !!p)
 
@@ -176,7 +254,7 @@ function createQueryForHref(
 
   return `?${formattedValues.join('&')}`
 
-  function renderParameter({ parameterName }: _RouteQueryParameter) {
+  function renderParameter({ parameterName }: _RouteQueryParameterState) {
     const value = parameterValues?.[parameterName]
 
     if (!value) {
@@ -186,5 +264,131 @@ function createQueryForHref(
     const encodedName = encodeURIComponent(parameterName)
     const encodedValue = encodeURIComponent(value)
     return `${encodedName}=${encodedValue}`
+  }
+}
+
+function findRouteForPathSegmentsAndQuery(
+  routes: readonly SimpluxBrowserRouteState[],
+  pathSegments: _Href[],
+  queryParameterValues: _QueryParameterValues,
+): [SimpluxRouteId, _NavigationParameters] | undefined {
+  for (let i = 0; i < routes.length; i += 1) {
+    const result = tryMatchRoute(routes[i]!)
+
+    if (result) {
+      return [i + 1, result]
+    }
+  }
+
+  return undefined
+
+  function tryMatchRoute({
+    pathTemplateSegments,
+    queryParameters,
+  }: SimpluxBrowserRouteState): _NavigationParameters | undefined {
+    if (pathTemplateSegments.length !== pathSegments.length) {
+      return undefined
+    }
+
+    for (let i = 0; i < pathTemplateSegments.length; i += 1) {
+      if (!pathSegmentMatches(pathTemplateSegments[i]!, pathSegments[i]!)) {
+        return undefined
+      }
+    }
+
+    const requiredQueryParameters = queryParameters.filter((p) => !p.isOptional)
+    for (const { parameterName, parameterType } of requiredQueryParameters) {
+      const parameterExists = queryParameterExists(parameterName)
+      const parameterValue = queryParameterValues[parameterName]
+      const parameterIsOfType = valueIsOfType(parameterValue, parameterType)
+
+      if (!parameterExists || !parameterIsOfType) {
+        return undefined
+      }
+    }
+
+    return parseParameterValues()
+
+    function parseParameterValues() {
+      const parameters: Record<_ParameterName, _ParameterValueType> = {}
+
+      for (let i = 0; i < pathTemplateSegments.length; i += 1) {
+        const template = pathTemplateSegments[i]!
+
+        if (typeof template === 'string') {
+          continue
+        }
+
+        parameters[template.parameterName] = parseValue(
+          pathSegments[i]!,
+          template.parameterType,
+        )
+      }
+
+      for (const { parameterName, parameterType } of queryParameters) {
+        if (!queryParameterExists(parameterName)) {
+          continue
+        }
+
+        parameters[parameterName] = parseValue(
+          queryParameterValues[parameterName]!,
+          parameterType,
+        )
+      }
+
+      return parameters
+    }
+  }
+
+  function pathSegmentMatches(
+    template: _RoutePathTemplateSegment,
+    segment: _Href,
+  ) {
+    if (typeof template === 'string') {
+      return template === segment
+    }
+
+    return valueIsOfType(segment, template.parameterType)
+  }
+
+  function queryParameterExists(parameterName: _ParameterName) {
+    return Object.prototype.hasOwnProperty.call(
+      queryParameterValues,
+      parameterName,
+    )
+  }
+
+  function valueIsOfType(
+    rawValue: string | undefined,
+    valueType: _ParameterType,
+  ): _ParameterValueType {
+    if (rawValue === undefined) {
+      return true
+    }
+
+    if (valueType === 'number') {
+      return /^[+-]?\d+(\.\d+)?$/.test(rawValue)
+    }
+
+    if (valueType === 'boolean') {
+      return rawValue === 'true' || rawValue === 'false'
+    }
+
+    return true
+  }
+
+  function parseValue(
+    rawValue: string,
+    valueType: _ParameterType,
+  ): _ParameterValueType {
+    if (valueType === 'number') {
+      return !rawValue ? 0 : parseInt(rawValue, 10)
+    }
+
+    if (valueType === 'boolean') {
+      return !rawValue ? true : rawValue === 'true'
+    }
+
+    return !rawValue ? '' : decodeURIComponent(rawValue)
   }
 }

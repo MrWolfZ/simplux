@@ -1,4 +1,5 @@
 import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
+import { _module } from './module.js'
 import { _routeEffects } from './route.js'
 import { _router } from './router.js'
 import {
@@ -52,6 +53,14 @@ describe(`router`, () => {
       expect(addMock).toHaveBeenCalledWith(routeTemplateWithPathParameters, {
         name: 'customName',
       })
+    })
+
+    it('delegations navigation to module', () => {
+      const [navMock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
+
+      _router.navigateToUrl('/root/123')
+
+      expect(navMock).toHaveBeenCalledWith('/root/123')
     })
   })
 })

@@ -1,5 +1,12 @@
 import type { Immutable, SimpluxEffect, SimpluxSelector } from '@simplux/core'
-import { SimpluxBrowserRouterState, _module, _UrlTemplate } from './module.js'
+import type { NavigationResult } from '@simplux/router'
+import {
+  SimpluxBrowserRouterState,
+  _Href,
+  _module,
+  _NavigationParameters,
+  _UrlTemplate,
+} from './module.js'
 import {
   SimpluxBrowserRoute,
   SimpluxBrowserRouteConfiguration,
@@ -43,8 +50,8 @@ export declare function _addRoute<TUrlTemplate extends _UrlTemplate>(
  * @public
  */
 export declare function _addRoute<
-  TPathParameters extends Record<string, any> = {},
-  TQueryParameters extends Record<string, any> = {}
+  TPathParameters extends _NavigationParameters<any> = {},
+  TQueryParameters extends _NavigationParameters<any> = {}
 >(
   urlTemplate: string,
   routeConfiguration?: SimpluxBrowserRouteConfiguration,
@@ -73,6 +80,16 @@ export interface SimpluxBrowserRouter {
   readonly addRoute: SimpluxEffect<typeof _addRoute>
 
   /**
+   * Navigate to a URL. Does the same as if the URL was entered in the
+   * browser address bar. The URL must be relative to your site root.
+   *
+   * @param url - URL to navigate to
+   *
+   * @returns the result of the navigation
+   */
+  navigateToUrl: SimpluxEffect<(url: _Href) => NavigationResult>
+
+  /**
    * Connect the router to the browser location mechanism. The router will
    * start listening to location changes and will update the location on
    * route navigations.
@@ -88,5 +105,6 @@ export interface SimpluxBrowserRouter {
 export const _router: SimpluxBrowserRouter = {
   state: _module.state,
   addRoute: _routeEffects.addRoute,
+  navigateToUrl: _module.navigateToRouteByUrl,
   activate: undefined!,
 }

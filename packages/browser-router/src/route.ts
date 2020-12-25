@@ -6,17 +6,15 @@ import {
   SimpluxRouteConfiguration,
   SimpluxRouteName,
 } from '@simplux/router'
-import { SimpluxBrowserRouterState, _module, _UrlTemplate } from './module.js'
-import type { _ParameterValueType } from './parameter.js'
+import {
+  SimpluxBrowserRouterState,
+  _Href,
+  _module,
+  _NavigationParameters,
+  _UrlTemplate,
+} from './module.js'
 import type { _ParsePathParameters } from './path.js'
 import type { _ParseQueryParameters } from './query.js'
-
-/**
- * Helper type to distinguish href values.
- *
- * @public
- */
-export type _Href = string
 
 /**
  * Helper type to parse parameters from a URL template.
@@ -66,7 +64,7 @@ export type _HrefParameters<TParameters> = keyof TParameters extends never
   ? [parameters: TParameters] | []
   : [parameters: TParameters]
 
-export type HrefFunction<TParameters> = NavigateToFn<TParameters>
+export type _HrefFunction<TParameters> = NavigateToFn<TParameters>
 
 /**
  * A simplux browser route.
@@ -110,8 +108,8 @@ function addRoute<TUrlTemplate extends _UrlTemplate>(
 >
 
 function addRoute<
-  TPathParameters extends Record<string, any> = {},
-  TQueryParameters extends Record<string, any> = {}
+  TPathParameters extends _NavigationParameters<any> = {},
+  TQueryParameters extends _NavigationParameters<any> = {}
 >(
   urlTemplate: string,
   routeConfiguration?: SimpluxBrowserRouteConfiguration,
@@ -128,7 +126,7 @@ function addRoute(
   _module.addRoute(route.id, urlTemplate)
 
   const selectors = createSelectors(_module, {
-    href: (state, parameterValues?: Record<string, _ParameterValueType>) =>
+    href: (state, parameterValues?: _NavigationParameters) =>
       _module.href.withState(state, route.id, parameterValues),
   })
 

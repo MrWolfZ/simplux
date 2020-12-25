@@ -1,19 +1,4 @@
-import type {
-  _ParameterName,
-  _ParameterType,
-  _ParseParameter,
-} from './parameter.js'
-
-/**
- * A query parameter for a route.
- *
- * @public
- */
-export interface _RouteQueryParameter {
-  readonly parameterName: _ParameterName
-  readonly parameterType: _ParameterType
-  readonly isOptional: boolean
-}
+import type { _ParseParameter } from './parameter.js'
 
 /**
  * Helper type to parse parameters from a query template.

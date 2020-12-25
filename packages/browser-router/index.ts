@@ -3,11 +3,16 @@ import { SimpluxBrowserRouter, _router } from './src/router.js'
 export type {
   SimpluxBrowserRouterState,
   SimpluxBrowserRouteState,
+  _Href,
+  _NavigationParameters,
+  _QueryParameterValues,
+  _RouteQueryParameterState,
   _UrlTemplate,
 } from './src/module.js'
 export type {
   _ParameterName,
   _ParameterType,
+  _ParameterValueType,
   _ParseParameter,
   _ParseParameterType,
 } from './src/parameter.js'
@@ -17,16 +22,12 @@ export type {
   _RoutePathTemplateParameterSegment,
   _RoutePathTemplateSegment,
 } from './src/path.js'
+export type { _ParseQueryParameters } from './src/query.js'
 export type {
-  _ParseQueryParameters,
-  _RouteQueryParameter,
-} from './src/query.js'
-export type {
-  HrefFunction,
   SimpluxBrowserRoute,
   SimpluxBrowserRouteConfiguration,
   TemplateParameters,
-  _Href,
+  _HrefFunction,
   _HrefParameters,
   _RequiredPropertyNames,
 } from './src/route.js'

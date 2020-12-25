@@ -10,6 +10,8 @@ import {
   routeTemplateWithPathAndQueryParameters,
   routeTemplateWithPathParameters,
   routeTemplateWithQueryParameters,
+  RouteWithPathAndQueryParametersPathPart,
+  RouteWithPathAndQueryParametersQueryPart,
 } from './src/testdata.js'
 
 describe(`@simplux/browser-router`, () => {
@@ -60,6 +62,15 @@ describe(`@simplux/browser-router`, () => {
     )
 
     expect(routeWithPathAndQueryParameters.name).toBe(
+      routeTemplateWithPathAndQueryParameters,
+    )
+
+    const routeWithExplicitParameterInterfaces = router.addRoute<
+      RouteWithPathAndQueryParametersPathPart,
+      RouteWithPathAndQueryParametersQueryPart
+    >(routeTemplateWithPathAndQueryParameters)
+
+    expect(routeWithExplicitParameterInterfaces.name).toBe(
       routeTemplateWithPathAndQueryParameters,
     )
 
