@@ -60,41 +60,43 @@ async function build() {
     });
     await executeStep(`Compiling`, () => util_2.execAsync(`tsc -p ${PACKAGE_DIR}/tsconfig.build.json`));
     const configPath = path_1.default.join(PACKAGE_DIR, 'api-extractor.json');
-    await executeStep(`Bundling type definitions`, async () => {
-        const extractorConfig = api_extractor_1.ExtractorConfig.loadFileAndPrepare(configPath);
-        const extractorResult = api_extractor_1.Extractor.invoke(extractorConfig, {
-            localBuild: !argv.ci,
-            showVerboseMessages: true,
-            messageCallback: (message) => {
-                let text = message.text;
-                switch (message.logLevel) {
-                    case 'error': // ExtractorLogLevel.Error:
-                        text = chalk_1.default.red(text);
-                        break;
-                    case 'warning': // ExtractorLogLevel.Warning:
-                        text = chalk_1.default.yellow(text);
-                        break;
-                    case 'info': // ExtractorLogLevel.Info:
-                        text = chalk_1.default.white(text);
-                        break;
-                    case 'verbose': // ExtractorLogLevel.Verbose:
-                        text = chalk_1.default.gray(text);
-                        break;
-                    default:
-                        break;
-                }
-                shelljs_1.default.echo(text);
-                message.handled = true;
-            },
+    if (fs_1.default.existsSync(configPath)) {
+        await executeStep(`Bundling type definitions`, async () => {
+            const extractorConfig = api_extractor_1.ExtractorConfig.loadFileAndPrepare(configPath);
+            const extractorResult = api_extractor_1.Extractor.invoke(extractorConfig, {
+                localBuild: !argv.ci,
+                showVerboseMessages: true,
+                messageCallback: (message) => {
+                    let text = message.text;
+                    switch (message.logLevel) {
+                        case 'error': // ExtractorLogLevel.Error:
+                            text = chalk_1.default.red(text);
+                            break;
+                        case 'warning': // ExtractorLogLevel.Warning:
+                            text = chalk_1.default.yellow(text);
+                            break;
+                        case 'info': // ExtractorLogLevel.Info:
+                            text = chalk_1.default.white(text);
+                            break;
+                        case 'verbose': // ExtractorLogLevel.Verbose:
+                            text = chalk_1.default.gray(text);
+                            break;
+                        default:
+                            break;
+                    }
+                    shelljs_1.default.echo(text);
+                    message.handled = true;
+                },
+            });
+            if (!extractorResult.succeeded) {
+                shelljs_1.default.echo(`API Extractor completed with ${chalk_1.default.yellow(`${extractorResult.errorCount}`)} ${chalk_1.default.red('errors')} and ${chalk_1.default.yellow(`${extractorResult.warningCount}`)} ${chalk_1.default.cyan('warnings')}`);
+                return 1;
+            }
+            shelljs_1.default.mv(path_1.default.join(OUTPUT_DIR, `${PACKAGE_SIMPLE_NAME}.d.ts`), path_1.default.join(OUTPUT_DIR, `simplux-${PACKAGE_SIMPLE_NAME}.d.ts`));
+            const indexDefContent = `export * from './simplux-${PACKAGE_SIMPLE_NAME}'\n`;
+            await util_1.promisify(fs_1.default.writeFile)(path_1.default.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent);
         });
-        if (!extractorResult.succeeded) {
-            shelljs_1.default.echo(`API Extractor completed with ${chalk_1.default.yellow(`${extractorResult.errorCount}`)} ${chalk_1.default.red('errors')} and ${chalk_1.default.yellow(`${extractorResult.warningCount}`)} ${chalk_1.default.cyan('warnings')}`);
-            return 1;
-        }
-        shelljs_1.default.mv(path_1.default.join(OUTPUT_DIR, `${PACKAGE_SIMPLE_NAME}.d.ts`), path_1.default.join(OUTPUT_DIR, `simplux-${PACKAGE_SIMPLE_NAME}.d.ts`));
-        const indexDefContent = `export * from './simplux-${PACKAGE_SIMPLE_NAME}'\n`;
-        await util_1.promisify(fs_1.default.writeFile)(path_1.default.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent);
-    });
+    }
     await executeStep(`Verify type definitions`, async () => {
         shelljs_1.default.mkdir(`-p`, TEST_D_DIR);
         shelljs_1.default.cp(`-r`, `${PACKAGE_DIR}/test-d/*.ts`, TEST_D_DIR);

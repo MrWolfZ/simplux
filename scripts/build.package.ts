@@ -68,67 +68,69 @@ async function build() {
 
   const configPath = path.join(PACKAGE_DIR, 'api-extractor.json')
 
-  await executeStep(`Bundling type definitions`, async () => {
-    const extractorConfig = ExtractorConfig.loadFileAndPrepare(configPath)
+  if (fs.existsSync(configPath)) {
+    await executeStep(`Bundling type definitions`, async () => {
+      const extractorConfig = ExtractorConfig.loadFileAndPrepare(configPath)
 
-    const extractorResult = Extractor.invoke(extractorConfig, {
-      localBuild: !argv.ci,
-      showVerboseMessages: true,
+      const extractorResult = Extractor.invoke(extractorConfig, {
+        localBuild: !argv.ci,
+        showVerboseMessages: true,
 
-      messageCallback: (message) => {
-        let text = message.text
+        messageCallback: (message) => {
+          let text = message.text
 
-        switch (message.logLevel) {
-          case 'error': // ExtractorLogLevel.Error:
-            text = chalk.red(text)
-            break
+          switch (message.logLevel) {
+            case 'error': // ExtractorLogLevel.Error:
+              text = chalk.red(text)
+              break
 
-          case 'warning': // ExtractorLogLevel.Warning:
-            text = chalk.yellow(text)
-            break
+            case 'warning': // ExtractorLogLevel.Warning:
+              text = chalk.yellow(text)
+              break
 
-          case 'info': // ExtractorLogLevel.Info:
-            text = chalk.white(text)
-            break
+            case 'info': // ExtractorLogLevel.Info:
+              text = chalk.white(text)
+              break
 
-          case 'verbose': // ExtractorLogLevel.Verbose:
-            text = chalk.gray(text)
-            break
+            case 'verbose': // ExtractorLogLevel.Verbose:
+              text = chalk.gray(text)
+              break
 
-          default:
-            break
-        }
+            default:
+              break
+          }
 
-        shell.echo(text)
+          shell.echo(text)
 
-        message.handled = true
-      },
-    })
+          message.handled = true
+        },
+      })
 
-    if (!extractorResult.succeeded) {
-      shell.echo(
-        `API Extractor completed with ${chalk.yellow(
-          `${extractorResult.errorCount}`,
-        )} ${chalk.red('errors')} and ${chalk.yellow(
-          `${extractorResult.warningCount}`,
-        )} ${chalk.cyan('warnings')}`,
+      if (!extractorResult.succeeded) {
+        shell.echo(
+          `API Extractor completed with ${chalk.yellow(
+            `${extractorResult.errorCount}`,
+          )} ${chalk.red('errors')} and ${chalk.yellow(
+            `${extractorResult.warningCount}`,
+          )} ${chalk.cyan('warnings')}`,
+        )
+
+        return 1
+      }
+
+      shell.mv(
+        path.join(OUTPUT_DIR, `${PACKAGE_SIMPLE_NAME}.d.ts`),
+        path.join(OUTPUT_DIR, `simplux-${PACKAGE_SIMPLE_NAME}.d.ts`),
       )
 
-      return 1
-    }
+      const indexDefContent = `export * from './simplux-${PACKAGE_SIMPLE_NAME}'\n`
 
-    shell.mv(
-      path.join(OUTPUT_DIR, `${PACKAGE_SIMPLE_NAME}.d.ts`),
-      path.join(OUTPUT_DIR, `simplux-${PACKAGE_SIMPLE_NAME}.d.ts`),
-    )
-
-    const indexDefContent = `export * from './simplux-${PACKAGE_SIMPLE_NAME}'\n`
-
-    await promisify(fs.writeFile)(
-      path.join(OUTPUT_DIR, 'index.d.ts'),
-      indexDefContent,
-    )
-  })
+      await promisify(fs.writeFile)(
+        path.join(OUTPUT_DIR, 'index.d.ts'),
+        indexDefContent,
+      )
+    })
+  }
 
   await executeStep(`Verify type definitions`, async () => {
     shell.mkdir(`-p`, TEST_D_DIR)
