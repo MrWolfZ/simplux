@@ -5,10 +5,12 @@ import {
   SimpluxSelector,
 } from '@simplux/core'
 import {
+  NavigationResult,
   SimpluxRouteId,
   SimpluxRouteName,
   SimpluxRouterState,
   _module,
+  _NavigationParameters,
 } from './module.js'
 
 /**
@@ -38,10 +40,10 @@ export type _RequiredPropertyNames<T> = {
  * @public
  */
 export type NavigateToFn<TParameters> = keyof TParameters extends never
-  ? () => void
+  ? () => NavigationResult
   : _RequiredPropertyNames<TParameters> extends never
-  ? (parameters?: TParameters) => void
-  : (parameters: TParameters) => void
+  ? (parameters?: TParameters) => NavigationResult
+  : (parameters: TParameters) => NavigationResult
 
 /**
  * A simplux route.
@@ -86,7 +88,7 @@ export interface SimpluxRoute<TParameters = {}> {
 
 // tslint:disable-next-line:variable-name (internal export)
 export const _routeEffects = createEffects({
-  addRoute: <TParameters extends Record<string, any> = {}>(
+  addRoute: <TParameters extends _NavigationParameters = {}>(
     name: SimpluxRouteName,
     configuration?: SimpluxRouteConfiguration<TParameters>,
   ): SimpluxRoute<TParameters> => {
@@ -102,7 +104,7 @@ export const _routeEffects = createEffects({
     })
 
     const { navigateTo } = createEffects({
-      navigateTo: (parameters?: TParameters) =>
+      navigateTo: (parameters?: TParameters): NavigationResult =>
         _module.navigateToRoute(routeId, parameters || {}),
     })
 

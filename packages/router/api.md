@@ -12,7 +12,13 @@ import { SimpluxSelector } from '@simplux/core';
 export function getSimpluxRouter(): SimpluxRouter;
 
 // @public
-export type NavigateToFn<TParameters> = keyof TParameters extends never ? () => void : _RequiredPropertyNames<TParameters> extends never ? (parameters?: TParameters) => void : (parameters: TParameters) => void;
+export type NavigateToFn<TParameters> = keyof TParameters extends never ? () => NavigationResult : _RequiredPropertyNames<TParameters> extends never ? (parameters?: TParameters) => NavigationResult : (parameters: TParameters) => NavigationResult;
+
+// @public
+export type _NavigationParameters = Readonly<Record<string, any>>;
+
+// @public
+export type NavigationResult = void;
 
 // @public
 export type _RequiredPropertyNames<T> = {
@@ -43,7 +49,9 @@ export type SimpluxRouteName = string;
 
 // @public
 export interface SimpluxRouter {
-    readonly addRoute: SimpluxEffect<(<TParameters extends Record<string, any> = {}>(name: SimpluxRouteName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TParameters>)>;
+    readonly addRoute: SimpluxEffect<(<TParameters extends _NavigationParameters = {}>(name: SimpluxRouteName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TParameters>)>;
+    // @internal
+    readonly navigateToRouteById: SimpluxEffect<(routeId: SimpluxRouteId, parameters?: Readonly<_NavigationParameters>) => NavigationResult>;
     readonly state: SimpluxSelector<SimpluxRouterState, [
     ], Immutable<SimpluxRouterState>>;
 }
@@ -51,7 +59,7 @@ export interface SimpluxRouter {
 // @public
 export interface SimpluxRouterState {
     activeRouteId: SimpluxRouteId | undefined;
-    activeRouteParameterValues: Readonly<Record<string, any>>;
+    activeRouteParameterValues: _NavigationParameters;
     readonly routes: SimpluxRouteState[];
 }
 

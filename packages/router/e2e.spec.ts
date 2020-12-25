@@ -53,5 +53,23 @@ describe(`@simplux/router`, () => {
       num: 1,
       bool: false,
     })
+
+    router.navigateToRouteById(testRoute1.id)
+
+    expect(testRoute1.isActive()).toBe(true)
+    expect(testRoute1.parameterValues()).toEqual({})
+
+    router.navigateToRouteById(testRoute3.id, {
+      str: 'a',
+      num: 1,
+      bool: false,
+    })
+
+    expect(testRoute3.isActive()).toBe(true)
+    expect(testRoute3.parameterValues()).toEqual({
+      str: 'a',
+      num: 1,
+      bool: false,
+    })
   })
 })

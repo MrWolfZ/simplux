@@ -1,4 +1,5 @@
 import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
+import { _module } from './module.js'
 import { _routeEffects } from './route.js'
 import { _router } from './router.js'
 import { routeName1, routeName2 } from './testdata.js'
@@ -32,6 +33,14 @@ describe(`router`, () => {
 
       expect(addMock).toHaveBeenCalledWith(routeName1)
       expect(addMock).toHaveBeenCalledWith(routeName2, {})
+    })
+
+    it('delegations navigation to module', () => {
+      const [navMock] = mockEffect(_module.navigateToRoute, jest.fn())
+
+      _router.navigateToRouteById(1, { param: 'value' })
+
+      expect(navMock).toHaveBeenCalledWith(1, { param: 'value' })
     })
   })
 })

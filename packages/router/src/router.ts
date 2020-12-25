@@ -1,5 +1,12 @@
 import type { Immutable, SimpluxEffect, SimpluxSelector } from '@simplux/core'
-import { SimpluxRouteName, SimpluxRouterState, _module } from './module.js'
+import {
+  NavigationResult,
+  SimpluxRouteId,
+  SimpluxRouteName,
+  SimpluxRouterState,
+  _module,
+  _NavigationParameters,
+} from './module.js'
 import {
   SimpluxRoute,
   SimpluxRouteConfiguration,
@@ -32,10 +39,25 @@ export interface SimpluxRouter {
    * @returns a route object for interacting with the route
    */
   readonly addRoute: SimpluxEffect<
-    <TParameters extends Record<string, any> = {}>(
+    <TParameters extends _NavigationParameters = {}>(
       name: SimpluxRouteName,
       routeConfiguration?: SimpluxRouteConfiguration<TParameters>,
     ) => SimpluxRoute<TParameters>
+  >
+
+  /**
+   * Navigate to a route with the given parameters.
+   *
+   * @param routeId - the ID of the route to navigate to
+   * @param parameters - the parameters for the navigation
+   *
+   * @internal
+   */
+  readonly navigateToRouteById: SimpluxEffect<
+    (
+      routeId: SimpluxRouteId,
+      parameters?: Readonly<_NavigationParameters>,
+    ) => NavigationResult
   >
 }
 
@@ -43,4 +65,5 @@ export interface SimpluxRouter {
 export const _router: SimpluxRouter = {
   state: _module.state,
   addRoute: _routeEffects.addRoute,
+  navigateToRouteById: _module.navigateToRoute,
 }

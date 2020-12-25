@@ -21,6 +21,20 @@ export type SimpluxRouteName = string
 export type SimpluxRouteId = number
 
 /**
+ * Helper type to distinguish navigation parameter values.
+ *
+ * @public
+ */
+export type _NavigationParameters = Readonly<Record<string, any>>
+
+/**
+ * The result of a route navigation.
+ *
+ * @public
+ */
+export type NavigationResult = void
+
+/**
  * The state of a simplux route.
  *
  * @public
@@ -54,7 +68,7 @@ export interface SimpluxRouterState {
    * The parameter values for the currently active route. Will
    * be `{}` while no route is active.
    */
-  activeRouteParameterValues: Readonly<Record<string, any>>
+  activeRouteParameterValues: _NavigationParameters
 }
 
 const initialState: SimpluxRouterState = {
@@ -75,7 +89,7 @@ const mutations = createMutations(routerModule, {
   activateRoute: (
     state,
     routeId: SimpluxRouteId,
-    parameters: Readonly<Record<string, unknown>>,
+    parameters: _NavigationParameters,
   ) => {
     state.activeRouteId = routeId
     state.activeRouteParameterValues = parameters
@@ -124,9 +138,9 @@ const effects = createEffects({
 
   navigateToRoute: (
     routeId: SimpluxRouteId,
-    parameters: Readonly<Record<string, unknown>>,
-  ) => {
-    mutations.activateRoute(routeId, parameters)
+    parameters?: _NavigationParameters,
+  ): NavigationResult => {
+    mutations.activateRoute(routeId, parameters || {})
   },
 })
 

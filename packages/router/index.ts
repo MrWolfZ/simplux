@@ -1,10 +1,12 @@
 import { SimpluxRouter, _router } from './src/router.js'
 
 export type {
+  NavigationResult,
   SimpluxRouteId,
   SimpluxRouteName,
   SimpluxRouterState,
   SimpluxRouteState,
+  _NavigationParameters,
 } from './src/module.js'
 export type {
   NavigateToFn,
