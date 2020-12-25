@@ -161,6 +161,10 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
+- core: make `SimpluxModule.getState` into a selector called `state`
+- core: remove `Simplux` prefix from most types
+- testing: replace `mockModuleState` with `mockSelector`
+- testing: add functions to throw when calling unmocked mutations or effects
 - router: method `addRoutes` on `SimpluxRouter` to create multiple routes at once
 - router: make navigation async
 - router: add interceptor `onNavigateTo` to route configuration
@@ -170,22 +174,17 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - router: allow creating child routes
 - router: remove default parameter values
 - router: add type tests
-- browser-router: create package
 - browser-router: abstract url interaction into separate module
-- browser-router: store url routes in separate module and create route in router module
-- browser-router: store url template as segments in module
-- browser-router: parse url template to extract parameters
 - browser-router: allow defining global query parameters
 - browser-router: throw when creating conflicting route definition
-- testing: add functions to throw when calling unmocked mutations or effects
 - entities: create package for managing collections of entities
 - entities: create default set of entity management mutations
 - entities: allow creating custom mutations that act on one entity
 - entities: create default set of selectors for entities
 - docs: create website
 - recipes: add advanced recipe for `mixing in mutations and selectors`
-- create root jest config to run tests of all projects at once
-- switch to eslint
+- build: create root jest config to run tests of all projects at once
+- build: switch to eslint
 
 ## Contributing
 
