@@ -85,6 +85,7 @@ describe('context', () => {
       dispatch: undefined!,
       subscribe: subscribeToReduxStoreProxyMock,
       subscribers: [],
+      actionsToDispatchOnStoreChange: [],
     }
 
     jest.clearAllMocks()
