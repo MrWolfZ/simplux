@@ -163,6 +163,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 - core: make `SimpluxModule.getState` into a selector called `state`
 - core: remove `Simplux` prefix from most types
+- core: remove `nameFunction` in production
 - testing: replace `mockModuleState` with `mockSelector`
 - testing: add functions to throw when calling unmocked mutations or effects
 - router: method `addRoutes` on `SimpluxRouter` to create multiple routes at once
