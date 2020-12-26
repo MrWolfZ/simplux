@@ -43,13 +43,16 @@ const counter = {
 
 const Counter = () => {
   const value = useSimplux(counter.value)
-  const valueTimesFive = useSimplux(counter.valueTimes, 5)
+  const valueTimesThree = useSimplux(counter.valueTimes, 3)
+  const valuePlusFive = useSimplux(counter, (state) => state.value + 5)
 
   return (
     <>
       <span>value: {value}</span>
       <br />
-      <span>value * 5: {valueTimesFive}</span>
+      <span>value * 3: {valueTimesThree}</span>
+      <br />
+      <span>value + 5: {valuePlusFive}</span>
       <br />
       <button onClick={counter.increment}>Increment</button>
       <br />
@@ -61,15 +64,15 @@ const Counter = () => {
 
 Let's start by looking at how we can test components that access a module's state.
 
-The best way to test these kinds of components is to test them in isolation from the module(s) they access. That means we do not want any real module's state to be accessed during the test. This is where the **simplux** testing package comes into play: it allows us to mock a module's state.
+The best way to test these kinds of components is to test them in isolation from the module(s) they access. That means we do not want any real module's state to be accessed during the test. This is where the **simplux** testing package comes into play: it allows us to mock a module's state and selectors.
 
 ```tsx
-import { mockModuleState } from '@simplux/testing'
+import { mockModuleState, mockSelector } from '@simplux/testing'
 
 it('displays the value', () => {
   // all access to the module's state after this call will return
   // the mocked state instead of the real module's state; this
-  // includes accesses via the module's selector hook
+  // includes accesses via the module's selector hooks
   mockModuleState(counter, { value: 10 })
 
   const wrapper = shallow(<Counter />)
@@ -78,19 +81,33 @@ it('displays the value', () => {
   expect(wrapper.contains(expected)).toBe(true)
 })
 
-// mocking the state works with any kind of selector, including
-// inline selectors as used by our Counter component
-it('displays the value times five', () => {
-  mockModuleState(counter, { value: 20 })
+// for components that select only a small portion of a module's
+// state or if you only want to test part of a component it can
+// be cumbersome to mock the whole state; in those cases you can
+// instead mock a selector directly
+it('displays the value times three', () => {
+  mockSelector(counter.valueTimes, () => 60)
 
   const wrapper = shallow(<Counter />)
-  const expected = <span>value * 5: 100</span>
+  const expected = <span>value * 3: 60</span>
 
   expect(wrapper.contains(expected)).toBe(true)
 })
+
+// mocking the state works with any kind of selector, including
+// selectors with arguments as well as inline selectors as used
+// by our Counter component above
+it('displays the value times three and plus five', () => {
+  mockModuleState(counter, { value: 20 })
+
+  const wrapper = shallow(<Counter />)
+
+  expect(wrapper.contains(<span>value * 3: 60</span>)).toBe(true)
+  expect(wrapper.contains(<span>value + 5: 25</span>)).toBe(true)
+})
 ```
 
-The `mockModuleState` call above mocks the module's state indefinitely. The testing extension provides a way to clear all simplux mocks which we can simply do after each test.
+The `mockModuleState` and `mockSelector` calls above mock the module's state/selectors indefinitely. The testing extension provides a way to clear all simplux mocks which we can simply do after each test.
 
 ```ts
 import { clearAllSimpluxMocks } from '@simplux/testing'
@@ -115,7 +132,7 @@ it('increments the counter when the "Increment" button is clicked', () => {
 
   const wrapper = shallow(<Counter />)
 
-  wrapper.findWhere(el => el.type() === 'button' && el.text() === 'Increment').simulate('click')
+  wrapper.findWhere((el) => el.type() === 'button' && el.text() === 'Increment').simulate('click')
 
   expect(incrementMock).toHaveBeenCalled()
 })
@@ -129,7 +146,7 @@ it('triggers an increment by 5 when the "Increment by 5" button is clicked', () 
   const wrapper = shallow(<Counter />)
 
   wrapper
-    .findWhere(el => el.type() === 'button' && el.text() === 'Increment by 5')
+    .findWhere((el) => el.type() === 'button' && el.text() === 'Increment by 5')
     .simulate('click')
 
   expect(incrementByMock).toHaveBeenCalledWith(5)

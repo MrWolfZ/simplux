@@ -50,13 +50,18 @@ const Counter = () => {
   const value = useSimplux(counter.value)
 
   // provide any arguments for the selector directly to the hook
-  const valueTimesFive = useSimplux(counter.valueTimes, 5)
+  const valueTimesThree = useSimplux(counter.valueTimes, 3)
+
+  // in simple cases you can also define a selector inline
+  const valuePlusFive = useSimplux(counter, (state) => state.value + 5)
 
   return (
     <>
       <span>value: {value}</span>
       <br />
-      <span>value * 5: {valueTimesFive}</span>
+      <span>value * 3: {valueTimesThree}</span>
+      <br />
+      <span>value + 5: {valuePlusFive}</span>
       <br />
       {/* we can use mutations directly as event handlers */}
       <button onClick={counter.increment}>Increment</button>
@@ -93,18 +98,21 @@ import { useSimplux } from '@simplux/react'
 
 interface CounterProps {
   value: number
-  valueTimesFive: number
+  valueTimesThree: number
+  valuePlusFive: number
 }
 
 class CounterComponent extends React.Component<CounterProps> {
   render() {
-    const { value, valueTimesFive } = this.props
+    const { value, valueTimesThree, valuePlusFive } = this.props
 
     return (
       <>
         <span>value: {value}</span>
         <br />
-        <span>value * 5: {valueTimesFive}</span>
+        <span>value * 3: {valueTimesThree}</span>
+        <br />
+        <span>value + 5: {valuePlusFive}</span>
         <br />
         {/* mutations can still be used directly */}
         <button onClick={counter.increment}>Increment</button>
@@ -117,8 +125,9 @@ class CounterComponent extends React.Component<CounterProps> {
 
 const CounterWrapper = () => {
   const value = useSimplux(counter.value)
-  const valueTimesFive = useSimplux(counter.valueTimes, 5)
-  const props = { value, valueTimesFive }
+  const valueTimesThree = useSimplux(counter.valueTimes, 3)
+  const valuePlusFive = useSimplux(counter, (state) => state.value + 5)
+  const props = { value, valueTimesThree, valuePlusFive }
   return <CounterComponent {...props} />
 }
 ```

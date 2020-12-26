@@ -1,7 +1,7 @@
 // this code is part of the simplux recipe "testing my React components":
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-component
 
-import { clearAllSimpluxMocks, mockModuleState, mockMutation } from '@simplux/testing'
+import { clearAllSimpluxMocks, mockModuleState, mockMutation, mockSelector } from '@simplux/testing'
 import { shallow } from 'enzyme'
 import React from 'react'
 import { Counter } from './counter'
@@ -19,7 +19,7 @@ describe(Counter.name, () => {
   // from the module; that means we do not want the real module's
   // state to be accessed during the test; this is where the simplux
   // testing package comes into play; it allows us to mock a
-  // module's state
+  // module's state and selectors
   it('displays the value', () => {
     // all access to the module's state after this call will return
     // the mocked state instead of the real module's state; this
@@ -32,20 +32,34 @@ describe(Counter.name, () => {
     expect(wrapper.contains(expected)).toBe(true)
   })
 
-  // the mockModuleState call above mocks the state indefinitely;
-  // therefore we need to make sure that we remove the mocked state
-  // after each test
+  // for components that select only a small portion of a module's
+  // state or if you only want to test part of a component it can
+  // be cumbersome to mock the whole state; in those cases you can
+  // instead mock a selector directly
+  it('displays the value times three', () => {
+    mockSelector(counter.valueTimes, () => 60)
+
+    const wrapper = shallow(<Counter />)
+    const expected = <span>value * 3: 60</span>
+
+    expect(wrapper.contains(expected)).toBe(true)
+  })
+
+  // the mockModuleState and mockSelector calls above mock the state
+  // and selectors indefinitely; therefore we need to make sure that
+  // we remove the mocked state after each test
   afterEach(clearAllSimpluxMocks)
 
   // mocking the state works with any kind of selector, including
-  // selectors with arguments
-  it('displays the value times five', () => {
+  // selectors with arguments as well as inline selectors as used
+  // by our Counter component
+  it('displays the value times three and plus five', () => {
     mockModuleState(counter, { value: 20 })
 
     const wrapper = shallow(<Counter />)
-    const expected = <span>value * 5: 100</span>
 
-    expect(wrapper.contains(expected)).toBe(true)
+    expect(wrapper.contains(<span>value * 3: 60</span>)).toBe(true)
+    expect(wrapper.contains(<span>value + 5: 25</span>)).toBe(true)
   })
 
   // testing your components that perform state changes is just as simple;
@@ -59,7 +73,7 @@ describe(Counter.name, () => {
 
     const wrapper = shallow(<Counter />)
 
-    wrapper.findWhere(el => el.type() === 'button' && el.text() === 'Increment').simulate('click')
+    wrapper.findWhere((el) => el.type() === 'button' && el.text() === 'Increment').simulate('click')
 
     expect(incrementMock).toHaveBeenCalled()
   })
@@ -73,7 +87,7 @@ describe(Counter.name, () => {
     const wrapper = shallow(<Counter />)
 
     wrapper
-      .findWhere(el => el.type() === 'button' && el.text() === 'Increment by 5')
+      .findWhere((el) => el.type() === 'button' && el.text() === 'Increment by 5')
       .simulate('click')
 
     expect(incrementByMock).toHaveBeenCalledWith(5)
