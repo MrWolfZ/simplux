@@ -75,11 +75,18 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
     return (result as unknown) as TResult
   }
 
-  return useSimpluxInternal(
-    selectorOrModule.owningModule,
-    selectorOrModule.withState,
-    [selectorOrArg, ...args] as TArgs,
-  )
+  const module = selectorOrModule.owningModule
+  const selector = selectorOrModule
+  args = [selectorOrArg, ...args] as TArgs
+
+  const selectorMocks = module.$simpluxInternals.selectorMocks
+  const selectorMock = selectorMocks[selectorOrModule.selectorId]
+
+  if (selectorMock) {
+    return selectorMock(...args)
+  }
+
+  return useSimpluxInternal(module, selector.withState, args)
 }
 
 export function useSimpluxInternal<TState, TArgs extends any[], TResult>(

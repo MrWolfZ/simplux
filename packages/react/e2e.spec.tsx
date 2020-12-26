@@ -6,7 +6,11 @@ import {
   createSimpluxModule,
 } from '@simplux/core'
 import { SimpluxProvider, useSimplux } from '@simplux/react'
-import { clearAllSimpluxMocks, mockModuleState } from '@simplux/testing'
+import {
+  clearAllSimpluxMocks,
+  mockModuleState,
+  mockSelector,
+} from '@simplux/testing'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { act as actHook, renderHook } from '@testing-library/react-hooks'
 import React from 'react'
@@ -77,11 +81,11 @@ describe(`@simplux/react`, () => {
       getById,
       getTodoIdsFromKeys,
     } = createSelectors(todosModule, {
-      getTodos: s => s,
-      getTodoIds: s => s.todoIds,
-      getNrOfTodos: s => Object.keys(s.todosById).length,
+      getTodos: (s) => s,
+      getTodoIds: (s) => s.todoIds,
+      getNrOfTodos: (s) => Object.keys(s.todosById).length,
       getById: (state, id: string) => state.todosById[id],
-      getTodoIdsFromKeys: s => Object.keys(s.todosById),
+      getTodoIdsFromKeys: (s) => Object.keys(s.todosById),
     })
 
     const counterModule = createSimpluxModule({
@@ -90,11 +94,11 @@ describe(`@simplux/react`, () => {
     })
 
     const { increment } = createMutations(counterModule, {
-      increment: c => c + 1,
+      increment: (c) => c + 1,
     })
 
     const { value } = createSelectors(counterModule, {
-      value: c => c,
+      value: (c) => c,
     })
 
     let unmounts: (() => void)[] = []
@@ -106,7 +110,7 @@ describe(`@simplux/react`, () => {
     })
 
     afterEach(() => {
-      unmounts.forEach(f => f())
+      unmounts.forEach((f) => f())
     })
 
     it('renders initially with the module state', () => {
@@ -134,7 +138,7 @@ describe(`@simplux/react`, () => {
       const {
         result: nrOfTodosFromInlineSelector,
         unmount: unmount8,
-      } = renderHook(() => useSimplux(todosModule, s => s.todoIds.length))
+      } = renderHook(() => useSimplux(todosModule, (s) => s.todoIds.length))
 
       unmounts.push(
         unmount1,
@@ -182,7 +186,7 @@ describe(`@simplux/react`, () => {
       const {
         result: nrOfTodosFromInlineSelector,
         unmount: unmount8,
-      } = renderHook(() => useSimplux(todosModule, s => s.todoIds.length))
+      } = renderHook(() => useSimplux(todosModule, (s) => s.todoIds.length))
 
       unmounts.push(
         unmount1,
@@ -256,7 +260,7 @@ describe(`@simplux/react`, () => {
       const {
         result: nrOfTodosFromInlineSelector,
         unmount: unmount8,
-      } = renderHook(() => useSimplux(todosModule, s => s.todoIds.length))
+      } = renderHook(() => useSimplux(todosModule, (s) => s.todoIds.length))
 
       unmounts.push(
         unmount1,
@@ -277,6 +281,30 @@ describe(`@simplux/react`, () => {
       expect(counterValue.current).toBe(20)
       expect(stateFromModule.current).toBe(todoStoreWithTwoTodos)
       expect(nrOfTodosFromInlineSelector.current).toBe(2)
+    })
+
+    it('renders initially with the mocked selectors if set', () => {
+      mockSelector(getTodoIds, () => todoStoreWithTwoTodos.todoIds)
+      mockSelector(getNrOfTodos, () => todoStoreWithTwoTodos.todoIds.length)
+      mockSelector(value, () => 20)
+
+      const { result: todoIds, unmount: unmount2 } = renderHook(() =>
+        useSimplux(getTodoIds),
+      )
+
+      const { result: nrOfTodos, unmount: unmount3 } = renderHook(() =>
+        useSimplux(getNrOfTodos),
+      )
+
+      const { result: counterValue, unmount: unmount6 } = renderHook(() =>
+        useSimplux(value),
+      )
+
+      unmounts.push(unmount2, unmount3, unmount6)
+
+      expect(todoIds.current).toBe(todoStoreWithTwoTodos.todoIds)
+      expect(nrOfTodos.current).toBe(2)
+      expect(counterValue.current).toBe(20)
     })
 
     it('renders initially with the module state with Provider', () => {
@@ -465,6 +493,31 @@ describe(`@simplux/react`, () => {
       ])
     })
 
+    it('renders initially with a mocked selectors with Provider', () => {
+      mockSelector(getTodoIds, () => todoStoreWithTwoTodos.todoIds)
+      mockSelector(getNrOfTodos, () => todoStoreWithTwoTodos.todoIds.length)
+      mockSelector(value, () => 20)
+
+      const renderedItems: any[] = []
+
+      const Comp = () => {
+        const todoIds = useSimplux(getTodoIds)
+        const nrOfTodos = useSimplux(getNrOfTodos)
+        const counterValue = useSimplux(value)
+        renderedItems.push(todoIds, nrOfTodos, counterValue)
+        return <div>{nrOfTodos}</div>
+      }
+
+      render(
+        // tslint:disable-next-line: jsx-wrap-multiline
+        <SimpluxProvider>
+          <Comp />
+        </SimpluxProvider>,
+      )
+
+      expect(renderedItems).toEqual([todoStoreWithTwoTodos.todoIds, 2, 20])
+    })
+
     it('uses batching for notifying subscribers with Provider', () => {
       const batchingModule = createSimpluxModule({
         name: 'batching',
@@ -472,12 +525,12 @@ describe(`@simplux/react`, () => {
       })
 
       const { increment } = createMutations(batchingModule, {
-        increment: c => c + 1,
+        increment: (c) => c + 1,
       })
 
       const { plus10, plus20 } = createSelectors(batchingModule, {
-        plus10: c => c + 10,
-        plus20: c => c + 20,
+        plus10: (c) => c + 10,
+        plus20: (c) => c + 20,
       })
 
       const renderedItems: number[] = []

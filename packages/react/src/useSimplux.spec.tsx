@@ -2,6 +2,7 @@ import {
   SimpluxModule,
   SimpluxSelector,
   SIMPLUX_MODULE,
+  SIMPLUX_SELECTOR,
   StateChangeSubscription,
 } from '@simplux/core'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
@@ -30,8 +31,11 @@ describe(useSimplux.name, () => {
       SimpluxSelector<typeof moduleState, TArgs, TResult>
     >
 
+    mutableSelector.selectorId = 1
+    mutableSelector.selectorName = 'testSelector'
     mutableSelector.owningModule = moduleMock
     mutableSelector.withState = fn
+    mutableSelector[SIMPLUX_SELECTOR] = undefined!
 
     return mutableSelector as any
   }
@@ -456,6 +460,17 @@ describe(useSimplux.name, () => {
       const { result } = renderHook(() => useSimplux(selector))
 
       expect(result.current).toEqual(11)
+    })
+
+    it('calls the mocked selector if set', () => {
+      const selector = createSelector((s) => s.count)
+
+      const mock = jest.fn().mockReturnValueOnce(-1)
+      moduleMock.$simpluxInternals.selectorMocks[selector.selectorId] = mock
+
+      const { result } = renderHook(() => useSimplux(selector))
+
+      expect(result.current).toEqual(-1)
     })
 
     it('selects the mock when subscriber is called', () => {
