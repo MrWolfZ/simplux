@@ -161,15 +161,12 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- core: make `SimpluxModule.getState` into a selector called `state`
-- core: remove `Simplux` prefix from most types
 - core: remove `nameFunction` in production
-- testing: replace `mockModuleState` with `mockSelector`
 - testing: add functions to throw when calling unmocked mutations or effects
-- router: method `addRoutes` on `SimpluxRouter` to create multiple routes at once
 - router: make navigation async
 - router: add interceptor `onNavigateTo` to route configuration
 - router: explicitly specify what happened in return value of `navigateTo`
+- router: method `addRoutes` on `SimpluxRouter` to create multiple routes at once
 - router: capture navigation history
 - router: allow going back to previously active route
 - router: allow creating child routes
