@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.3](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.2...v0.18.0-alpha.3) (2020-12-26)
+
+
+### Bug Fixes
+
+* **core:** fix mutations from module scope getting lost during app initialization ([81cc625](https://github.com/MrWolfZ/simplux/commit/81cc625eefbb0e091172f33455ecf862d1e58fe1))
+
+
+
+
+
 # [0.18.0-alpha.2](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.1...v0.18.0-alpha.2) (2020-12-25)
 
 

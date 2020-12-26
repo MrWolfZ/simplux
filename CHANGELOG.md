@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.3](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.2...v0.18.0-alpha.3) (2020-12-26)
+
+
+### Bug Fixes
+
+* **browser-router:** update browser location when navigating to route programmatically ([5f8bd58](https://github.com/MrWolfZ/simplux/commit/5f8bd58b41898ecbb290fb6302b9e4f650a996b8))
+* **core:** fix mutations from module scope getting lost during app initialization ([81cc625](https://github.com/MrWolfZ/simplux/commit/81cc625eefbb0e091172f33455ecf862d1e58fe1))
+
+
+### Features
+
+* **browser-router:** add selector for checking if any route is active ([0f7c644](https://github.com/MrWolfZ/simplux/commit/0f7c644c2294df3f44123abc264f434a262d041c))
+* **router:** add selector for checking if any route is active ([9ff3914](https://github.com/MrWolfZ/simplux/commit/9ff39140533655615384c0b581f1211104480a10))
+
+
+
+
+
 # [0.18.0-alpha.2](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.1...v0.18.0-alpha.2) (2020-12-25)
 
 
