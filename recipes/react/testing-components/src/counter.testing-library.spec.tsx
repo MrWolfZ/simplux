@@ -50,18 +50,6 @@ describe(Counter.name, () => {
   // after each test
   afterEach(clearAllSimpluxMocks)
 
-  // mocking the state works with any kind of selector, including
-  // selectors with arguments as well as inline selectors as used
-  // by our Counter component
-  it('displays the value times three and plus five', () => {
-    mockModuleState(counter, { value: 20 })
-
-    const { getByText } = render(<Counter />)
-
-    expect(getByText(/value \* 3:\s*60/g)).toBeDefined()
-    expect(getByText(/value + 5:\s*25/g)).toBeDefined()
-  })
-
   // testing your components that perform state changes is just as simple;
   // see the recipe for "testing my code that uses mutations" for more
   // details about this

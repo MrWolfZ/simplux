@@ -8,15 +8,12 @@ import { counter } from './counter-module'
 export const Counter = () => {
   const value = useSimplux(counter.value)
   const valueTimesThree = useSimplux(counter.valueTimes, 3)
-  const valuePlusFive = useSimplux(counter, (state) => state.value + 5)
 
   return (
     <>
       <span>value: {value}</span>
       <br />
       <span>value * 3: {valueTimesThree}</span>
-      <br />
-      <span>value + 5: {valuePlusFive}</span>
       <br />
       <button onClick={counter.increment}>Increment</button>
       <br />

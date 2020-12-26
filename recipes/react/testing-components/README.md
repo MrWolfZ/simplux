@@ -44,15 +44,12 @@ const counter = {
 const Counter = () => {
   const value = useSimplux(counter.value)
   const valueTimesThree = useSimplux(counter.valueTimes, 3)
-  const valuePlusFive = useSimplux(counter, (state) => state.value + 5)
 
   return (
     <>
       <span>value: {value}</span>
       <br />
       <span>value * 3: {valueTimesThree}</span>
-      <br />
-      <span>value + 5: {valuePlusFive}</span>
       <br />
       <button onClick={counter.increment}>Increment</button>
       <br />
@@ -92,18 +89,6 @@ it('displays the value times three', () => {
   const expected = <span>value * 3: 60</span>
 
   expect(wrapper.contains(expected)).toBe(true)
-})
-
-// mocking the state works with any kind of selector, including
-// selectors with arguments as well as inline selectors as used
-// by our Counter component above
-it('displays the value times three and plus five', () => {
-  mockModuleState(counter, { value: 20 })
-
-  const wrapper = shallow(<Counter />)
-
-  expect(wrapper.contains(<span>value * 3: 60</span>)).toBe(true)
-  expect(wrapper.contains(<span>value + 5: 25</span>)).toBe(true)
 })
 ```
 
