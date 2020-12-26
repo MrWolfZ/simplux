@@ -95,6 +95,7 @@ async function build() {
             shelljs_1.default.mv(path_1.default.join(OUTPUT_DIR, `${PACKAGE_SIMPLE_NAME}.d.ts`), path_1.default.join(OUTPUT_DIR, `simplux-${PACKAGE_SIMPLE_NAME}.d.ts`));
             const indexDefContent = `export * from './simplux-${PACKAGE_SIMPLE_NAME}'\n`;
             await util_1.promisify(fs_1.default.writeFile)(path_1.default.join(OUTPUT_DIR, 'index.d.ts'), indexDefContent);
+            shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/src/*.d.ts`);
         });
     }
     await executeStep(`Verify type definitions`, async () => {
@@ -271,14 +272,18 @@ if (process.env.NODE_ENV !== 'production') {
             await util_1.promisify(fs_1.default.unlink)(mapFile);
         }));
     });
-    await executeStep(`Cleaning build files`, () => {
+    await executeStep(`Cleaning build files`, async () => {
         shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*.js.map`);
         shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*.d.ts.map`);
-        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*.spec.js`);
-        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*.spec.d.ts`);
         shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/*.api.json`);
-        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/src`);
+        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/src/*.js`);
+        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/src/*.js.map`);
+        shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/src/*.d.ts.map`);
         shelljs_1.default.rm(`-Rf`, TEMP_DIR);
+        const srcFiles = await util_1.promisify(glob_1.default)(`${OUTPUT_DIR}/src/**/*`);
+        if (srcFiles.length === 0) {
+            shelljs_1.default.rm(`-Rf`, `${OUTPUT_DIR}/src`);
+        }
     });
     await executeStep(`Copying static assets`, () => {
         shelljs_1.default.cp(`-Rf`, [`${PACKAGE_DIR}/package.json`], OUTPUT_DIR);

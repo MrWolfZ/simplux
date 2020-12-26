@@ -129,6 +129,8 @@ async function build() {
         path.join(OUTPUT_DIR, 'index.d.ts'),
         indexDefContent,
       )
+
+      shell.rm(`-Rf`, `${OUTPUT_DIR}/src/*.d.ts`)
     })
   }
 
@@ -481,14 +483,20 @@ if (process.env.NODE_ENV !== 'production') {
     )
   })
 
-  await executeStep(`Cleaning build files`, () => {
+  await executeStep(`Cleaning build files`, async () => {
     shell.rm(`-Rf`, `${OUTPUT_DIR}/*.js.map`)
     shell.rm(`-Rf`, `${OUTPUT_DIR}/*.d.ts.map`)
-    shell.rm(`-Rf`, `${OUTPUT_DIR}/*.spec.js`)
-    shell.rm(`-Rf`, `${OUTPUT_DIR}/*.spec.d.ts`)
     shell.rm(`-Rf`, `${OUTPUT_DIR}/*.api.json`)
-    shell.rm(`-Rf`, `${OUTPUT_DIR}/src`)
+    shell.rm(`-Rf`, `${OUTPUT_DIR}/src/*.js`)
+    shell.rm(`-Rf`, `${OUTPUT_DIR}/src/*.js.map`)
+    shell.rm(`-Rf`, `${OUTPUT_DIR}/src/*.d.ts.map`)
     shell.rm(`-Rf`, TEMP_DIR)
+
+    const srcFiles = await promisify(glob)(`${OUTPUT_DIR}/src/**/*`)
+
+    if (srcFiles.length === 0) {
+      shell.rm(`-Rf`, `${OUTPUT_DIR}/src`)
+    }
   })
 
   await executeStep(`Copying static assets`, () => {
