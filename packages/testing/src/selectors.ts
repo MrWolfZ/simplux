@@ -8,7 +8,8 @@ import { registerMockCleanupFunction } from './cleanup.js'
 function setupMutationMock<
   TState,
   TArgs extends any[],
-  TMock extends (...args: TArgs) => TState
+  TReturn,
+  TMock extends (...args: TArgs) => TReturn
 >(
   owningModule: SimpluxModule<TState>,
   selectorId: number,
@@ -42,11 +43,11 @@ export function mockSelector<
   TState,
   TArgs extends any[],
   TReturn,
-  TMock extends (...args: TArgs) => TState
+  TMock extends (...args: TArgs) => TReturn
 >(mutation: SimpluxSelectorMarker<TState, TArgs, TReturn>, mockFn: TMock) {
   const mut = mutation as SimpluxSelector<TState, TArgs, TReturn>
 
-  return setupMutationMock<TState, TArgs, TMock>(
+  return setupMutationMock<TState, TArgs, TReturn, TMock>(
     mut.owningModule,
     mut.selectorId,
     mockFn,

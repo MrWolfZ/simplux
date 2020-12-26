@@ -23,7 +23,7 @@ export function mockModuleState<TState>(simpluxModule: SimpluxModuleMarker<TStat
 export function mockMutation<TState, TArgs extends any[], TMock extends (...args: TArgs) => TState>(mutation: SimpluxMutationMarker<TState, TArgs>, mockFn: TMock): [TMock, () => void];
 
 // @public
-export function mockSelector<TState, TArgs extends any[], TReturn, TMock extends (...args: TArgs) => TState>(mutation: SimpluxSelectorMarker<TState, TArgs, TReturn>, mockFn: TMock): [TMock, () => void];
+export function mockSelector<TState, TArgs extends any[], TReturn, TMock extends (...args: TArgs) => TReturn>(mutation: SimpluxSelectorMarker<TState, TArgs, TReturn>, mockFn: TMock): [TMock, () => void];
 
 // @public
 export function registerMockCleanupFunction(cleanupFunction: () => void): () => void;
