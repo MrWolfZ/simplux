@@ -2,10 +2,13 @@
 // https://github.com/MrWolfZ/simplux/tree/master/recipes/react/testing-component
 
 import { clearAllSimpluxMocks, mockModuleState, mockMutation, mockSelector } from '@simplux/testing'
-import { shallow } from 'enzyme'
+import Enzyme, { shallow } from 'enzyme'
+import Adapter from 'enzyme-adapter-react-16'
 import React from 'react'
 import { Counter } from './counter'
 import { counter } from './counter-module'
+
+Enzyme.configure({ adapter: new Adapter() })
 
 // this file shows you how to test your components that read
 // and change state; here we are using enzyme but any other
