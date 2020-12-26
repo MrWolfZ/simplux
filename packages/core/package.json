@@ -11,7 +11,6 @@
       "import": "./esm2015/index.js"
     }
   },
-  "sideEffects": false,
   "scripts": {
     "build": "node ../../scripts/build.package.js --forceEnableColors=true",
     "build:ci": "npm run build -- --forceEnableColors=false --ci",
