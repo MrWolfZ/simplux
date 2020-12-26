@@ -1544,7 +1544,7 @@ describe(`module`, () => {
         expect(navByIdMock).toHaveBeenCalledWith(routeId, parameters)
       })
 
-      it('pushes the route href', () => {
+      it('pushes the new url to the location module', () => {
         const state = makeBrowserRouterState({
           pathTemplateSegments: [
             'root',
@@ -1561,6 +1561,44 @@ describe(`module`, () => {
         _module.navigateToRouteById(routeId, parameters)
 
         expect(pushUrlMock).toHaveBeenCalledWith(`/root/value`)
+      })
+
+      it('sets the current navigation url at the start of the navigation', () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [
+            'root',
+            { parameterName: 'param', parameterType: 'string' },
+          ],
+          queryParameters: [],
+        })
+
+        const routeId = 1
+        const parameters = { param: 'value' }
+
+        mockModuleState(_module, state)
+
+        _module.navigateToRouteById(routeId, parameters)
+
+        expect(setCurrentNavigationUrlMock).toHaveBeenCalledWith(`/root/value`)
+      })
+
+      it('clears the current navigation url at the end of the navigation', () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [
+            'root',
+            { parameterName: 'param', parameterType: 'string' },
+          ],
+          queryParameters: [],
+        })
+
+        const routeId = 1
+        const parameters = { param: 'value' }
+
+        mockModuleState(_module, state)
+
+        _module.navigateToRouteById(routeId, parameters)
+
+        expect(setCurrentNavigationUrlMock).toHaveBeenCalledWith(undefined)
       })
     })
   })

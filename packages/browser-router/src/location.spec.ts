@@ -264,6 +264,17 @@ describe(`location module`, () => {
     })
 
     describe(pushNewUrl, () => {
+      it('sets the url in the module', () => {
+        const newUrl = '/root/nested?queryParam=value'
+        mockModuleState(_locationModule, { url: '/root', isActive: true })
+        mockEffect(getHistoryInstance, () => window.history)
+        const [setUrlMock] = mockMutation(setUrl, jest.fn())
+
+        pushNewUrl(newUrl)
+
+        expect(setUrlMock).toHaveBeenCalledWith(newUrl)
+      })
+
       it('pushes a new state entry', () => {
         const newUrl = '/root/nested?queryParam=value'
         mockModuleState(_locationModule, { url: '/root', isActive: true })
@@ -277,9 +288,11 @@ describe(`location module`, () => {
       it('does nothing if router is not active', () => {
         const newUrl = '/root/nested?queryParam=value'
         mockModuleState(_locationModule, { url: '/root', isActive: false })
+        const [setUrlMock] = mockMutation(setUrl, jest.fn())
 
         pushNewUrl(newUrl)
 
+        expect(setUrlMock).not.toHaveBeenCalled()
         expect(pushMock).not.toHaveBeenCalled()
       })
     })

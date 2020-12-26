@@ -100,6 +100,7 @@ const effects = createEffects({
       return
     }
 
+    mutations.setUrl(url)
     effects.getHistoryInstance().pushState({ url }, '', url)
   },
 })

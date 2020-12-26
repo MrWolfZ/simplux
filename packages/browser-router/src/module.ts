@@ -178,8 +178,8 @@ const effects = createEffects({
 
     if (result) {
       const [routeId, parameters] = result
-      simpluxRouter.navigateToRouteById(routeId, parameters)
       mutations.setCurrentNavigationUrl(url)
+      simpluxRouter.navigateToRouteById(routeId, parameters)
       _locationModule.pushNewUrl(url)
       mutations.setCurrentNavigationUrl(undefined)
     } else {
@@ -191,10 +191,11 @@ const effects = createEffects({
     routeId: SimpluxRouteId,
     parameterValues?: _NavigationParameters,
   ): NavigationResult => {
+    const url = selectors.href(routeId, parameterValues)
+    mutations.setCurrentNavigationUrl(url)
     simpluxRouter.navigateToRouteById(routeId, parameterValues)
-
-    const href = selectors.href(routeId, parameterValues)
-    _locationModule.pushNewUrl(href)
+    _locationModule.pushNewUrl(url)
+    mutations.setCurrentNavigationUrl(undefined)
   },
 })
 
