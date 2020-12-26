@@ -135,10 +135,6 @@ describe(`@simplux/react`, () => {
       const { result: stateFromModule, unmount: unmount7 } = renderHook(() =>
         useSimplux(todosModule),
       )
-      const {
-        result: nrOfTodosFromInlineSelector,
-        unmount: unmount8,
-      } = renderHook(() => useSimplux(todosModule, (s) => s.todoIds.length))
 
       unmounts.push(
         unmount1,
@@ -148,7 +144,6 @@ describe(`@simplux/react`, () => {
         unmount5,
         unmount6,
         unmount7,
-        unmount8,
       )
 
       expect(state.current).toBe(todoStoreWithOneTodo)
@@ -158,7 +153,6 @@ describe(`@simplux/react`, () => {
       expect(todoIdsFromKeys.current).toEqual(todoStoreWithOneTodo.todoIds)
       expect(counterValue.current).toBe(10)
       expect(stateFromModule.current).toBe(todoStoreWithOneTodo)
-      expect(nrOfTodosFromInlineSelector.current).toBe(1)
     })
 
     it('re-renders when the state changes', () => {
@@ -183,10 +177,6 @@ describe(`@simplux/react`, () => {
       const { result: stateFromModule, unmount: unmount7 } = renderHook(() =>
         useSimplux(todosModule),
       )
-      const {
-        result: nrOfTodosFromInlineSelector,
-        unmount: unmount8,
-      } = renderHook(() => useSimplux(todosModule, (s) => s.todoIds.length))
 
       unmounts.push(
         unmount1,
@@ -196,7 +186,6 @@ describe(`@simplux/react`, () => {
         unmount5,
         unmount6,
         unmount7,
-        unmount8,
       )
 
       actHook(() => {
@@ -210,7 +199,6 @@ describe(`@simplux/react`, () => {
       expect(todoIdsFromKeys.current).toEqual(todoStoreWithTwoTodos.todoIds)
       expect(counterValue.current).toBe(10)
       expect(stateFromModule.current).toEqual(todoStoreWithTwoTodos)
-      expect(nrOfTodosFromInlineSelector.current).toBe(2)
 
       actHook(() => {
         removeTodo(todo2.id)
@@ -223,7 +211,6 @@ describe(`@simplux/react`, () => {
       expect(todoIdsFromKeys.current).toEqual(todoStoreWithOneTodo.todoIds)
       expect(counterValue.current).toBe(10)
       expect(stateFromModule.current).toEqual(todoStoreWithOneTodo)
-      expect(nrOfTodosFromInlineSelector.current).toBe(1)
 
       actHook(() => {
         increment()
@@ -257,10 +244,6 @@ describe(`@simplux/react`, () => {
       const { result: stateFromModule, unmount: unmount7 } = renderHook(() =>
         useSimplux(todosModule),
       )
-      const {
-        result: nrOfTodosFromInlineSelector,
-        unmount: unmount8,
-      } = renderHook(() => useSimplux(todosModule, (s) => s.todoIds.length))
 
       unmounts.push(
         unmount1,
@@ -270,7 +253,6 @@ describe(`@simplux/react`, () => {
         unmount5,
         unmount6,
         unmount7,
-        unmount8,
       )
 
       expect(state.current).toBe(todoStoreWithTwoTodos)
@@ -280,7 +262,6 @@ describe(`@simplux/react`, () => {
       expect(todoIdsFromKeys.current).toEqual(todoStoreWithTwoTodos.todoIds)
       expect(counterValue.current).toBe(20)
       expect(stateFromModule.current).toBe(todoStoreWithTwoTodos)
-      expect(nrOfTodosFromInlineSelector.current).toBe(2)
     })
 
     it('renders initially with the mocked selectors if set', () => {

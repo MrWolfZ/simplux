@@ -16,9 +16,6 @@ export const SimpluxProvider: FunctionComponent;
 export function useSimplux<TState>(simpluxModule: SimpluxModule<TState>): Immutable<TState>;
 
 // @public
-export function useSimplux<TState, TResult>(simpluxModule: SimpluxModule<TState>, selector: (state: Immutable<TState>) => TResult): TResult;
-
-// @public
 export function useSimplux<TState, TArgs extends any[], TResult>(selector: SimpluxSelector<TState, TArgs, TResult>, ...args: TArgs): TResult;
 
 

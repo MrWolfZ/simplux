@@ -27,28 +27,6 @@ export function useSimplux<TState>(
  * a component. Whenever the result of the selector changes the
  * component using the hook will be re-rendered.
  *
- * Note that for optimal performance the selector reference
- * should not change between invocations, for example by using
- * `useCallback` to create the selector.
- *
- * @param simpluxModule - the module to return the state for
- * @param selector - the selector that determines the slice
- * of the module's state which is returned
- *
- * @returns the result of the selector
- *
- * @public
- */
-export function useSimplux<TState, TResult>(
-  simpluxModule: SimpluxModule<TState>,
-  selector: (state: Immutable<TState>) => TResult,
-): TResult
-
-/**
- * A react hook that allows accessing a module's state inside
- * a component. Whenever the result of the selector changes the
- * component using the hook will be re-rendered.
- *
  * @param selector - the module selector that determines the slice
  * of the module's state which is returned
  * @param args - the arguments for the selector
