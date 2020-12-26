@@ -295,6 +295,17 @@ describe(`location module`, () => {
         expect(setUrlMock).not.toHaveBeenCalled()
         expect(pushMock).not.toHaveBeenCalled()
       })
+
+      it('does nothing if the url is the same as current URL', () => {
+        const url = '/root/nested?queryParam=value'
+        mockModuleState(_locationModule, { url, isActive: true })
+        const [setUrlMock] = mockMutation(setUrl, jest.fn())
+
+        pushNewUrl(url)
+
+        expect(setUrlMock).not.toHaveBeenCalled()
+        expect(pushMock).not.toHaveBeenCalled()
+      })
     })
   })
 })

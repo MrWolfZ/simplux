@@ -8,7 +8,7 @@ export const emptyRouterState: SimpluxBrowserRouterState = {
   currentNavigationUrl: undefined,
 }
 
-export const rootRouteTemplate = 'root'
+export const rootRouteTemplate = '/'
 
 export const rootRoute: SimpluxBrowserRouteState = {
   pathTemplateSegments: [],

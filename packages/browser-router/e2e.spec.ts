@@ -154,5 +154,20 @@ describe(`@simplux/browser-router`, () => {
       queryStringParam: 'query',
       queryNumberParam: -100,
     })
+
+    router.navigateToUrl(rootRoute.href())
+
+    expect(rootRoute.isActive()).toBe(true)
+    expect(rootRoute.parameterValues()).toEqual({})
+
+    const window: any = {
+      location: { pathname: routeWithoutParameters.href(), search: '' },
+      addEventListener: jest.fn(),
+    }
+
+    router.activate(window)
+
+    expect(routeWithoutParameters.isActive()).toBe(true)
+    expect(routeWithoutParameters.parameterValues()).toEqual({})
   })
 })
