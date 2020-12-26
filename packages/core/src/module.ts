@@ -151,7 +151,7 @@ export interface _SimpluxModuleInternals<TState> {
   /**
    * Mock functions that should be called instead of real selectors.
    */
-  readonly selectorMocks: { [selectorId: number]: (...args: any[]) => TState }
+  readonly selectorMocks: { [selectorId: number]: (...args: any[]) => any }
 
   /**
    * A proxy to the Redux store's dispatch function. This is part of the
