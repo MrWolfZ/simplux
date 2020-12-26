@@ -226,7 +226,7 @@ export interface _SimpluxModuleInternals<TState> {
     readonly mutations: MutationDefinitions<TState>;
     readonly name: string;
     readonly selectorMocks: {
-        [selectorId: number]: (...args: any[]) => TState;
+        [selectorId: number]: (...args: any[]) => any;
     };
 }
 
