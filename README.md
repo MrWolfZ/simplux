@@ -110,6 +110,7 @@ Instead of traditional documentation **simplux** has these recipes that will sho
 
 - [creating non-trivial modules](recipes/advanced/creating-non-trivial-modules#readme)
 - [testing my code that uses mutations](recipes/advanced/testing-code-using-mutations#readme)
+- [testing my code that uses modules and selectors](recipes/advanced/testing-code-using-modules-and-selectors#readme)
 - [reacting to state changes](recipes/advanced/reacting-to-state-changes#readme)
 - [creating testable side effects (like loading data from my API)](recipes/advanced/creating-testable-side-effects#readme)
 - [organizing my application state](recipes/advanced/organizing-application-state#readme)

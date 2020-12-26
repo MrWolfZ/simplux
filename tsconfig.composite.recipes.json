@@ -23,6 +23,9 @@
       "path": "./recipes/advanced/reacting-to-state-changes/tsconfig.composite.json"
     },
     {
+      "path": "./recipes/advanced/testing-code-using-modules-and-selectors/tsconfig.composite.json"
+    },
+    {
       "path": "./recipes/advanced/testing-code-using-mutations/tsconfig.composite.json"
     },
     {
