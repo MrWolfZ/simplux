@@ -31,10 +31,14 @@ describe(`@simplux/router`, () => {
 
     expect(testRoute3.name).toBe(routeName3)
 
+    expect(router.anyRouteIsActive()).toBe(false)
+
     testRoute1.navigateTo()
 
     expect(testRoute1.isActive()).toBe(true)
     expect(testRoute1.parameterValues()).toEqual({})
+
+    expect(router.anyRouteIsActive()).toBe(true)
 
     testRoute2.navigateTo()
 
