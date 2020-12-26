@@ -187,7 +187,7 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - entities: allow creating custom mutations that act on one entity
 - entities: create default set of selectors for entities
 - docs: create website
-- recipes: add advanced recipe for `mixing in mutations and selectors`
+- recipes: add example effects to recipe for `creating non-trivial modules` and explicitly mention mixin pattern
 - build: create root jest config to run tests of all projects at once
 - build: switch to eslint
 
