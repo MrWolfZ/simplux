@@ -1,8 +1,12 @@
-import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
+import {
+  clearAllSimpluxMocks,
+  mockEffect,
+  mockModuleState,
+} from '@simplux/testing'
 import { _module } from './module.js'
 import { _routeEffects } from './route.js'
 import { _router } from './router.js'
-import { routeName1, routeName2 } from './testdata.js'
+import { emptyRouterState, routeName1, routeName2 } from './testdata.js'
 
 describe(`router`, () => {
   afterEach(clearAllSimpluxMocks)
@@ -33,6 +37,14 @@ describe(`router`, () => {
 
       expect(addMock).toHaveBeenCalledWith(routeName1)
       expect(addMock).toHaveBeenCalledWith(routeName2, {})
+    })
+
+    it('delegations active route check to module', () => {
+      mockModuleState(_module, emptyRouterState)
+
+      const result = _router.anyRouteIsActive()
+
+      expect(result).toBe(false)
     })
 
     it('delegations navigation to module', () => {

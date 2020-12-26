@@ -107,8 +107,9 @@ const mutations = createMutations(browserRouterModule, {
     routeId: SimpluxRouteId,
     urlTemplate: _UrlTemplate,
   ) => {
+    urlTemplate = urlTemplate.replace(/^\//, '').replace(/\/$/, '')
     const [path, query] = urlTemplate.replace('[?', '?[').split('?')
-    const pathTemplateSegments = parsePathTemplate(path!)
+    const pathTemplateSegments = !path ? [] : parsePathTemplate(path!)
     const queryParameters = parseQueryTemplate(query)
 
     routes[routeId - 1] = {
@@ -135,16 +136,20 @@ const selectors = createSelectors(browserRouterModule, {
     const path = createPathForHref(pathTemplateSegments, parameterValues)
     const query = createQueryForHref(queryParameters, parameterValues)
 
-    return `/${path}${query}`
+    return `${!path ? '' : '/'}${path}${query}`
   },
 
   routeIdAndParametersByUrl: (
     { routes },
     url: _Href,
   ): [SimpluxRouteId, _NavigationParameters] | undefined => {
-    const [path, query] = url.replace(/^\//g, '').split('?')
+    const [path, query] = url.split('?')
 
-    const pathSegments = path!.split('/').map(decodeURIComponent)
+    const trimmedPath = path!.replace(/^\//, '').replace(/\/$/, '')
+
+    const pathSegments =
+      trimmedPath === '' ? [] : trimmedPath.split('/').map(decodeURIComponent)
+
     const queryParameters = query
       ?.split('&')
       .map((p) => p.split('='))
@@ -163,7 +168,7 @@ const selectors = createSelectors(browserRouterModule, {
 
 const effects = createEffects({
   navigateToRouteByUrl: (url: _Href): NavigationResult => {
-    url = !url ? '/' : url.startsWith('/') ? url : `/${url}`
+    url = !url ? '' : url.startsWith('/') ? url : `/${url}`
 
     if (url === selectors.state().currentNavigationUrl) {
       return

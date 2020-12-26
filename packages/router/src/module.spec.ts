@@ -132,6 +132,38 @@ describe(`module`, () => {
   })
 
   describe('selectors', () => {
+    describe(_module.anyRouteIsActive, () => {
+      it('returns true for an active route', () => {
+        const stateWithActiveRoute: SimpluxRouterState = {
+          ...routerStateWithTwoRoutes,
+          activeRouteId: 1,
+          activeRouteParameterValues: {},
+        }
+
+        const isActive = _module.routeIsActive.withState(
+          stateWithActiveRoute,
+          1,
+        )
+
+        expect(isActive).toBe(true)
+      })
+
+      it('returns false for an inactive route', () => {
+        const stateWithActiveRoute: SimpluxRouterState = {
+          ...routerStateWithTwoRoutes,
+          activeRouteId: undefined,
+          activeRouteParameterValues: {},
+        }
+
+        const isActive = _module.routeIsActive.withState(
+          stateWithActiveRoute,
+          2,
+        )
+
+        expect(isActive).toBe(false)
+      })
+    })
+
     describe(_module.routeIsActive, () => {
       const stateWithActiveRoute: SimpluxRouterState = {
         ...routerStateWithTwoRoutes,

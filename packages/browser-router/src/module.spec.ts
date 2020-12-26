@@ -176,6 +176,120 @@ describe(`module`, () => {
 
         expect(updateState).toEqual(state)
       })
+
+      it('strips leading and trailing slashes', () => {
+        const template = '/root/nested/'
+
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: ['root', 'nested'],
+          queryParameters: [],
+        })
+
+        const updateState = _module.addRoute.withState(
+          emptyRouterState,
+          1,
+          template,
+        )
+
+        expect(updateState).toEqual(state)
+      })
+
+      it('creates route without segments for empty template', () => {
+        const template = ''
+
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [],
+          queryParameters: [],
+        })
+
+        const updateState = _module.addRoute.withState(
+          emptyRouterState,
+          1,
+          template,
+        )
+
+        expect(updateState).toEqual(state)
+      })
+
+      it('creates route without segments for template /', () => {
+        const template = '/'
+
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [],
+          queryParameters: [],
+        })
+
+        const updateState = _module.addRoute.withState(
+          emptyRouterState,
+          1,
+          template,
+        )
+
+        expect(updateState).toEqual(state)
+      })
+
+      it('creates route with empty segments', () => {
+        const template = 'root//nested'
+
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: ['root', '', 'nested'],
+          queryParameters: [],
+        })
+
+        const updateState = _module.addRoute.withState(
+          emptyRouterState,
+          1,
+          template,
+        )
+
+        expect(updateState).toEqual(state)
+      })
+
+      it('creates route with empty segments with query parameters', () => {
+        const template = '?queryParam:string'
+
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [],
+          queryParameters: [
+            {
+              parameterName: 'queryParam',
+              parameterType: 'string',
+              isOptional: false,
+            },
+          ],
+        })
+
+        const updateState = _module.addRoute.withState(
+          emptyRouterState,
+          1,
+          template,
+        )
+
+        expect(updateState).toEqual(state)
+      })
+
+      it('creates route with empty segments with optional query parameters', () => {
+        const template = '[?queryParam:string]'
+
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [],
+          queryParameters: [
+            {
+              parameterName: 'queryParam',
+              parameterType: 'string',
+              isOptional: true,
+            },
+          ],
+        })
+
+        const updateState = _module.addRoute.withState(
+          emptyRouterState,
+          1,
+          template,
+        )
+
+        expect(updateState).toEqual(state)
+      })
     })
 
     describe(_module.setCurrentNavigationUrl, () => {
@@ -394,6 +508,38 @@ describe(`module`, () => {
         const href = _module.href.withState(state, 1, parameterValues)
 
         expect(href).toBe('/ro%3Dot/value?query%2FParam=value')
+      })
+
+      it('creates empty href for route without segments', () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [],
+          queryParameters: [],
+        })
+
+        const href = _module.href.withState(state, 1)
+
+        expect(href).toBe(``)
+      })
+
+      it('creates href for route without segments but with query parameters', () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [],
+          queryParameters: [
+            {
+              parameterName: 'param',
+              parameterType: 'string',
+              isOptional: false,
+            },
+          ],
+        })
+
+        const parameterValues = {
+          param: 'value',
+        }
+
+        const href = _module.href.withState(state, 1, parameterValues)
+
+        expect(href).toBe(`?param=value`)
       })
     })
 
@@ -829,6 +975,140 @@ describe(`module`, () => {
 
         expect(result).toEqual([2, parameterValues])
       })
+
+      it('finds empty route', () => {
+        const state = makeBrowserRouterState(
+          {
+            pathTemplateSegments: ['other'],
+            queryParameters: [],
+          },
+          {
+            pathTemplateSegments: [],
+            queryParameters: [],
+          },
+        )
+
+        const result = _module.routeIdAndParametersByUrl.withState(state, ``)
+
+        expect(result).toEqual([2, {}])
+      })
+
+      it('finds empty route with leading /', () => {
+        const state = makeBrowserRouterState(
+          {
+            pathTemplateSegments: ['other'],
+            queryParameters: [],
+          },
+          {
+            pathTemplateSegments: [],
+            queryParameters: [],
+          },
+        )
+
+        const result = _module.routeIdAndParametersByUrl.withState(state, `/`)
+
+        expect(result).toEqual([2, {}])
+      })
+
+      it('finds empty route with query parameters', () => {
+        const state = makeBrowserRouterState(
+          {
+            pathTemplateSegments: ['other'],
+            queryParameters: [],
+          },
+          {
+            pathTemplateSegments: [],
+            queryParameters: [
+              {
+                parameterName: 'queryParam',
+                parameterType: 'string',
+                isOptional: false,
+              },
+            ],
+          },
+        )
+
+        const parameterValues = {
+          queryParam: 'value',
+        }
+
+        const result = _module.routeIdAndParametersByUrl.withState(
+          state,
+          `?queryParam=${parameterValues.queryParam}`,
+        )
+
+        expect(result).toEqual([2, parameterValues])
+      })
+
+      it('finds route with empty segments', () => {
+        const state = makeBrowserRouterState(
+          {
+            pathTemplateSegments: ['other'],
+            queryParameters: [],
+          },
+          {
+            pathTemplateSegments: ['root', '', 'nested'],
+            queryParameters: [],
+          },
+        )
+
+        const result = _module.routeIdAndParametersByUrl.withState(
+          state,
+          `/root//nested`,
+        )
+
+        expect(result).toEqual([2, {}])
+      })
+
+      it('ignores trailing and leading slashes', () => {
+        const state = makeBrowserRouterState(
+          {
+            pathTemplateSegments: ['other'],
+            queryParameters: [],
+          },
+          {
+            pathTemplateSegments: ['root', 'nested'],
+            queryParameters: [],
+          },
+        )
+
+        const result = _module.routeIdAndParametersByUrl.withState(
+          state,
+          `/root/nested/`,
+        )
+
+        expect(result).toEqual([2, {}])
+      })
+
+      it('ignores trailing slash with query parameters', () => {
+        const state = makeBrowserRouterState(
+          {
+            pathTemplateSegments: ['other'],
+            queryParameters: [],
+          },
+          {
+            pathTemplateSegments: ['root', 'nested'],
+            queryParameters: [
+              {
+                parameterName: 'queryParam',
+                parameterType: 'string',
+                isOptional: false,
+              },
+            ],
+          },
+        )
+
+        const parameterValues = {
+          queryParam: 'value',
+        }
+
+        const result = _module.routeIdAndParametersByUrl.withState(
+          state,
+          `/root/nested/?queryParam=${parameterValues.queryParam}`,
+        )
+
+        expect(result).toEqual([2, parameterValues])
+      })
     })
   })
 
@@ -1176,9 +1456,9 @@ describe(`module`, () => {
         expect(pushUrlMock).toHaveBeenCalledWith(`/root/nested`)
       })
 
-      it('sets the url to / if empty', () => {
+      it('sets the url to empty if empty', () => {
         const state = makeBrowserRouterState({
-          pathTemplateSegments: [''],
+          pathTemplateSegments: [],
           queryParameters: [],
         })
 
@@ -1186,7 +1466,7 @@ describe(`module`, () => {
 
         _module.navigateToRouteByUrl('')
 
-        expect(pushUrlMock).toHaveBeenCalledWith(`/`)
+        expect(pushUrlMock).toHaveBeenCalledWith(``)
       })
 
       it('pushes the new url to the location module', () => {

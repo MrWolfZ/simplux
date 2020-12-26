@@ -99,6 +99,8 @@ const mutations = createMutations(routerModule, {
 const selectors = createSelectors(routerModule, {
   state: (s) => s,
 
+  anyRouteIsActive: ({ activeRouteId }) => !!activeRouteId,
+
   routeIsActive: ({ activeRouteId }, routeId: SimpluxRouteId) =>
     activeRouteId === routeId,
 

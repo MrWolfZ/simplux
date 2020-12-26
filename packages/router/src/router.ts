@@ -31,6 +31,14 @@ export interface SimpluxRouter {
   >
 
   /**
+   * A selector to check if any route is active (useful to trigger
+   * a default navigation).
+   *
+   * @returns `true` if any route is currently active, otherwise `false`
+   */
+  readonly anyRouteIsActive: SimpluxSelector<SimpluxRouterState, [], boolean>
+
+  /**
    * Add a new route to the router.
    *
    * @param name - the name of the route
@@ -64,6 +72,7 @@ export interface SimpluxRouter {
 // tslint:disable-next-line:variable-name (internal export)
 export const _router: SimpluxRouter = {
   state: _module.state,
+  anyRouteIsActive: _module.anyRouteIsActive,
   addRoute: _routeEffects.addRoute,
   navigateToRouteById: _module.navigateToRoute,
 }

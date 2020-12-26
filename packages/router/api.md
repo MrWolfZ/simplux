@@ -50,6 +50,7 @@ export type SimpluxRouteName = string;
 // @public
 export interface SimpluxRouter {
     readonly addRoute: SimpluxEffect<(<TParameters extends _NavigationParameters = {}>(name: SimpluxRouteName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TParameters>)>;
+    readonly anyRouteIsActive: SimpluxSelector<SimpluxRouterState, [], boolean>;
     // @internal
     readonly navigateToRouteById: SimpluxEffect<(routeId: SimpluxRouteId, parameters?: Readonly<_NavigationParameters>) => NavigationResult>;
     readonly state: SimpluxSelector<SimpluxRouterState, [
