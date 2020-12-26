@@ -174,8 +174,6 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - router: allow creating child routes
 - router: remove default parameter values
 - router: add type tests
-- browser-router: allow defining default values for parameters (e.g. /:id:string|defaultValue/)
-- browser-router: alternatively add function configuration parameter to fill in defaults dynamically (also infer correct full parameter type from return value of callback)
 - browser-router: configuration parameter for setting URL at start or end of navigation (or not at all); also add these as navigation options
 - browser-router: configuration parameter for replacing history entry; also add these as navigation options
 - browser-router: allow ?[, [?, &[, and [& for optional query parameters
@@ -183,6 +181,8 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 - browser-router: throw when creating conflicting route definition
 - browser-router: add support for base href in history mode
 - browser-router: add support for hash mode
+- browser-router: allow defining default values for parameters (e.g. /:id:string|defaultValue/)
+- browser-router: alternatively add function configuration parameter to fill in defaults dynamically (also infer correct full parameter type from return value of callback)
 - entities: create package for managing collections of entities
 - entities: create default set of entity management mutations
 - entities: allow creating custom mutations that act on one entity
