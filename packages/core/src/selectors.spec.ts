@@ -23,6 +23,8 @@ describe('selectors', () => {
         mockStateValue: undefined,
         mutations: {},
         mutationMocks: {},
+        lastSelectorId: -1,
+        selectorMocks: {},
         dispatch: undefined!,
         getReducer: undefined!,
         getState: getModuleStateMock,
@@ -56,6 +58,33 @@ describe('selectors', () => {
         expect(minusOne()).toBe(19)
       })
 
+      it('calls the mock if it is defined', () => {
+        const { plus, plus2, minusOne } = createSelectors(moduleMock, {
+          plus: (c, amount: number) => c + amount,
+          plus2: (c, arg1: number, arg2: number) => c + arg1 + arg2,
+          minusOne: (c) => c - 1,
+        })
+
+        const plusMock = jest.fn().mockReturnValueOnce(-1)
+        const plus2Mock = jest.fn().mockReturnValueOnce(-2)
+        const minusOneMock = jest.fn().mockReturnValueOnce(-3)
+
+        moduleMock.$simpluxInternals.selectorMocks[plus.selectorId] = plusMock
+        moduleMock.$simpluxInternals.selectorMocks[plus2.selectorId] = plus2Mock
+        moduleMock.$simpluxInternals.selectorMocks[
+          minusOne.selectorId
+        ] = minusOneMock
+
+        expect(plus(5)).toBe(-1)
+        expect(plus2(5, 7)).toBe(-2)
+        expect(minusOne()).toBe(-3)
+
+        expect(plusMock).toHaveBeenCalledWith(5)
+        expect(plus2Mock).toHaveBeenCalledWith(5, 7)
+        expect(minusOneMock).toHaveBeenCalled()
+        expect(getModuleStateMock).not.toHaveBeenCalled()
+      })
+
       it('can be called with a specified state', () => {
         const { plus, plus2 } = createSelectors(moduleMock, {
           plus: (c, amount: number) => c + amount,
@@ -64,6 +93,20 @@ describe('selectors', () => {
 
         expect(plus.withState(10, 5)).toBe(15)
         expect(plus2.withState(10, 5, 7)).toBe(22)
+      })
+
+      it('does not call the mock if called with specified state', () => {
+        const { plus } = createSelectors(moduleMock, {
+          plus: (c, amount: number) => c + amount,
+        })
+
+        const plusMock = jest.fn().mockReturnValueOnce(-1)
+
+        moduleMock.$simpluxInternals.selectorMocks[plus.selectorId] = plusMock
+
+        expect(plus.withState(1, 5)).toBe(6)
+
+        expect(plusMock).not.toHaveBeenCalled()
       })
 
       it('can be composed', () => {

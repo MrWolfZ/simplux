@@ -34,6 +34,8 @@ describe('mutations', () => {
         mockStateValue: undefined,
         mutations: {},
         mutationMocks: {},
+        lastSelectorId: -1,
+        selectorMocks: {},
         dispatch: dispatchMock,
         getReducer: getReducerMock,
         getState: getModuleStateMock,

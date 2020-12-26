@@ -128,22 +128,30 @@ export interface _SimpluxModuleInternals<TState> {
   readonly name: string
 
   /**
-   * This is part of the simplux internal API and should not be accessed
-   * except by simplux extensions.
+   * The mock state value to return instead of the real state when the
+   * module's state is accessed.
    */
   mockStateValue: TState | undefined
 
   /**
-   * This is part of the simplux internal API and should not be accessed
-   * except by simplux extensions.
+   * Track all module mutations to be able to detect duplicates etc.
    */
   readonly mutations: MutationDefinitions<TState>
 
   /**
-   * This is part of the simplux internal API and should not be accessed
-   * except by simplux extensions.
+   * Mock functions that should be called instead of real mutations.
    */
   readonly mutationMocks: { [mutationName: string]: (...args: any[]) => TState }
+
+  /**
+   * Track generated selector IDs for the module.
+   */
+  lastSelectorId: number
+
+  /**
+   * Mock functions that should be called instead of real selectors.
+   */
+  readonly selectorMocks: { [selectorId: number]: (...args: any[]) => TState }
 
   /**
    * A proxy to the Redux store's dispatch function. This is part of the
@@ -249,6 +257,8 @@ export function createModule<TState>(
     mockStateValue: undefined,
     mutations: {},
     mutationMocks: {},
+    lastSelectorId: -1,
+    selectorMocks: {},
     dispatch,
     getReducer: () => simpluxStore.getReducer(config.name),
     getState: getModuleState,

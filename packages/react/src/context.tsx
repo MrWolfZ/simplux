@@ -49,7 +49,7 @@ const defaultContextValue: SimpluxContextValue = {
   subscribeToModuleStateChanges(simpluxModule, handler) {
     return simpluxModule.subscribeToStateChanges(handler).unsubscribe
   },
-  getModuleState: (simpluxModule) => simpluxModule.state(),
+  getModuleState: (simpluxModule) => simpluxModule.$simpluxInternals.getState(),
 }
 
 // by always returning 0 for `calculateChangedBits` we prevent components

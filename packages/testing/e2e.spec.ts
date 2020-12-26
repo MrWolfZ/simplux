@@ -4,6 +4,7 @@ import {
   createEffect,
   createEffects,
   createMutations,
+  createSelectors,
   createSimpluxModule,
 } from '@simplux/core'
 import {
@@ -11,6 +12,7 @@ import {
   mockEffect,
   mockModuleState,
   mockMutation,
+  mockSelector,
 } from '@simplux/testing'
 
 describe(`@simplux/testing`, () => {
@@ -253,6 +255,132 @@ describe(`@simplux/testing`, () => {
 
         expect(addTodoSpy3).toHaveBeenCalledWith(todo1)
         expect(updatedState3).toEqual(todoStoreWithTodo2)
+      })
+    })
+  })
+
+  describe('selectors', () => {
+    const selectorMockTestModule = createSimpluxModule({
+      name: 'selectorMockTest1',
+      initialState: todoStoreWithBothTodos,
+    })
+
+    const mockedTodo1: Todo = { id: '3', description: 'test1', isDone: true }
+    const mockedTodo2: Todo = { id: '4', description: 'test2', isDone: false }
+
+    const { byId, byId2 } = createSelectors(selectorMockTestModule, {
+      byId: ({ todosById }, id: string) => todosById[id],
+      byId2: ({ todosById }, id: string) => todosById[id],
+    })
+
+    beforeEach(() => {
+      selectorMockTestModule.setState(todoStoreWithBothTodos)
+    })
+
+    it('can be mocked', () => {
+      const [byIdSpy] = mockSelector(
+        byId,
+        jest.fn().mockReturnValue(mockedTodo1),
+      )
+
+      const [byIdSpy2] = mockSelector(
+        byId2,
+        jest.fn().mockReturnValue(mockedTodo2),
+      )
+
+      const mockedReturnValue = byId(todo1.id)
+      const mockedReturnValue2 = byId2(todo2.id)
+
+      expect(byIdSpy).toHaveBeenCalledWith(todo1.id)
+      expect(mockedReturnValue).toBe(mockedTodo1)
+
+      expect(byIdSpy2).toHaveBeenCalledWith(todo2.id)
+      expect(mockedReturnValue2).toBe(mockedTodo2)
+    })
+
+    it('extras can be called as normal when state is mocked', () => {
+      mockSelector(byId, jest.fn().mockReturnValue(mockedTodo1))
+
+      expect(byId.withState).toBeDefined()
+      expect(byId.withState(todoStoreWithTodo1, todo1.id)).toEqual(todo1)
+    })
+
+    describe('mocks', () => {
+      it('can be cleared', () => {
+        const [byIdSpy, clear] = mockSelector(
+          byId,
+          jest.fn().mockReturnValue(mockedTodo1),
+        )
+
+        byId(todo1.id)
+
+        clear()
+
+        const updatedState = byId(todo2.id)
+
+        expect(byIdSpy).toHaveBeenCalledWith(todo1.id)
+        expect(updatedState).toEqual(todo2)
+      })
+
+      it('can be removed all at once', () => {
+        const [byIdSpy] = mockSelector(
+          byId,
+          jest.fn().mockReturnValue(mockedTodo1),
+        )
+
+        const [byIdSpy2] = mockSelector(
+          byId2,
+          jest.fn().mockReturnValue(mockedTodo2),
+        )
+
+        byId(todo1.id)
+        byId2(todo2.id)
+
+        clearAllSimpluxMocks()
+
+        const updatedState1 = byId(todo1.id)
+        const updatedState2 = byId2(todo2.id)
+
+        expect(byIdSpy).toHaveBeenCalledWith(todo1.id)
+        expect(updatedState1).toEqual(todo1)
+
+        expect(byIdSpy2).toHaveBeenCalledWith(todo2.id)
+        expect(updatedState2).toEqual(todo2)
+      })
+
+      it('can be removed all at once for multiple modules', () => {
+        const selectorMockTestModule2 = createSimpluxModule({
+          name: 'selectorMockTest2',
+          initialState: todoStoreWithBothTodos,
+        })
+
+        const { byId3 } = createSelectors(selectorMockTestModule2, {
+          byId3: ({ todosById }, id: string) => todosById[id],
+        })
+
+        const [byIdSpy] = mockSelector(
+          byId,
+          jest.fn().mockReturnValue(mockedTodo1),
+        )
+
+        const [byIdSpy3] = mockSelector(
+          byId3,
+          jest.fn().mockReturnValue(mockedTodo2),
+        )
+
+        byId(todo1.id)
+        byId3(todo2.id)
+
+        clearAllSimpluxMocks()
+
+        const updatedState1 = byId(todo1.id)
+        const updatedState3 = byId3(todo2.id)
+
+        expect(byIdSpy).toHaveBeenCalledWith(todo1.id)
+        expect(updatedState1).toEqual(todo1)
+
+        expect(byIdSpy3).toHaveBeenCalledWith(todo2.id)
+        expect(updatedState3).toEqual(todo2)
       })
     })
   })

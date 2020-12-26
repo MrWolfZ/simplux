@@ -1,7 +1,7 @@
 import type {
   SimpluxModule,
-  SimpluxMutation,
-  SimpluxMutationMarker,
+  SimpluxSelector,
+  SimpluxSelectorMarker,
 } from '@simplux/core'
 import { registerMockCleanupFunction } from './cleanup.js'
 
@@ -11,43 +11,44 @@ function setupMutationMock<
   TMock extends (...args: TArgs) => TState
 >(
   owningModule: SimpluxModule<TState>,
-  mutationName: string,
+  selectorId: number,
   mockFn: TMock,
 ): [TMock, () => void] {
   const cleanup = () => {
-    delete owningModule.$simpluxInternals.mutationMocks[mutationName]
+    delete owningModule.$simpluxInternals.selectorMocks[selectorId]
     clearCleanup()
   }
 
   const clearCleanup = registerMockCleanupFunction(cleanup)
 
-  owningModule.$simpluxInternals.mutationMocks[mutationName] = mockFn as any
+  owningModule.$simpluxInternals.selectorMocks[selectorId] = mockFn as any
 
   return [mockFn, cleanup]
 }
 
 /**
  * Specify a mock function that should be called instead of the
- * mutation. The mutation will stay mocked indefinitely until either
+ * selector. The selector will stay mocked indefinitely until either
  * the clear callback or `clearAllSimpluxMocks` is called.
  *
- * @param mutation - the mutation to mock
+ * @param selector - the selector to mock
  * @param mockFn - the mock function to use
  *
  * @returns a function that clears the mock when called
  *
  * @public
  */
-export function mockMutation<
+export function mockSelector<
   TState,
   TArgs extends any[],
+  TReturn,
   TMock extends (...args: TArgs) => TState
->(mutation: SimpluxMutationMarker<TState, TArgs>, mockFn: TMock) {
-  const mut = mutation as SimpluxMutation<TState, TArgs>
+>(mutation: SimpluxSelectorMarker<TState, TArgs, TReturn>, mockFn: TMock) {
+  const mut = mutation as SimpluxSelector<TState, TArgs, TReturn>
 
   return setupMutationMock<TState, TArgs, TMock>(
     mut.owningModule,
-    mut.mutationName,
+    mut.selectorId,
     mockFn,
   )
 }

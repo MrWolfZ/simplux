@@ -67,6 +67,8 @@ describe('service', () => {
           mockStateValue: undefined,
           mutations: {},
           mutationMocks: {},
+          lastSelectorId: -1,
+          selectorMocks: {},
           dispatch: undefined!,
           getReducer: undefined!,
           getState: getModuleStateMock,

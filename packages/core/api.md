@@ -218,12 +218,16 @@ export interface _SimpluxModuleInternals<TState> {
     readonly dispatch: (action: AnyAction) => void;
     readonly getReducer: () => Reducer;
     readonly getState: () => Immutable<TState>;
+    lastSelectorId: number;
     mockStateValue: TState | undefined;
     readonly mutationMocks: {
         [mutationName: string]: (...args: any[]) => TState;
     };
     readonly mutations: MutationDefinitions<TState>;
     readonly name: string;
+    readonly selectorMocks: {
+        [selectorId: number]: (...args: any[]) => TState;
+    };
 }
 
 // @public
@@ -263,6 +267,8 @@ export interface SimpluxSelector<TState, TArgs extends any[], TReturn> extends S
     (...args: TArgs): TReturn;
     // @internal
     readonly owningModule: SimpluxModule<TState>;
+    // @internal
+    readonly selectorId: number;
     readonly selectorName: string;
     readonly withState: (state: Immutable<TState>, ...args: TArgs) => TReturn;
 }

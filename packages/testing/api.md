@@ -6,8 +6,9 @@
 
 import { FunctionSignature } from '@simplux/core';
 import { SimpluxEffect } from '@simplux/core';
-import type { SimpluxModuleLike } from '@simplux/core';
-import type { SimpluxMutation } from '@simplux/core';
+import type { SimpluxModuleMarker } from '@simplux/core';
+import type { SimpluxMutationMarker } from '@simplux/core';
+import type { SimpluxSelectorMarker } from '@simplux/core';
 
 // @public
 export function clearAllSimpluxMocks(): void;
@@ -16,10 +17,13 @@ export function clearAllSimpluxMocks(): void;
 export function mockEffect<TEffect extends SimpluxEffect<(...args: any[]) => any>, TMock extends FunctionSignature<TEffect>>(effectToMock: TEffect, mockFn: TMock): [TMock, () => void];
 
 // @public
-export function mockModuleState<TState>(simpluxModule: SimpluxModuleLike<TState>, mockStateValue: TState): () => void;
+export function mockModuleState<TState>(simpluxModule: SimpluxModuleMarker<TState>, mockStateValue: TState): () => void;
 
 // @public
-export function mockMutation<TState, TArgs extends any[], TMock extends (...args: TArgs) => TState>(mutation: SimpluxMutation<TState, TArgs>, mockFn: TMock): [TMock, () => void];
+export function mockMutation<TState, TArgs extends any[], TMock extends (...args: TArgs) => TState>(mutation: SimpluxMutationMarker<TState, TArgs>, mockFn: TMock): [TMock, () => void];
+
+// @public
+export function mockSelector<TState, TArgs extends any[], TReturn, TMock extends (...args: TArgs) => TState>(mutation: SimpluxSelectorMarker<TState, TArgs, TReturn>, mockFn: TMock): [TMock, () => void];
 
 // @public
 export function registerMockCleanupFunction(cleanupFunction: () => void): () => void;

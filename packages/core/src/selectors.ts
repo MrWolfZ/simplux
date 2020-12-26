@@ -61,6 +61,13 @@ export interface SimpluxSelector<TState, TArgs extends any[], TReturn>
   (...args: TArgs): TReturn
 
   /**
+   * The ID that identifies this selector uniquely on the owning module.
+   *
+   * @internal
+   */
+  readonly selectorId: number
+
+  /**
    * The name of this selector.
    */
   readonly selectorName: string
@@ -156,15 +163,22 @@ export function createSelectors<
   selectorDefinitions: TSelectorDefinitions,
 ): SimpluxSelectors<TState, TSelectorDefinitions> {
   const module = simpluxModule as SimpluxModule<TState>
+  const selectorMocks = module.$simpluxInternals.selectorMocks
 
   const resolvedSelectors = Object.keys(selectorDefinitions).reduce(
     (acc, selectorName: keyof TSelectorDefinitions) => {
       const definition = selectorDefinitions[selectorName as string]!
       const memoizedDefinition = memoize(definition)
+      const selectorId = ++module.$simpluxInternals.lastSelectorId
 
       const namedSelector = nameFunction(
         selectorName as string,
         (...args: any[]) => {
+          const mock = selectorMocks[selectorId]
+          if (mock) {
+            return mock(...args)
+          }
+
           return memoizedDefinition(
             module.$simpluxInternals.getState(),
             ...args,
@@ -178,6 +192,7 @@ export function createSelectors<
 
       extras.withState = memoizedDefinition
 
+      extras.selectorId = selectorId
       extras.selectorName = selectorName as string
       extras.owningModule = module
       extras[SIMPLUX_SELECTOR] = undefined!
