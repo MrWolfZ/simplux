@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.5](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.4...v0.18.0-alpha.5) (2020-12-26)
+
+
+### Bug Fixes
+
+* **testing:** fix signature of `mockSelector` and add type tests ([b5348f8](https://github.com/MrWolfZ/simplux/commit/b5348f8807f23ecf613940c890c4c9cf602f15a1))
+
+
+### Features
+
+* **testing:** add function to mock selectors ([fded6f7](https://github.com/MrWolfZ/simplux/commit/fded6f770975925831143ca9b258ed427b32e22d))
+
+
+
+
+
 # [0.18.0-alpha.4](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.3...v0.18.0-alpha.4) (2020-12-26)
 
 **Note:** Version bump only for package @simplux/testing

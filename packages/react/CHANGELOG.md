@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.5](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.4...v0.18.0-alpha.5) (2020-12-26)
+
+
+### Bug Fixes
+
+* **react:** call mocked selectors in `useSimplux` hook ([c575d77](https://github.com/MrWolfZ/simplux/commit/c575d77077dcc933934734fe828ae63c81a7400c))
+
+
+### Features
+
+* **testing:** add function to mock selectors ([fded6f7](https://github.com/MrWolfZ/simplux/commit/fded6f770975925831143ca9b258ed427b32e22d))
+
+
+
+
+
 # [0.18.0-alpha.4](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.3...v0.18.0-alpha.4) (2020-12-26)
 
 **Note:** Version bump only for package @simplux/react
