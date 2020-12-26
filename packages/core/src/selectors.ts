@@ -1,5 +1,16 @@
-import type { SimpluxModule, SimpluxModuleLike } from './module.js'
+import type { SimpluxModule, SimpluxModuleMarker } from './module.js'
 import type { Immutable } from './types.js'
+
+/**
+ * Helper symbol used for identifying simplux select objects.
+ *
+ * @public
+ */
+// should really be a symbol, but as of TypeScript 4.1 there is a bug
+// that causes the symbol to not be properly re-exported in type
+// definitions when spreading a select object onto an export, which can
+// cause issues with composite builds
+export const SIMPLUX_SELECTOR = '[SIMPLUX_SELECTOR]'
 
 /**
  * A function to turn into a selector.
@@ -21,11 +32,29 @@ export interface SelectorDefinitions<TState> {
 }
 
 /**
+ * Interface for efficiently identifying simplux selector objects at compile time.
+ *
+ * @public
+ */
+export interface SimpluxSelectorMarker<TState, TArgs extends any[], TReturn> {
+  /**
+   * A symbol that allows efficient compile-time and run-time identification
+   * of simplux selector objects.
+   *
+   * This property will have an `undefined` value at runtime.
+   *
+   * @public
+   */
+  readonly [SIMPLUX_SELECTOR]: [TState, TArgs, TReturn]
+}
+
+/**
  * A simplux selector is a function that projects a module's state to some value.
  *
  * @public
  */
-export interface SimpluxSelector<TState, TArgs extends any[], TReturn> {
+export interface SimpluxSelector<TState, TArgs extends any[], TReturn>
+  extends SimpluxSelectorMarker<TState, TArgs, TReturn> {
   // this signature does not have a TSDoc comment on purpose to allow
   // consumers to define their own docs for their mutations (which would
   // be overwritten if this signature had a TSDoc comment)
@@ -123,7 +152,7 @@ export function createSelectors<
   TState,
   TSelectorDefinitions extends SelectorDefinitions<TState>
 >(
-  simpluxModule: SimpluxModuleLike<TState>,
+  simpluxModule: SimpluxModuleMarker<TState>,
   selectorDefinitions: TSelectorDefinitions,
 ): SimpluxSelectors<TState, TSelectorDefinitions> {
   const module = simpluxModule as SimpluxModule<TState>
@@ -151,6 +180,7 @@ export function createSelectors<
 
       extras.selectorName = selectorName as string
       extras.owningModule = module
+      extras[SIMPLUX_SELECTOR] = undefined!
 
       return acc
     },
@@ -179,4 +209,26 @@ function memoize<TFunction extends Function>(fn: TFunction): TFunction {
   }
 
   return (memoizedFunction as unknown) as TFunction
+}
+
+/**
+ * Checks if an object is a simplux selector.
+ *
+ * @param object - the object to check
+ *
+ * @returns true if the object is a simplux selector
+ *
+ * @internal
+ */
+export function _isSimpluxSelector<
+  TState,
+  TArgs extends any[],
+  TReturn,
+  TOther
+>(
+  object: SimpluxSelectorMarker<TState, TArgs, TReturn> | TOther,
+): object is SimpluxSelector<TState, TArgs, TReturn> {
+  return (
+    object && Object.prototype.hasOwnProperty.call(object, SIMPLUX_SELECTOR)
+  )
 }

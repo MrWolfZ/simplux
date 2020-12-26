@@ -1,4 +1,8 @@
-import type { SimpluxModule, SimpluxMutation } from '@simplux/core'
+import type {
+  SimpluxModule,
+  SimpluxMutation,
+  SimpluxMutationMarker,
+} from '@simplux/core'
 import { registerMockCleanupFunction } from './cleanup.js'
 
 function setupMutationMock<
@@ -38,10 +42,12 @@ export function mockMutation<
   TState,
   TArgs extends any[],
   TMock extends (...args: TArgs) => TState
->(mutation: SimpluxMutation<TState, TArgs>, mockFn: TMock) {
+>(mutation: SimpluxMutationMarker<TState, TArgs>, mockFn: TMock) {
+  const mut = mutation as SimpluxMutation<TState, TArgs>
+
   return setupMutationMock<TState, TArgs, TMock>(
-    mutation.owningModule,
-    mutation.mutationName,
+    mut.owningModule,
+    mut.mutationName,
     mockFn,
   )
 }

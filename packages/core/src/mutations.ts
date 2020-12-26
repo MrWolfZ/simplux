@@ -1,4 +1,15 @@
-import type { SimpluxModule, SimpluxModuleLike } from './module.js'
+import type { SimpluxModule, SimpluxModuleMarker } from './module.js'
+
+/**
+ * Helper symbol used for identifying simplux mutation objects.
+ *
+ * @public
+ */
+// should really be a symbol, but as of TypeScript 4.1 there is a bug
+// that causes the symbol to not be properly re-exported in type
+// definitions when spreading a mutation object onto an export, which can
+// cause issues with composite builds
+export const SIMPLUX_MUTATION = '[SIMPLUX_MUTATION]'
 
 /**
  * A function to turn into a mutation.
@@ -20,11 +31,29 @@ export interface MutationDefinitions<TState> {
 }
 
 /**
+ * Interface for efficiently identifying simplux mutation objects at compile time.
+ *
+ * @public
+ */
+export interface SimpluxMutationMarker<TState, TArgs extends any[]> {
+  /**
+   * A symbol that allows efficient compile-time and run-time identification
+   * of simplux mutation objects.
+   *
+   * This property will have an `undefined` value at runtime.
+   *
+   * @public
+   */
+  readonly [SIMPLUX_MUTATION]: [TState, TArgs]
+}
+
+/**
  * A simplux mutation is a function that updates a module's state.
  *
  * @public
  */
-export interface SimpluxMutation<TState, TArgs extends any[]> {
+export interface SimpluxMutation<TState, TArgs extends any[]>
+  extends SimpluxMutationMarker<TState, TArgs> {
   // this signature does not have a TSDoc comment on purpose to allow
   // consumers to define their own docs for their mutations (which would
   // be overwritten if this signature had a TSDoc comment)
@@ -140,7 +169,7 @@ export function createMutations<
   TState,
   TMutations extends MutationDefinitions<TState>
 >(
-  simpluxModule: SimpluxModuleLike<TState>,
+  simpluxModule: SimpluxModuleMarker<TState>,
   mutationDefinitions: TMutations,
 ): SimpluxMutations<TState, TMutations> {
   const module = simpluxModule as SimpluxModule<TState>
@@ -226,6 +255,7 @@ export function createMutations<
 
       extras.mutationName = mutationName as string
       extras.owningModule = module
+      extras[SIMPLUX_MUTATION] = undefined!
 
       return acc
     },
@@ -284,4 +314,21 @@ function isEvent(arg: any) {
 
 function hasProp(arg: any, name: string) {
   return Object.prototype.hasOwnProperty.call(arg, name)
+}
+
+/**
+ * Checks if an object is a simplux mutation.
+ *
+ * @param object - the object to check
+ *
+ * @returns true if the object is a simplux mutation
+ *
+ * @internal
+ */
+export function _isSimpluxMutation<TState, TArgs extends any[], TOther>(
+  object: SimpluxMutationMarker<TState, TArgs> | TOther,
+): object is SimpluxMutation<TState, TArgs> {
+  return (
+    object && Object.prototype.hasOwnProperty.call(object, SIMPLUX_MUTATION)
+  )
 }

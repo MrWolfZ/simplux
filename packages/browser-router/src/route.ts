@@ -138,7 +138,7 @@ function addRoute(
 
   return {
     ...route,
-    ...selectors,
+    href: selectors.href as any,
     navigateTo,
     $parameterTypes: undefined!,
   }

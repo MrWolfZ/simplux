@@ -25,7 +25,7 @@ interface FunctionWithProps {
 const functionWithProps: FunctionWithProps = undefined!
 
 const effectWithProps = createEffect(functionWithProps)
-expectType<SimpluxEffect<(s: string) => string>>(effectWithProps)
+expectType<SimpluxEffect<FunctionWithProps>>(effectWithProps)
 expectAssignable<(s: string) => string>(effectWithProps)
 
 // @ts-expect-error
@@ -54,7 +54,7 @@ expectAssignable<<T>(s: T) => T>(effects.genericEffect)
 expectAssignable<(s: string) => string>(effects.genericEffect)
 expectType<string>(effects.genericEffect('' as string))
 
-expectType<SimpluxEffect<(s: string) => string>>(effects.functionWithProps)
+expectType<SimpluxEffect<FunctionWithProps>>(effects.functionWithProps)
 expectAssignable<(s: string) => string>(effects.functionWithProps)
 
 // @ts-expect-error

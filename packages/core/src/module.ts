@@ -172,7 +172,7 @@ export interface _SimpluxModuleInternals<TState> {
  *
  * @public
  */
-export interface SimpluxModuleLike<TState> {
+export interface SimpluxModuleMarker<TState> {
   /**
    * A symbol that allows efficient compile-time and run-time identification
    * of simplux module objects.
@@ -190,7 +190,7 @@ export interface SimpluxModuleLike<TState> {
  *
  * @public
  */
-export interface SimpluxModule<TState> extends SimpluxModuleLike<TState> {
+export interface SimpluxModule<TState> extends SimpluxModuleMarker<TState> {
   /**
    * A selector for getting the current module state.
    *
@@ -366,7 +366,7 @@ export function createModule<TState>(
  * @internal
  */
 export function _isSimpluxModule<TState, TOther>(
-  object: SimpluxModuleLike<TState> | TOther,
+  object: SimpluxModuleMarker<TState> | TOther,
 ): object is SimpluxModule<TState> {
   return object && Object.prototype.hasOwnProperty.call(object, SIMPLUX_MODULE)
 }

@@ -12,11 +12,14 @@ setReduxStoreForSimplux(createStore(getSimpluxReducer()), (s) => s)
 export {
   createEffect,
   createEffects,
+  SIMPLUX_EFFECT,
   _getEffectMockDefinitionsInternal,
+  _isSimpluxEffect,
 } from './src/effects.js'
 export type {
   SimpluxEffect,
   SimpluxEffectDefinitions,
+  SimpluxEffectMarker,
   SimpluxEffectMetadata,
   SimpluxEffects,
   _EffectMockDefinition,
@@ -26,7 +29,7 @@ export type {
   ResolvedStateChangeHandler,
   SimpluxModule,
   SimpluxModuleConfig,
-  SimpluxModuleLike,
+  SimpluxModuleMarker,
   StateChangeHandler,
   StateChangeHandlerOptions,
   StateChangeSubscription,
@@ -34,20 +37,30 @@ export type {
   Subscription,
   _SimpluxModuleInternals,
 } from './src/module.js'
-export { createMutations } from './src/mutations.js'
+export {
+  createMutations,
+  SIMPLUX_MUTATION,
+  _isSimpluxMutation,
+} from './src/mutations.js'
 export type {
   MutationDefinition,
   MutationDefinitions,
   ResolvedMutation,
   SimpluxMutation,
+  SimpluxMutationMarker,
   SimpluxMutations,
 } from './src/mutations.js'
-export { createSelectors } from './src/selectors.js'
+export {
+  createSelectors,
+  SIMPLUX_SELECTOR,
+  _isSimpluxSelector,
+} from './src/selectors.js'
 export type {
   ResolvedSelector,
   SelectorDefinition,
   SelectorDefinitions,
   SimpluxSelector,
+  SimpluxSelectorMarker,
   SimpluxSelectors,
 } from './src/selectors.js'
 export { _getInternalReduxStoreProxy } from './src/store.js'
