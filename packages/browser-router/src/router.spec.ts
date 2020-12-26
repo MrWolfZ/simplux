@@ -56,6 +56,13 @@ describe(`router`, () => {
       })
     })
 
+    // TODO: mock selector once possible
+    it('delegations active route check to base router', () => {
+      const result = _router.anyRouteIsActive()
+
+      expect(result).toBe(false)
+    })
+
     it('delegates navigation to module', () => {
       const [navMock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
 

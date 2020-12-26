@@ -77,10 +77,14 @@ describe(`@simplux/browser-router`, () => {
     const namedRoute = router.addRoute(rootRouteTemplate, { name: 'testName' })
     expect(namedRoute.name).toBe('testName')
 
+    expect(router.anyRouteIsActive()).toBe(false)
+
     rootRoute.navigateTo()
 
     expect(rootRoute.isActive()).toBe(true)
     expect(rootRoute.parameterValues()).toEqual({})
+
+    expect(router.anyRouteIsActive()).toBe(true)
 
     routeWithoutParameters.navigateTo()
 

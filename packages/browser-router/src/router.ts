@@ -1,5 +1,9 @@
 import type { Immutable, SimpluxEffect, SimpluxSelector } from '@simplux/core'
-import type { NavigationResult } from '@simplux/router'
+import {
+  getSimpluxRouter,
+  NavigationResult,
+  SimpluxRouterState,
+} from '@simplux/router'
 import { _locationModule } from './location.js'
 import {
   SimpluxBrowserRouterState,
@@ -76,6 +80,14 @@ export interface SimpluxBrowserRouter {
     Immutable<SimpluxBrowserRouterState>
   >
 
+  /**
+   * A selector to check if any route is active (useful to trigger
+   * a default navigation).
+   *
+   * @returns `true` if any route is currently active, otherwise `false`
+   */
+  readonly anyRouteIsActive: SimpluxSelector<SimpluxRouterState, [], boolean>
+
   // no tsdoc since it inherits the docs of the declared
   // function above
   readonly addRoute: SimpluxEffect<typeof _addRoute>
@@ -106,6 +118,7 @@ export interface SimpluxBrowserRouter {
 // tslint:disable-next-line:variable-name (internal export)
 export const _router: SimpluxBrowserRouter = {
   state: _module.state,
+  anyRouteIsActive: getSimpluxRouter().anyRouteIsActive,
   addRoute: _routeEffects.addRoute,
   navigateToUrl: _module.navigateToRouteByUrl,
   activate: _locationModule.activate,
