@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.6](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.5...v0.18.0-alpha.6) (2020-12-26)
+
+
+### Bug Fixes
+
+* **browser-router:** fix error during activation ([0f721f6](https://github.com/MrWolfZ/simplux/commit/0f721f6b111e86497da7a800082e6d6254c00368))
+
+
+
+
+
 # [0.18.0-alpha.5](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.4...v0.18.0-alpha.5) (2020-12-26)
 
 

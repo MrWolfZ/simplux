@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.angular.using-in-angular-application",
-  "version": "0.18.0-alpha.5",
+  "version": "0.18.0-alpha.6",
   "description": "This recipe shows you how simple it is to integrate simplux into your Angular application",
   "scripts": {
     "start": "ng serve"
@@ -28,8 +28,8 @@
     "@angular/core": "^10.2.4",
     "@angular/platform-browser": "^10.2.4",
     "@angular/platform-browser-dynamic": "^10.2.4",
-    "@simplux/angular": "0.18.0-alpha.5",
-    "@simplux/core": "0.18.0-alpha.5",
+    "@simplux/angular": "0.18.0-alpha.6",
+    "@simplux/core": "0.18.0-alpha.6",
     "core-js": "^3.8.1",
     "rxjs": "^6.6.3",
     "tslib": "^2.0.3",
