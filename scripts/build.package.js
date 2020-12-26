@@ -42,7 +42,6 @@ build().catch((err) => {
 async function build() {
     const PACKAGE_DIR = argv.packageDir;
     const OUTPUT_DIR = path_1.default.join(PACKAGE_DIR, `dist`);
-    const ESM5_DIR = path_1.default.join(OUTPUT_DIR, `esm5`);
     const ESM2015_DIR = path_1.default.join(OUTPUT_DIR, `esm2015`);
     const UMD_DIR = path_1.default.join(OUTPUT_DIR, `umd`);
     const CJS_DIR = path_1.default.join(OUTPUT_DIR, `cjs`);
@@ -113,21 +112,6 @@ async function build() {
             const newFileContent = fileContent.replace(/\/\/ @ts.*/g, '');
             await util_1.promisify(fs_1.default.writeFile)(filePath, newFileContent);
         }
-    });
-    await executeStep(`Compiling esm5`, async () => {
-        const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es5`, `--module es2015`, `--outDir ${ESM5_DIR}`, `--noLib`, `--sourceMap`, `--jsx react`);
-        // 2 indicates failure with output still being generated
-        // (this command will usually fail because of the --noLib flag)
-        if (ret.code !== 0 && ret.code !== 2) {
-            return ret;
-        }
-        let code = 0;
-        const jsFiles = await util_1.promisify(glob_1.default)(`${ESM5_DIR}/**/*.js`);
-        for (const file of jsFiles) {
-            code += await mapSources(file, false);
-        }
-        await util_1.promisify(fs_1.default.writeFile)(path_1.default.join(ESM5_DIR, 'package.json'), `{"type":"module"}\n`);
-        return code;
     });
     await executeStep(`Compiling esm2015`, async () => {
         const ret = await util_2.execAsync(`tsc`, `${PACKAGE_DIR}/index.ts`, `--target es2015`, `--module es2015`, `--outDir ${ESM2015_DIR}`, `--noLib`, `--sourceMap`, `--jsx react`);
@@ -254,12 +238,9 @@ if (process.env.NODE_ENV !== 'production') {
     });
     await executeStep(`Inlining source maps`, async () => {
         const globPromise = util_1.promisify(glob_1.default);
-        const esm5MapFiles = await globPromise(`${ESM5_DIR}/**/*.map`);
         const esm2015MapFiles = await globPromise(`${ESM2015_DIR}/**/*.map`);
         const developmentMapFiles = await globPromise(`${OUTPUT_DIR}/**/*.development.js.map`);
-        const bundleMapFiles = esm5MapFiles
-            .concat(esm2015MapFiles)
-            .concat(developmentMapFiles);
+        const bundleMapFiles = esm2015MapFiles.concat(developmentMapFiles);
         await Promise.all(bundleMapFiles.map(async (mapFile) => {
             const sourceFile = mapFile.replace(/\.map$/, '');
             const mapFileContent = await util_1.promisify(fs_1.default.readFile)(mapFile);

@@ -2,8 +2,7 @@
   "name": "@simplux/testing",
   "version": "0.18.0-alpha.2",
   "description": "The testing package for simplux. Contains various testing utilities (e.g. for mocking module states and mutations).",
-  "module": "./esm5/index.js",
-  "es2015": "./esm2015/index.js",
+  "module": "./esm2015/index.js",
   "main": "./index.js",
   "types": "./index.d.ts",
   "exports": {

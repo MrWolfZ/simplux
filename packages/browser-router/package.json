@@ -2,8 +2,7 @@
   "name": "@simplux/browser-router",
   "version": "0.18.0-alpha.2",
   "description": "The browser router package for simplux. Can be used to provide routing capabilities to a web app.",
-  "module": "./esm5/index.js",
-  "es2015": "./esm2015/index.js",
+  "module": "./esm2015/index.js",
   "main": "./index.js",
   "types": "./index.d.ts",
   "exports": {

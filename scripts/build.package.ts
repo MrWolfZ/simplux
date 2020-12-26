@@ -42,7 +42,6 @@ build().catch((err) => {
 async function build() {
   const PACKAGE_DIR = argv.packageDir
   const OUTPUT_DIR = path.join(PACKAGE_DIR, `dist`)
-  const ESM5_DIR = path.join(OUTPUT_DIR, `esm5`)
   const ESM2015_DIR = path.join(OUTPUT_DIR, `esm2015`)
   const UMD_DIR = path.join(OUTPUT_DIR, `umd`)
   const CJS_DIR = path.join(OUTPUT_DIR, `cjs`)
@@ -152,38 +151,6 @@ async function build() {
       const newFileContent = fileContent.replace(/\/\/ @ts.*/g, '')
       await promisify(fs.writeFile)(filePath, newFileContent)
     }
-  })
-
-  await executeStep(`Compiling esm5`, async () => {
-    const ret = await execAsync(
-      `tsc`,
-      `${PACKAGE_DIR}/index.ts`,
-      `--target es5`,
-      `--module es2015`,
-      `--outDir ${ESM5_DIR}`,
-      `--noLib`,
-      `--sourceMap`,
-      `--jsx react`,
-    )
-
-    // 2 indicates failure with output still being generated
-    // (this command will usually fail because of the --noLib flag)
-    if (ret.code !== 0 && ret.code !== 2) {
-      return ret
-    }
-
-    let code = 0
-    const jsFiles = await promisify(glob)(`${ESM5_DIR}/**/*.js`)
-    for (const file of jsFiles) {
-      code += await mapSources(file, false)
-    }
-
-    await promisify(fs.writeFile)(
-      path.join(ESM5_DIR, 'package.json'),
-      `{"type":"module"}\n`,
-    )
-
-    return code
   })
 
   await executeStep(`Compiling esm2015`, async () => {
@@ -453,15 +420,12 @@ if (process.env.NODE_ENV !== 'production') {
 
   await executeStep(`Inlining source maps`, async () => {
     const globPromise = promisify(glob)
-    const esm5MapFiles = await globPromise(`${ESM5_DIR}/**/*.map`)
     const esm2015MapFiles = await globPromise(`${ESM2015_DIR}/**/*.map`)
     const developmentMapFiles = await globPromise(
       `${OUTPUT_DIR}/**/*.development.js.map`,
     )
 
-    const bundleMapFiles = esm5MapFiles
-      .concat(esm2015MapFiles)
-      .concat(developmentMapFiles)
+    const bundleMapFiles = esm2015MapFiles.concat(developmentMapFiles)
 
     await Promise.all(
       bundleMapFiles.map(async (mapFile) => {
