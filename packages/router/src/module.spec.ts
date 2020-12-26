@@ -1,8 +1,4 @@
-import {
-  clearAllSimpluxMocks,
-  mockModuleState,
-  mockMutation,
-} from '@simplux/testing'
+import { clearAllSimpluxMocks, mockMutation } from '@simplux/testing'
 import { SimpluxRouterState, _module } from './module.js'
 import {
   emptyRouterState,
@@ -277,8 +273,6 @@ describe(`module`, () => {
 
     describe(_module.navigateToRoute, () => {
       it('activates the route', () => {
-        mockModuleState(_module, routerStateWithRoute1)
-
         const [mock] = mockMutation(_module.activateRoute, jest.fn())
 
         const parameterValues = { param: 'value' }

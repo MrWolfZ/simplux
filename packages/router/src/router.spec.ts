@@ -1,12 +1,12 @@
 import {
   clearAllSimpluxMocks,
   mockEffect,
-  mockModuleState,
+  mockSelector,
 } from '@simplux/testing'
 import { _module } from './module.js'
 import { _routeEffects } from './route.js'
 import { _router } from './router.js'
-import { emptyRouterState, routeName1, routeName2 } from './testdata.js'
+import { routeName1, routeName2 } from './testdata.js'
 
 describe(`router`, () => {
   afterEach(clearAllSimpluxMocks)
@@ -40,11 +40,11 @@ describe(`router`, () => {
     })
 
     it('delegations active route check to module', () => {
-      mockModuleState(_module, emptyRouterState)
+      const [mock] = mockSelector(_module.anyRouteIsActive, jest.fn())
 
-      const result = _router.anyRouteIsActive()
+      _router.anyRouteIsActive()
 
-      expect(result).toBe(false)
+      expect(mock).toHaveBeenCalled()
     })
 
     it('delegations navigation to module', () => {
