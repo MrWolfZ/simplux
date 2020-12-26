@@ -1246,6 +1246,43 @@ describe(`module`, () => {
         expect(navByIdMock).not.toHaveBeenCalled()
       })
     })
+
+    describe(_module.navigateToRouteById, () => {
+      it('delegates to the base router', () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: ['root'],
+          queryParameters: [],
+        })
+
+        const routeId = 1
+        const parameters = { param: 'value' }
+
+        mockModuleState(_module, state)
+
+        _module.navigateToRouteById(routeId, parameters)
+
+        expect(navByIdMock).toHaveBeenCalledWith(routeId, parameters)
+      })
+
+      it('pushes the route href', () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [
+            'root',
+            { parameterName: 'param', parameterType: 'string' },
+          ],
+          queryParameters: [],
+        })
+
+        const routeId = 1
+        const parameters = { param: 'value' }
+
+        mockModuleState(_module, state)
+
+        _module.navigateToRouteById(routeId, parameters)
+
+        expect(pushUrlMock).toHaveBeenCalledWith(`/root/value`)
+      })
+    })
   })
 
   describe('state change handlers', () => {

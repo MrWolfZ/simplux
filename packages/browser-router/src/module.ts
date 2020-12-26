@@ -181,6 +181,16 @@ const effects = createEffects({
       // should this throw?
     }
   },
+
+  navigateToRouteById: (
+    routeId: SimpluxRouteId,
+    parameterValues?: _NavigationParameters,
+  ): NavigationResult => {
+    simpluxRouter.navigateToRouteById(routeId, parameterValues)
+
+    const href = selectors.href(routeId, parameterValues)
+    _locationModule.pushNewUrl(href)
+  },
 })
 
 const sub = _locationModule.subscribeToStateChanges(({ isActive, url }) => {

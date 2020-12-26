@@ -2,6 +2,7 @@ import { createEffects, createSelectors, SimpluxSelector } from '@simplux/core'
 import {
   getSimpluxRouter,
   NavigateToFn,
+  NavigationResult,
   SimpluxRoute,
   SimpluxRouteConfiguration,
   SimpluxRouteName,
@@ -130,9 +131,15 @@ function addRoute(
       _module.href.withState(state, route.id, parameterValues),
   })
 
+  const { navigateTo } = createEffects({
+    navigateTo: (parameters?: _NavigationParameters): NavigationResult =>
+      _module.navigateToRouteById(route.id, parameters || {}),
+  })
+
   return {
     ...route,
     ...selectors,
+    navigateTo,
     $parameterTypes: undefined!,
   }
 }
