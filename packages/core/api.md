@@ -4,6 +4,7 @@
 
 ```ts
 
+import { Action } from 'redux';
 import type { AnyAction } from 'redux';
 import { Reducer } from 'redux';
 import { Store } from 'redux';
@@ -59,6 +60,8 @@ export type Immutable<T> = T extends _AtomicObject ? T : _IsImmutable<T> extends
 
 // @internal (undocumented)
 export interface _InternalReduxStoreProxy {
+    // (undocumented)
+    actionsToDispatchOnStoreChange: Action[];
     // (undocumented)
     dispatch: Store['dispatch'];
     // (undocumented)
