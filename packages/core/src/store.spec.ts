@@ -5,7 +5,7 @@ import {
   _createSimpluxStore,
   _getInternalReduxStoreProxy,
   _setReduxStore,
-  _transferConfigurationToNewStore,
+  _transferSubscribersToNewStore,
 } from './store.js'
 
 describe('store', () => {
@@ -180,6 +180,26 @@ describe('store', () => {
     const handler = jest.fn()
     const unsubscribe = simpluxStore.subscribe(handler)
 
+    cleanup = _setReduxStore(
+      createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
+      (s) => s,
+    )
+
+    simpluxStore.dispatch({ type: 'INC' })
+    expect(handler).toHaveBeenCalledTimes(1)
+
+    unsubscribe()
+  })
+
+  it(`calls subscriptions for transferred actions`, () => {
+    _setReduxStore(
+      createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
+      (s) => s,
+    )
+
+    const handler = jest.fn()
+    const unsubscribe = simpluxStore.subscribe(handler)
+
     simpluxStore.dispatch({ type: 'INC' })
     expect(handler).toHaveBeenCalledTimes(1)
 
@@ -188,7 +208,6 @@ describe('store', () => {
       (s) => s,
     )
 
-    simpluxStore.dispatch({ type: 'INC' })
     expect(handler).toHaveBeenCalledTimes(2)
 
     unsubscribe()
@@ -213,7 +232,7 @@ describe('store', () => {
     )
 
     store1.dispatch({ type: 'INC' })
-    expect(handler).toHaveBeenCalledTimes(1)
+    expect(handler).toHaveBeenCalledTimes(2)
 
     unsubscribe()
   })
@@ -242,9 +261,43 @@ describe('store', () => {
       [],
     )
 
-    _transferConfigurationToNewStore(storeProxy, newStoreProxy)
+    _transferSubscribersToNewStore(storeProxy, newStoreProxy)
 
     expect(newStoreProxy.getState().test).toBe(initialState)
+  })
+
+  it(`dispatches actions from previous store that were dispatched before end of first microtask queue`, () => {
+    _setReduxStore(
+      createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
+      (s) => s,
+    )
+
+    simpluxStore.dispatch({ type: 'INC' })
+
+    cleanup = _setReduxStore(
+      createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
+      (s) => s,
+    )
+
+    expect(simpluxStore.getState()).toBe(11)
+  })
+
+  it(`does not dispatch actions from previous store that were dispatched after end of first microtask queue`, async () => {
+    _setReduxStore(
+      createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
+      (s) => s,
+    )
+
+    simpluxStore.dispatch({ type: 'INC' })
+
+    await Promise.resolve()
+
+    cleanup = _setReduxStore(
+      createStore((c: number = 10, { type }) => (type === 'INC' ? c + 1 : c)),
+      (s) => s,
+    )
+
+    expect(simpluxStore.getState()).toBe(10)
   })
 
   it(`throws if store is not set when accessing state`, () => {

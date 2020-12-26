@@ -1,4 +1,10 @@
-import { combineReducers, Reducer, Store as ReduxStore } from 'redux'
+import {
+  Action,
+  combineReducers,
+  Dispatch,
+  Reducer,
+  Store as ReduxStore,
+} from 'redux'
 
 /**
  * @internal
@@ -9,6 +15,7 @@ export interface _InternalReduxStoreProxy {
   dispatch: ReduxStore['dispatch']
   subscribe: ReduxStore['subscribe']
   subscribers: { handler: () => void; unsubscribe: () => void }[]
+  actionsToDispatchOnStoreChange: Action[]
 }
 
 let latestReduxStoreId = 0
@@ -66,7 +73,8 @@ export function _setReduxStore<TState>(
   )
 
   if (previousStoreProxy) {
-    _transferConfigurationToNewStore(previousStoreProxy, reduxStoreProxy)
+    _transferSubscribersToNewStore(previousStoreProxy, reduxStoreProxy)
+    _dispatchActionsFromPreviousStore(previousStoreProxy, reduxStoreProxy)
   }
 
   return () => {
@@ -87,13 +95,22 @@ export function _setReduxStore<TState>(
 /**
  * @internal
  */
-export function _transferConfigurationToNewStore(
+export function _transferSubscribersToNewStore(
   previousStoreProxy: _InternalReduxStoreProxy,
   newReduxStoreProxy: _InternalReduxStoreProxy,
 ) {
   for (const subscriber of previousStoreProxy.subscribers) {
     subscriber.unsubscribe()
     newReduxStoreProxy.subscribe(subscriber.handler)
+  }
+}
+
+function _dispatchActionsFromPreviousStore(
+  { actionsToDispatchOnStoreChange }: _InternalReduxStoreProxy,
+  newReduxStoreProxy: _InternalReduxStoreProxy,
+) {
+  for (const action of actionsToDispatchOnStoreChange) {
+    newReduxStoreProxy.dispatch(action)
   }
 }
 
@@ -106,10 +123,40 @@ export function _createReduxStoreProxy<TState>(
   id: number,
   subscribers: _InternalReduxStoreProxy['subscribers'],
 ): _InternalReduxStoreProxy {
+  // this is a workaround for a race condition that can happen when loading an
+  // application: if an imported module dispatches actions on the store (e.g. by
+  // calling mutations in the module scope), these actions can get lost if a
+  // new store gets set; this is not what users would expect, so we capture all
+  // actions dispatched before the end of the first microtask queue, which basically
+  // means capturing all actions dispatched during module evaluation; these actions
+  // are then dispatched again on the new store, which restores the expected
+  // behavior of seeing those actions in the new store
+  let shouldCaptureActions = true
+  const actionsToDispatchOnStoreChange: Action[] = []
+
+  async function stopCapture() {
+    await Promise.resolve()
+    shouldCaptureActions = false
+    const actions = actionsToDispatchOnStoreChange
+    actions.splice(0, actions.length)
+  }
+
+  stopCapture().catch(() => void 0)
+
+  const dispatch: Dispatch = (action) => {
+    if (shouldCaptureActions) {
+      actionsToDispatchOnStoreChange.push(action)
+    }
+
+    return storeToUse.dispatch(action)
+  }
+
   return {
     id,
     subscribers,
+    actionsToDispatchOnStoreChange,
     ...storeToUse,
+    dispatch,
     getState: () => simpluxStateGetter(storeToUse.getState()),
     subscribe: (handler) => {
       const unsubscribe = storeToUse.subscribe(handler)

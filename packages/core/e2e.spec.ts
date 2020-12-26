@@ -245,18 +245,66 @@ describe(`@simplux/core`, () => {
   it('sets initial module states when switching to a new store', () => {
     const initialState = { prop: 'value' }
 
-    const { setState } = createSimpluxModule({
+    createSimpluxModule({
       name: 'switchToNewStore',
       initialState,
     })
-
-    setState({ prop: 'updated' })
 
     const store = createStore(
       combineReducers({
         simplux: getSimpluxReducer(),
       }),
     )
+
+    const cleanup = setReduxStoreForSimplux(store, (s: any) => s.simplux)
+
+    expect(store.getState().simplux.switchToNewStore).toBe(initialState)
+
+    cleanup()
+  })
+
+  it('persists state from previous store if switching to new store before end of first microtask queue', () => {
+    const initialState = { prop: 'value' }
+    const updatedState = { prop: 'value' }
+
+    const { setState } = createSimpluxModule({
+      name: 'switchToNewStore',
+      initialState,
+    })
+
+    setState(updatedState)
+
+    const store = createStore(
+      combineReducers({
+        simplux: getSimpluxReducer(),
+      }),
+    )
+
+    const cleanup = setReduxStoreForSimplux(store, (s: any) => s.simplux)
+
+    expect(store.getState().simplux.switchToNewStore).toEqual(updatedState)
+
+    cleanup()
+  })
+
+  it('does not persists state from previous store if switching to new store after end of first microtask queue', async () => {
+    const initialState = { prop: 'value' }
+    const updatedState = { prop: 'value' }
+
+    const { setState } = createSimpluxModule({
+      name: 'switchToNewStore',
+      initialState,
+    })
+
+    setState(updatedState)
+
+    const store = createStore(
+      combineReducers({
+        simplux: getSimpluxReducer(),
+      }),
+    )
+
+    await Promise.resolve()
 
     const cleanup = setReduxStoreForSimplux(store, (s: any) => s.simplux)
 
