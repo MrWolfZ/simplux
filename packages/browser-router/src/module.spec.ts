@@ -3,6 +3,7 @@ import {
   mockEffect,
   mockModuleState,
   mockMutation,
+  mockSelector,
 } from '@simplux/testing'
 import { getSimpluxRouter } from '../../router/index.js'
 import { _locationModule } from './location.js'
@@ -1124,321 +1125,32 @@ describe(`module`, () => {
       mockEffect(_locationModule.pushNewUrl, pushUrlMock)
     })
 
-    // TODO: all of these test can be replaced with a single test once selectors can be mocked
     describe(_module.navigateToRouteByUrl, () => {
-      it('navigates to route without parameters', () => {
-        const state = makeBrowserRouterState(
-          {
-            pathTemplateSegments: ['other'],
-            queryParameters: [],
-          },
-          {
-            pathTemplateSegments: ['root', 'nested'],
-            queryParameters: [],
-          },
-        )
-
-        mockModuleState(_module, state)
-
-        _module.navigateToRouteByUrl(`/root/nested`)
-
-        expect(navByIdMock).toHaveBeenCalledWith(2, {})
-      })
-
-      it('navigates to route with path parameters', () => {
-        const state = makeBrowserRouterState(
-          {
-            pathTemplateSegments: ['other'],
-            queryParameters: [],
-          },
-          {
-            pathTemplateSegments: [
-              'root',
-              {
-                parameterName: 'stringParam',
-                parameterType: 'string',
-              },
-              'intermediate',
-              {
-                parameterName: 'numberParam',
-                parameterType: 'number',
-              },
-              'trailing',
-            ],
-            queryParameters: [],
-          },
-        )
-
+      it('navigates to the correct route', () => {
         const parameterValues = {
           stringParam: 'parameterValue',
           numberParam: 100,
         }
 
-        mockModuleState(_module, state)
+        const [mock] = mockSelector(
+          _module.routeIdAndParametersByUrl,
+          jest.fn().mockReturnValue([2, parameterValues]),
+        )
 
         _module.navigateToRouteByUrl(
           `/root/${parameterValues.stringParam}/intermediate/${parameterValues.numberParam}/trailing`,
         )
 
-        expect(navByIdMock).toHaveBeenCalledWith(2, parameterValues)
-      })
-
-      it('navigates to route with query parameters', () => {
-        const state = makeBrowserRouterState(
-          {
-            pathTemplateSegments: ['other'],
-            queryParameters: [],
-          },
-          {
-            pathTemplateSegments: ['root', 'nested'],
-            queryParameters: [
-              {
-                parameterName: 'stringParam',
-                parameterType: 'string',
-                isOptional: false,
-              },
-              {
-                parameterName: 'numberParam',
-                parameterType: 'number',
-                isOptional: false,
-              },
-            ],
-          },
+        expect(mock).toHaveBeenCalledWith(
+          `/root/${parameterValues.stringParam}/intermediate/${parameterValues.numberParam}/trailing`,
         )
-
-        const parameterValues = {
-          stringParam: 'parameterValue',
-          numberParam: 100,
-        }
-
-        mockModuleState(_module, state)
-
-        _module.navigateToRouteByUrl(
-          `/root/nested?stringParam=${parameterValues.stringParam}&numberParam=${parameterValues.numberParam}`,
-        )
-
-        expect(navByIdMock).toHaveBeenCalledWith(2, parameterValues)
-      })
-
-      it('navigates to route with path and query parameters', () => {
-        const state = makeBrowserRouterState(
-          {
-            pathTemplateSegments: ['other'],
-            queryParameters: [],
-          },
-          {
-            pathTemplateSegments: [
-              'root',
-              {
-                parameterName: 'pathParam',
-                parameterType: 'string',
-              },
-            ],
-            queryParameters: [
-              {
-                parameterName: 'falseParam',
-                parameterType: 'boolean',
-                isOptional: false,
-              },
-              {
-                parameterName: 'trueParam',
-                parameterType: 'boolean',
-                isOptional: true,
-              },
-            ],
-          },
-        )
-
-        const parameterValues = {
-          pathParam: 'pathValue',
-          falseParam: false,
-          trueParam: true,
-        }
-
-        mockModuleState(_module, state)
-
-        _module.navigateToRouteByUrl(
-          `/root/${parameterValues.pathParam}?falseParam=${parameterValues.falseParam}&trueParam=${parameterValues.trueParam}`,
-        )
-
-        expect(navByIdMock).toHaveBeenCalledWith(2, parameterValues)
-      })
-
-      it('navigates to route with required and optional missing query parameters', () => {
-        const state = makeBrowserRouterState(
-          {
-            pathTemplateSegments: ['other'],
-            queryParameters: [],
-          },
-          {
-            pathTemplateSegments: ['root', 'nested'],
-            queryParameters: [
-              {
-                parameterName: 'requiredParam',
-                parameterType: 'string',
-                isOptional: false,
-              },
-              {
-                parameterName: 'optionalParam',
-                parameterType: 'string',
-                isOptional: true,
-              },
-            ],
-          },
-        )
-
-        const parameterValues = {
-          requiredParam: 'parameterValue',
-        }
-
-        mockModuleState(_module, state)
-
-        _module.navigateToRouteByUrl(
-          `/root/nested?requiredParam=${parameterValues.requiredParam}`,
-        )
-
-        expect(navByIdMock).toHaveBeenCalledWith(2, parameterValues)
-      })
-
-      it('navigates to route with only optional missing query parameters', () => {
-        const state = makeBrowserRouterState(
-          {
-            pathTemplateSegments: ['other'],
-            queryParameters: [],
-          },
-          {
-            pathTemplateSegments: ['root', 'nested'],
-            queryParameters: [
-              {
-                parameterName: 'stringParam',
-                parameterType: 'string',
-                isOptional: true,
-              },
-            ],
-          },
-        )
-
-        mockModuleState(_module, state)
-
-        _module.navigateToRouteByUrl(`/root/nested`)
-
-        expect(navByIdMock).toHaveBeenCalledWith(2, {})
-      })
-
-      it('decodes parameters', () => {
-        const state = makeBrowserRouterState(
-          {
-            pathTemplateSegments: ['other'],
-            queryParameters: [],
-          },
-          {
-            pathTemplateSegments: [
-              'root',
-              {
-                parameterName: 'pathParam',
-                parameterType: 'string',
-              },
-            ],
-            queryParameters: [
-              {
-                parameterName: 'queryParam',
-                parameterType: 'string',
-                isOptional: false,
-              },
-            ],
-          },
-        )
-
-        const parameterValues = {
-          pathParam: 'should/=?encode',
-          queryParam: 'should/=?encode',
-        }
-
-        mockModuleState(_module, state)
-
-        _module.navigateToRouteByUrl(
-          '/root/should%2F%3D%3Fencode?queryParam=should%2F%3D%3Fencode',
-        )
-
-        expect(navByIdMock).toHaveBeenCalledWith(2, parameterValues)
-      })
-
-      it('decodes path segments and parameterNames', () => {
-        const state = makeBrowserRouterState(
-          {
-            pathTemplateSegments: ['other'],
-            queryParameters: [],
-          },
-          {
-            pathTemplateSegments: [
-              'ro=ot',
-              {
-                parameterName: 'path=Param',
-                parameterType: 'string',
-              },
-            ],
-            queryParameters: [
-              {
-                parameterName: 'query/Param',
-                parameterType: 'string',
-                isOptional: false,
-              },
-            ],
-          },
-        )
-
-        const parameterValues = {
-          ['path=Param']: 'value',
-          ['query/Param']: 'value',
-        }
-
-        mockModuleState(_module, state)
-
-        _module.navigateToRouteByUrl('/ro%3Dot/value?query%2FParam=value')
-
         expect(navByIdMock).toHaveBeenCalledWith(2, parameterValues)
       })
 
       it('ignores the navigation if no matching route path is found', () => {
-        const state = makeBrowserRouterState(
-          {
-            pathTemplateSegments: ['other'],
-            queryParameters: [],
-          },
-          {
-            pathTemplateSegments: ['root'],
-            queryParameters: [],
-          },
-        )
-
-        mockModuleState(_module, state)
+        mockSelector(_module.routeIdAndParametersByUrl, jest.fn())
 
         _module.navigateToRouteByUrl('/doesNotExist')
-
-        expect(navByIdMock).not.toHaveBeenCalled()
-      })
-
-      it('ignores the navigation if a required query is missing', () => {
-        const state = makeBrowserRouterState(
-          {
-            pathTemplateSegments: ['other'],
-            queryParameters: [],
-          },
-          {
-            pathTemplateSegments: ['root'],
-            queryParameters: [
-              {
-                parameterName: 'queryParam',
-                parameterType: 'string',
-                isOptional: false,
-              },
-            ],
-          },
-        )
-
-        mockModuleState(_module, state)
-
-        _module.navigateToRouteByUrl('/root')
 
         expect(navByIdMock).not.toHaveBeenCalled()
       })
@@ -1529,15 +1241,10 @@ describe(`module`, () => {
 
     describe(_module.navigateToRouteById, () => {
       it('delegates to the base router', () => {
-        const state = makeBrowserRouterState({
-          pathTemplateSegments: ['root'],
-          queryParameters: [],
-        })
-
         const routeId = 1
         const parameters = { param: 'value' }
 
-        mockModuleState(_module, state)
+        mockSelector(_module.href, () => '')
 
         _module.navigateToRouteById(routeId, parameters)
 
@@ -1545,18 +1252,10 @@ describe(`module`, () => {
       })
 
       it('pushes the new url to the location module', () => {
-        const state = makeBrowserRouterState({
-          pathTemplateSegments: [
-            'root',
-            { parameterName: 'param', parameterType: 'string' },
-          ],
-          queryParameters: [],
-        })
-
         const routeId = 1
         const parameters = { param: 'value' }
 
-        mockModuleState(_module, state)
+        mockSelector(_module.href, () => `/root/value`)
 
         _module.navigateToRouteById(routeId, parameters)
 
@@ -1564,18 +1263,10 @@ describe(`module`, () => {
       })
 
       it('sets the current navigation url at the start of the navigation', () => {
-        const state = makeBrowserRouterState({
-          pathTemplateSegments: [
-            'root',
-            { parameterName: 'param', parameterType: 'string' },
-          ],
-          queryParameters: [],
-        })
-
         const routeId = 1
         const parameters = { param: 'value' }
 
-        mockModuleState(_module, state)
+        mockSelector(_module.href, () => `/root/value`)
 
         _module.navigateToRouteById(routeId, parameters)
 
@@ -1583,18 +1274,10 @@ describe(`module`, () => {
       })
 
       it('clears the current navigation url at the end of the navigation', () => {
-        const state = makeBrowserRouterState({
-          pathTemplateSegments: [
-            'root',
-            { parameterName: 'param', parameterType: 'string' },
-          ],
-          queryParameters: [],
-        })
-
         const routeId = 1
         const parameters = { param: 'value' }
 
-        mockModuleState(_module, state)
+        mockSelector(_module.href, () => `/root/value`)
 
         _module.navigateToRouteById(routeId, parameters)
 
