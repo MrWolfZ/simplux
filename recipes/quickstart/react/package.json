@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.quickstart.react",
-  "version": "0.18.0-alpha.3",
+  "version": "0.18.0-alpha.4",
   "description": "A quickstart for using simplux with React",
   "scripts": {
     "start": "react-scripts start"
@@ -24,8 +24,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.18.0-alpha.3",
-    "@simplux/react": "0.18.0-alpha.3",
+    "@simplux/core": "0.18.0-alpha.4",
+    "@simplux/react": "0.18.0-alpha.4",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   },

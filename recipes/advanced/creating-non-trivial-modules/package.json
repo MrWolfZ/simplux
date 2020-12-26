@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.advanced.creating-non-trivial-modules",
-  "version": "0.18.0-alpha.3",
+  "version": "0.18.0-alpha.4",
   "description": "This recipe shows you how you can create simplux modules that are as non-trivial as the modules you will typically create in your application",
   "main": "src/index.ts",
   "scripts": {
@@ -27,7 +27,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.18.0-alpha.3"
+    "@simplux/core": "0.18.0-alpha.4"
   },
   "devDependencies": {
     "@types/jest": "^26.0.19",

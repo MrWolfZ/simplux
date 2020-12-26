@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.4](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.3...v0.18.0-alpha.4) (2020-12-26)
+
+
+### Bug Fixes
+
+* **core:** do not throw if first argument for mutation is `undefined` ([04ae60a](https://github.com/MrWolfZ/simplux/commit/04ae60a67db81a0c867b4bc28d90462a27e07739))
+
+
+
+
+
 # [0.18.0-alpha.3](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.2...v0.18.0-alpha.3) (2020-12-26)
 
 
