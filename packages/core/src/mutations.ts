@@ -266,7 +266,7 @@ function isEvent(arg: any) {
     return true
   }
 
-  if (arg === null) {
+  if (arg === null || arg === undefined) {
     return false
   }
 

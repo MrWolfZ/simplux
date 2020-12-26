@@ -300,6 +300,34 @@ describe('mutations', () => {
         })
       })
 
+      it('can take undefined as an argument', () => {
+        const { increment } = createMutations(moduleMock, {
+          increment: (c, _: undefined) => c + 1,
+        })
+
+        increment(undefined)
+
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
+          args: [undefined],
+        })
+      })
+
+      it('can take nothing as an argument', () => {
+        const { increment } = createMutations(moduleMock, {
+          increment: (c) => c + 1,
+        })
+
+        increment()
+
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
+          args: [],
+        })
+      })
+
       it('ignores event arg in first position', () => {
         const { increment } = createMutations(moduleMock, {
           increment: (c) => c + 1,
