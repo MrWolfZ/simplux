@@ -63,7 +63,7 @@ describe(`@simplux/testing`, () => {
     it('state can be mocked', () => {
       mockModuleState(moduleMockTestModule, todoStoreWithTodo1)
 
-      expect(moduleMockTestModule.getState()).toBe(todoStoreWithTodo1)
+      expect(moduleMockTestModule.state()).toBe(todoStoreWithTodo1)
     })
 
     it('calls subscribers with mocked state on subscribe', () => {
@@ -95,11 +95,11 @@ describe(`@simplux/testing`, () => {
       it('can be cleared', () => {
         const clear = mockModuleState(moduleMockTestModule, todoStoreWithTodo1)
 
-        expect(moduleMockTestModule.getState()).toBe(todoStoreWithTodo1)
+        expect(moduleMockTestModule.state()).toBe(todoStoreWithTodo1)
 
         clear()
 
-        expect(moduleMockTestModule.getState()).toBe(initialState)
+        expect(moduleMockTestModule.state()).toBe(initialState)
       })
     })
   })

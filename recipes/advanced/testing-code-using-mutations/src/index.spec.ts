@@ -46,7 +46,7 @@ describe('adding new books', () => {
     // note that it is usually a bad idea to call the real mutation
     // during a test like this
     const id = addNewBook('test title', 'test author')
-    expect(books.getState()[id].title).toBe('test title')
+    expect(books.state()[id].title).toBe('test title')
     books.setState({})
   })
 })

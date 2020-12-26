@@ -49,6 +49,6 @@ export const booksStateWithTwoAvailableAndOneSoldOutBook: BooksState = {
 
 describe('books module', () => {
   it('is empty initially', () => {
-    expect(booksModule.getState()).toEqual(emptyBooksState)
+    expect(booksModule.state()).toEqual(emptyBooksState)
   })
 })

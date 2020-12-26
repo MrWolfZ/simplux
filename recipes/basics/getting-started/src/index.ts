@@ -9,8 +9,8 @@ import { createMutations, createSimpluxModule } from '@simplux/core'
 // initial state of the module
 const counterModule = createSimpluxModule('counter', { value: 0 })
 
-// you can access the module's current state with getState
-console.log('initial state:', counterModule.getState())
+// you can access the module's current state with state()
+console.log('initial state:', counterModule.state())
 
 // to change the state we can define mutations; a mutation
 // is a pure function that takes the current module state and
@@ -18,7 +18,7 @@ console.log('initial state:', counterModule.getState())
 // or returns a new updated state
 const { increment, incrementBy } = createMutations(counterModule, {
   // we can have mutations that only use the state
-  increment: state => {
+  increment: (state) => {
     state.value += 1
   },
 
@@ -30,11 +30,11 @@ const { increment, incrementBy } = createMutations(counterModule, {
 
 // to update the module's state, simply call a mutation
 increment()
-console.log('incremented counter:', counterModule.getState())
+console.log('incremented counter:', counterModule.state())
 
 // we can also pass arguments to a mutation
 incrementBy(5)
-console.log('incremented counter by 5:', counterModule.getState())
+console.log('incremented counter by 5:', counterModule.state())
 
 // executing a mutation returns the updated state
 console.log('final state:', increment())

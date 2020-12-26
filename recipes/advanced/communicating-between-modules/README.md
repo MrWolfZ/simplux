@@ -89,11 +89,11 @@ notifications.add({
   isMarkedAsSeen: false,
 })
 
-console.log('notifications:', notifications.getState())
+console.log('notifications:', notifications.state())
 
 user.logOut()
 
-console.log('notifications after user logged out:', notifications.getState())
+console.log('notifications after user logged out:', notifications.state())
 
 // don't forget to unsubscribe when you do not need to react to
 // state changes anymore (although in this scenario it may make

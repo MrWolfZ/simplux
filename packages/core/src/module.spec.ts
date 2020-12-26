@@ -44,12 +44,12 @@ describe('module', () => {
 
     it('immediately adds the module state to the overall state', () => {
       const initialState = { prop: 'value' }
-      const { getState } = createModule(simpluxStore, {
+      const { state } = createModule(simpluxStore, {
         name: 'test',
         initialState,
       })
 
-      expect(getState()).toBe(initialState)
+      expect(state()).toBe(initialState)
       expect(reduxStore.getState().test).toBe(initialState)
     })
 
@@ -124,7 +124,7 @@ describe('module', () => {
       setAutoFreeze(true)
     })
 
-    describe(`getState`, () => {
+    describe(`state`, () => {
       it('returns initial state', () => {
         const initialState = { prop: 'value' }
         const testModule = createModule(simpluxStore, {
@@ -132,7 +132,17 @@ describe('module', () => {
           initialState,
         })
 
-        expect(testModule.getState()).toBe(initialState)
+        expect(testModule.state()).toBe(initialState)
+      })
+
+      it('is a selector', () => {
+        const state = { prop: 'value' }
+        const testModule = createModule(simpluxStore, {
+          name: 'getStateTest',
+          initialState: {},
+        })
+
+        expect(testModule.state.withState(state)).toBe(state)
       })
 
       it('returns mocked state if set', () => {
@@ -145,7 +155,7 @@ describe('module', () => {
         const mockStateValue: typeof initialState = { prop: 'mocked' }
         testModule.$simpluxInternals.mockStateValue = mockStateValue
 
-        expect(testModule.getState()).toBe(mockStateValue)
+        expect(testModule.state()).toBe(mockStateValue)
       })
 
       it('returns frozen state during development', () => {
@@ -156,7 +166,7 @@ describe('module', () => {
         })
 
         expect(
-          () => ((testModule.getState() as any).prop = 'updated'),
+          () => ((testModule.state() as any).prop = 'updated'),
         ).toThrowError()
       })
 
@@ -174,7 +184,7 @@ describe('module', () => {
         })
 
         expect(
-          () => ((testModule.getState() as any).prop = 'updated'),
+          () => ((testModule.state() as any).prop = 'updated'),
         ).not.toThrowError()
       })
     })
@@ -182,13 +192,13 @@ describe('module', () => {
     describe(`setState`, () => {
       it('replaces the whole state', () => {
         const replacedState = { prop: 'updated' }
-        const { getState, setState } = createModule(simpluxStore, {
+        const { state, setState } = createModule(simpluxStore, {
           name: 'setStateTest',
           initialState: { prop: 'value' },
         })
 
         setState(replacedState)
-        expect(getState()).toBe(replacedState)
+        expect(state()).toBe(replacedState)
       })
     })
 

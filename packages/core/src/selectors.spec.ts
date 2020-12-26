@@ -15,7 +15,7 @@ describe('selectors', () => {
   beforeEach(() => {
     moduleState = 0
     moduleMock = {
-      getState: getModuleStateMock,
+      state: getModuleStateMock as any,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
       $simpluxInternals: {
@@ -25,6 +25,7 @@ describe('selectors', () => {
         mutationMocks: {},
         dispatch: undefined!,
         getReducer: undefined!,
+        getState: getModuleStateMock,
       },
       [SIMPLUX_MODULE]: undefined!,
     }

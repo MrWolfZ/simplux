@@ -115,7 +115,7 @@ export function createModuleServiceBaseClass<
   TSimpluxSelectors
 > {
   return class {
-    getCurrentState = simpluxModule.getState
+    getCurrentState = simpluxModule.state
     selectState = () => observeState(simpluxModule)
 
     constructor() {

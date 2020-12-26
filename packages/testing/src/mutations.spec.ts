@@ -16,7 +16,7 @@ describe('mutations', () => {
   beforeEach(() => {
     moduleState = 0
     moduleMock = {
-      getState: getModuleStateMock,
+      state: getModuleStateMock as any,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
       $simpluxInternals: {
@@ -26,6 +26,7 @@ describe('mutations', () => {
         mutationMocks: {},
         dispatch: dispatchMock,
         getReducer: undefined!,
+        getState: getModuleStateMock,
       },
       [SIMPLUX_MODULE]: undefined!,
     }
@@ -116,7 +117,7 @@ describe('mutations', () => {
 
     it('can be removed all at once for multiple modules', () => {
       const moduleMock2: typeof moduleMock = {
-        getState: getModuleStateMock,
+        state: getModuleStateMock as any,
         setState: setModuleStateMock,
         subscribeToStateChanges: subscribeToModuleStateChangesMock,
         $simpluxInternals: {
@@ -126,6 +127,7 @@ describe('mutations', () => {
           mutationMocks: {},
           dispatch: dispatchMock,
           getReducer: undefined!,
+          getState: getModuleStateMock,
         },
         [SIMPLUX_MODULE]: undefined!,
       }

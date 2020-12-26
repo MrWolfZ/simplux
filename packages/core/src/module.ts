@@ -2,6 +2,7 @@ import type { AnyAction, Reducer } from 'redux'
 import { createImmerReducer } from './immer.js'
 import type { MutationDefinitions } from './mutations.js'
 import { createModuleReducer } from './reducer.js'
+import { createSelectors, SimpluxSelector } from './selectors.js'
 import { simpluxStore, _SimpluxStore } from './store.js'
 import type { Immutable } from './types.js'
 
@@ -157,6 +158,13 @@ export interface _SimpluxModuleInternals<TState> {
    * extensions.
    */
   readonly getReducer: () => Reducer
+
+  /**
+   * Get the current module state.
+   *
+   * @returns the module state
+   */
+  readonly getState: () => Immutable<TState>
 }
 
 /**
@@ -184,11 +192,11 @@ export interface SimpluxModuleLike<TState> {
  */
 export interface SimpluxModule<TState> extends SimpluxModuleLike<TState> {
   /**
-   * Get the current module state.
+   * A selector for getting the current module state.
    *
    * @returns the module state
    */
-  readonly getState: () => Immutable<TState>
+  readonly state: SimpluxSelector<TState, [], Immutable<TState>>
 
   /**
    * Replace the whole module state.
@@ -243,10 +251,12 @@ export function createModule<TState>(
     mutationMocks: {},
     dispatch,
     getReducer: () => simpluxStore.getReducer(config.name),
+    getState: getModuleState,
   }
 
-  const getModuleState = (): Immutable<TState> =>
-    internals.mockStateValue || getState()[config.name]
+  function getModuleState(): Immutable<TState> {
+    return internals.mockStateValue || getState()[config.name]
+  }
 
   const setModuleState = (state: Immutable<TState>) => {
     dispatch({
@@ -327,13 +337,21 @@ export function createModule<TState>(
 
   setReducer(config.name, moduleReducerWithImmerSupport)
 
-  const result: SimpluxModule<TState> = {
-    getState: getModuleState,
+  type ShallowMutable<T> = { -readonly [prop in keyof T]: T[prop] }
+
+  const result: ShallowMutable<SimpluxModule<TState>> = {
+    state: undefined!,
     setState: setModuleState,
     subscribeToStateChanges,
     $simpluxInternals: internals,
     [SIMPLUX_MODULE]: undefined!,
   }
+
+  const selectors = createSelectors(result, {
+    state: (s) => s,
+  })
+
+  result.state = selectors.state
 
   return result
 }

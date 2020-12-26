@@ -208,7 +208,7 @@ export function createMutations<
           currentlyDispatchingMutationName = mutationName as string
           dispatch(createAction(...args))
           currentlyDispatchingMutationName = undefined
-          return module.getState()
+          return module.state()
         },
       ) as ResolvedMutation<TState, TMutations[typeof mutationName]>
 

@@ -49,7 +49,7 @@ const defaultContextValue: SimpluxContextValue = {
   subscribeToModuleStateChanges(simpluxModule, handler) {
     return simpluxModule.subscribeToStateChanges(handler).unsubscribe
   },
-  getModuleState: (simpluxModule) => simpluxModule.getState(),
+  getModuleState: (simpluxModule) => simpluxModule.state(),
 }
 
 // by always returning 0 for `calculateChangedBits` we prevent components
@@ -103,7 +103,7 @@ export const useSimpluxSubscription = (
     return (
       simpluxModule.$simpluxInternals.mockStateValue ||
       moduleStates[simpluxModule.$simpluxInternals.name] ||
-      simpluxModule.getState()
+      simpluxModule.state()
     )
   }
 

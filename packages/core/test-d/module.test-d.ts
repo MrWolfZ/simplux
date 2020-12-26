@@ -11,7 +11,7 @@ const module = createSimpluxModule<State>({
 })
 
 // @ts-expect-error
-expectError((module.getState().count += 1))
+expectError((module.state().count += 1))
 
 expectType<(_: Immutable<State>) => void>(
   module.subscribeToStateChanges((_) => {}).handler,

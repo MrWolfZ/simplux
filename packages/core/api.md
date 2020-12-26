@@ -177,8 +177,8 @@ export type SimpluxEffects<TEffectDefinitions extends SimpluxEffectDefinitions> 
 export interface SimpluxModule<TState> extends SimpluxModuleLike<TState> {
     // @internal
     readonly $simpluxInternals: _SimpluxModuleInternals<TState>;
-    readonly getState: () => Immutable<TState>;
     readonly setState: (state: Immutable<TState>) => void;
+    readonly state: SimpluxSelector<TState, [], Immutable<TState>>;
     readonly subscribeToStateChanges: SubscribeToStateChanges<TState>;
 }
 
@@ -194,6 +194,7 @@ export interface SimpluxModuleConfig<TState> {
 export interface _SimpluxModuleInternals<TState> {
     readonly dispatch: (action: AnyAction) => void;
     readonly getReducer: () => Reducer;
+    readonly getState: () => Immutable<TState>;
     mockStateValue: TState | undefined;
     readonly mutationMocks: {
         [mutationName: string]: (...args: any[]) => TState;

@@ -136,7 +136,10 @@ export function createSelectors<
       const namedSelector = nameFunction(
         selectorName as string,
         (...args: any[]) => {
-          return memoizedDefinition(module.getState(), ...args)
+          return memoizedDefinition(
+            module.$simpluxInternals.getState(),
+            ...args,
+          )
         },
       ) as ResolvedSelector<TState, TSelectorDefinitions[typeof selectorName]>
 

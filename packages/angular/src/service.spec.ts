@@ -59,7 +59,7 @@ describe('service', () => {
       })
 
       moduleMock = {
-        getState: getModuleStateMock,
+        state: getModuleStateMock as any,
         setState: setModuleStateMock,
         subscribeToStateChanges: subscribeToModuleStateChangesMock,
         $simpluxInternals: {
@@ -69,6 +69,7 @@ describe('service', () => {
           mutationMocks: {},
           dispatch: undefined!,
           getReducer: undefined!,
+          getState: getModuleStateMock,
         },
         [SIMPLUX_MODULE]: undefined!,
       }

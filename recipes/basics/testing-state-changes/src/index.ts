@@ -6,4 +6,4 @@
 
 import { counter } from './counter.module'
 
-console.log(`counter module state:`, counter.getState())
+console.log(`counter module state:`, counter.state())

@@ -26,7 +26,7 @@ describe('mutations', () => {
   beforeEach(() => {
     moduleState = 0
     moduleMock = {
-      getState: getModuleStateMock,
+      state: getModuleStateMock as any,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
       $simpluxInternals: {
@@ -36,6 +36,7 @@ describe('mutations', () => {
         mutationMocks: {},
         dispatch: dispatchMock,
         getReducer: getReducerMock,
+        getState: getModuleStateMock,
       },
       [SIMPLUX_MODULE]: undefined!,
     }
@@ -409,7 +410,7 @@ describe('mutations', () => {
         dispatchMock.mockImplementation(({ mutationName }) => {
           const moduleMutations = moduleMock.$simpluxInternals.mutations
           const mutation = moduleMutations[mutationName]!
-          mutation(moduleMock.getState())
+          mutation(moduleMock.state())
         })
 
         const { increment, increment2 } = createMutations(moduleMock, {

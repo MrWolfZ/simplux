@@ -50,7 +50,7 @@ describe('context', () => {
       .mockImplementation(() => ({ unsubscribe: () => void 0 }))
 
     moduleMock = {
-      getState: getModuleStateMock,
+      state: getModuleStateMock as any,
       setState: undefined!,
       subscribeToStateChanges: subscribeToModuleMock,
       $simpluxInternals: {
@@ -60,12 +60,13 @@ describe('context', () => {
         mutationMocks: {},
         dispatch: undefined!,
         getReducer: undefined!,
+        getState: getModuleStateMock,
       },
       [SIMPLUX_MODULE]: undefined!,
     }
 
     moduleMock2 = {
-      getState: getModuleStateMock2,
+      state: getModuleStateMock2 as any,
       setState: undefined!,
       subscribeToStateChanges: subscribeToModuleMock,
       $simpluxInternals: {
@@ -75,6 +76,7 @@ describe('context', () => {
         mutationMocks: {},
         dispatch: undefined!,
         getReducer: undefined!,
+        getState: getModuleStateMock2,
       },
       [SIMPLUX_MODULE]: undefined!,
     }

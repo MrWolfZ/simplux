@@ -48,7 +48,7 @@ describe(`@simplux/core`, () => {
       initialState: initialTodoState,
     })
 
-    const { getState, setState, subscribeToStateChanges } = todosModule
+    const { state, setState, subscribeToStateChanges } = todosModule
 
     const { addTodo, addTodos } = createMutations(todosModule, {
       addTodo({ todosById, todoIds }, todo: Todo) {
@@ -89,7 +89,7 @@ describe(`@simplux/core`, () => {
 
     let updatedState = addTodo(todo1)
     expect(updatedState).toEqual(todoStoreWithOneTodo)
-    expect(getState()).toEqual(todoStoreWithOneTodo)
+    expect(state()).toEqual(todoStoreWithOneTodo)
     expect(handler).toHaveBeenCalledWith(updatedState, initialTodoState)
 
     let previousState = updatedState
@@ -99,13 +99,13 @@ describe(`@simplux/core`, () => {
 
     previousState = updatedState
     setState(todoStoreWithOneTodo)
-    expect(getState()).toBe(todoStoreWithOneTodo)
+    expect(state()).toBe(todoStoreWithOneTodo)
     expect(handler).toHaveBeenCalledWith(todoStoreWithOneTodo, previousState)
 
     setState(initialTodoState)
     updatedState = addTodos(todo1, todo2)
     expect(updatedState).toEqual(todoStoreWithTwoTodos)
-    expect(getState()).toEqual(todoStoreWithTwoTodos)
+    expect(state()).toEqual(todoStoreWithTwoTodos)
     expect(handler).toHaveBeenCalledWith(updatedState, initialTodoState)
 
     expect(handler).toHaveBeenCalledTimes(6)
@@ -119,7 +119,7 @@ describe(`@simplux/core`, () => {
 
   it('works with module factory shorthand', () => {
     const counterModule = createSimpluxModule('counter', 10)
-    expect(counterModule.getState()).toBe(10)
+    expect(counterModule.state()).toBe(10)
   })
 
   describe('mutable/immer-style mutation', () => {
@@ -129,7 +129,7 @@ describe(`@simplux/core`, () => {
         initialState: initialTodoState,
       })
 
-      const { getState, setState, subscribeToStateChanges } = todosModule
+      const { state, setState, subscribeToStateChanges } = todosModule
 
       const { addTodo, addTodos } = createMutations(todosModule, {
         addTodo({ todosById, todoIds }, todo: Todo) {
@@ -159,7 +159,7 @@ describe(`@simplux/core`, () => {
 
       let updatedState = addTodo(todo1)
       expect(updatedState).toEqual(todoStoreWithOneTodo)
-      expect(getState()).toEqual(todoStoreWithOneTodo)
+      expect(state()).toEqual(todoStoreWithOneTodo)
       expect(handler).toHaveBeenCalledWith(updatedState, initialTodoState)
 
       let previousState = updatedState
@@ -169,13 +169,13 @@ describe(`@simplux/core`, () => {
 
       previousState = updatedState
       setState(todoStoreWithOneTodo)
-      expect(getState()).toBe(todoStoreWithOneTodo)
+      expect(state()).toBe(todoStoreWithOneTodo)
       expect(handler).toHaveBeenCalledWith(todoStoreWithOneTodo, previousState)
 
       setState(initialTodoState)
       updatedState = addTodos(todo1, todo2)
       expect(updatedState).toEqual(todoStoreWithTwoTodos)
-      expect(getState()).toEqual(todoStoreWithTwoTodos)
+      expect(state()).toEqual(todoStoreWithTwoTodos)
       expect(handler).toHaveBeenCalledWith(updatedState, initialTodoState)
 
       expect(handler).toHaveBeenCalledTimes(6)
@@ -395,7 +395,7 @@ describe(`@simplux/core`, () => {
 
       await addTodoEffect()
 
-      expect(todosModule.getState()).toEqual(todoStoreWithOneTodo)
+      expect(todosModule.state()).toEqual(todoStoreWithOneTodo)
 
       todosModule.setState(initialTodoState)
 
@@ -413,7 +413,7 @@ describe(`@simplux/core`, () => {
       await addTodoEffect1()
       await addTodoEffect2()
 
-      expect(todosModule.getState()).toEqual(todoStoreWithTwoTodos)
+      expect(todosModule.state()).toEqual(todoStoreWithTwoTodos)
     })
   })
 })
