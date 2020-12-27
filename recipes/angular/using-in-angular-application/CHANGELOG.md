@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.7](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.6...v0.18.0-alpha.7) (2020-12-27)
+
+**Note:** Version bump only for package @simplux/recipes.angular.using-in-angular-application
+
+
+
+
+
 # [0.18.0-alpha.6](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.5...v0.18.0-alpha.6) (2020-12-26)
 
 **Note:** Version bump only for package @simplux/recipes.angular.using-in-angular-application

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.7](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.6...v0.18.0-alpha.7) (2020-12-27)
+
+
+### Features
+
+* **router:** add route configuration option for intercepting navigation ([fa4ca34](https://github.com/MrWolfZ/simplux/commit/fa4ca343eb9ad1ad624e1aff2b0753a91e8963dc))
+* **router:** add selector to check if a navigation is in progress ([4c047fa](https://github.com/MrWolfZ/simplux/commit/4c047fa2fd7fb400efd57bd502fbe5b2aaad942e))
+
+
+
+
+
 # [0.18.0-alpha.6](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.5...v0.18.0-alpha.6) (2020-12-26)
 
 **Note:** Version bump only for package @simplux/router
