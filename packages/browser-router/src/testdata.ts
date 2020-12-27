@@ -134,6 +134,7 @@ export const routeStateWithPathAndQueryParameters: SimpluxBrowserRouteState = {
 export const routeTemplateWithOnNavigateTo = 'root/withOnNavigateTo'
 export const routeTemplateWithOnNavigateToAndParameters =
   'root/withOnNavigateTo/:pathParam?queryParam'
+export const routeTemplateForCancellation = 'root/forCancellation'
 
 export function makeBrowserRouterState(
   ...routes: SimpluxBrowserRouteState[]

@@ -7,6 +7,7 @@ import {
 import {
   getSimpluxRouter,
   NavigationResult,
+  NAVIGATION_CANCELLED,
   SimpluxRouteId,
 } from '@simplux/router'
 import { _extractOrigin, _locationModule, _Url } from './location.js'
@@ -184,11 +185,12 @@ const effects = createEffects({
     const result = selectors.routeIdAndParametersByUrl(url)
 
     if (result) {
-      const [routeId, parameters] = result
-      mutations.setCurrentNavigationUrl(url)
-      await simpluxRouter.navigateToRouteById(routeId, parameters)
-      _locationModule.pushNewUrl(url)
-      mutations.setCurrentNavigationUrl(undefined)
+      const [routeId, parameterValues] = result
+      return await effects.navigateToRouteByIdAndPushUrl(
+        routeId,
+        parameterValues,
+        url,
+      )
     } else {
       // should this throw?
     }
@@ -199,10 +201,32 @@ const effects = createEffects({
     parameterValues?: _NavigationParameters,
   ): NavigationResult => {
     const url = selectors.href(routeId, parameterValues)
+    return await effects.navigateToRouteByIdAndPushUrl(
+      routeId,
+      parameterValues,
+      url,
+    )
+  },
+
+  navigateToRouteByIdAndPushUrl: async (
+    routeId: SimpluxRouteId,
+    parameterValues: _NavigationParameters | undefined,
+    url: _Url,
+  ): NavigationResult => {
     mutations.setCurrentNavigationUrl(url)
-    await simpluxRouter.navigateToRouteById(routeId, parameterValues)
+    const result = await simpluxRouter.navigateToRouteById(
+      routeId,
+      parameterValues,
+    )
+
+    if (result === NAVIGATION_CANCELLED) {
+      return NAVIGATION_CANCELLED
+    }
+
     _locationModule.pushNewUrl(url)
     mutations.setCurrentNavigationUrl(undefined)
+
+    return result
   },
 })
 

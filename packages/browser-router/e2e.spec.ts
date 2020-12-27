@@ -1,9 +1,13 @@
 // this file contains an end-to-end test for the public API
 
-import { getSimpluxBrowserRouter } from '@simplux/browser-router'
+import {
+  getSimpluxBrowserRouter,
+  NAVIGATION_CANCELLED,
+} from '@simplux/browser-router'
 import {
   emptyRouterState,
   rootRouteTemplate,
+  routeTemplateForCancellation,
   routeTemplateWithOnlyOptionalQueryParameter,
   routeTemplateWithOnNavigateTo,
   routeTemplateWithOnNavigateToAndParameters,
@@ -98,6 +102,14 @@ describe(`@simplux/browser-router`, () => {
         },
       },
     )
+
+    let cancelledNavigation = new Promise<typeof NAVIGATION_CANCELLED>(() => {})
+    const routeForCancellation = router.addRoute(routeTemplateForCancellation, {
+      onNavigateTo: async ({ cancelled }) => {
+        cancelledNavigation = cancelled
+        await new Promise<typeof NAVIGATION_CANCELLED>(() => {})
+      },
+    })
 
     expect(router.anyRouteIsActive()).toBe(false)
 
@@ -197,6 +209,11 @@ describe(`@simplux/browser-router`, () => {
       queryParam: 'queryValue',
     })
 
+    const navToCancel = routeForCancellation.navigateTo()
+
+    expect(routeForCancellation.isActive()).toBe(false)
+    expect(router.navigationIsInProgress()).toBe(true)
+
     const window: any = {
       location: {
         pathname: routeWithoutParameters.href(),
@@ -208,7 +225,14 @@ describe(`@simplux/browser-router`, () => {
 
     router.activate(window)
 
+    // give the router time to finish the navigation
+    await new Promise<void>((r) => setTimeout(r, 0))
+
     expect(routeWithoutParameters.isActive()).toBe(true)
     expect(routeWithoutParameters.parameterValues()).toEqual({})
+
+    cancelledNavigation
+    await expect(cancelledNavigation).resolves.toBe(NAVIGATION_CANCELLED)
+    await expect(navToCancel).resolves.toBe(NAVIGATION_CANCELLED)
   })
 })
