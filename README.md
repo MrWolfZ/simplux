@@ -163,21 +163,21 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 ## Open points
 
 - core: remove `nameFunction` in production
+- core: add a `combineSelectors` utility function
 - testing: add functions to throw when calling unmocked mutations or effects
-- router: make navigation async
-- router: add interceptor `onNavigateTo` to route configuration
 - router: explicitly specify what happened in return value of `navigateTo`
-- router: method `addRoutes` on `SimpluxRouter` to create multiple routes at once
 - router: capture navigation history
 - router: allow going back to previously active route
 - router: allow creating child routes
-- router: remove default parameter values
+- router: method `addRoutes` on `SimpluxRouter` to create multiple routes at once
 - router: add type tests
+- browser-router: allow defining global query parameters
+- browser-router: throw when creating conflicting route definition
 - browser-router: configuration parameter for setting URL at start or end of navigation (or not at all); also add these as navigation options
 - browser-router: configuration parameter for replacing history entry; also add these as navigation options
 - browser-router: allow ?[, [?, &[, and [& for optional query parameters
-- browser-router: allow defining global query parameters
-- browser-router: throw when creating conflicting route definition
+- browser-router: add type tests
+- browser-router: add support for setting hash parameter in history mode
 - browser-router: add support for base href in history mode
 - browser-router: add support for hash mode
 - browser-router: allow defining default values for parameters (e.g. /:id:string|defaultValue/)
