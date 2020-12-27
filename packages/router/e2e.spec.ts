@@ -104,7 +104,7 @@ describe(`@simplux/router`, () => {
       bool: false,
     })
 
-    const nav6 = testRoute6.navigateTo()
+    const navToCancel = testRoute6.navigateTo()
 
     expect(testRoute6.isActive()).toBe(false)
     expect(router.navigationIsInProgress()).toBe(true)
@@ -112,7 +112,7 @@ describe(`@simplux/router`, () => {
     await testRoute1.navigateTo()
 
     await expect(cancelledNavigation).resolves.toBe(NAVIGATION_CANCELLED)
-    await expect(nav6).resolves.toBeUndefined()
+    await expect(navToCancel).resolves.toBe(NAVIGATION_CANCELLED)
 
     expect(testRoute6.isActive()).toBe(false)
     expect(testRoute1.isActive()).toBe(true)

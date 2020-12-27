@@ -444,6 +444,31 @@ describe(`module`, () => {
         expect(activateMock).not.toHaveBeenCalled()
       })
 
+      it('returns the correct value if navigation is cancelled', async () => {
+        const [mock] = mockEffect(
+          _module.createNavigationCancellationPromise,
+          jest.fn(),
+        )
+
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: () => new Promise<void>(() => {}),
+        }))
+
+        let cancelNav = () => {}
+        const cancelPromise = new Promise<typeof NAVIGATION_CANCELLED>(
+          (r) => (cancelNav = () => r(NAVIGATION_CANCELLED)),
+        )
+
+        mock.mockReturnValueOnce(cancelPromise)
+
+        const parameterValues = { param: 'value' }
+        const promise = _module.navigateToRoute(1, parameterValues)
+
+        cancelNav()
+
+        await expect(promise).resolves.toBe(NAVIGATION_CANCELLED)
+      })
+
       it('clears cancellation callback at the end of the navigation', async () => {
         mockMutation(_module.activateRoute, jest.fn())
         const [mock] = mockEffect(
@@ -501,7 +526,7 @@ describe(`module`, () => {
         cancelNav()
 
         await expect(cancellationPromise).resolves.toBe(NAVIGATION_CANCELLED)
-        await expect(promise).resolves.toBeUndefined()
+        await promise
       })
     })
 

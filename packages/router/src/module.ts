@@ -32,7 +32,7 @@ export type _NavigationParameters = Readonly<Record<string, any>>
  *
  * @public
  */
-export type NavigationResult = Promise<void>
+export type NavigationResult = Promise<typeof NAVIGATION_CANCELLED | void>
 
 /**
  * Arguments for an `onNavigateTo` callback.
@@ -226,7 +226,7 @@ const effects = createEffects({
     ])
 
     if (result === NAVIGATION_CANCELLED) {
-      return
+      return NAVIGATION_CANCELLED
     }
 
     mutations.activateRoute(routeId, parameters || {})

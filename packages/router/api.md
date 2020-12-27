@@ -21,7 +21,7 @@ export const NAVIGATION_CANCELLED: unique symbol;
 export type _NavigationParameters = Readonly<Record<string, any>>;
 
 // @public
-export type NavigationResult = Promise<void>;
+export type NavigationResult = Promise<typeof NAVIGATION_CANCELLED | void>;
 
 // @public
 export type OnNavigateTo<TParameters = _NavigationParameters> = (args: OnNavigateToArgs<TParameters>) => void | Promise<void>;
