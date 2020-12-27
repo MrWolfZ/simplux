@@ -8,13 +8,13 @@ import {
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { act as actHook, renderHook } from '@testing-library/react-hooks'
 import React, { useLayoutEffect, useState } from 'react'
-import { create } from 'react-test-renderer'
+import { act as rendererAct, create } from 'react-test-renderer'
 import { SimpluxProvider } from './context'
 import { useSimplux } from './useSimplux'
 
 describe(useSimplux.name, () => {
   let moduleState = { count: 0 }
-  let subscriber: (state: typeof moduleState) => void = () => void 0
+  let subscriber: (state: typeof moduleState) => void = () => {}
   let getModuleStateMock: jest.Mock<typeof moduleState, []>
 
   let subscriptionMock: StateChangeSubscription<any, any>
@@ -48,6 +48,7 @@ describe(useSimplux.name, () => {
       handler: () => void 0,
     }
 
+    subscriber = () => {}
     getModuleStateMock = jest.fn().mockImplementation(() => moduleState)
     subscribeToModuleStateChangesMock = jest.fn().mockImplementation((s) => {
       subscriber = s
@@ -198,7 +199,7 @@ describe(useSimplux.name, () => {
 
       expect(renderedItems).toEqual([10])
 
-      actHook(() => {
+      rendererAct(() => {
         moduleState = { count: 11 }
         subscriber(moduleState)
       })
@@ -225,7 +226,7 @@ describe(useSimplux.name, () => {
 
       expect(renderedItems).toEqual([15])
 
-      actHook(() => {
+      rendererAct(() => {
         moduleState = { count: 11 }
         subscriber(moduleState)
       })
