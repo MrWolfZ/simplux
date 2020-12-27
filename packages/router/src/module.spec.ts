@@ -3,7 +3,13 @@ import {
   mockEffect,
   mockMutation,
 } from '@simplux/testing'
-import { NAVIGATION_CANCELLED, SimpluxRouterState, _module } from './module.js'
+import {
+  NAVIGATION_CANCELLED,
+  OnNavigateToArgs,
+  SimpluxRouterState,
+  _module,
+  _NavigationParameters,
+} from './module.js'
 import {
   emptyRouterState,
   routeName1,
@@ -460,6 +466,42 @@ describe(`module`, () => {
         await promise
 
         expect(mock).toHaveBeenCalled()
+      })
+
+      it('notifies the onNavigateTo interceptor for the route of cancellation', async () => {
+        let cancellationPromise = new Promise<typeof NAVIGATION_CANCELLED>(
+          () => {},
+        )
+
+        const [createCancelPromiseMock] = mockEffect(
+          _module.createNavigationCancellationPromise,
+          jest.fn(),
+        )
+
+        let cancelNav = () => {}
+        const cancelPromise = new Promise<typeof NAVIGATION_CANCELLED>(
+          (r) => (cancelNav = () => r(NAVIGATION_CANCELLED)),
+        )
+
+        createCancelPromiseMock.mockReturnValueOnce(cancelPromise)
+
+        const interceptor = jest
+          .fn<Promise<void>, [OnNavigateToArgs<_NavigationParameters>]>()
+          .mockImplementationOnce(({ cancelled }) => {
+            cancellationPromise = cancelled
+            return new Promise<void>(() => {})
+          })
+
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: interceptor,
+        }))
+
+        const promise = _module.navigateToRoute(1)
+
+        cancelNav()
+
+        await expect(cancellationPromise).resolves.toBe(NAVIGATION_CANCELLED)
+        await expect(promise).resolves.toBeUndefined()
       })
     })
 

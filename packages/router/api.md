@@ -28,6 +28,7 @@ export type OnNavigateTo<TParameters = _NavigationParameters> = (args: OnNavigat
 
 // @public
 export interface OnNavigateToArgs<TParameters> {
+    cancelled: Promise<typeof NAVIGATION_CANCELLED>;
     parameters: TParameters;
 }
 

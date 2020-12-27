@@ -44,6 +44,13 @@ export interface OnNavigateToArgs<TParameters> {
    * The parameters for the navigation.
    */
   parameters: TParameters
+
+  /**
+   * A promise that resolves when the navigation is cancelled
+   * (e.g. because a new navigation has started while this
+   * function was running).
+   */
+  cancelled: Promise<typeof NAVIGATION_CANCELLED>
 }
 
 /**
@@ -210,6 +217,7 @@ const effects = createEffects({
 
     const onNavigateToArgs: OnNavigateToArgs<_NavigationParameters> = {
       parameters: parameters || {},
+      cancelled: cancellationPromise,
     }
 
     const result = await Promise.race([

@@ -1,6 +1,6 @@
 // this file contains an end-to-end test for the public API
 
-import { getSimpluxRouter } from '@simplux/router'
+import { getSimpluxRouter, NAVIGATION_CANCELLED } from '@simplux/router'
 import {
   emptyRouterState,
   routeName1,
@@ -43,8 +43,12 @@ describe(`@simplux/router`, () => {
       },
     })
 
+    let cancelledNavigation = new Promise<typeof NAVIGATION_CANCELLED>(() => {})
     const testRoute6 = router.addRoute('asyncNever', {
-      onNavigateTo: () => new Promise<void>(() => {}),
+      onNavigateTo: ({ cancelled }) => {
+        cancelledNavigation = cancelled
+        return new Promise<void>(() => {})
+      },
     })
 
     expect(router.anyRouteIsActive()).toBe(false)
@@ -107,7 +111,8 @@ describe(`@simplux/router`, () => {
 
     await testRoute1.navigateTo()
 
-    await nav6
+    await expect(cancelledNavigation).resolves.toBe(NAVIGATION_CANCELLED)
+    await expect(nav6).resolves.toBeUndefined()
 
     expect(testRoute6.isActive()).toBe(false)
     expect(testRoute1.isActive()).toBe(true)
