@@ -34,7 +34,7 @@ describe(`route`, () => {
 
   const routerAddMock = jest.fn().mockReturnValue(mockRoute)
   const moduleAddMock = jest.fn()
-  const moduleNavigateToIdMock = jest.fn()
+  const moduleNavigateToIdMock = jest.fn().mockResolvedValue(undefined)
 
   beforeEach(() => {
     clearAllSimpluxMocks()
@@ -92,15 +92,15 @@ describe(`route`, () => {
       })
 
       describe(mockRoute.navigateTo, () => {
-        it('delegates to the module', () => {
+        it('delegates to the module', async () => {
           const testRoute = addRoute(routeTemplateWithoutParameters)
 
-          testRoute.navigateTo()
+          await testRoute.navigateTo()
 
           expect(moduleNavigateToIdMock).toHaveBeenCalled()
         })
 
-        it('enforces correct parameters', () => {
+        it('enforces correct parameters', async () => {
           const testRoute = addRoute(routeTemplateWithPathParameters)
 
           const parameterValues: typeof testRoute.$parameterTypes = {
@@ -109,7 +109,7 @@ describe(`route`, () => {
             booleanParam: true,
           }
 
-          testRoute.navigateTo(parameterValues)
+          await testRoute.navigateTo(parameterValues)
 
           expect(moduleNavigateToIdMock).toHaveBeenCalledWith(
             1,
@@ -117,15 +117,15 @@ describe(`route`, () => {
           )
         })
 
-        it('does not take parameters if route has none', () => {
+        it('does not take parameters if route has none', async () => {
           const testRoute = addRoute(routeTemplateWithoutParameters)
 
-          testRoute.navigateTo()
+          await testRoute.navigateTo()
 
           expect(moduleNavigateToIdMock).toHaveBeenCalled()
         })
 
-        it('makes parameters optional if route has only optional parameters', () => {
+        it('makes parameters optional if route has only optional parameters', async () => {
           interface Parameters {
             opt?: string
           }
@@ -134,7 +134,7 @@ describe(`route`, () => {
             routeTemplateWithPathParameters,
           )
 
-          testRoute.navigateTo()
+          await testRoute.navigateTo()
 
           expect(moduleNavigateToIdMock).toHaveBeenCalledWith(1, {})
         })

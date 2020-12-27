@@ -19,6 +19,12 @@ describe(`module`, () => {
     process.env.NODE_ENV = nodeEnv
   })
 
+  beforeEach(() => {
+    mockMutation(_module.addRoute, jest.fn())
+    mockMutation(_module.activateRoute, jest.fn())
+    mockMutation(_module.setNavigationIsInProgress, jest.fn())
+  })
+
   afterEach(clearAllSimpluxMocks)
 
   it('starts with an empty state', () => {
@@ -123,6 +129,17 @@ describe(`module`, () => {
         expect(updatedState.activeRouteParameterValues).toEqual(
           newParameterValues,
         )
+      })
+    })
+
+    describe(_module.setNavigationIsInProgress, () => {
+      it('sets the property', () => {
+        const updatedState = _module.setNavigationIsInProgress.withState(
+          emptyRouterState,
+          true,
+        )
+
+        expect(updatedState.navigationIsInProgress).toBe(true)
       })
     })
   })
@@ -272,13 +289,71 @@ describe(`module`, () => {
     })
 
     describe(_module.navigateToRoute, () => {
-      it('activates the route', () => {
+      it('activates the route at the end of the navigation', async () => {
         const [mock] = mockMutation(_module.activateRoute, jest.fn())
 
+        let resolve = () => {}
+        const onNavToPromise = new Promise<void>((r) => (resolve = r))
+
         const parameterValues = { param: 'value' }
-        _module.navigateToRoute(1, parameterValues)
+        const promise = _module.navigateToRoute(
+          1,
+          parameterValues,
+          () => onNavToPromise,
+        )
+
+        expect(mock).not.toHaveBeenCalled()
+
+        resolve()
+        await promise
 
         expect(mock).toHaveBeenCalledWith(1, parameterValues)
+      })
+
+      it('marks navigation as running at the start of the navigation', async () => {
+        const [mock] = mockMutation(
+          _module.setNavigationIsInProgress,
+          jest.fn(),
+        )
+
+        let resolve = () => {}
+        const onNavToPromise = new Promise<void>((r) => (resolve = r))
+
+        const parameterValues = { param: 'value' }
+        const promise = _module.navigateToRoute(
+          1,
+          parameterValues,
+          () => onNavToPromise,
+        )
+
+        expect(mock).toHaveBeenCalledWith(true)
+
+        resolve()
+        await promise
+      })
+
+      it('marks navigation as not running at the end of the navigation', async () => {
+        const [mock] = mockMutation(
+          _module.setNavigationIsInProgress,
+          jest.fn(),
+        )
+
+        let resolve = () => {}
+        const onNavToPromise = new Promise<void>((r) => (resolve = r))
+
+        const parameterValues = { param: 'value' }
+        const promise = _module.navigateToRoute(
+          1,
+          parameterValues,
+          () => onNavToPromise,
+        )
+
+        mock.mockClear()
+
+        resolve()
+        await promise
+
+        expect(mock).toHaveBeenCalledWith(false)
       })
     })
   })

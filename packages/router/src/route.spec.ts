@@ -125,22 +125,26 @@ describe(`route`, () => {
       })
 
       describe(keyOf<SimpluxRoute>('navigateTo'), () => {
-        it('navigates to the route', () => {
+        it('navigates to the route', async () => {
           mockEffect(_module.registerRoute, () => 1)
           const [mock] = mockEffect(_module.navigateToRoute, jest.fn())
+          mock.mockResolvedValueOnce(void 0)
+
           const parameterValues = { param: 'value' }
           const testRoute = addRoute<typeof parameterValues>(
             routeName1,
             undefined,
           )
 
-          testRoute.navigateTo(parameterValues)
+          await testRoute.navigateTo(parameterValues)
+
           expect(mock).toHaveBeenCalledWith(1, parameterValues)
         })
 
-        it('enforces correct parameters', () => {
+        it('enforces correct parameters', async () => {
           mockEffect(_module.registerRoute, () => 1)
           const [mock] = mockEffect(_module.navigateToRoute, jest.fn())
+          mock.mockResolvedValueOnce(void 0)
 
           const parameterValues: RouteParameters3 = {
             str: 'string',
@@ -150,23 +154,23 @@ describe(`route`, () => {
 
           const testRoute = addRoute<RouteParameters3>(routeName1)
 
-          testRoute.navigateTo(parameterValues)
+          await testRoute.navigateTo(parameterValues)
 
           expect(mock).toHaveBeenCalledWith(1, parameterValues)
         })
 
-        it('does not take parameters if route has none', () => {
+        it('does not take parameters if route has none', async () => {
           mockEffect(_module.registerRoute, () => 1)
           const [mock] = mockEffect(_module.navigateToRoute, jest.fn())
 
           const testRoute = addRoute(routeName1)
 
-          testRoute.navigateTo()
+          await testRoute.navigateTo()
 
           expect(mock).toHaveBeenCalledWith(1, {})
         })
 
-        it('makes parameters optional if route has only optional parameters', () => {
+        it('makes parameters optional if route has only optional parameters', async () => {
           mockEffect(_module.registerRoute, () => 1)
           const [mock] = mockEffect(_module.navigateToRoute, jest.fn())
 
@@ -176,7 +180,7 @@ describe(`route`, () => {
 
           const testRoute = addRoute<Parameters>(routeName1)
 
-          testRoute.navigateTo()
+          await testRoute.navigateTo()
 
           expect(mock).toHaveBeenCalledWith(1, {})
         })

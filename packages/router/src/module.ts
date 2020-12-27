@@ -32,7 +32,7 @@ export type _NavigationParameters = Readonly<Record<string, any>>
  *
  * @public
  */
-export type NavigationResult = void
+export type NavigationResult = Promise<void>
 
 /**
  * The state of a simplux route.
@@ -69,12 +69,18 @@ export interface SimpluxRouterState {
    * be `{}` while no route is active.
    */
   activeRouteParameterValues: _NavigationParameters
+
+  /**
+   * Indicates whether a navigation is currently in progress.
+   */
+  navigationIsInProgress: boolean
 }
 
 const initialState: SimpluxRouterState = {
   routes: [],
   activeRouteId: undefined,
   activeRouteParameterValues: {},
+  navigationIsInProgress: false,
 }
 
 const routerModule = createSimpluxModule('router', initialState)
@@ -93,6 +99,10 @@ const mutations = createMutations(routerModule, {
   ) => {
     state.activeRouteId = routeId
     state.activeRouteParameterValues = parameters
+  },
+
+  setNavigationIsInProgress: (state, navigationIsInProgress: boolean) => {
+    state.navigationIsInProgress = navigationIsInProgress
   },
 })
 
@@ -138,11 +148,20 @@ const effects = createEffects({
     return updatedState.routes.length
   },
 
-  navigateToRoute: (
+  navigateToRoute: async (
     routeId: SimpluxRouteId,
-    parameters?: _NavigationParameters,
+    parameters: _NavigationParameters | undefined,
+    // TODO: replace with global collection of navigation callbacks
+    onNavigateTo?: () => Promise<void>,
   ): NavigationResult => {
+    mutations.setNavigationIsInProgress(true)
+
+    if (onNavigateTo) {
+      await onNavigateTo()
+    }
+
     mutations.activateRoute(routeId, parameters || {})
+    mutations.setNavigationIsInProgress(false)
   },
 })
 

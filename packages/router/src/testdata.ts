@@ -8,6 +8,7 @@ export const emptyRouterState: SimpluxRouterState = {
   routes: [],
   activeRouteId: undefined,
   activeRouteParameterValues: {},
+  navigationIsInProgress: false,
 }
 
 export const routeState1: SimpluxRouteState = {
@@ -30,19 +31,16 @@ export const routeState3: SimpluxRouteState = {
 }
 
 export const routerStateWithRoute1: SimpluxRouterState = {
+  ...emptyRouterState,
   routes: [routeState1],
-  activeRouteId: undefined,
-  activeRouteParameterValues: {},
 }
 
 export const routerStateWithRoute2: SimpluxRouterState = {
+  ...emptyRouterState,
   routes: [routeState2],
-  activeRouteId: undefined,
-  activeRouteParameterValues: {},
 }
 
 export const routerStateWithTwoRoutes: SimpluxRouterState = {
+  ...emptyRouterState,
   routes: [routeState1, routeState2],
-  activeRouteId: undefined,
-  activeRouteParameterValues: {},
 }

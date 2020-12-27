@@ -63,10 +63,11 @@ describe(`router`, () => {
       expect(result).toBe(false)
     })
 
-    it('delegates navigation to module', () => {
+    it('delegates navigation to module', async () => {
       const [navMock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
+      navMock.mockResolvedValueOnce(void 0)
 
-      _router.navigateToUrl('/root/123')
+      await _router.navigateToUrl('/root/123')
 
       expect(navMock).toHaveBeenCalledWith('/root/123')
     })

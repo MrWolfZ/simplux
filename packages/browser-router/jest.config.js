@@ -19,4 +19,5 @@ module.exports = {
     '@jest/reporters/build/SummaryReporter.js',
     ['jest-silent-reporter', { useDots: true, showWarnings: true }],
   ],
+  setupFilesAfterEnv: ['../../jest.setup.js'],
 }

@@ -39,7 +39,7 @@ describe(`router`, () => {
       expect(addMock).toHaveBeenCalledWith(routeName2, {})
     })
 
-    it('delegations active route check to module', () => {
+    it('delegates active route check to module', () => {
       const [mock] = mockSelector(_module.anyRouteIsActive, jest.fn())
 
       _router.anyRouteIsActive()
@@ -47,10 +47,11 @@ describe(`router`, () => {
       expect(mock).toHaveBeenCalled()
     })
 
-    it('delegations navigation to module', () => {
+    it('delegates navigation to module', async () => {
       const [navMock] = mockEffect(_module.navigateToRoute, jest.fn())
+      navMock.mockResolvedValueOnce(void 0)
 
-      _router.navigateToRouteById(1, { param: 'value' })
+      await _router.navigateToRouteById(1, { param: 'value' })
 
       expect(navMock).toHaveBeenCalledWith(1, { param: 'value' })
     })

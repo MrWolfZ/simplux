@@ -12,7 +12,7 @@ import {
 } from './src/testdata.js'
 
 describe(`@simplux/router`, () => {
-  it('works', () => {
+  it('works', async () => {
     const router = getSimpluxRouter()
 
     expect(router.state()).toEqual(emptyRouterState)
@@ -33,19 +33,19 @@ describe(`@simplux/router`, () => {
 
     expect(router.anyRouteIsActive()).toBe(false)
 
-    testRoute1.navigateTo()
+    await testRoute1.navigateTo()
 
     expect(testRoute1.isActive()).toBe(true)
     expect(testRoute1.parameterValues()).toEqual({})
 
     expect(router.anyRouteIsActive()).toBe(true)
 
-    testRoute2.navigateTo()
+    await testRoute2.navigateTo()
 
     expect(testRoute2.isActive()).toBe(true)
     expect(testRoute2.parameterValues()).toEqual({})
 
-    testRoute3.navigateTo({
+    await testRoute3.navigateTo({
       str: 'a',
       num: 1,
       bool: false,
@@ -58,12 +58,12 @@ describe(`@simplux/router`, () => {
       bool: false,
     })
 
-    router.navigateToRouteById(testRoute1.id)
+    await router.navigateToRouteById(testRoute1.id)
 
     expect(testRoute1.isActive()).toBe(true)
     expect(testRoute1.parameterValues()).toEqual({})
 
-    router.navigateToRouteById(testRoute3.id, {
+    await router.navigateToRouteById(testRoute3.id, {
       str: 'a',
       num: 1,
       bool: false,

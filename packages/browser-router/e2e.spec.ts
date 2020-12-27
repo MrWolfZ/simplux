@@ -15,7 +15,7 @@ import {
 } from './src/testdata.js'
 
 describe(`@simplux/browser-router`, () => {
-  it('works', () => {
+  it('works', async () => {
     const router = getSimpluxBrowserRouter()
 
     expect(router.state()).toEqual(emptyRouterState)
@@ -79,19 +79,19 @@ describe(`@simplux/browser-router`, () => {
 
     expect(router.anyRouteIsActive()).toBe(false)
 
-    rootRoute.navigateTo()
+    await rootRoute.navigateTo()
 
     expect(rootRoute.isActive()).toBe(true)
     expect(rootRoute.parameterValues()).toEqual({})
 
     expect(router.anyRouteIsActive()).toBe(true)
 
-    routeWithoutParameters.navigateTo()
+    await routeWithoutParameters.navigateTo()
 
     expect(routeWithoutParameters.isActive()).toBe(true)
     expect(routeWithoutParameters.parameterValues()).toEqual({})
 
-    routeWithPathParameters.navigateTo({
+    await routeWithPathParameters.navigateTo({
       stringParam: 'a',
       numberParam: 1,
       booleanParam: false,
@@ -104,7 +104,7 @@ describe(`@simplux/browser-router`, () => {
       booleanParam: false,
     })
 
-    routeWithQueryParameters.navigateTo({
+    await routeWithQueryParameters.navigateTo({
       stringParam: 'a',
       numberParam: 1,
       booleanParam: false,
@@ -117,7 +117,7 @@ describe(`@simplux/browser-router`, () => {
       booleanParam: false,
     })
 
-    routeWithOptionalQueryParameter.navigateTo({
+    await routeWithOptionalQueryParameter.navigateTo({
       requiredParam: 'a',
     })
 
@@ -126,12 +126,12 @@ describe(`@simplux/browser-router`, () => {
       requiredParam: 'a',
     })
 
-    routeWithOnlyOptionalQueryParameter.navigateTo()
+    await routeWithOnlyOptionalQueryParameter.navigateTo()
 
     expect(routeWithOnlyOptionalQueryParameter.isActive()).toBe(true)
     expect(routeWithOnlyOptionalQueryParameter.parameterValues()).toEqual({})
 
-    routeWithOnlyOptionalQueryParameter.navigateTo({
+    await routeWithOnlyOptionalQueryParameter.navigateTo({
       optionalParam: 'opt',
     })
 
@@ -140,7 +140,7 @@ describe(`@simplux/browser-router`, () => {
       optionalParam: 'opt',
     })
 
-    routeWithPathAndQueryParameters.navigateTo({
+    await routeWithPathAndQueryParameters.navigateTo({
       pathStringParam: 'path',
       pathNumberParam: 100,
       queryStringParam: 'query',
@@ -155,7 +155,7 @@ describe(`@simplux/browser-router`, () => {
       queryNumberParam: -100,
     })
 
-    router.navigateToUrl(rootRoute.href())
+    await router.navigateToUrl(rootRoute.href())
 
     expect(rootRoute.isActive()).toBe(true)
     expect(rootRoute.parameterValues()).toEqual({})

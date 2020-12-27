@@ -167,7 +167,7 @@ const selectors = createSelectors(browserRouterModule, {
 })
 
 const effects = createEffects({
-  navigateToRouteByUrl: (url: _Href): NavigationResult => {
+  navigateToRouteByUrl: async (url: _Href): NavigationResult => {
     url = !url ? '' : url.startsWith('/') ? url : `/${url}`
 
     if (url === selectors.state().currentNavigationUrl) {
@@ -179,7 +179,7 @@ const effects = createEffects({
     if (result) {
       const [routeId, parameters] = result
       mutations.setCurrentNavigationUrl(url)
-      simpluxRouter.navigateToRouteById(routeId, parameters)
+      await simpluxRouter.navigateToRouteById(routeId, parameters)
       _locationModule.pushNewUrl(url)
       mutations.setCurrentNavigationUrl(undefined)
     } else {
@@ -187,23 +187,25 @@ const effects = createEffects({
     }
   },
 
-  navigateToRouteById: (
+  navigateToRouteById: async (
     routeId: SimpluxRouteId,
     parameterValues?: _NavigationParameters,
   ): NavigationResult => {
     const url = selectors.href(routeId, parameterValues)
     mutations.setCurrentNavigationUrl(url)
-    simpluxRouter.navigateToRouteById(routeId, parameterValues)
+    await simpluxRouter.navigateToRouteById(routeId, parameterValues)
     _locationModule.pushNewUrl(url)
     mutations.setCurrentNavigationUrl(undefined)
   },
 })
 
-const sub = _locationModule.subscribeToStateChanges(({ isActive, url }) => {
-  if (isActive) {
-    effects.navigateToRouteByUrl(url)
-  }
-})
+const sub = _locationModule.subscribeToStateChanges(
+  ({ isActive, url }, { url: prevUrl }) => {
+    if (isActive && url !== prevUrl) {
+      effects.navigateToRouteByUrl(url).catch((err) => console.error(err))
+    }
+  },
+)
 
 // tslint:disable-next-line:variable-name (internal export)
 export const _onLocationStateChange = sub.handler

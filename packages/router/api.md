@@ -18,7 +18,7 @@ export type NavigateToFn<TParameters> = keyof TParameters extends never ? () => 
 export type _NavigationParameters = Readonly<Record<string, any>>;
 
 // @public
-export type NavigationResult = void;
+export type NavigationResult = Promise<void>;
 
 // @public
 export type _RequiredPropertyNames<T> = {
@@ -61,6 +61,7 @@ export interface SimpluxRouter {
 export interface SimpluxRouterState {
     activeRouteId: SimpluxRouteId | undefined;
     activeRouteParameterValues: _NavigationParameters;
+    navigationIsInProgress: boolean;
     readonly routes: SimpluxRouteState[];
 }
 

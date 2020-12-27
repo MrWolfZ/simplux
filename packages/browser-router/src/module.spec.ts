@@ -1114,19 +1114,19 @@ describe(`module`, () => {
   })
 
   describe('effects', () => {
-    const navByIdMock = jest.fn()
+    const routerNavByIdMock = jest.fn().mockResolvedValueOnce(undefined)
     const setCurrentNavigationUrlMock = jest.fn()
     const pushUrlMock = jest.fn()
 
     beforeEach(() => {
       jest.clearAllMocks()
-      mockEffect(getSimpluxRouter().navigateToRouteById, navByIdMock)
+      mockEffect(getSimpluxRouter().navigateToRouteById, routerNavByIdMock)
       mockMutation(_module.setCurrentNavigationUrl, setCurrentNavigationUrlMock)
       mockEffect(_locationModule.pushNewUrl, pushUrlMock)
     })
 
     describe(_module.navigateToRouteByUrl, () => {
-      it('navigates to the correct route', () => {
+      it('navigates to the correct route', async () => {
         const parameterValues = {
           stringParam: 'parameterValue',
           numberParam: 100,
@@ -1137,25 +1137,25 @@ describe(`module`, () => {
           jest.fn().mockReturnValue([2, parameterValues]),
         )
 
-        _module.navigateToRouteByUrl(
+        await _module.navigateToRouteByUrl(
           `/root/${parameterValues.stringParam}/intermediate/${parameterValues.numberParam}/trailing`,
         )
 
         expect(mock).toHaveBeenCalledWith(
           `/root/${parameterValues.stringParam}/intermediate/${parameterValues.numberParam}/trailing`,
         )
-        expect(navByIdMock).toHaveBeenCalledWith(2, parameterValues)
+        expect(routerNavByIdMock).toHaveBeenCalledWith(2, parameterValues)
       })
 
-      it('ignores the navigation if no matching route path is found', () => {
+      it('ignores the navigation if no matching route path is found', async () => {
         mockSelector(_module.routeIdAndParametersByUrl, jest.fn())
 
-        _module.navigateToRouteByUrl('/doesNotExist')
+        await _module.navigateToRouteByUrl('/doesNotExist')
 
-        expect(navByIdMock).not.toHaveBeenCalled()
+        expect(routerNavByIdMock).not.toHaveBeenCalled()
       })
 
-      it('prefixes the url with /', () => {
+      it('prefixes the url with /', async () => {
         const state = makeBrowserRouterState({
           pathTemplateSegments: ['root', 'nested'],
           queryParameters: [],
@@ -1163,12 +1163,12 @@ describe(`module`, () => {
 
         mockModuleState(_module, state)
 
-        _module.navigateToRouteByUrl(`root/nested`)
+        await _module.navigateToRouteByUrl(`root/nested`)
 
         expect(pushUrlMock).toHaveBeenCalledWith(`/root/nested`)
       })
 
-      it('sets the url to empty if empty', () => {
+      it('sets the url to empty if empty', async () => {
         const state = makeBrowserRouterState({
           pathTemplateSegments: [],
           queryParameters: [],
@@ -1176,12 +1176,12 @@ describe(`module`, () => {
 
         mockModuleState(_module, state)
 
-        _module.navigateToRouteByUrl('')
+        await _module.navigateToRouteByUrl('')
 
         expect(pushUrlMock).toHaveBeenCalledWith(``)
       })
 
-      it('pushes the new url to the location module', () => {
+      it('pushes the new url to the location module after the navigation', async () => {
         const state = makeBrowserRouterState({
           pathTemplateSegments: ['root', 'nested'],
           queryParameters: [],
@@ -1189,12 +1189,21 @@ describe(`module`, () => {
 
         mockModuleState(_module, state)
 
-        _module.navigateToRouteByUrl(`/root/nested`)
+        let resolve = () => {}
+        const routerNavByIdPromise = new Promise<void>((r) => (resolve = r))
+        routerNavByIdMock.mockReturnValueOnce(routerNavByIdPromise)
+
+        const promise = _module.navigateToRouteByUrl(`/root/nested`)
+
+        expect(pushUrlMock).not.toHaveBeenCalledWith()
+
+        resolve()
+        await promise
 
         expect(pushUrlMock).toHaveBeenCalledWith(`/root/nested`)
       })
 
-      it('sets the current navigation url at the start of the navigation', () => {
+      it('sets the current navigation url at the start of the navigation', async () => {
         const state = makeBrowserRouterState({
           pathTemplateSegments: ['root', 'nested'],
           queryParameters: [],
@@ -1202,12 +1211,19 @@ describe(`module`, () => {
 
         mockModuleState(_module, state)
 
-        _module.navigateToRouteByUrl(`/root/nested`)
+        let resolve = () => {}
+        const routerNavByIdPromise = new Promise<void>((r) => (resolve = r))
+        routerNavByIdMock.mockReturnValueOnce(routerNavByIdPromise)
+
+        const promise = _module.navigateToRouteByUrl(`/root/nested`)
 
         expect(setCurrentNavigationUrlMock).toHaveBeenCalledWith(`/root/nested`)
+
+        resolve()
+        await promise
       })
 
-      it('clears the current navigation url at the end of the navigation', () => {
+      it('clears the current navigation url at the end of the navigation', async () => {
         const state = makeBrowserRouterState({
           pathTemplateSegments: ['root', 'nested'],
           queryParameters: [],
@@ -1215,12 +1231,21 @@ describe(`module`, () => {
 
         mockModuleState(_module, state)
 
-        _module.navigateToRouteByUrl(`/root/nested`)
+        let resolve = () => {}
+        const routerNavByIdPromise = new Promise<void>((r) => (resolve = r))
+        routerNavByIdMock.mockReturnValueOnce(routerNavByIdPromise)
+
+        const promise = _module.navigateToRouteByUrl(`/root/nested`)
+
+        setCurrentNavigationUrlMock.mockClear()
+
+        resolve()
+        await promise
 
         expect(setCurrentNavigationUrlMock).toHaveBeenCalledWith(undefined)
       })
 
-      it('ignores the navigation if the url is equal to the current navigation URL', () => {
+      it('ignores the navigation if the url is equal to the current navigation URL', async () => {
         const currentNavigationUrl = `/root/nested`
 
         const state: SimpluxBrowserRouterState = {
@@ -1233,53 +1258,78 @@ describe(`module`, () => {
 
         mockModuleState(_module, state)
 
-        _module.navigateToRouteByUrl(currentNavigationUrl)
+        await _module.navigateToRouteByUrl(currentNavigationUrl)
 
-        expect(navByIdMock).not.toHaveBeenCalled()
+        expect(routerNavByIdMock).not.toHaveBeenCalled()
       })
     })
 
     describe(_module.navigateToRouteById, () => {
-      it('delegates to the base router', () => {
+      it('delegates to the base router', async () => {
         const routeId = 1
         const parameters = { param: 'value' }
 
         mockSelector(_module.href, () => '')
 
-        _module.navigateToRouteById(routeId, parameters)
+        await _module.navigateToRouteById(routeId, parameters)
 
-        expect(navByIdMock).toHaveBeenCalledWith(routeId, parameters)
+        expect(routerNavByIdMock).toHaveBeenCalledWith(routeId, parameters)
       })
 
-      it('pushes the new url to the location module', () => {
+      it('pushes the new url to the location module after the navigation', async () => {
         const routeId = 1
         const parameters = { param: 'value' }
 
         mockSelector(_module.href, () => `/root/value`)
 
-        _module.navigateToRouteById(routeId, parameters)
+        let resolve = () => {}
+        const routerNavByIdPromise = new Promise<void>((r) => (resolve = r))
+        routerNavByIdMock.mockReturnValueOnce(routerNavByIdPromise)
+
+        const promise = _module.navigateToRouteById(routeId, parameters)
+
+        expect(pushUrlMock).not.toHaveBeenCalledWith()
+
+        resolve()
+        await promise
 
         expect(pushUrlMock).toHaveBeenCalledWith(`/root/value`)
       })
 
-      it('sets the current navigation url at the start of the navigation', () => {
+      it('sets the current navigation url at the start of the navigation', async () => {
         const routeId = 1
         const parameters = { param: 'value' }
 
         mockSelector(_module.href, () => `/root/value`)
 
-        _module.navigateToRouteById(routeId, parameters)
+        let resolve = () => {}
+        const routerNavByIdPromise = new Promise<void>((r) => (resolve = r))
+        routerNavByIdMock.mockReturnValueOnce(routerNavByIdPromise)
+
+        const promise = _module.navigateToRouteById(routeId, parameters)
 
         expect(setCurrentNavigationUrlMock).toHaveBeenCalledWith(`/root/value`)
+
+        resolve()
+        await promise
       })
 
-      it('clears the current navigation url at the end of the navigation', () => {
+      it('clears the current navigation url at the end of the navigation', async () => {
         const routeId = 1
         const parameters = { param: 'value' }
 
         mockSelector(_module.href, () => `/root/value`)
 
-        _module.navigateToRouteById(routeId, parameters)
+        let resolve = () => {}
+        const routerNavByIdPromise = new Promise<void>((r) => (resolve = r))
+        routerNavByIdMock.mockReturnValueOnce(routerNavByIdPromise)
+
+        const promise = _module.navigateToRouteById(routeId, parameters)
+
+        setCurrentNavigationUrlMock.mockClear()
+
+        resolve()
+        await promise
 
         expect(setCurrentNavigationUrlMock).toHaveBeenCalledWith(undefined)
       })
@@ -1292,8 +1342,12 @@ describe(`module`, () => {
         const url = '/root/nested'
 
         const [mock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
+        mock.mockResolvedValueOnce(undefined)
 
-        _onLocationStateChange({ isActive: true, url })
+        _onLocationStateChange(
+          { isActive: true, url },
+          { isActive: true, url: '' },
+        )
 
         expect(mock).toHaveBeenCalledWith(url)
       })
@@ -1302,10 +1356,49 @@ describe(`module`, () => {
         const url = '/root/nested'
 
         const [mock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
+        mock.mockResolvedValueOnce(undefined)
 
-        _onLocationStateChange({ isActive: false, url })
+        _onLocationStateChange(
+          { isActive: false, url },
+          { isActive: false, url: '' },
+        )
 
         expect(mock).not.toHaveBeenCalled()
+      })
+
+      it('does not navigate to the URL if it is the same as before', () => {
+        const url = '/root/nested'
+
+        const [mock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
+        mock.mockResolvedValueOnce(undefined)
+
+        _onLocationStateChange({ isActive: true, url }, { isActive: true, url })
+
+        expect(mock).not.toHaveBeenCalled()
+      })
+
+      it('logs errors to the console', async () => {
+        const url = '/root/nested'
+
+        const error = new Error()
+        const [mock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
+        mock.mockRejectedValueOnce(error)
+
+        const logErrorMock = jest
+          .spyOn(global.console, 'error')
+          .mockImplementationOnce(() => {})
+
+        _onLocationStateChange(
+          { isActive: true, url },
+          { isActive: true, url: '' },
+        )
+
+        // give the error time to propagate
+        await Promise.resolve()
+
+        expect(logErrorMock).toHaveBeenCalledWith(error)
+
+        logErrorMock.mockRestore()
       })
     })
   })
