@@ -1,4 +1,8 @@
-import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
+import {
+  clearAllSimpluxMocks,
+  mockEffect,
+  mockSelector,
+} from '@simplux/testing'
 import { _locationModule } from './location.js'
 import { _module } from './module.js'
 import { _routeEffects } from './route.js'
@@ -56,14 +60,23 @@ describe(`router`, () => {
       })
     })
 
-    // TODO: mock selector once possible
-    it('delegations active route check to base router', () => {
-      const result = _router.anyRouteIsActive()
+    it('delegates active route check to base router', () => {
+      const [mock] = mockSelector(_router.anyRouteIsActive, jest.fn())
 
-      expect(result).toBe(false)
+      _router.anyRouteIsActive()
+
+      expect(mock).toHaveBeenCalled()
     })
 
-    it('delegates navigation to module', async () => {
+    it('delegates nav in progress check to base router', () => {
+      const [mock] = mockSelector(_router.navigationIsInProgress, jest.fn())
+
+      _router.navigationIsInProgress()
+
+      expect(mock).toHaveBeenCalled()
+    })
+
+    it('delegates navigation by URL to module', async () => {
       const [navMock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
       navMock.mockResolvedValueOnce(void 0)
 

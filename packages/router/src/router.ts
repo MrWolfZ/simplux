@@ -14,22 +14,11 @@ import {
 } from './route.js'
 
 /**
- * A router that allows navigating between different routes.
+ * The selectors to check the router's state.
  *
  * @public
  */
-export interface SimpluxRouter {
-  /**
-   * A selector to get the current router state.
-   *
-   * @returns the router state
-   */
-  readonly state: SimpluxSelector<
-    SimpluxRouterState,
-    [],
-    Immutable<SimpluxRouterState>
-  >
-
+export interface SimpluxRouterSelectors {
   /**
    * A selector to check if any route is active (useful to trigger
    * a default navigation).
@@ -47,6 +36,26 @@ export interface SimpluxRouter {
     SimpluxRouterState,
     [],
     boolean
+  >
+}
+
+/**
+ * A router that allows navigating between different routes.
+ *
+ * @public
+ */
+export interface SimpluxRouter extends SimpluxRouterSelectors {
+  /**
+   * A selector to get the current router state.
+   *
+   * @returns the router state
+   *
+   * @internal
+   */
+  readonly state: SimpluxSelector<
+    SimpluxRouterState,
+    [],
+    Immutable<SimpluxRouterState>
   >
 
   /**

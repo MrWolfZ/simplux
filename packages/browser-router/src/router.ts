@@ -2,7 +2,7 @@ import type { Immutable, SimpluxEffect, SimpluxSelector } from '@simplux/core'
 import {
   getSimpluxRouter,
   NavigationResult,
-  SimpluxRouterState,
+  SimpluxRouterSelectors,
 } from '@simplux/router'
 import { _locationModule } from './location.js'
 import {
@@ -18,6 +18,8 @@ import {
   TemplateParameters,
   _routeEffects,
 } from './route.js'
+
+const simpluxRouter = getSimpluxRouter()
 
 /**
  * Add a new route with the given template to the router.
@@ -76,25 +78,19 @@ export declare function _addRoute<
  *
  * @public
  */
-export interface SimpluxBrowserRouter {
+export interface SimpluxBrowserRouter extends SimpluxRouterSelectors {
   /**
    * A selector to get the current router state.
    *
    * @returns the router state
+   *
+   * @internal
    */
   readonly state: SimpluxSelector<
     SimpluxBrowserRouterState,
     [],
     Immutable<SimpluxBrowserRouterState>
   >
-
-  /**
-   * A selector to check if any route is active (useful to trigger
-   * a default navigation).
-   *
-   * @returns `true` if any route is currently active, otherwise `false`
-   */
-  readonly anyRouteIsActive: SimpluxSelector<SimpluxRouterState, [], boolean>
 
   // no tsdoc since it inherits the docs of the declared
   // function above
@@ -109,7 +105,7 @@ export interface SimpluxBrowserRouter {
    *
    * @returns the result of the navigation
    */
-  navigateToUrl: SimpluxEffect<(url: _Href) => NavigationResult>
+  readonly navigateToUrl: SimpluxEffect<(url: _Href) => NavigationResult>
 
   /**
    * Connect the router to the browser window. The router will start
@@ -120,13 +116,14 @@ export interface SimpluxBrowserRouter {
    *
    * @returns a function that can be called to deactivate the router
    */
-  activate: SimpluxEffect<(window: Window) => () => void>
+  readonly activate: SimpluxEffect<(window: Window) => () => void>
 }
 
 // tslint:disable-next-line:variable-name (internal export)
 export const _router: SimpluxBrowserRouter = {
   state: _module.state,
-  anyRouteIsActive: getSimpluxRouter().anyRouteIsActive,
+  anyRouteIsActive: simpluxRouter.anyRouteIsActive,
+  navigationIsInProgress: simpluxRouter.navigationIsInProgress,
   addRoute: _routeEffects.addRoute,
   navigateToUrl: _module.navigateToRouteByUrl,
   activate: _locationModule.activate,

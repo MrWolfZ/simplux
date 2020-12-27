@@ -16,7 +16,7 @@ export type {
   SimpluxRouteConfiguration,
   _RequiredPropertyNames,
 } from './src/route.js'
-export type { SimpluxRouter } from './src/router.js'
+export type { SimpluxRouter, SimpluxRouterSelectors } from './src/router.js'
 
 /**
  * Get the simplux router.

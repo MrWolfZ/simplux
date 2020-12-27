@@ -55,15 +55,20 @@ export type SimpluxRouteId = number;
 export type SimpluxRouteName = string;
 
 // @public
-export interface SimpluxRouter {
+export interface SimpluxRouter extends SimpluxRouterSelectors {
     readonly addRoute: SimpluxEffect<(<TParameters extends _NavigationParameters = {}>(name: SimpluxRouteName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TParameters>)>;
-    readonly anyRouteIsActive: SimpluxSelector<SimpluxRouterState, [], boolean>;
     // @internal
     readonly navigateToRouteById: SimpluxEffect<(routeId: SimpluxRouteId, parameters?: Readonly<_NavigationParameters>) => NavigationResult>;
-    readonly navigationIsInProgress: SimpluxSelector<SimpluxRouterState, [
-    ], boolean>;
+    // @internal
     readonly state: SimpluxSelector<SimpluxRouterState, [
     ], Immutable<SimpluxRouterState>>;
+}
+
+// @public
+export interface SimpluxRouterSelectors {
+    readonly anyRouteIsActive: SimpluxSelector<SimpluxRouterState, [], boolean>;
+    readonly navigationIsInProgress: SimpluxSelector<SimpluxRouterState, [
+    ], boolean>;
 }
 
 // @public
