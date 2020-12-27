@@ -22,12 +22,6 @@ export const routeStateWithoutParameters: SimpluxBrowserRouteState = {
   queryParameters: [],
 }
 
-export interface RouteWithPathParameters {
-  stringParam: string
-  numberParam: number
-  booleanParam: boolean
-}
-
 export const routeTemplateWithPathParameters =
   'root/:stringParam/intermediate/:numberParam:number/:booleanParam:boolean'
 
@@ -49,12 +43,6 @@ export const routeStateWithPathParameters: SimpluxBrowserRouteState = {
     },
   ],
   queryParameters: [],
-}
-
-export interface RouteWithQueryParameters {
-  stringParam: string
-  numberParam: number
-  booleanParam: boolean
 }
 
 export const routeTemplateWithQueryParameters =
@@ -79,11 +67,6 @@ export const routeStateWithQueryParameters: SimpluxBrowserRouteState = {
       isOptional: false,
     },
   ],
-}
-
-export interface RouteWithOptionalQueryParameter {
-  requiredParam: string
-  optionalParam?: string
 }
 
 export const routeTemplateWithOptionalQueryParameter =
@@ -118,10 +101,6 @@ export interface RouteWithPathAndQueryParametersQueryPart {
   queryNumberParam: number
 }
 
-export interface RouteWithPathAndQueryParameters
-  extends RouteWithPathAndQueryParametersPathPart,
-    RouteWithPathAndQueryParametersQueryPart {}
-
 export const routeTemplateWithPathAndQueryParameters =
   'root/:pathStringParam/intermediate/:pathNumberParam:number?queryStringParam&queryNumberParam:number'
 
@@ -151,6 +130,10 @@ export const routeStateWithPathAndQueryParameters: SimpluxBrowserRouteState = {
     },
   ],
 }
+
+export const routeTemplateWithOnNavigateTo = 'root/withOnNavigateTo'
+export const routeTemplateWithOnNavigateToAndParameters =
+  'root/withOnNavigateTo/:pathParam?queryParam'
 
 export function makeBrowserRouterState(
   ...routes: SimpluxBrowserRouteState[]

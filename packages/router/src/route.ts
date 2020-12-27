@@ -6,6 +6,7 @@ import {
 } from '@simplux/core'
 import {
   NavigationResult,
+  OnNavigateTo,
   SimpluxRouteId,
   SimpluxRouteName,
   SimpluxRouterState,
@@ -20,9 +21,9 @@ import {
  */
 export interface SimpluxRouteConfiguration<TParameters> {
   /**
-   * @internal
+   * A function to be called when navigation to the route starts.
    */
-  readonly never?: TParameters
+  readonly onNavigateTo?: OnNavigateTo<TParameters>
 }
 
 /**

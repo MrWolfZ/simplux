@@ -2,6 +2,8 @@ import { SimpluxRouter, _router } from './src/router.js'
 
 export type {
   NavigationResult,
+  OnNavigateTo,
+  OnNavigateToArgs,
   SimpluxRouteId,
   SimpluxRouteName,
   SimpluxRouterState,

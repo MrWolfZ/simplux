@@ -5,6 +5,8 @@ import {
   emptyRouterState,
   rootRouteTemplate,
   routeTemplateWithOnlyOptionalQueryParameter,
+  routeTemplateWithOnNavigateTo,
+  routeTemplateWithOnNavigateToAndParameters,
   routeTemplateWithOptionalQueryParameter,
   routeTemplateWithoutParameters,
   routeTemplateWithPathAndQueryParameters,
@@ -76,6 +78,26 @@ describe(`@simplux/browser-router`, () => {
 
     const namedRoute = router.addRoute(rootRouteTemplate, { name: 'testName' })
     expect(namedRoute.name).toBe('testName')
+
+    const routeWithOnNavigateTo = router.addRoute(
+      routeTemplateWithOnNavigateTo,
+      {
+        onNavigateTo: async () => {
+          await Promise.resolve()
+        },
+      },
+    )
+
+    const routeWithOnNavigateToAndParameters = router.addRoute(
+      routeTemplateWithOnNavigateToAndParameters,
+      {
+        onNavigateTo: async ({ parameters }) => {
+          expect(parameters.pathParam).toBe('pathValue')
+          expect(parameters.queryParam).toBe('queryValue')
+          await Promise.resolve()
+        },
+      },
+    )
 
     expect(router.anyRouteIsActive()).toBe(false)
 
@@ -159,6 +181,21 @@ describe(`@simplux/browser-router`, () => {
 
     expect(rootRoute.isActive()).toBe(true)
     expect(rootRoute.parameterValues()).toEqual({})
+
+    await routeWithOnNavigateTo.navigateTo()
+    expect(routeWithOnNavigateTo.isActive()).toBe(true)
+    expect(routeWithOnNavigateTo.parameterValues()).toEqual({})
+
+    await routeWithOnNavigateToAndParameters.navigateTo({
+      pathParam: 'pathValue',
+      queryParam: 'queryValue',
+    })
+
+    expect(routeWithOnNavigateToAndParameters.isActive()).toBe(true)
+    expect(routeWithOnNavigateToAndParameters.parameterValues()).toEqual({
+      pathParam: 'pathValue',
+      queryParam: 'queryValue',
+    })
 
     const window: any = {
       location: { pathname: routeWithoutParameters.href(), search: '' },

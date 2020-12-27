@@ -3,6 +3,8 @@ import type { SimpluxRouterState, SimpluxRouteState } from './module.js'
 export const routeName1 = 'testRoute1'
 export const routeName2 = 'testRoute2'
 export const routeName3 = 'testRoute3'
+export const routeName4 = 'testRoute4'
+export const routeName5 = 'testRoute5'
 
 export const emptyRouterState: SimpluxRouterState = {
   routes: [],

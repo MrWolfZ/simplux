@@ -21,6 +21,14 @@ export type _NavigationParameters = Readonly<Record<string, any>>;
 export type NavigationResult = Promise<void>;
 
 // @public
+export type OnNavigateTo<TParameters = _NavigationParameters> = (args: OnNavigateToArgs<TParameters>) => void | Promise<void>;
+
+// @public
+export interface OnNavigateToArgs<TParameters> {
+    parameters: TParameters;
+}
+
+// @public
 export type _RequiredPropertyNames<T> = {
     [K in keyof T]-?: undefined extends T[K] ? never : K;
 }[keyof T];
@@ -37,8 +45,7 @@ export interface SimpluxRoute<TParameters = {}> {
 
 // @public
 export interface SimpluxRouteConfiguration<TParameters> {
-    // @internal (undocumented)
-    readonly never?: TParameters;
+    readonly onNavigateTo?: OnNavigateTo<TParameters>;
 }
 
 // @public

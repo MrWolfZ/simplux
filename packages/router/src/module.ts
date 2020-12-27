@@ -35,6 +35,31 @@ export type _NavigationParameters = Readonly<Record<string, any>>
 export type NavigationResult = Promise<void>
 
 /**
+ * Arguments for an `onNavigateTo` callback.
+ *
+ * @public
+ */
+export interface OnNavigateToArgs<TParameters> {
+  /**
+   * The parameters for the navigation.
+   */
+  parameters: TParameters
+}
+
+/**
+ * A function to be called when navigating to a route.
+ *
+ * @param args - the arguments for the function.
+ *
+ * @returns nothing or a promise to wait for during navigation
+ *
+ * @public
+ */
+export type OnNavigateTo<TParameters = _NavigationParameters> = (
+  args: OnNavigateToArgs<TParameters>,
+) => void | Promise<void>
+
+/**
  * The state of a simplux route.
  *
  * @public
@@ -138,30 +163,56 @@ const selectors = createSelectors(routerModule, {
   },
 })
 
+type OnNavigateToInterceptors = {
+  [routeId in SimpluxRouteId]?: OnNavigateTo
+}
+
+let onNavigateToInterceptors: OnNavigateToInterceptors = {}
+
 const effects = createEffects({
   registerRoute: (
     name: SimpluxRouteName,
     configuration?: SimpluxRouteConfiguration<any>,
   ): SimpluxRouteId => {
-    configuration // TODO: use
     const updatedState = mutations.addRoute(name)
-    return updatedState.routes.length
+    const routeId = updatedState.routes.length
+
+    if (configuration) {
+      if (configuration.onNavigateTo) {
+        effects.addOnNavigateToInterceptor(routeId, configuration.onNavigateTo)
+      }
+    }
+
+    return routeId
   },
 
   navigateToRoute: async (
     routeId: SimpluxRouteId,
-    parameters: _NavigationParameters | undefined,
-    // TODO: replace with global collection of navigation callbacks
-    onNavigateTo?: () => Promise<void>,
+    parameters?: _NavigationParameters,
   ): NavigationResult => {
     mutations.setNavigationIsInProgress(true)
 
+    const onNavigateTo = effects.getOnNavigateToInterceptors()[routeId]
+
     if (onNavigateTo) {
-      await onNavigateTo()
+      await onNavigateTo({ parameters: parameters || {} })
     }
 
     mutations.activateRoute(routeId, parameters || {})
     mutations.setNavigationIsInProgress(false)
+  },
+
+  addOnNavigateToInterceptor: (
+    routeId: SimpluxRouteId,
+    interceptor: OnNavigateTo,
+  ) => {
+    onNavigateToInterceptors[routeId] = interceptor
+  },
+
+  getOnNavigateToInterceptors: () => onNavigateToInterceptors,
+
+  clearOnNavigateToInterceptors: () => {
+    onNavigateToInterceptors = {}
   },
 })
 

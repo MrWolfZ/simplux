@@ -1,4 +1,8 @@
-import { clearAllSimpluxMocks, mockMutation } from '@simplux/testing'
+import {
+  clearAllSimpluxMocks,
+  mockEffect,
+  mockMutation,
+} from '@simplux/testing'
 import { SimpluxRouterState, _module } from './module.js'
 import {
   emptyRouterState,
@@ -286,21 +290,58 @@ describe(`module`, () => {
         expect(routeId1).toEqual(1)
         expect(routeId2).toEqual(2)
       })
+
+      it('stores the onNavigateTo function', () => {
+        mockMutation(_module.addRoute, () => routerStateWithRoute1)
+        const [addInterceptorMock] = mockEffect(
+          _module.addOnNavigateToInterceptor,
+          jest.fn(),
+        )
+
+        const onNavigateTo = jest.fn()
+        _module.registerRoute(routeName1, { onNavigateTo })
+
+        expect(addInterceptorMock).toHaveBeenCalledWith(1, onNavigateTo)
+      })
     })
 
     describe(_module.navigateToRoute, () => {
+      it('calls the onNavigateTo interceptor for the route', async () => {
+        const interceptor = jest.fn().mockResolvedValueOnce(undefined)
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: interceptor,
+        }))
+
+        const parameterValues = { param: 'value' }
+        await _module.navigateToRoute(1, parameterValues)
+
+        expect(interceptor).toHaveBeenCalledWith({
+          parameters: parameterValues,
+        })
+      })
+
+      it('calls the onNavigateTo interceptor for the route without parameters', async () => {
+        const interceptor = jest.fn().mockResolvedValueOnce(undefined)
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: interceptor,
+        }))
+
+        await _module.navigateToRoute(1)
+
+        expect(interceptor).toHaveBeenCalledWith({ parameters: {} })
+      })
+
       it('activates the route at the end of the navigation', async () => {
         const [mock] = mockMutation(_module.activateRoute, jest.fn())
 
         let resolve = () => {}
         const onNavToPromise = new Promise<void>((r) => (resolve = r))
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: () => onNavToPromise,
+        }))
 
         const parameterValues = { param: 'value' }
-        const promise = _module.navigateToRoute(
-          1,
-          parameterValues,
-          () => onNavToPromise,
-        )
+        const promise = _module.navigateToRoute(1, parameterValues)
 
         expect(mock).not.toHaveBeenCalled()
 
@@ -318,13 +359,12 @@ describe(`module`, () => {
 
         let resolve = () => {}
         const onNavToPromise = new Promise<void>((r) => (resolve = r))
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: () => onNavToPromise,
+        }))
 
         const parameterValues = { param: 'value' }
-        const promise = _module.navigateToRoute(
-          1,
-          parameterValues,
-          () => onNavToPromise,
-        )
+        const promise = _module.navigateToRoute(1, parameterValues)
 
         expect(mock).toHaveBeenCalledWith(true)
 
@@ -340,13 +380,12 @@ describe(`module`, () => {
 
         let resolve = () => {}
         const onNavToPromise = new Promise<void>((r) => (resolve = r))
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: () => onNavToPromise,
+        }))
 
         const parameterValues = { param: 'value' }
-        const promise = _module.navigateToRoute(
-          1,
-          parameterValues,
-          () => onNavToPromise,
-        )
+        const promise = _module.navigateToRoute(1, parameterValues)
 
         mock.mockClear()
 
@@ -354,6 +393,29 @@ describe(`module`, () => {
         await promise
 
         expect(mock).toHaveBeenCalledWith(false)
+      })
+    })
+
+    describe('onNavigateTo interceptors', () => {
+      afterEach(_module.clearOnNavigateToInterceptors)
+
+      it('can be added', () => {
+        const interceptor = jest.fn()
+        _module.addOnNavigateToInterceptor(1, interceptor)
+
+        const interceptors = _module.getOnNavigateToInterceptors()
+
+        expect(interceptors).toEqual({ 1: interceptor })
+      })
+
+      it('can be cleared', () => {
+        const interceptor = jest.fn()
+        _module.addOnNavigateToInterceptor(1, interceptor)
+
+        _module.clearOnNavigateToInterceptors()
+
+        const interceptors = _module.getOnNavigateToInterceptors()
+        expect(interceptors).toEqual({})
       })
     })
   })

@@ -36,8 +36,8 @@ export type TemplateParameters<
  *
  * @public
  */
-export interface SimpluxBrowserRouteConfiguration
-  extends SimpluxRouteConfiguration<never> {
+export interface SimpluxBrowserRouteConfiguration<TParameters>
+  extends SimpluxRouteConfiguration<TParameters> {
   /**
    * An optional name for the route. If not provided the template will be
    * used as the name.
@@ -98,12 +98,18 @@ export interface SimpluxBrowserRoute<TParameters = {}>
 
 function addRoute<TUrlTemplate extends _UrlTemplate>(
   urlTemplate: TUrlTemplate,
-  routeConfiguration?: SimpluxBrowserRouteConfiguration,
+  routeConfiguration?: SimpluxBrowserRouteConfiguration<
+    {
+      // this duplication is to get tooling to display the inferred parameter object
+      // as a single object instead of an intersection of objects, e.g. show
+      // { param1: string; param2?: string } instead of { param1: string } & { param2?: string };
+      // introducing another wrapper type (e.g. _Params) would also lead to _Params<'route'>
+      // to be shown
+      [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
+    }
+  >,
 ): SimpluxBrowserRoute<
   {
-    // this duplication is to get tooling to display the inferred parameter object
-    // as a single object instead of an intersection of objects, e.g. show
-    // { param1: string; param2?: string } instead of { param1: string } & { param2?: string }
     [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
   }
 >
@@ -113,12 +119,14 @@ function addRoute<
   TQueryParameters extends _NavigationParameters<any> = {}
 >(
   urlTemplate: string,
-  routeConfiguration?: SimpluxBrowserRouteConfiguration,
+  routeConfiguration?: SimpluxBrowserRouteConfiguration<
+    TPathParameters & TQueryParameters
+  >,
 ): SimpluxBrowserRoute<TPathParameters & TQueryParameters>
 
 function addRoute(
   urlTemplate: _UrlTemplate,
-  routeConfiguration?: SimpluxBrowserRouteConfiguration,
+  routeConfiguration?: SimpluxBrowserRouteConfiguration<any>,
 ): SimpluxBrowserRoute<unknown> {
   const name = routeConfiguration?.name || urlTemplate
 
