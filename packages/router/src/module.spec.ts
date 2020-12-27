@@ -3,7 +3,7 @@ import {
   mockEffect,
   mockMutation,
 } from '@simplux/testing'
-import { SimpluxRouterState, _module } from './module.js'
+import { NAVIGATION_CANCELLED, SimpluxRouterState, _module } from './module.js'
 import {
   emptyRouterState,
   routeName1,
@@ -27,6 +27,8 @@ describe(`module`, () => {
     mockMutation(_module.addRoute, jest.fn())
     mockMutation(_module.activateRoute, jest.fn())
     mockMutation(_module.setNavigationIsInProgress, jest.fn())
+    mockEffect(_module.createNavigationCancellationPromise, jest.fn())
+    mockEffect(_module.cancelNavigationInProgress, jest.fn())
   })
 
   afterEach(clearAllSimpluxMocks)
@@ -399,6 +401,66 @@ describe(`module`, () => {
 
         expect(mock).toHaveBeenCalledWith(false)
       })
+
+      it('cancels navigation in progress', async () => {
+        const [mock] = mockEffect(_module.cancelNavigationInProgress, jest.fn())
+
+        const parameterValues = { param: 'value' }
+        await _module.navigateToRoute(1, parameterValues)
+
+        expect(mock).toHaveBeenCalled()
+      })
+
+      it('does not activate the route if navigation is cancelled', async () => {
+        const [activateMock] = mockMutation(_module.activateRoute, jest.fn())
+        const [mock] = mockEffect(
+          _module.createNavigationCancellationPromise,
+          jest.fn(),
+        )
+
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: () => new Promise<void>(() => {}),
+        }))
+
+        let cancelNav = () => {}
+        const cancelPromise = new Promise<typeof NAVIGATION_CANCELLED>(
+          (r) => (cancelNav = () => r(NAVIGATION_CANCELLED)),
+        )
+
+        mock.mockReturnValueOnce(cancelPromise)
+
+        const parameterValues = { param: 'value' }
+        const promise = _module.navigateToRoute(1, parameterValues)
+
+        cancelNav()
+        await promise
+
+        expect(activateMock).not.toHaveBeenCalled()
+      })
+
+      it('clears cancellation callback at the end of the navigation', async () => {
+        mockMutation(_module.activateRoute, jest.fn())
+        const [mock] = mockEffect(
+          _module.clearNavigationCancellationCallback,
+          jest.fn(),
+        )
+
+        let resolve = () => {}
+        const onNavToPromise = new Promise<void>((r) => (resolve = r))
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: () => onNavToPromise,
+        }))
+
+        const parameterValues = { param: 'value' }
+        const promise = _module.navigateToRoute(1, parameterValues)
+
+        expect(mock).not.toHaveBeenCalled()
+
+        resolve()
+        await promise
+
+        expect(mock).toHaveBeenCalled()
+      })
     })
 
     describe('onNavigateTo interceptors', () => {
@@ -421,6 +483,38 @@ describe(`module`, () => {
 
         const interceptors = _module.getOnNavigateToInterceptors()
         expect(interceptors).toEqual({})
+      })
+    })
+
+    describe('cancellation', () => {
+      it('promise can be created and then cancelled', async () => {
+        clearAllSimpluxMocks()
+
+        const promise = _module.createNavigationCancellationPromise()
+
+        _module.cancelNavigationInProgress()
+
+        await expect(promise).resolves.toBe(NAVIGATION_CANCELLED)
+      })
+
+      it('callback can be cleaned up', async () => {
+        clearAllSimpluxMocks()
+
+        const promise = _module.createNavigationCancellationPromise()
+
+        _module.clearNavigationCancellationCallback()
+
+        let isResolved = false
+        promise.then(
+          () => (isResolved = true),
+          () => (isResolved = true),
+        )
+
+        _module.cancelNavigationInProgress()
+
+        await Promise.resolve()
+
+        expect(isResolved).toBe(false)
       })
     })
   })

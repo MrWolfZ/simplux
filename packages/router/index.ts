@@ -1,5 +1,6 @@
 import { SimpluxRouter, _router } from './src/router.js'
 
+export { NAVIGATION_CANCELLED } from './src/module.js'
 export type {
   NavigationResult,
   OnNavigateTo,

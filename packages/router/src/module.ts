@@ -60,6 +60,13 @@ export type OnNavigateTo<TParameters = _NavigationParameters> = (
 ) => void | Promise<void>
 
 /**
+ * A marker symbol used when navigations are cancelled.
+ *
+ * @public
+ */
+export const NAVIGATION_CANCELLED = Symbol('NAVIGATION_CANCELLED')
+
+/**
  * The state of a simplux route.
  *
  * @public
@@ -171,6 +178,7 @@ type OnNavigateToInterceptors = {
 }
 
 let onNavigateToInterceptors: OnNavigateToInterceptors = {}
+let cancelNavigationInProgress: (() => void) | undefined
 
 const effects = createEffects({
   registerRoute: (
@@ -193,16 +201,43 @@ const effects = createEffects({
     routeId: SimpluxRouteId,
     parameters?: _NavigationParameters,
   ): NavigationResult => {
+    effects.cancelNavigationInProgress()
+
     mutations.setNavigationIsInProgress(true)
 
     const onNavigateTo = effects.getOnNavigateToInterceptors()[routeId]
+    const cancellationPromise = effects.createNavigationCancellationPromise()
 
-    if (onNavigateTo) {
-      await onNavigateTo({ parameters: parameters || {} })
+    const onNavigateToArgs: OnNavigateToArgs<_NavigationParameters> = {
+      parameters: parameters || {},
+    }
+
+    const result = await Promise.race([
+      onNavigateTo?.(onNavigateToArgs) || Promise.resolve(),
+      cancellationPromise,
+    ])
+
+    if (result === NAVIGATION_CANCELLED) {
+      return
     }
 
     mutations.activateRoute(routeId, parameters || {})
     mutations.setNavigationIsInProgress(false)
+    effects.clearNavigationCancellationCallback()
+  },
+
+  createNavigationCancellationPromise: () => {
+    return new Promise<typeof NAVIGATION_CANCELLED>((resolve) => {
+      cancelNavigationInProgress = () => resolve(NAVIGATION_CANCELLED)
+    })
+  },
+
+  cancelNavigationInProgress: () => {
+    cancelNavigationInProgress?.()
+  },
+
+  clearNavigationCancellationCallback: () => {
+    cancelNavigationInProgress = undefined
   },
 
   addOnNavigateToInterceptor: (

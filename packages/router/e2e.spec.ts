@@ -6,7 +6,6 @@ import {
   routeName1,
   routeName2,
   routeName3,
-  routeName4,
   RouteParameters3,
   routerStateWithRoute1,
   routerStateWithTwoRoutes,
@@ -31,17 +30,21 @@ describe(`@simplux/router`, () => {
     const testRoute3 = router.addRoute<RouteParameters3>(routeName3)
     expect(testRoute3.name).toBe(routeName3)
 
-    const testRoute4 = router.addRoute(routeName4, {
+    const testRoute4 = router.addRoute('async', {
       onNavigateTo: async () => {
         await Promise.resolve()
       },
     })
 
-    const testRoute5 = router.addRoute<{ param: string }>(routeName4, {
+    const testRoute5 = router.addRoute<{ param: string }>('asyncParams', {
       onNavigateTo: async ({ parameters }) => {
         expect(parameters.param).toBe('value')
         await Promise.resolve()
       },
+    })
+
+    const testRoute6 = router.addRoute('asyncNever', {
+      onNavigateTo: () => new Promise<void>(() => {}),
     })
 
     expect(router.anyRouteIsActive()).toBe(false)
@@ -96,5 +99,18 @@ describe(`@simplux/router`, () => {
       num: 1,
       bool: false,
     })
+
+    const nav6 = testRoute6.navigateTo()
+
+    expect(testRoute6.isActive()).toBe(false)
+    expect(router.navigationIsInProgress()).toBe(true)
+
+    await testRoute1.navigateTo()
+
+    await nav6
+
+    expect(testRoute6.isActive()).toBe(false)
+    expect(testRoute1.isActive()).toBe(true)
+    expect(router.navigationIsInProgress()).toBe(false)
   })
 })

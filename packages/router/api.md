@@ -15,6 +15,9 @@ export function getSimpluxRouter(): SimpluxRouter;
 export type NavigateToFn<TParameters> = keyof TParameters extends never ? () => NavigationResult : _RequiredPropertyNames<TParameters> extends never ? (parameters?: TParameters) => NavigationResult : (parameters: TParameters) => NavigationResult;
 
 // @public
+export const NAVIGATION_CANCELLED: unique symbol;
+
+// @public
 export type _NavigationParameters = Readonly<Record<string, any>>;
 
 // @public
