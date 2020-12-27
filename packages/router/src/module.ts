@@ -136,6 +136,9 @@ const selectors = createSelectors(routerModule, {
 
   anyRouteIsActive: ({ activeRouteId }) => !!activeRouteId,
 
+  navigationIsInProgress: ({ navigationIsInProgress }) =>
+    navigationIsInProgress,
+
   routeIsActive: ({ activeRouteId }, routeId: SimpluxRouteId) =>
     activeRouteId === routeId,
 

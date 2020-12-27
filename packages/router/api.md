@@ -60,6 +60,8 @@ export interface SimpluxRouter {
     readonly anyRouteIsActive: SimpluxSelector<SimpluxRouterState, [], boolean>;
     // @internal
     readonly navigateToRouteById: SimpluxEffect<(routeId: SimpluxRouteId, parameters?: Readonly<_NavigationParameters>) => NavigationResult>;
+    readonly navigationIsInProgress: SimpluxSelector<SimpluxRouterState, [
+    ], boolean>;
     readonly state: SimpluxSelector<SimpluxRouterState, [
     ], Immutable<SimpluxRouterState>>;
 }

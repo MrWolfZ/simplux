@@ -55,5 +55,13 @@ describe(`router`, () => {
 
       expect(navMock).toHaveBeenCalledWith(1, { param: 'value' })
     })
+
+    it('delegates navigation is in progress check to module', () => {
+      const [mock] = mockSelector(_module.navigationIsInProgress, jest.fn())
+
+      _router.navigationIsInProgress()
+
+      expect(mock).toHaveBeenCalled()
+    })
   })
 })

@@ -151,33 +151,38 @@ describe(`module`, () => {
   describe('selectors', () => {
     describe(_module.anyRouteIsActive, () => {
       it('returns true for an active route', () => {
-        const stateWithActiveRoute: SimpluxRouterState = {
+        const state: SimpluxRouterState = {
           ...routerStateWithTwoRoutes,
           activeRouteId: 1,
           activeRouteParameterValues: {},
         }
 
-        const isActive = _module.routeIsActive.withState(
-          stateWithActiveRoute,
-          1,
-        )
-
-        expect(isActive).toBe(true)
+        const anyRouteIsActive = _module.anyRouteIsActive.withState(state)
+        expect(anyRouteIsActive).toBe(true)
       })
 
       it('returns false for an inactive route', () => {
-        const stateWithActiveRoute: SimpluxRouterState = {
+        const state = routerStateWithTwoRoutes
+        const anyRouteIsActive = _module.anyRouteIsActive.withState(state)
+        expect(anyRouteIsActive).toBe(false)
+      })
+    })
+
+    describe(_module.navigationIsInProgress, () => {
+      it('returns true if navigation is in progress', () => {
+        const state: SimpluxRouterState = {
           ...routerStateWithTwoRoutes,
-          activeRouteId: undefined,
-          activeRouteParameterValues: {},
+          navigationIsInProgress: true,
         }
 
-        const isActive = _module.routeIsActive.withState(
-          stateWithActiveRoute,
-          2,
-        )
+        const navIsInProgress = _module.navigationIsInProgress.withState(state)
+        expect(navIsInProgress).toBe(true)
+      })
 
-        expect(isActive).toBe(false)
+      it('returns false if navigation is not in progress', () => {
+        const state = routerStateWithTwoRoutes
+        const navIsInProgress = _module.navigationIsInProgress.withState(state)
+        expect(navIsInProgress).toBe(false)
       })
     })
 
