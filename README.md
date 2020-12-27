@@ -162,13 +162,16 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
+- core: add `CallableSelector` interface that does not have extras and can be used for public library selector properties
 - core: remove `nameFunction` in production
 - core: add a `combineSelectors` utility function
 - testing: add functions to throw when calling unmocked mutations or effects
-- router: explicitly specify what happened in return value of `navigateTo`
+- router: allow `onNavigateTo` to cancel or redirect the navigation
+- router: explicitly specify what happened (i.e. success, fail, cancel, redirect) in return value of `navigateTo` functions
 - router: capture navigation history
 - router: allow going back to previously active route
 - router: allow creating child routes
+- router: pass info into `onNavigateTo` whether this is the final route to allow easy default redirects
 - router: method `addRoutes` on `SimpluxRouter` to create multiple routes at once
 - router: add type tests
 - browser-router: allow defining global query parameters
