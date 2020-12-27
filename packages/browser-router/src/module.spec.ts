@@ -1181,6 +1181,71 @@ describe(`module`, () => {
         expect(pushUrlMock).toHaveBeenCalledWith(``)
       })
 
+      it('sets the url to empty if /', async () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [],
+          queryParameters: [],
+        })
+
+        mockModuleState(_module, state)
+
+        await _module.navigateToRouteByUrl('/')
+
+        expect(pushUrlMock).toHaveBeenCalledWith(``)
+      })
+
+      it('strips protocol and host from an http URL', async () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: ['root', 'nested'],
+          queryParameters: [],
+        })
+
+        mockModuleState(_module, state)
+
+        await _module.navigateToRouteByUrl(`http://example.com/root/nested`)
+
+        expect(pushUrlMock).toHaveBeenCalledWith(`/root/nested`)
+      })
+
+      it('strips protocol and host from an https URL', async () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: ['root', 'nested'],
+          queryParameters: [],
+        })
+
+        mockModuleState(_module, state)
+
+        await _module.navigateToRouteByUrl(`https://example.com/root/nested`)
+
+        expect(pushUrlMock).toHaveBeenCalledWith(`/root/nested`)
+      })
+
+      it('sets the url to empty if only protocol and host without slash', async () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [],
+          queryParameters: [],
+        })
+
+        mockModuleState(_module, state)
+
+        await _module.navigateToRouteByUrl('https://example.com')
+
+        expect(pushUrlMock).toHaveBeenCalledWith(``)
+      })
+
+      it('sets the url to empty if only protocol and host with slash', async () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: [],
+          queryParameters: [],
+        })
+
+        mockModuleState(_module, state)
+
+        await _module.navigateToRouteByUrl('https://example.com/')
+
+        expect(pushUrlMock).toHaveBeenCalledWith(``)
+      })
+
       it('pushes the new url to the location module after the navigation', async () => {
         const state = makeBrowserRouterState({
           pathTemplateSegments: ['root', 'nested'],

@@ -168,7 +168,8 @@ const selectors = createSelectors(browserRouterModule, {
 
 const effects = createEffects({
   navigateToRouteByUrl: async (url: _Href): NavigationResult => {
-    url = !url ? '' : url.startsWith('/') ? url : `/${url}`
+    url = url.replace(/^https?:\/\/[^/]+/, '')
+    url = !url || url === '/' ? '' : url.startsWith('/') ? url : `/${url}`
 
     if (url === selectors.state().currentNavigationUrl) {
       return
