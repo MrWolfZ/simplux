@@ -1,5 +1,8 @@
 import { SimpluxBrowserRouter, _router } from './src/router.js'
 
+// re-export everything from the router package to prevent users from having to
+// import from multiple packages
+export * from '@simplux/router'
 export type {
   SimpluxBrowserRouterState,
   SimpluxBrowserRouteState,
