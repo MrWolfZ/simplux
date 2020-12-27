@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.8](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.7...v0.18.0-alpha.8) (2020-12-27)
+
+
+### Features
+
+* **router:** notify `onNavigateTo` if navigation is cancelled ([9989b1b](https://github.com/MrWolfZ/simplux/commit/9989b1b8426b3b9d383dab243ffc93ea80cfa991))
+
+
+
+
+
 # [0.18.0-alpha.7](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.6...v0.18.0-alpha.7) (2020-12-27)
 
 

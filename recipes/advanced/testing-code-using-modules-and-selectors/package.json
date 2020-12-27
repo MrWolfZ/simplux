@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.advanced.testing-code-using-modules-and-selectors",
-  "version": "0.18.0-alpha.7",
+  "version": "0.18.0-alpha.8",
   "description": "This recipe shows you how simple it is to test your code that uses simplux modules and selectors",
   "main": "src/index.ts",
   "scripts": {
@@ -28,8 +28,8 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.18.0-alpha.7",
-    "@simplux/testing": "0.18.0-alpha.7"
+    "@simplux/core": "0.18.0-alpha.8",
+    "@simplux/testing": "0.18.0-alpha.8"
   },
   "devDependencies": {
     "@types/jest": "^26.0.19",

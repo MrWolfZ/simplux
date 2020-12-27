@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.basics.testing-state-changes",
-  "version": "0.18.0-alpha.7",
+  "version": "0.18.0-alpha.8",
   "description": "This recipe shows how simple it is to test your state changes with simplux",
   "main": "src/index.ts",
   "scripts": {
@@ -25,7 +25,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.18.0-alpha.7"
+    "@simplux/core": "0.18.0-alpha.8"
   },
   "devDependencies": {
     "@types/jest": "^26.0.19",
