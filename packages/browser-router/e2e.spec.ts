@@ -198,7 +198,11 @@ describe(`@simplux/browser-router`, () => {
     })
 
     const window: any = {
-      location: { pathname: routeWithoutParameters.href(), search: '' },
+      location: {
+        pathname: routeWithoutParameters.href(),
+        search: '',
+        href: `https://domain.com/${routeWithoutParameters.href()}`,
+      },
       addEventListener: jest.fn(),
     }
 

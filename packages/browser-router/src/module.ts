@@ -9,7 +9,7 @@ import {
   NavigationResult,
   SimpluxRouteId,
 } from '@simplux/router'
-import { _locationModule, _Url } from './location.js'
+import { _extractOrigin, _locationModule, _Url } from './location.js'
 import type {
   _ParameterName,
   _ParameterType,
@@ -168,7 +168,13 @@ const selectors = createSelectors(browserRouterModule, {
 
 const effects = createEffects({
   navigateToRouteByUrl: async (url: _Href): NavigationResult => {
-    url = url.replace(/^https?:\/\/[^/]+/, '')
+    const origin = _extractOrigin(url)
+
+    if (origin && origin !== _locationModule.origin()) {
+      throw new Error(`cannot navigate to different origin, got ${origin}`)
+    }
+
+    url = url.replace(origin, '')
     url = !url || url === '/' ? '' : url.startsWith('/') ? url : `/${url}`
 
     if (url === selectors.state().currentNavigationUrl) {

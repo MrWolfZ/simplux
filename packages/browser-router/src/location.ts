@@ -29,6 +29,11 @@ export interface SimpluxBrowserRouterLocationState {
   url: _Url
 
   /**
+   * The origin (i.e. protocol, host, and port) of the current browser window.
+   */
+  origin: _Url
+
+  /**
    * Whether the router is active, i.e. whether it interacts with the
    * browser location.
    */
@@ -37,6 +42,7 @@ export interface SimpluxBrowserRouterLocationState {
 
 const initialState: SimpluxBrowserRouterLocationState = {
   url: '',
+  origin: '',
   isActive: false,
 }
 
@@ -50,6 +56,10 @@ const mutations = createMutations(locationModule, {
     state.url = !url ? '/' : url.startsWith('/') ? url : `/${url}`
   },
 
+  setOriginFromHref: (state, href: _Url | undefined) => {
+    state.origin = _extractOrigin(href)
+  },
+
   setIsActive: (state, isActive: boolean) => {
     state.isActive = isActive
   },
@@ -57,6 +67,7 @@ const mutations = createMutations(locationModule, {
 
 const selectors = createSelectors(locationModule, {
   state: (s) => s,
+  origin: (s) => s.origin,
 })
 
 // it's a bit ugly that we have to store this here in the module scope
@@ -71,6 +82,7 @@ const effects = createEffects({
 
     effects.setHistoryInstance(window.history)
     mutations.setIsActive(true)
+    mutations.setOriginFromHref(window.location.href)
 
     const url = `${window.location.pathname}${window.location.search}`
     mutations.setUrl(url)
@@ -115,4 +127,9 @@ export const _locationModule = {
   ...mutations,
   ...selectors,
   ...effects,
+}
+
+export function _extractOrigin(href: _Url | undefined) {
+  const regex = /^(?<origin>https?:\/\/[^/?]+(:\d+)?)([/?].*)?$/
+  return regex.exec(href || '')?.groups?.origin || ''
 }

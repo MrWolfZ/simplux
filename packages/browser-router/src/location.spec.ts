@@ -4,7 +4,10 @@ import {
   mockModuleState,
   mockMutation,
 } from '@simplux/testing'
-import { _locationModule } from './location.js'
+import {
+  SimpluxBrowserRouterLocationState,
+  _locationModule,
+} from './location.js'
 
 describe(`location module`, () => {
   afterEach(clearAllSimpluxMocks)
@@ -13,30 +16,34 @@ describe(`location module`, () => {
     state,
     setIsActive,
     setUrl,
+    setOriginFromHref,
     activate,
     setHistoryInstance,
     getHistoryInstance,
     pushNewUrl,
   } = _locationModule
 
+  const emptyState: SimpluxBrowserRouterLocationState = {
+    url: '',
+    origin: '',
+    isActive: false,
+  }
+
   it('starts with an empty state', () => {
-    expect(state()).toEqual({ url: '', isActive: false })
+    expect(state()).toEqual(emptyState)
   })
 
   describe('mutations', () => {
     describe(setIsActive, () => {
       it('marks the router as active', () => {
-        const { isActive } = setIsActive.withState(
-          { url: '', isActive: false },
-          true,
-        )
+        const { isActive } = setIsActive.withState(emptyState, true)
 
         expect(isActive).toBe(true)
       })
 
       it('marks the router as inactive', () => {
         const { isActive } = setIsActive.withState(
-          { url: '', isActive: true },
+          { ...emptyState, isActive: true },
           false,
         )
 
@@ -47,23 +54,143 @@ describe(`location module`, () => {
     describe(setUrl, () => {
       it('sets the url', () => {
         const newUrl = '/root/nested'
-        const { url } = setUrl.withState({ url: '', isActive: false }, newUrl)
+        const { url } = setUrl.withState(emptyState, newUrl)
 
         expect(url).toBe(newUrl)
       })
 
       it('ensures url is prefixed with /', () => {
         const newUrl = 'root/nested'
-        const { url } = setUrl.withState({ url: '', isActive: false }, newUrl)
+        const { url } = setUrl.withState(emptyState, newUrl)
 
         expect(url).toBe(`/${newUrl}`)
       })
 
       it('sets url to / if new url is empty', () => {
         const newUrl = ''
-        const { url } = setUrl.withState({ url: '', isActive: false }, newUrl)
+        const { url } = setUrl.withState(emptyState, newUrl)
 
         expect(url).toBe('/')
+      })
+    })
+
+    describe(setOriginFromHref, () => {
+      it('extracts origin from an http URL with path', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'http://domain.com/path',
+        )
+
+        expect(origin).toBe('http://domain.com')
+      })
+
+      it('extracts origin from an https URL with path', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'https://domain.com/path',
+        )
+
+        expect(origin).toBe('https://domain.com')
+      })
+
+      it('extracts origin from a URL with port and no slash', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'http://domain.com:1234',
+        )
+
+        expect(origin).toBe('http://domain.com:1234')
+      })
+
+      it('extracts origin from a URL with port and slash', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'http://domain.com:1234/',
+        )
+
+        expect(origin).toBe('http://domain.com:1234')
+      })
+
+      it('extracts origin from a URL with port and path', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'http://domain.com:1234/path',
+        )
+
+        expect(origin).toBe('http://domain.com:1234')
+      })
+
+      it('extracts origin from a URL without path or query and no slash', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'http://domain.com',
+        )
+
+        expect(origin).toBe('http://domain.com')
+      })
+
+      it('extracts origin from a URL without path or query and slash', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'http://domain.com/',
+        )
+
+        expect(origin).toBe('http://domain.com')
+      })
+
+      it('extracts origin from a URL with query and no slash', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'http://domain.com?query',
+        )
+
+        expect(origin).toBe('http://domain.com')
+      })
+
+      it('extracts origin from a URL with query and slash', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'http://domain.com/?query',
+        )
+
+        expect(origin).toBe('http://domain.com')
+      })
+
+      it('extracts origin from a URL without TLD', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'http://domain/path',
+        )
+
+        expect(origin).toBe('http://domain')
+      })
+
+      it('extracts origin from a URL with IP', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'http://10.0.0.0/path',
+        )
+
+        expect(origin).toBe('http://10.0.0.0')
+      })
+
+      it('extracts origin from a URL with IP and port', () => {
+        const { origin } = setOriginFromHref.withState(
+          emptyState,
+          'http://10.0.0.0:1234/path',
+        )
+
+        expect(origin).toBe('http://10.0.0.0:1234')
+      })
+
+      it('sets the origin to empty if URL is invalid', () => {
+        const { origin } = setOriginFromHref.withState(emptyState, 'invalid')
+        expect(origin).toBe('')
+      })
+
+      it('sets the origin to empty if URL is undefined', () => {
+        const { origin } = setOriginFromHref.withState(emptyState, undefined)
+        expect(origin).toBe('')
       })
     })
   })
@@ -129,6 +256,7 @@ describe(`location module`, () => {
     describe(activate, () => {
       beforeEach(() => {
         mockEffect(setHistoryInstance, jest.fn())
+        mockMutation(setOriginFromHref, jest.fn())
       })
 
       it('marks the router as active', () => {
@@ -141,11 +269,26 @@ describe(`location module`, () => {
         expect(setIsActiveMock).toHaveBeenCalledWith(true)
       })
 
+      it('sets the origin', () => {
+        pathnameMock.mockReturnValueOnce('/root')
+        searchMock.mockReturnValueOnce('')
+        hrefMock.mockReturnValueOnce('https://domain.com/root')
+        const [setOriginMock] = mockMutation(setOriginFromHref, jest.fn())
+
+        activate(window)
+
+        expect(setOriginMock).toHaveBeenCalledWith('https://domain.com/root')
+      })
+
       it('throws if the router is already active', () => {
         pathnameMock.mockReturnValueOnce('/root/nested')
         searchMock.mockReturnValueOnce('?queryParam=test')
 
-        mockModuleState(_locationModule, { url: '/root', isActive: true })
+        mockModuleState(_locationModule, {
+          ...emptyState,
+          url: '/root',
+          isActive: true,
+        })
 
         expect(() => activate(window)).toThrowError()
       })
@@ -266,7 +409,12 @@ describe(`location module`, () => {
     describe(pushNewUrl, () => {
       it('sets the url in the module', () => {
         const newUrl = '/root/nested?queryParam=value'
-        mockModuleState(_locationModule, { url: '/root', isActive: true })
+        mockModuleState(_locationModule, {
+          ...emptyState,
+          url: '/root',
+          isActive: true,
+        })
+
         mockEffect(getHistoryInstance, () => window.history)
         const [setUrlMock] = mockMutation(setUrl, jest.fn())
 
@@ -277,7 +425,12 @@ describe(`location module`, () => {
 
       it('pushes a new state entry', () => {
         const newUrl = '/root/nested?queryParam=value'
-        mockModuleState(_locationModule, { url: '/root', isActive: true })
+        mockModuleState(_locationModule, {
+          ...emptyState,
+          url: '/root',
+          isActive: true,
+        })
+
         mockEffect(getHistoryInstance, () => window.history)
 
         pushNewUrl(newUrl)
@@ -287,7 +440,12 @@ describe(`location module`, () => {
 
       it('does nothing if router is not active', () => {
         const newUrl = '/root/nested?queryParam=value'
-        mockModuleState(_locationModule, { url: '/root', isActive: false })
+        mockModuleState(_locationModule, {
+          ...emptyState,
+          url: '/root',
+          isActive: false,
+        })
+
         const [setUrlMock] = mockMutation(setUrl, jest.fn())
 
         pushNewUrl(newUrl)
@@ -298,7 +456,7 @@ describe(`location module`, () => {
 
       it('does nothing if the url is the same as current URL', () => {
         const url = '/root/nested?queryParam=value'
-        mockModuleState(_locationModule, { url, isActive: true })
+        mockModuleState(_locationModule, { ...emptyState, url, isActive: true })
         const [setUrlMock] = mockMutation(setUrl, jest.fn())
 
         pushNewUrl(url)

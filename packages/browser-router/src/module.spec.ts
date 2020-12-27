@@ -6,7 +6,10 @@ import {
   mockSelector,
 } from '@simplux/testing'
 import { getSimpluxRouter } from '../../router/index.js'
-import { _locationModule } from './location.js'
+import {
+  SimpluxBrowserRouterLocationState,
+  _locationModule,
+} from './location.js'
 import {
   SimpluxBrowserRouterState,
   _module,
@@ -1194,56 +1197,62 @@ describe(`module`, () => {
         expect(pushUrlMock).toHaveBeenCalledWith(``)
       })
 
-      it('strips protocol and host from an http URL', async () => {
+      it('strips origin from URL', async () => {
         const state = makeBrowserRouterState({
           pathTemplateSegments: ['root', 'nested'],
           queryParameters: [],
         })
 
         mockModuleState(_module, state)
-
-        await _module.navigateToRouteByUrl(`http://example.com/root/nested`)
-
-        expect(pushUrlMock).toHaveBeenCalledWith(`/root/nested`)
-      })
-
-      it('strips protocol and host from an https URL', async () => {
-        const state = makeBrowserRouterState({
-          pathTemplateSegments: ['root', 'nested'],
-          queryParameters: [],
-        })
-
-        mockModuleState(_module, state)
+        mockSelector(_locationModule.origin, () => 'https://example.com')
 
         await _module.navigateToRouteByUrl(`https://example.com/root/nested`)
 
         expect(pushUrlMock).toHaveBeenCalledWith(`/root/nested`)
       })
 
-      it('sets the url to empty if only protocol and host without slash', async () => {
+      it('sets the url to empty if url is origin', async () => {
         const state = makeBrowserRouterState({
           pathTemplateSegments: [],
           queryParameters: [],
         })
 
         mockModuleState(_module, state)
+        mockSelector(_locationModule.origin, () => 'https://example.com')
 
         await _module.navigateToRouteByUrl('https://example.com')
 
         expect(pushUrlMock).toHaveBeenCalledWith(``)
       })
 
-      it('sets the url to empty if only protocol and host with slash', async () => {
+      it('sets the url to empty if url is origin with slash', async () => {
         const state = makeBrowserRouterState({
           pathTemplateSegments: [],
           queryParameters: [],
         })
 
         mockModuleState(_module, state)
+        mockSelector(_locationModule.origin, () => 'https://example.com')
 
         await _module.navigateToRouteByUrl('https://example.com/')
 
         expect(pushUrlMock).toHaveBeenCalledWith(``)
+      })
+
+      it('throws if url has origin and is different', async () => {
+        const state = makeBrowserRouterState({
+          pathTemplateSegments: ['root', 'nested'],
+          queryParameters: [],
+        })
+
+        mockModuleState(_module, state)
+        mockSelector(_locationModule.origin, () => 'https://example.com')
+
+        const result = _module.navigateToRouteByUrl(
+          `https://other.org/root/nested`,
+        )
+
+        await expect(result).rejects.toBeDefined()
       })
 
       it('pushes the new url to the location module after the navigation', async () => {
@@ -1403,6 +1412,12 @@ describe(`module`, () => {
 
   describe('state change handlers', () => {
     describe('on location changes', () => {
+      const emptyLocationState: SimpluxBrowserRouterLocationState = {
+        url: '',
+        origin: '',
+        isActive: false,
+      }
+
       it('navigates to the new URL if active', () => {
         const url = '/root/nested'
 
@@ -1410,8 +1425,8 @@ describe(`module`, () => {
         mock.mockResolvedValueOnce(undefined)
 
         _onLocationStateChange(
-          { isActive: true, url },
-          { isActive: true, url: '' },
+          { ...emptyLocationState, isActive: true, url },
+          { ...emptyLocationState, isActive: true },
         )
 
         expect(mock).toHaveBeenCalledWith(url)
@@ -1424,8 +1439,8 @@ describe(`module`, () => {
         mock.mockResolvedValueOnce(undefined)
 
         _onLocationStateChange(
-          { isActive: false, url },
-          { isActive: false, url: '' },
+          { ...emptyLocationState, url },
+          emptyLocationState,
         )
 
         expect(mock).not.toHaveBeenCalled()
@@ -1437,7 +1452,10 @@ describe(`module`, () => {
         const [mock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
         mock.mockResolvedValueOnce(undefined)
 
-        _onLocationStateChange({ isActive: true, url }, { isActive: true, url })
+        _onLocationStateChange(
+          { ...emptyLocationState, isActive: true, url },
+          { ...emptyLocationState, isActive: true, url },
+        )
 
         expect(mock).not.toHaveBeenCalled()
       })
@@ -1454,8 +1472,8 @@ describe(`module`, () => {
           .mockImplementationOnce(() => {})
 
         _onLocationStateChange(
-          { isActive: true, url },
-          { isActive: true, url: '' },
+          { ...emptyLocationState, isActive: true, url },
+          { ...emptyLocationState, isActive: true },
         )
 
         // give the error time to propagate
