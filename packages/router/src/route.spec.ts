@@ -1,6 +1,6 @@
 import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
 import { _module, _RouterState } from './module.js'
-import { SimpluxRoute, _routeEffects } from './route.js'
+import { SimpluxRoute, SIMPLUX_ROUTE, _routeEffects } from './route.js'
 import {
   routeName1,
   routeName2,
@@ -54,6 +54,16 @@ describe(`route`, () => {
     })
 
     describe('created route', () => {
+      it('has the marker', () => {
+        mockEffect(_module.registerRoute, () => 1)
+
+        const testRoute = addRoute(routeName1)
+
+        expect(
+          Object.prototype.hasOwnProperty.call(testRoute, SIMPLUX_ROUTE),
+        ).toBe(true)
+      })
+
       describe(keyOf<SimpluxRoute<any, any>>('onNavigateTo'), () => {
         it('is the passed callback', () => {
           mockEffect(_module.registerRoute, () => 1)

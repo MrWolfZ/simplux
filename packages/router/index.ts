@@ -11,11 +11,13 @@ export type {
   _RouterState,
   _RouteState,
 } from './src/module.js'
+export { SIMPLUX_ROUTE, _isSimpluxRoute } from './src/route.js'
 export type {
   NavigateToFn,
   RequiredPropertyNames,
   SimpluxRoute,
   SimpluxRouteConfiguration,
+  SimpluxRouteMarker,
 } from './src/route.js'
 export type { SimpluxRouter, SimpluxRouterSelectors } from './src/router.js'
 

@@ -13,6 +13,17 @@ import {
 } from './module.js'
 
 /**
+ * Helper symbol used for identifying simplux route objects.
+ *
+ * @public
+ */
+// should really be a symbol, but as of TypeScript 4.1 there is a bug
+// that causes the symbol to not be properly re-exported in type
+// definitions when spreading a select object onto an export, which can
+// cause issues with composite builds
+export const SIMPLUX_ROUTE = '[SIMPLUX_ROUTE]'
+
+/**
  * The configuration for a route.
  *
  * @public
@@ -45,6 +56,26 @@ export type NavigateToFn<TParameters> = keyof TParameters extends never
   : (parameters: TParameters) => NavigationResult
 
 /**
+ * Interface for efficiently identifying simplux route objects at compile time.
+ *
+ * @public
+ */
+export interface SimpluxRouteMarker<
+  TParameters,
+  TConfiguration extends SimpluxRouteConfiguration<TParameters>
+> {
+  /**
+   * A symbol that allows efficient compile-time and run-time identification
+   * of simplux route objects.
+   *
+   * This property will have an `undefined` value at runtime.
+   *
+   * @public
+   */
+  readonly [SIMPLUX_ROUTE]: [TParameters, TConfiguration]
+}
+
+/**
  * A simplux route.
  *
  * @public
@@ -52,7 +83,7 @@ export type NavigateToFn<TParameters> = keyof TParameters extends never
 export interface SimpluxRoute<
   TParameters,
   TConfiguration extends SimpluxRouteConfiguration<TParameters> = {}
-> {
+> extends SimpluxRouteMarker<TParameters, TConfiguration> {
   /**
    * The id of the route.
    *
@@ -126,6 +157,26 @@ export const _routeEffects = createEffects({
       parameterValues: selectors.parameterValues as any,
       navigateTo: navigateTo as SimpluxEffect<NavigateToFn<TParameters>>,
       onNavigateTo: configuration?.onNavigateTo,
+      [SIMPLUX_ROUTE]: undefined!,
     }
   },
 })
+
+/**
+ * Checks if an object is a simplux route.
+ *
+ * @param object - the object to check
+ *
+ * @returns true if the object is a simplux route
+ *
+ * @internal
+ */
+export function _isSimpluxRoute<
+  TParameters,
+  TConfiguration extends SimpluxRouteConfiguration<TParameters>,
+  TOther
+>(
+  object: SimpluxRouteMarker<TParameters, TConfiguration> | TOther,
+): object is SimpluxRoute<TParameters, TConfiguration> {
+  return object && Object.prototype.hasOwnProperty.call(object, SIMPLUX_ROUTE)
+}

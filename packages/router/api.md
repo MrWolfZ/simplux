@@ -11,6 +11,9 @@ import { SimpluxSelector } from '@simplux/core';
 // @public
 export function getSimpluxRouter(): SimpluxRouter;
 
+// @internal
+export function _isSimpluxRoute<TParameters, TConfiguration extends SimpluxRouteConfiguration<TParameters>, TOther>(object: SimpluxRouteMarker<TParameters, TConfiguration> | TOther): object is SimpluxRoute<TParameters, TConfiguration>;
+
 // @public
 export type NavigateToFn<TParameters> = keyof TParameters extends never ? () => NavigationResult : RequiredPropertyNames<TParameters> extends never ? (parameters?: TParameters) => NavigationResult : (parameters: TParameters) => NavigationResult;
 
@@ -27,11 +30,12 @@ export type NavigationParameters = Readonly<Record<string, any>>;
 export type NavigationResult = Promise<typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED>;
 
 // @public
-export type OnNavigateTo<TParameters = NavigationParameters> = (parameters: TParameters, extras: OnNavigateToExtras) => void | Promise<void>;
+export type OnNavigateTo<TParameters = NavigationParameters, TExtras extends OnNavigateToExtras = OnNavigateToExtras> = (parameters: TParameters, extras: TExtras) => void | typeof NAVIGATION_CANCELLED | Promise<void | typeof NAVIGATION_CANCELLED>;
 
 // @public
 export interface OnNavigateToExtras {
     cancelled: Promise<typeof NAVIGATION_CANCELLED>;
+    cancelNavigation: typeof NAVIGATION_CANCELLED;
 }
 
 // @public
@@ -59,7 +63,10 @@ export interface _RouteState {
 }
 
 // @public
-export interface SimpluxRoute<TParameters, TConfiguration extends SimpluxRouteConfiguration<TParameters> = {}> {
+export const SIMPLUX_ROUTE = "[SIMPLUX_ROUTE]";
+
+// @public
+export interface SimpluxRoute<TParameters, TConfiguration extends SimpluxRouteConfiguration<TParameters> = {}> extends SimpluxRouteMarker<TParameters, TConfiguration> {
     // @internal
     readonly id: _RouteId;
     readonly isActive: SimpluxSelector<never, [], boolean>;
@@ -72,6 +79,11 @@ export interface SimpluxRoute<TParameters, TConfiguration extends SimpluxRouteCo
 // @public
 export interface SimpluxRouteConfiguration<TParameters> {
     readonly onNavigateTo?: OnNavigateTo<TParameters>;
+}
+
+// @public
+export interface SimpluxRouteMarker<TParameters, TConfiguration extends SimpluxRouteConfiguration<TParameters>> {
+    readonly [SIMPLUX_ROUTE]: [TParameters, TConfiguration];
 }
 
 // @public

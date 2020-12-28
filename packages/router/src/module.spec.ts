@@ -545,6 +545,22 @@ describe(`module`, () => {
         await expect(cancellationPromise).resolves.toBe(NAVIGATION_CANCELLED)
         await promise
       })
+
+      it('cancels navigation if onNavigateTo wants to cancel navigation', async () => {
+        const interceptor = jest
+          .fn<Promise<typeof NAVIGATION_CANCELLED>, [any, OnNavigateToExtras]>()
+          .mockImplementationOnce((_, { cancelNavigation }) => {
+            return Promise.resolve(cancelNavigation)
+          })
+
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: interceptor,
+        }))
+
+        const promise = _module.navigateToRoute(1)
+
+        await expect(promise).resolves.toBe(NAVIGATION_CANCELLED)
+      })
     })
 
     describe('onNavigateTo interceptors', () => {

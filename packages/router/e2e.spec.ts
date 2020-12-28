@@ -31,30 +31,50 @@ describe(`@simplux/router`, () => {
     const testRoute3 = router.addRoute<RouteParameters3>(routeName3)
     expect(testRoute3.name).toBe(routeName3)
 
-    const testRoute4 = router.addRoute('async', {
+    const asyncRoute = router.addRoute('async', {
       onNavigateTo: async () => {
         await Promise.resolve()
       },
     })
 
-    await testRoute4.onNavigateTo()
+    await asyncRoute.onNavigateTo()
 
-    const testRoute5 = router.addRoute<{ param: string }>('asyncParams', {
-      onNavigateTo: async ({ param }) => {
-        expect(param).toBe('value')
-        await Promise.resolve()
+    const asyncRouteWithParams = router.addRoute<{ param: string }>(
+      'asyncParams',
+      {
+        onNavigateTo: async ({ param }) => {
+          expect(param).toBe('value')
+          await Promise.resolve()
+        },
       },
-    })
+    )
 
-    await testRoute5.onNavigateTo!({ param: 'value' }, undefined!)
+    await asyncRouteWithParams.onNavigateTo!({ param: 'value' }, undefined!)
 
     let cancelledNavigation = new Promise<typeof NAVIGATION_CANCELLED>(() => {})
-    const testRoute6 = router.addRoute('asyncNever', {
+    const cancelledNavRoute = router.addRoute('asyncNever', {
       onNavigateTo: (_, { cancelled }) => {
         cancelledNavigation = cancelled
         return new Promise<void>(() => {})
       },
     })
+
+    // tslint:disable-next-line: no-floating-promises
+    cancelledNavRoute.onNavigateTo(
+      {},
+      { cancelled: undefined!, cancelNavigation: NAVIGATION_CANCELLED },
+    )
+
+    const routeThatCancelsNav = router.addRoute('asyncCancel', {
+      onNavigateTo: (_, { cancelNavigation }) => {
+        return Promise.resolve(cancelNavigation)
+      },
+    })
+
+    await routeThatCancelsNav.onNavigateTo(
+      {},
+      { cancelled: undefined!, cancelNavigation: NAVIGATION_CANCELLED },
+    )
 
     expect(router.anyRouteIsActive()).toBe(false)
 
@@ -83,13 +103,13 @@ describe(`@simplux/router`, () => {
       bool: false,
     })
 
-    await testRoute4.navigateTo()
-    expect(testRoute4.isActive()).toBe(true)
+    await asyncRoute.navigateTo()
+    expect(asyncRoute.isActive()).toBe(true)
 
-    await testRoute5.navigateTo({ param: 'value' })
+    await asyncRouteWithParams.navigateTo({ param: 'value' })
 
-    expect(testRoute5.isActive()).toBe(true)
-    expect(testRoute5.parameterValues()).toEqual({ param: 'value' })
+    expect(asyncRouteWithParams.isActive()).toBe(true)
+    expect(asyncRouteWithParams.parameterValues()).toEqual({ param: 'value' })
 
     await router.navigateToRouteById(testRoute1.id)
 
@@ -109,9 +129,9 @@ describe(`@simplux/router`, () => {
       bool: false,
     })
 
-    const navToCancel = testRoute6.navigateTo()
+    const navToCancel = cancelledNavRoute.navigateTo()
 
-    expect(testRoute6.isActive()).toBe(false)
+    expect(cancelledNavRoute.isActive()).toBe(false)
     expect(router.navigationIsInProgress()).toBe(true)
 
     const finishedNav = testRoute1.navigateTo()
@@ -120,8 +140,11 @@ describe(`@simplux/router`, () => {
     await expect(cancelledNavigation).resolves.toBe(NAVIGATION_CANCELLED)
     await expect(navToCancel).resolves.toBe(NAVIGATION_CANCELLED)
 
-    expect(testRoute6.isActive()).toBe(false)
+    expect(cancelledNavRoute.isActive()).toBe(false)
     expect(testRoute1.isActive()).toBe(true)
     expect(router.navigationIsInProgress()).toBe(false)
+
+    const cancelledNav = routeThatCancelsNav.navigateTo()
+    await expect(cancelledNav).resolves.toBe(NAVIGATION_CANCELLED)
   })
 })

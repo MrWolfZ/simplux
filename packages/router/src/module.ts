@@ -62,6 +62,11 @@ export interface OnNavigateToExtras {
    * function was running).
    */
   cancelled: Promise<typeof NAVIGATION_CANCELLED>
+
+  /**
+   * This object can be returned to cancel the navigation.
+   */
+  cancelNavigation: typeof NAVIGATION_CANCELLED
 }
 
 /**
@@ -74,10 +79,16 @@ export interface OnNavigateToExtras {
  *
  * @public
  */
-export type OnNavigateTo<TParameters = NavigationParameters> = (
+export type OnNavigateTo<
+  TParameters = NavigationParameters,
+  TExtras extends OnNavigateToExtras = OnNavigateToExtras
+> = (
   parameters: TParameters,
-  extras: OnNavigateToExtras,
-) => void | Promise<void>
+  extras: TExtras,
+) =>
+  | void
+  | typeof NAVIGATION_CANCELLED
+  | Promise<void | typeof NAVIGATION_CANCELLED>
 
 /**
  * The state of a simplux route.
@@ -223,6 +234,7 @@ const effects = createEffects({
 
     const onNavigateToExtras: OnNavigateToExtras = {
       cancelled: cancellationPromise,
+      cancelNavigation: NAVIGATION_CANCELLED,
     }
 
     const result = await Promise.race([
