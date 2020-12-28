@@ -6,9 +6,10 @@ import {
 } from '@simplux/core'
 import {
   getSimpluxRouter,
+  NavigationParameters,
   NavigationResult,
   NAVIGATION_CANCELLED,
-  SimpluxRouteId,
+  _RouteId,
 } from '@simplux/router'
 import { _extractOrigin, _locationModule, _Url } from './location.js'
 import type {
@@ -23,16 +24,9 @@ const simpluxRouter = getSimpluxRouter()
 /**
  * Helper type to distinguish url template values.
  *
- * @public
+ * @internal
  */
 export type _UrlTemplate = string
-
-/**
- * Helper type to distinguish href values.
- *
- * @public
- */
-export type _Href = string
 
 /**
  * @internal
@@ -42,18 +36,9 @@ export type _QueryParameterValues = Readonly<
 >
 
 /**
- * Helper type to distinguish navigation parameter values.
- *
- * @public
- */
-export type _NavigationParameters<
-  TParameterValueType = _ParameterValueType
-> = Readonly<Record<string, TParameterValueType>>
-
-/**
  * A query parameter for a route.
  *
- * @public
+ * @internal
  */
 export interface _RouteQueryParameterState {
   readonly parameterName: _ParameterName
@@ -62,11 +47,11 @@ export interface _RouteQueryParameterState {
 }
 
 /**
- * The state of a simplux browser route.
+ * The state of a browser route.
  *
- * @public
+ * @internal
  */
-export interface SimpluxBrowserRouteState {
+export interface _BrowserRouteState {
   /**
    * The path segments of the route.
    */
@@ -79,15 +64,15 @@ export interface SimpluxBrowserRouteState {
 }
 
 /**
- * The state of the simplux browser router.
+ * The state of the browser router.
  *
- * @public
+ * @internal
  */
-export interface SimpluxBrowserRouterState {
+export interface _BrowserRouterState {
   /**
    * All registered routes.
    */
-  readonly routes: SimpluxBrowserRouteState[]
+  readonly routes: _BrowserRouteState[]
 
   /**
    * The URL of the current navigation.
@@ -95,7 +80,7 @@ export interface SimpluxBrowserRouterState {
   currentNavigationUrl: _Url | undefined
 }
 
-const initialState: SimpluxBrowserRouterState = {
+const initialState: _BrowserRouterState = {
   routes: [],
   currentNavigationUrl: undefined,
 }
@@ -103,11 +88,7 @@ const initialState: SimpluxBrowserRouterState = {
 const browserRouterModule = createSimpluxModule('browserRouter', initialState)
 
 const mutations = createMutations(browserRouterModule, {
-  addRoute: (
-    { routes },
-    routeId: SimpluxRouteId,
-    urlTemplate: _UrlTemplate,
-  ) => {
+  addRoute: ({ routes }, routeId: _RouteId, urlTemplate: _UrlTemplate) => {
     urlTemplate = urlTemplate.replace(/^\//, '').replace(/\/$/, '')
     const [path, query] = urlTemplate.replace('[?', '?[').split('?')
     const pathTemplateSegments = !path ? [] : parsePathTemplate(path!)
@@ -129,8 +110,8 @@ const selectors = createSelectors(browserRouterModule, {
 
   href: (
     { routes },
-    routeId: SimpluxRouteId,
-    parameterValues?: _NavigationParameters,
+    routeId: _RouteId,
+    parameterValues?: NavigationParameters,
   ) => {
     const { pathTemplateSegments, queryParameters } = routes[routeId - 1]!
 
@@ -142,8 +123,8 @@ const selectors = createSelectors(browserRouterModule, {
 
   routeIdAndParametersByUrl: (
     { routes },
-    url: _Href,
-  ): [SimpluxRouteId, _NavigationParameters] | undefined => {
+    url: _Url,
+  ): [_RouteId, NavigationParameters] | undefined => {
     const [path, query] = url.split('?')
 
     const trimmedPath = path!.replace(/^\//, '').replace(/\/$/, '')
@@ -168,7 +149,7 @@ const selectors = createSelectors(browserRouterModule, {
 })
 
 const effects = createEffects({
-  navigateToRouteByUrl: async (url: _Href): NavigationResult => {
+  navigateToRouteByUrl: async (url: _Url): NavigationResult => {
     const origin = _extractOrigin(url)
 
     if (origin && origin !== _locationModule.origin()) {
@@ -197,8 +178,8 @@ const effects = createEffects({
   },
 
   navigateToRouteById: async (
-    routeId: SimpluxRouteId,
-    parameterValues?: _NavigationParameters,
+    routeId: _RouteId,
+    parameterValues?: NavigationParameters,
   ): NavigationResult => {
     const url = selectors.href(routeId, parameterValues)
     return await effects.navigateToRouteByIdAndPushUrl(
@@ -209,8 +190,8 @@ const effects = createEffects({
   },
 
   navigateToRouteByIdAndPushUrl: async (
-    routeId: SimpluxRouteId,
-    parameterValues: _NavigationParameters | undefined,
+    routeId: _RouteId,
+    parameterValues: NavigationParameters | undefined,
     url: _Url,
   ): NavigationResult => {
     mutations.setCurrentNavigationUrl(url)
@@ -304,7 +285,7 @@ function parseQueryTemplate(
 
 function createPathForHref(
   segments: readonly _RoutePathTemplateSegment[],
-  parameterValues?: _NavigationParameters,
+  parameterValues?: NavigationParameters,
 ) {
   return segments.map(renderSegment).join('/')
 
@@ -317,7 +298,7 @@ function createPathForHref(
 
 function createQueryForHref(
   parameters: readonly _RouteQueryParameterState[],
-  parameterValues?: _NavigationParameters,
+  parameterValues?: NavigationParameters,
 ) {
   const formattedValues = parameters.map(renderParameter).filter((p) => !!p)
 
@@ -341,10 +322,10 @@ function createQueryForHref(
 }
 
 function findRouteForPathSegmentsAndQuery(
-  routes: readonly SimpluxBrowserRouteState[],
-  pathSegments: _Href[],
+  routes: readonly _BrowserRouteState[],
+  pathSegments: _Url[],
   queryParameterValues: _QueryParameterValues,
-): [SimpluxRouteId, _NavigationParameters] | undefined {
+): [_RouteId, NavigationParameters] | undefined {
   for (let i = 0; i < routes.length; i += 1) {
     const result = tryMatchRoute(routes[i]!)
 
@@ -358,7 +339,7 @@ function findRouteForPathSegmentsAndQuery(
   function tryMatchRoute({
     pathTemplateSegments,
     queryParameters,
-  }: SimpluxBrowserRouteState): _NavigationParameters | undefined {
+  }: _BrowserRouteState): NavigationParameters | undefined {
     if (pathTemplateSegments.length !== pathSegments.length) {
       return undefined
     }
@@ -415,7 +396,7 @@ function findRouteForPathSegmentsAndQuery(
 
   function pathSegmentMatches(
     template: _RoutePathTemplateSegment,
-    segment: _Href,
+    segment: _Url,
   ) {
     if (typeof template === 'string') {
       return template === segment

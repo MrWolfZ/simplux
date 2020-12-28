@@ -6,12 +6,9 @@ import {
   mockMutation,
   mockSelector,
 } from '@simplux/testing'
+import { _BrowserRouterLocationState, _locationModule } from './location.js'
 import {
-  SimpluxBrowserRouterLocationState,
-  _locationModule,
-} from './location.js'
-import {
-  SimpluxBrowserRouterState,
+  _BrowserRouterState,
   _module,
   _onLocationStateChange,
 } from './module.js'
@@ -1284,7 +1281,7 @@ describe(`module`, () => {
       it('ignores the navigation if the url is equal to the current navigation URL', async () => {
         const currentNavigationUrl = `/root/nested`
 
-        const state: SimpluxBrowserRouterState = {
+        const state: _BrowserRouterState = {
           ...makeBrowserRouterState({
             pathTemplateSegments: ['root', 'nested'],
             queryParameters: [],
@@ -1450,7 +1447,7 @@ describe(`module`, () => {
 
   describe('state change handlers', () => {
     describe('on location changes', () => {
-      const emptyLocationState: SimpluxBrowserRouterLocationState = {
+      const emptyLocationState: _BrowserRouterLocationState = {
         url: '',
         origin: '',
         isActive: false,

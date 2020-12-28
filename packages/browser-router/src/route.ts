@@ -2,18 +2,13 @@ import { createEffects, createSelectors, SimpluxSelector } from '@simplux/core'
 import {
   getSimpluxRouter,
   NavigateToFn,
+  NavigationParameters,
   NavigationResult,
+  RequiredPropertyNames,
   SimpluxRoute,
   SimpluxRouteConfiguration,
-  SimpluxRouteName,
 } from '@simplux/router'
-import {
-  SimpluxBrowserRouterState,
-  _Href,
-  _module,
-  _NavigationParameters,
-  _UrlTemplate,
-} from './module.js'
+import { _module, _UrlTemplate } from './module.js'
 import type { _ParsePathParameters } from './path.js'
 import type { _ParseQueryParameters } from './query.js'
 
@@ -42,26 +37,19 @@ export interface SimpluxBrowserRouteConfiguration<TParameters>
    * An optional name for the route. If not provided the template will be
    * used as the name.
    */
-  readonly name?: SimpluxRouteName
+  readonly name?: string
 }
-
-/**
- * Helper type to extract the required property names from an object
- *
- * @public
- */
-export type _RequiredPropertyNames<T> = {
-  [K in keyof T]-?: undefined extends T[K] ? never : K
-}[keyof T]
 
 /**
  * Helper type to specify the parameters for an href selector
  *
  * @public
  */
-export type _HrefParameters<TParameters> = keyof TParameters extends never
+export type HrefSelectorParameters<
+  TParameters
+> = keyof TParameters extends never
   ? []
-  : _RequiredPropertyNames<TParameters> extends never
+  : RequiredPropertyNames<TParameters> extends never
   ? [parameters: TParameters] | []
   : [parameters: TParameters]
 
@@ -90,9 +78,9 @@ export interface SimpluxBrowserRoute<TParameters = {}>
    * in HTML anchors)
    */
   readonly href: SimpluxSelector<
-    SimpluxBrowserRouterState,
-    _HrefParameters<TParameters>,
-    _Href
+    never,
+    HrefSelectorParameters<TParameters>,
+    string
   >
 }
 
@@ -115,8 +103,8 @@ function addRoute<TUrlTemplate extends _UrlTemplate>(
 >
 
 function addRoute<
-  TPathParameters extends _NavigationParameters<any> = {},
-  TQueryParameters extends _NavigationParameters<any> = {}
+  TPathParameters extends NavigationParameters = {},
+  TQueryParameters extends NavigationParameters = {}
 >(
   urlTemplate: string,
   routeConfiguration?: SimpluxBrowserRouteConfiguration<
@@ -135,12 +123,12 @@ function addRoute(
   _module.addRoute(route.id, urlTemplate)
 
   const selectors = createSelectors(_module, {
-    href: (state, parameterValues?: _NavigationParameters) =>
+    href: (state, parameterValues?: NavigationParameters) =>
       _module.href.withState(state, route.id, parameterValues),
   })
 
   const { navigateTo } = createEffects({
-    navigateTo: (parameters?: _NavigationParameters): NavigationResult =>
+    navigateTo: (parameters?: NavigationParameters): NavigationResult =>
       _module.navigateToRouteById(route.id, parameters || {}),
   })
 

@@ -1,23 +1,20 @@
-import type {
-  SimpluxBrowserRouterState,
-  SimpluxBrowserRouteState,
-} from './module.js'
+import type { _BrowserRouterState, _BrowserRouteState } from './module.js'
 
-export const emptyRouterState: SimpluxBrowserRouterState = {
+export const emptyRouterState: _BrowserRouterState = {
   routes: [],
   currentNavigationUrl: undefined,
 }
 
 export const rootRouteTemplate = '/'
 
-export const rootRoute: SimpluxBrowserRouteState = {
+export const rootRoute: _BrowserRouteState = {
   pathTemplateSegments: [],
   queryParameters: [],
 }
 
 export const routeTemplateWithoutParameters = 'root'
 
-export const routeStateWithoutParameters: SimpluxBrowserRouteState = {
+export const routeStateWithoutParameters: _BrowserRouteState = {
   pathTemplateSegments: ['root'],
   queryParameters: [],
 }
@@ -25,7 +22,7 @@ export const routeStateWithoutParameters: SimpluxBrowserRouteState = {
 export const routeTemplateWithPathParameters =
   'root/:stringParam/intermediate/:numberParam:number/:booleanParam:boolean'
 
-export const routeStateWithPathParameters: SimpluxBrowserRouteState = {
+export const routeStateWithPathParameters: _BrowserRouteState = {
   pathTemplateSegments: [
     'root',
     {
@@ -48,7 +45,7 @@ export const routeStateWithPathParameters: SimpluxBrowserRouteState = {
 export const routeTemplateWithQueryParameters =
   'root?stringParam&numberParam:number&booleanParam:boolean'
 
-export const routeStateWithQueryParameters: SimpluxBrowserRouteState = {
+export const routeStateWithQueryParameters: _BrowserRouteState = {
   pathTemplateSegments: ['root'],
   queryParameters: [
     {
@@ -72,7 +69,7 @@ export const routeStateWithQueryParameters: SimpluxBrowserRouteState = {
 export const routeTemplateWithOptionalQueryParameter =
   'root?requiredParam[&optionalParam]'
 
-export const routeStateWithOptionalQueryParameters: SimpluxBrowserRouteState = {
+export const routeStateWithOptionalQueryParameters: _BrowserRouteState = {
   pathTemplateSegments: ['root'],
   queryParameters: [
     {
@@ -104,7 +101,7 @@ export interface RouteWithPathAndQueryParametersQueryPart {
 export const routeTemplateWithPathAndQueryParameters =
   'root/:pathStringParam/intermediate/:pathNumberParam:number?queryStringParam&queryNumberParam:number'
 
-export const routeStateWithPathAndQueryParameters: SimpluxBrowserRouteState = {
+export const routeStateWithPathAndQueryParameters: _BrowserRouteState = {
   pathTemplateSegments: [
     'root',
     {
@@ -137,8 +134,8 @@ export const routeTemplateWithOnNavigateToAndParameters =
 export const routeTemplateForCancellation = 'root/forCancellation'
 
 export function makeBrowserRouterState(
-  ...routes: SimpluxBrowserRouteState[]
-): SimpluxBrowserRouterState {
+  ...routes: _BrowserRouteState[]
+): _BrowserRouterState {
   return {
     routes,
     currentNavigationUrl: undefined,

@@ -1,17 +1,12 @@
 import type { Immutable, SimpluxEffect, SimpluxSelector } from '@simplux/core'
 import {
   getSimpluxRouter,
+  NavigationParameters,
   NavigationResult,
   SimpluxRouterSelectors,
 } from '@simplux/router'
 import { _locationModule } from './location.js'
-import {
-  SimpluxBrowserRouterState,
-  _Href,
-  _module,
-  _NavigationParameters,
-  _UrlTemplate,
-} from './module.js'
+import { _BrowserRouterState, _module } from './module.js'
 import {
   SimpluxBrowserRoute,
   SimpluxBrowserRouteConfiguration,
@@ -33,7 +28,7 @@ const simpluxRouter = getSimpluxRouter()
  *
  * @public
  */
-export declare function _addRoute<TUrlTemplate extends _UrlTemplate>(
+export declare function _addRoute<TUrlTemplate extends string>(
   urlTemplate: TUrlTemplate,
   routeConfiguration?: SimpluxBrowserRouteConfiguration<
     {
@@ -63,8 +58,8 @@ export declare function _addRoute<TUrlTemplate extends _UrlTemplate>(
  * @public
  */
 export declare function _addRoute<
-  TPathParameters extends _NavigationParameters<any> = {},
-  TQueryParameters extends _NavigationParameters<any> = {}
+  TPathParameters extends NavigationParameters = {},
+  TQueryParameters extends NavigationParameters = {}
 >(
   urlTemplate: string,
   routeConfiguration?: SimpluxBrowserRouteConfiguration<
@@ -87,9 +82,9 @@ export interface SimpluxBrowserRouter extends SimpluxRouterSelectors {
    * @internal
    */
   readonly state: SimpluxSelector<
-    SimpluxBrowserRouterState,
+    _BrowserRouterState,
     [],
-    Immutable<SimpluxBrowserRouterState>
+    Immutable<_BrowserRouterState>
   >
 
   // no tsdoc since it inherits the docs of the declared
@@ -105,7 +100,7 @@ export interface SimpluxBrowserRouter extends SimpluxRouterSelectors {
    *
    * @returns the result of the navigation
    */
-  readonly navigateToUrl: SimpluxEffect<(url: _Href) => NavigationResult>
+  readonly navigateToUrl: SimpluxEffect<(url: string) => NavigationResult>
 
   /**
    * Connect the router to the browser window. The router will start

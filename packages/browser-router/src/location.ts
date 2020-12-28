@@ -13,16 +13,16 @@ declare const history: undefined
 /**
  * Helper type to distinguish url values.
  *
- * @public
+ * @internal
  */
 export type _Url = string
 
 /**
- * The state of the simplux browser router.
+ * The state of the browser router location module.
  *
- * @public
+ * @internal
  */
-export interface SimpluxBrowserRouterLocationState {
+export interface _BrowserRouterLocationState {
   /**
    * The current URL.
    */
@@ -40,7 +40,7 @@ export interface SimpluxBrowserRouterLocationState {
   isActive: boolean
 }
 
-const initialState: SimpluxBrowserRouterLocationState = {
+const initialState: _BrowserRouterLocationState = {
   url: '',
   origin: '',
   isActive: false,

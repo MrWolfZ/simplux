@@ -4,10 +4,7 @@ import {
   mockModuleState,
   mockMutation,
 } from '@simplux/testing'
-import {
-  SimpluxBrowserRouterLocationState,
-  _locationModule,
-} from './location.js'
+import { _BrowserRouterLocationState, _locationModule } from './location.js'
 
 describe(`location module`, () => {
   afterEach(clearAllSimpluxMocks)
@@ -23,7 +20,7 @@ describe(`location module`, () => {
     pushNewUrl,
   } = _locationModule
 
-  const emptyState: SimpluxBrowserRouterLocationState = {
+  const emptyState: _BrowserRouterLocationState = {
     url: '',
     origin: '',
     isActive: false,
