@@ -92,24 +92,34 @@ describe(`@simplux/browser-router`, () => {
       },
     )
 
+    await routeWithOnNavigateTo.onNavigateTo()
+
     const routeWithOnNavigateToAndParameters = router.addRoute(
       routeTemplateWithOnNavigateToAndParameters,
       {
-        onNavigateTo: async ({ parameters }) => {
-          expect(parameters.pathParam).toBe('pathValue')
-          expect(parameters.queryParam).toBe('queryValue')
+        onNavigateTo: async ({ pathParam, queryParam }) => {
+          expect(pathParam).toBe('pathValue')
+          expect(queryParam).toBe('queryValue')
           await Promise.resolve()
         },
       },
     )
 
+    await routeWithOnNavigateToAndParameters.onNavigateTo({
+      pathParam: 'pathValue',
+      queryParam: 'queryValue',
+    })
+
     let cancelledNavigation = new Promise<typeof NAVIGATION_CANCELLED>(() => {})
     const routeForCancellation = router.addRoute(routeTemplateForCancellation, {
-      onNavigateTo: async ({ cancelled }) => {
+      onNavigateTo: async (_, { cancelled }) => {
         cancelledNavigation = cancelled
         await new Promise<typeof NAVIGATION_CANCELLED>(() => {})
       },
     })
+
+    // tslint:disable-next-line: no-floating-promises
+    routeForCancellation.onNavigateTo({}, { cancelled: undefined! })
 
     expect(router.anyRouteIsActive()).toBe(false)
 
@@ -231,7 +241,6 @@ describe(`@simplux/browser-router`, () => {
     expect(routeWithoutParameters.isActive()).toBe(true)
     expect(routeWithoutParameters.parameterValues()).toEqual({})
 
-    cancelledNavigation
     await expect(cancelledNavigation).resolves.toBe(NAVIGATION_CANCELLED)
     await expect(navToCancel).resolves.toBe(NAVIGATION_CANCELLED)
   })

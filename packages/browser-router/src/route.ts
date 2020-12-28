@@ -60,8 +60,10 @@ export type _HrefFunction<TParameters> = NavigateToFn<TParameters>
  *
  * @public
  */
-export interface SimpluxBrowserRoute<TParameters = {}>
-  extends SimpluxRoute<TParameters> {
+export interface SimpluxBrowserRoute<
+  TParameters,
+  TConfiguration extends SimpluxRouteConfiguration<TParameters> = {}
+> extends SimpluxRoute<TParameters, TConfiguration> {
   /**
    * Helper property to get the parameter type of this route via
    * `typeof route.$parameterTypes`. Will be `undefined` at runtime.
@@ -84,9 +86,9 @@ export interface SimpluxBrowserRoute<TParameters = {}>
   >
 }
 
-function addRoute<TUrlTemplate extends _UrlTemplate>(
-  urlTemplate: TUrlTemplate,
-  routeConfiguration?: SimpluxBrowserRouteConfiguration<
+function addRoute<
+  TUrlTemplate extends _UrlTemplate,
+  TConfiguration extends SimpluxBrowserRouteConfiguration<
     {
       // this duplication is to get tooling to display the inferred parameter object
       // as a single object instead of an intersection of objects, e.g. show
@@ -95,22 +97,27 @@ function addRoute<TUrlTemplate extends _UrlTemplate>(
       // to be shown
       [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
     }
-  >,
+  >
+>(
+  urlTemplate: TUrlTemplate,
+  routeConfiguration?: TConfiguration,
 ): SimpluxBrowserRoute<
   {
     [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
-  }
+  },
+  TConfiguration
 >
 
 function addRoute<
   TPathParameters extends NavigationParameters = {},
-  TQueryParameters extends NavigationParameters = {}
+  TQueryParameters extends NavigationParameters = {},
+  TConfiguration extends SimpluxBrowserRouteConfiguration<
+    TPathParameters & TQueryParameters
+  > = SimpluxBrowserRouteConfiguration<TPathParameters & TQueryParameters>
 >(
   urlTemplate: string,
-  routeConfiguration?: SimpluxBrowserRouteConfiguration<
-    TPathParameters & TQueryParameters
-  >,
-): SimpluxBrowserRoute<TPathParameters & TQueryParameters>
+  routeConfiguration?: TConfiguration,
+): SimpluxBrowserRoute<TPathParameters & TQueryParameters, TConfiguration>
 
 function addRoute(
   urlTemplate: _UrlTemplate,

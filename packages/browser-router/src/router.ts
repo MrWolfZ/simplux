@@ -28,9 +28,9 @@ const simpluxRouter = getSimpluxRouter()
  *
  * @public
  */
-export declare function _addRoute<TUrlTemplate extends string>(
-  urlTemplate: TUrlTemplate,
-  routeConfiguration?: SimpluxBrowserRouteConfiguration<
+export declare function _addRoute<
+  TUrlTemplate extends string,
+  TConfiguration extends SimpluxBrowserRouteConfiguration<
     {
       // this duplication is to get tooling to display the inferred parameter object
       // as a single object instead of an intersection of objects, e.g. show
@@ -39,11 +39,15 @@ export declare function _addRoute<TUrlTemplate extends string>(
       // to be shown
       [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
     }
-  >,
+  >
+>(
+  urlTemplate: TUrlTemplate,
+  routeConfiguration?: TConfiguration,
 ): SimpluxBrowserRoute<
   {
     [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
-  }
+  },
+  TConfiguration
 >
 
 /**
@@ -59,13 +63,14 @@ export declare function _addRoute<TUrlTemplate extends string>(
  */
 export declare function _addRoute<
   TPathParameters extends NavigationParameters = {},
-  TQueryParameters extends NavigationParameters = {}
+  TQueryParameters extends NavigationParameters = {},
+  TConfiguration extends SimpluxBrowserRouteConfiguration<
+    TPathParameters & TQueryParameters
+  > = SimpluxBrowserRouteConfiguration<TPathParameters & TQueryParameters>
 >(
   urlTemplate: string,
-  routeConfiguration?: SimpluxBrowserRouteConfiguration<
-    TPathParameters & TQueryParameters
-  >,
-): SimpluxBrowserRoute<TPathParameters & TQueryParameters>
+  routeConfiguration?: TConfiguration,
+): SimpluxBrowserRoute<TPathParameters & TQueryParameters, TConfiguration>
 
 /**
  * A router that allows navigating between different routes by

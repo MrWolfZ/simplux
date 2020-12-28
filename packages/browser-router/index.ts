@@ -8,7 +8,7 @@ export type {
   NavigationParameters,
   NavigationResult,
   OnNavigateTo,
-  OnNavigateToArgs,
+  OnNavigateToExtras,
   RequiredPropertyNames,
   SimpluxRoute,
   SimpluxRouteConfiguration,

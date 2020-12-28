@@ -24,15 +24,19 @@ describe(`route`, () => {
   const isActiveMock = jest.fn()
   const parameterValuesMock = jest.fn()
 
-  const mockRoute: SimpluxRoute = {
+  const mockRoute: SimpluxRoute<{}> = {
     id: 1,
     name: 'testRoute',
     isActive: isActiveMock as any,
     parameterValues: parameterValuesMock as any,
     navigateTo: undefined!,
+    onNavigateTo: undefined,
   }
 
-  const routerAddMock = jest.fn().mockReturnValue(mockRoute)
+  const routerAddMock = jest
+    .fn()
+    .mockImplementation((_, config = {}) => ({ ...mockRoute, ...config }))
+
   const moduleAddMock = jest.fn()
   const moduleNavigateToIdMock = jest.fn().mockResolvedValue(undefined)
 
@@ -180,6 +184,23 @@ describe(`route`, () => {
                 `queryParam=${parameterValues.queryParam}`,
               )}`,
           )
+        })
+      })
+
+      describe('onNavigateTo', () => {
+        it('is the passed callback', () => {
+          const onNavigateTo = jest.fn()
+          const testRoute = addRoute(routeTemplateWithPathParameters, {
+            onNavigateTo,
+          })
+
+          expect(testRoute.onNavigateTo).toBe(onNavigateTo)
+        })
+
+        it('is undefined if no callback was passed', () => {
+          const testRoute = addRoute(routeTemplateWithPathParameters)
+
+          expect(testRoute.onNavigateTo).toBe(undefined)
         })
       })
     })
