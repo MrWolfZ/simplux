@@ -620,6 +620,36 @@ describe(`module`, () => {
 
         expect(activateMock).not.toHaveBeenCalled()
       })
+
+      it('rejects the navigation if onNavigateTo throws', async () => {
+        const [activateMock] = mockMutation(_module.activateRoute, jest.fn())
+
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: () => {
+            throw new Error()
+          },
+        }))
+
+        const parameterValues = { param: 'value' }
+        const promise = _module.navigateToRoute(1, parameterValues)
+
+        await expect(promise).rejects.toBeDefined()
+        expect(activateMock).not.toHaveBeenCalled()
+      })
+
+      it('rejects the navigation if onNavigateTo rejects', async () => {
+        const [activateMock] = mockMutation(_module.activateRoute, jest.fn())
+
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: () => Promise.reject(new Error()),
+        }))
+
+        const parameterValues = { param: 'value' }
+        const promise = _module.navigateToRoute(1, parameterValues)
+
+        await expect(promise).rejects.toBeDefined()
+        expect(activateMock).not.toHaveBeenCalled()
+      })
     })
 
     describe('onNavigateTo interceptors', () => {

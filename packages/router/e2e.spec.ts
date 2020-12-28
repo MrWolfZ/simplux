@@ -95,6 +95,19 @@ describe(`@simplux/router`, () => {
       },
     })
 
+    const routeThatThrowsSync = router.addRoute('syncThrow', {
+      onNavigateTo: () => {
+        throw new Error()
+      },
+    })
+
+    const routeThatThrowsAsync = router.addRoute('asyncThrow', {
+      onNavigateTo: async () => {
+        await Promise.resolve()
+        throw new Error()
+      },
+    })
+
     expect(router.anyRouteIsActive()).toBe(false)
 
     await testRoute1.navigateTo()
@@ -182,5 +195,11 @@ describe(`@simplux/router`, () => {
     await expect(redirectedCancelAsync).resolves.toBe(NAVIGATION_CANCELLED)
     expect(routeThatRedirectsNavAsync.isActive()).toBe(false)
     expect(testRoute2.isActive()).toBe(true)
+
+    const syncThrowNav = routeThatThrowsSync.navigateTo()
+    await expect(syncThrowNav).rejects.toBeDefined()
+
+    const asyncThrowNav = routeThatThrowsAsync.navigateTo()
+    await expect(asyncThrowNav).rejects.toBeDefined()
   })
 })
