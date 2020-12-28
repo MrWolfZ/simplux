@@ -9,6 +9,7 @@ import {
   emptyRouterState,
   rootRouteTemplate,
   routeTemplateForCancellation,
+  routeTemplateThatCancelsNav,
   routeTemplateWithOnlyOptionalQueryParameter,
   routeTemplateWithOnNavigateTo,
   routeTemplateWithOnNavigateToAndParameters,
@@ -120,7 +121,21 @@ describe(`@simplux/browser-router`, () => {
     })
 
     // tslint:disable-next-line: no-floating-promises
-    routeForCancellation.onNavigateTo({}, { cancelled: undefined! })
+    routeForCancellation.onNavigateTo(
+      {},
+      { cancelled: undefined!, cancelNavigation: NAVIGATION_CANCELLED },
+    )
+
+    const routeThatCancelsNav = router.addRoute(routeTemplateThatCancelsNav, {
+      onNavigateTo: (_, { cancelNavigation }) => {
+        return Promise.resolve(cancelNavigation)
+      },
+    })
+
+    await routeThatCancelsNav.onNavigateTo(
+      {},
+      { cancelled: undefined!, cancelNavigation: NAVIGATION_CANCELLED },
+    )
 
     expect(router.anyRouteIsActive()).toBe(false)
 
@@ -236,6 +251,9 @@ describe(`@simplux/browser-router`, () => {
 
     const finishedNav = rootRoute.navigateTo()
     await expect(finishedNav).resolves.toBe(NAVIGATION_FINISHED)
+
+    const cancelledNav = routeThatCancelsNav.navigateTo()
+    await expect(cancelledNav).resolves.toBe(NAVIGATION_CANCELLED)
 
     router.activate(window)
 

@@ -1,4 +1,4 @@
-import { getSimpluxRouter, SimpluxRoute } from '@simplux/router'
+import { getSimpluxRouter, SimpluxRoute, SIMPLUX_ROUTE } from '@simplux/router'
 import {
   clearAllSimpluxMocks,
   mockEffect,
@@ -31,6 +31,7 @@ describe(`route`, () => {
     parameterValues: parameterValuesMock as any,
     navigateTo: undefined!,
     onNavigateTo: undefined,
+    [SIMPLUX_ROUTE]: undefined!,
   }
 
   const routerAddMock = jest
