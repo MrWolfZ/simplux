@@ -10,7 +10,10 @@
         "${fileBasename}",
         "--runInBand",
         "--forceExit",
-        "--detectOpenHandles"
+        "--detectOpenHandles",
+        "--no-cache",
+        "--colors",
+        "--config=./jest.config.js"
       ],
       "cwd": "${fileDirname}",
       "console": "integratedTerminal",
