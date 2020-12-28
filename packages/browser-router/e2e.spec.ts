@@ -3,6 +3,7 @@
 import {
   getSimpluxBrowserRouter,
   NAVIGATION_CANCELLED,
+  NAVIGATION_FINISHED,
 } from '@simplux/browser-router'
 import {
   emptyRouterState,
@@ -232,6 +233,9 @@ describe(`@simplux/browser-router`, () => {
       },
       addEventListener: jest.fn(),
     }
+
+    const finishedNav = rootRoute.navigateTo()
+    await expect(finishedNav).resolves.toBe(NAVIGATION_FINISHED)
 
     router.activate(window)
 

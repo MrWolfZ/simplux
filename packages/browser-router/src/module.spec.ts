@@ -1278,7 +1278,7 @@ describe(`module`, () => {
         await expect(result).rejects.toBeDefined()
       })
 
-      it('ignores the navigation if the url is equal to the current navigation URL', async () => {
+      it('cancels the navigation if the url is equal to the current navigation URL', async () => {
         const currentNavigationUrl = `/root/nested`
 
         const state: _BrowserRouterState = {
@@ -1291,9 +1291,10 @@ describe(`module`, () => {
 
         mockModuleState(_module, state)
 
-        await _module.navigateToRouteByUrl(currentNavigationUrl)
+        const result = await _module.navigateToRouteByUrl(currentNavigationUrl)
 
         expect(routerNavByIdMock).not.toHaveBeenCalled()
+        expect(result).toBe(NAVIGATION_CANCELLED)
       })
     })
 

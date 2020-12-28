@@ -160,7 +160,7 @@ const effects = createEffects({
     url = !url || url === '/' ? '' : url.startsWith('/') ? url : `/${url}`
 
     if (url === selectors.state().currentNavigationUrl) {
-      return
+      return NAVIGATION_CANCELLED
     }
 
     const result = selectors.routeIdAndParametersByUrl(url)
@@ -174,6 +174,7 @@ const effects = createEffects({
       )
     } else {
       // should this throw?
+      return NAVIGATION_CANCELLED
     }
   },
 
