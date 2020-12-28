@@ -1,5 +1,5 @@
 import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
-import { SimpluxRouterState, _module } from './module.js'
+import { _module, _RouterState } from './module.js'
 import { SimpluxRoute, _routeEffects } from './route.js'
 import {
   routeName1,
@@ -55,7 +55,7 @@ describe(`route`, () => {
 
     describe('created route', () => {
       describe(keyOf<SimpluxRoute>('isActive'), () => {
-        const stateWithActiveRoute: SimpluxRouterState = {
+        const stateWithActiveRoute: _RouterState = {
           ...routerStateWithTwoRoutes,
           activeRouteId: 1,
         }
@@ -63,21 +63,25 @@ describe(`route`, () => {
         it('returns true if route is active', () => {
           mockEffect(_module.registerRoute, () => 1)
           const testRoute = addRoute(routeName1)
-          const isActive = testRoute.isActive.withState(stateWithActiveRoute)
+          const isActive = testRoute.isActive.withState(
+            stateWithActiveRoute as never,
+          )
           expect(isActive).toBe(true)
         })
 
         it('returns false if route is inactive', () => {
           mockEffect(_module.registerRoute, () => 2)
           const testRoute = addRoute(routeName2)
-          const isActive = testRoute.isActive.withState(stateWithActiveRoute)
+          const isActive = testRoute.isActive.withState(
+            stateWithActiveRoute as never,
+          )
           expect(isActive).toBe(false)
         })
       })
 
       describe(keyOf<SimpluxRoute>('parameterValues'), () => {
         const parameterValues = { param: 1 }
-        const stateWithActiveRoute: SimpluxRouterState = {
+        const stateWithActiveRoute: _RouterState = {
           ...routerStateWithTwoRoutes,
           activeRouteId: 1,
           activeRouteParameterValues: parameterValues,
@@ -87,7 +91,7 @@ describe(`route`, () => {
           mockEffect(_module.registerRoute, () => 1)
           const testRoute = addRoute(routeName1)
           const result = testRoute.parameterValues.withState(
-            stateWithActiveRoute,
+            stateWithActiveRoute as never,
           )
 
           expect(result).toEqual(parameterValues)
@@ -107,7 +111,7 @@ describe(`route`, () => {
           const result = testRoute.parameterValues.withState({
             ...stateWithActiveRoute,
             activeRouteParameterValues: parameterValues,
-          })
+          } as never)
 
           expect(result.str).toBe(parameterValues.str)
           expect(result.num).toBe(parameterValues.num)
@@ -119,7 +123,7 @@ describe(`route`, () => {
           mockEffect(_module.registerRoute, () => 2)
           const testRoute = addRoute(routeName2)
           expect(() =>
-            testRoute.parameterValues.withState(stateWithActiveRoute),
+            testRoute.parameterValues.withState(stateWithActiveRoute as never),
           ).toThrow()
         })
       })

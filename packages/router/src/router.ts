@@ -1,11 +1,10 @@
 import type { Immutable, SimpluxEffect, SimpluxSelector } from '@simplux/core'
 import {
+  NavigationParameters,
   NavigationResult,
-  SimpluxRouteId,
-  SimpluxRouteName,
-  SimpluxRouterState,
   _module,
-  _NavigationParameters,
+  _RouteId,
+  _RouterState,
 } from './module.js'
 import {
   SimpluxRoute,
@@ -25,18 +24,14 @@ export interface SimpluxRouterSelectors {
    *
    * @returns `true` if any route is currently active, otherwise `false`
    */
-  readonly anyRouteIsActive: SimpluxSelector<SimpluxRouterState, [], boolean>
+  readonly anyRouteIsActive: SimpluxSelector<never, [], boolean>
 
   /**
    * A selector to check if a navigation is currently in progress.
    *
    * @returns `true` if a navigation is in progress, otherwise `false`
    */
-  readonly navigationIsInProgress: SimpluxSelector<
-    SimpluxRouterState,
-    [],
-    boolean
-  >
+  readonly navigationIsInProgress: SimpluxSelector<never, [], boolean>
 }
 
 /**
@@ -52,11 +47,7 @@ export interface SimpluxRouter extends SimpluxRouterSelectors {
    *
    * @internal
    */
-  readonly state: SimpluxSelector<
-    SimpluxRouterState,
-    [],
-    Immutable<SimpluxRouterState>
-  >
+  readonly state: SimpluxSelector<_RouterState, [], Immutable<_RouterState>>
 
   /**
    * Add a new route to the router.
@@ -67,8 +58,8 @@ export interface SimpluxRouter extends SimpluxRouterSelectors {
    * @returns a route object for interacting with the route
    */
   readonly addRoute: SimpluxEffect<
-    <TParameters extends _NavigationParameters = {}>(
-      name: SimpluxRouteName,
+    <TParameters extends NavigationParameters = {}>(
+      name: string,
       routeConfiguration?: SimpluxRouteConfiguration<TParameters>,
     ) => SimpluxRoute<TParameters>
   >
@@ -83,8 +74,8 @@ export interface SimpluxRouter extends SimpluxRouterSelectors {
    */
   readonly navigateToRouteById: SimpluxEffect<
     (
-      routeId: SimpluxRouteId,
-      parameters?: Readonly<_NavigationParameters>,
+      routeId: _RouteId,
+      parameters?: Readonly<NavigationParameters>,
     ) => NavigationResult
   >
 }
@@ -92,8 +83,8 @@ export interface SimpluxRouter extends SimpluxRouterSelectors {
 // tslint:disable-next-line:variable-name (internal export)
 export const _router: SimpluxRouter = {
   state: _module.state,
-  anyRouteIsActive: _module.anyRouteIsActive,
-  navigationIsInProgress: _module.navigationIsInProgress,
+  anyRouteIsActive: _module.anyRouteIsActive as any,
+  navigationIsInProgress: _module.navigationIsInProgress as any,
   addRoute: _routeEffects.addRoute,
   navigateToRouteById: _module.navigateToRoute,
 }

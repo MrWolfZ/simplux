@@ -9,23 +9,23 @@ import type { SimpluxRouteConfiguration } from './route.js'
 /**
  * The name of a simplux route.
  *
- * @public
+ * @internal
  */
-export type SimpluxRouteName = string
+export type _RouteName = string
 
 /**
  * The ID of a simplux route.
  *
- * @public
+ * @internal
  */
-export type SimpluxRouteId = number
+export type _RouteId = number
 
 /**
- * Helper type to distinguish navigation parameter values.
+ * Base type for navigation parameters.
  *
  * @public
  */
-export type _NavigationParameters = Readonly<Record<string, any>>
+export type NavigationParameters = Readonly<Record<string, any>>
 
 /**
  * The result of a route navigation.
@@ -62,7 +62,7 @@ export interface OnNavigateToArgs<TParameters> {
  *
  * @public
  */
-export type OnNavigateTo<TParameters = _NavigationParameters> = (
+export type OnNavigateTo<TParameters = NavigationParameters> = (
   args: OnNavigateToArgs<TParameters>,
 ) => void | Promise<void>
 
@@ -76,38 +76,38 @@ export const NAVIGATION_CANCELLED = Symbol('NAVIGATION_CANCELLED')
 /**
  * The state of a simplux route.
  *
- * @public
+ * @internal
  */
-export interface SimpluxRouteState {
+export interface _RouteState {
   /**
    * The name of the route.
    */
-  readonly name: SimpluxRouteName
+  readonly name: _RouteName
 }
 
 /**
  * The state of the simplux router.
  *
- * @public
+ * @internal
  */
-export interface SimpluxRouterState {
+export interface _RouterState {
   /**
    * All registered routes.
    */
-  readonly routes: SimpluxRouteState[]
+  readonly routes: _RouteState[]
 
   /**
    * The id of the currently active route (or `undefined` if
    * no route is currently active, e.g. after creating the
    * router).
    */
-  activeRouteId: SimpluxRouteId | undefined
+  activeRouteId: _RouteId | undefined
 
   /**
    * The parameter values for the currently active route. Will
    * be `{}` while no route is active.
    */
-  activeRouteParameterValues: _NavigationParameters
+  activeRouteParameterValues: NavigationParameters
 
   /**
    * Indicates whether a navigation is currently in progress.
@@ -115,7 +115,7 @@ export interface SimpluxRouterState {
   navigationIsInProgress: boolean
 }
 
-const initialState: SimpluxRouterState = {
+const initialState: _RouterState = {
   routes: [],
   activeRouteId: undefined,
   activeRouteParameterValues: {},
@@ -125,7 +125,7 @@ const initialState: SimpluxRouterState = {
 const routerModule = createSimpluxModule('router', initialState)
 
 const mutations = createMutations(routerModule, {
-  addRoute: ({ routes }, name: SimpluxRouteName) => {
+  addRoute: ({ routes }, name: _RouteName) => {
     routes.push({
       name,
     })
@@ -133,8 +133,8 @@ const mutations = createMutations(routerModule, {
 
   activateRoute: (
     state,
-    routeId: SimpluxRouteId,
-    parameters: _NavigationParameters,
+    routeId: _RouteId,
+    parameters: NavigationParameters,
   ) => {
     state.activeRouteId = routeId
     state.activeRouteParameterValues = parameters
@@ -153,12 +153,12 @@ const selectors = createSelectors(routerModule, {
   navigationIsInProgress: ({ navigationIsInProgress }) =>
     navigationIsInProgress,
 
-  routeIsActive: ({ activeRouteId }, routeId: SimpluxRouteId) =>
+  routeIsActive: ({ activeRouteId }, routeId: _RouteId) =>
     activeRouteId === routeId,
 
   routeParameterValues: (
     { routes, activeRouteId, activeRouteParameterValues },
-    routeId: SimpluxRouteId,
+    routeId: _RouteId,
   ) => {
     const route = routes[routeId - 1]
 
@@ -181,7 +181,7 @@ const selectors = createSelectors(routerModule, {
 })
 
 type OnNavigateToInterceptors = {
-  [routeId in SimpluxRouteId]?: OnNavigateTo
+  [routeId in _RouteId]?: OnNavigateTo
 }
 
 let onNavigateToInterceptors: OnNavigateToInterceptors = {}
@@ -189,9 +189,9 @@ let cancelNavigationInProgress: (() => void) | undefined
 
 const effects = createEffects({
   registerRoute: (
-    name: SimpluxRouteName,
+    name: _RouteName,
     configuration?: SimpluxRouteConfiguration<any>,
-  ): SimpluxRouteId => {
+  ): _RouteId => {
     const updatedState = mutations.addRoute(name)
     const routeId = updatedState.routes.length
 
@@ -205,8 +205,8 @@ const effects = createEffects({
   },
 
   navigateToRoute: async (
-    routeId: SimpluxRouteId,
-    parameters?: _NavigationParameters,
+    routeId: _RouteId,
+    parameters?: NavigationParameters,
   ): NavigationResult => {
     effects.cancelNavigationInProgress()
 
@@ -215,7 +215,7 @@ const effects = createEffects({
     const onNavigateTo = effects.getOnNavigateToInterceptors()[routeId]
     const cancellationPromise = effects.createNavigationCancellationPromise()
 
-    const onNavigateToArgs: OnNavigateToArgs<_NavigationParameters> = {
+    const onNavigateToArgs: OnNavigateToArgs<NavigationParameters> = {
       parameters: parameters || {},
       cancelled: cancellationPromise,
     }
@@ -249,7 +249,7 @@ const effects = createEffects({
   },
 
   addOnNavigateToInterceptor: (
-    routeId: SimpluxRouteId,
+    routeId: _RouteId,
     interceptor: OnNavigateTo,
   ) => {
     onNavigateToInterceptors[routeId] = interceptor

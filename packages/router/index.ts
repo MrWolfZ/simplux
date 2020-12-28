@@ -2,20 +2,20 @@ import { SimpluxRouter, _router } from './src/router.js'
 
 export { NAVIGATION_CANCELLED } from './src/module.js'
 export type {
+  NavigationParameters,
   NavigationResult,
   OnNavigateTo,
   OnNavigateToArgs,
-  SimpluxRouteId,
-  SimpluxRouteName,
-  SimpluxRouterState,
-  SimpluxRouteState,
-  _NavigationParameters,
+  _RouteId,
+  _RouteName,
+  _RouterState,
+  _RouteState,
 } from './src/module.js'
 export type {
   NavigateToFn,
+  RequiredPropertyNames,
   SimpluxRoute,
   SimpluxRouteConfiguration,
-  _RequiredPropertyNames,
 } from './src/route.js'
 export type { SimpluxRouter, SimpluxRouterSelectors } from './src/router.js'
 

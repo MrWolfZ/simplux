@@ -5,13 +5,12 @@ import {
   SimpluxSelector,
 } from '@simplux/core'
 import {
+  NavigationParameters,
   NavigationResult,
   OnNavigateTo,
-  SimpluxRouteId,
-  SimpluxRouteName,
-  SimpluxRouterState,
   _module,
-  _NavigationParameters,
+  _RouteId,
+  _RouteName,
 } from './module.js'
 
 /**
@@ -31,7 +30,7 @@ export interface SimpluxRouteConfiguration<TParameters> {
  *
  * @public
  */
-export type _RequiredPropertyNames<T> = {
+export type RequiredPropertyNames<T> = {
   [K in keyof T]-?: undefined extends T[K] ? never : K
 }[keyof T]
 
@@ -42,7 +41,7 @@ export type _RequiredPropertyNames<T> = {
  */
 export type NavigateToFn<TParameters> = keyof TParameters extends never
   ? () => NavigationResult
-  : _RequiredPropertyNames<TParameters> extends never
+  : RequiredPropertyNames<TParameters> extends never
   ? (parameters?: TParameters) => NavigationResult
   : (parameters: TParameters) => NavigationResult
 
@@ -57,19 +56,19 @@ export interface SimpluxRoute<TParameters = {}> {
    *
    * @internal
    */
-  readonly id: SimpluxRouteId
+  readonly id: _RouteId
 
   /**
-   * The name of the route.
+   * The unique name of the route.
    */
-  readonly name: SimpluxRouteName
+  readonly name: string
 
   /**
    * A selector for checking if the route is active.
    *
    * @returns `true` if the route is active, otherwise `false`
    */
-  readonly isActive: SimpluxSelector<SimpluxRouterState, [], boolean>
+  readonly isActive: SimpluxSelector<never, [], boolean>
 
   /**
    * A selector for getting the parameter values for this route.
@@ -77,7 +76,7 @@ export interface SimpluxRoute<TParameters = {}> {
    *
    * @returns the current parameters for the route (if it is active)
    */
-  readonly parameterValues: SimpluxSelector<SimpluxRouterState, [], TParameters>
+  readonly parameterValues: SimpluxSelector<never, [], TParameters>
 
   /**
    * Navigate to this route with the given parameters.
@@ -89,8 +88,8 @@ export interface SimpluxRoute<TParameters = {}> {
 
 // tslint:disable-next-line:variable-name (internal export)
 export const _routeEffects = createEffects({
-  addRoute: <TParameters extends _NavigationParameters = {}>(
-    name: SimpluxRouteName,
+  addRoute: <TParameters extends NavigationParameters = {}>(
+    name: _RouteName,
     configuration?: SimpluxRouteConfiguration<TParameters>,
   ): SimpluxRoute<TParameters> => {
     const routeId = _module.registerRoute(name, configuration)
@@ -112,7 +111,8 @@ export const _routeEffects = createEffects({
     return {
       id: routeId,
       name,
-      ...selectors,
+      isActive: selectors.isActive as any,
+      parameterValues: selectors.parameterValues as any,
       navigateTo: navigateTo as SimpluxEffect<NavigateToFn<TParameters>>,
     }
   },

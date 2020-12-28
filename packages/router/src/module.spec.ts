@@ -4,11 +4,11 @@ import {
   mockMutation,
 } from '@simplux/testing'
 import {
+  NavigationParameters,
   NAVIGATION_CANCELLED,
   OnNavigateToArgs,
-  SimpluxRouterState,
   _module,
-  _NavigationParameters,
+  _RouterState,
 } from './module.js'
 import {
   emptyRouterState,
@@ -89,7 +89,7 @@ describe(`module`, () => {
       })
 
       it('overwrites the active route ID', () => {
-        const stateWithActiveRoute: SimpluxRouterState = {
+        const stateWithActiveRoute: _RouterState = {
           ...routerStateWithTwoRoutes,
           activeRouteId: 2,
         }
@@ -104,7 +104,7 @@ describe(`module`, () => {
       })
 
       it('overwrites the active parameters', () => {
-        const stateWithActiveRoute: SimpluxRouterState = {
+        const stateWithActiveRoute: _RouterState = {
           ...routerStateWithTwoRoutes,
           activeRouteId: 2,
           activeRouteParameterValues: { param: 'value' },
@@ -124,7 +124,7 @@ describe(`module`, () => {
       })
 
       it('updates the parameter values if the route was already active', () => {
-        const stateWithActiveRoute: SimpluxRouterState = {
+        const stateWithActiveRoute: _RouterState = {
           ...routerStateWithRoute1,
           activeRouteId: 1,
           activeRouteParameterValues: { param: 'value' },
@@ -159,7 +159,7 @@ describe(`module`, () => {
   describe('selectors', () => {
     describe(_module.anyRouteIsActive, () => {
       it('returns true for an active route', () => {
-        const state: SimpluxRouterState = {
+        const state: _RouterState = {
           ...routerStateWithTwoRoutes,
           activeRouteId: 1,
           activeRouteParameterValues: {},
@@ -178,7 +178,7 @@ describe(`module`, () => {
 
     describe(_module.navigationIsInProgress, () => {
       it('returns true if navigation is in progress', () => {
-        const state: SimpluxRouterState = {
+        const state: _RouterState = {
           ...routerStateWithTwoRoutes,
           navigationIsInProgress: true,
         }
@@ -195,7 +195,7 @@ describe(`module`, () => {
     })
 
     describe(_module.routeIsActive, () => {
-      const stateWithActiveRoute: SimpluxRouterState = {
+      const stateWithActiveRoute: _RouterState = {
         ...routerStateWithTwoRoutes,
         activeRouteId: 1,
         activeRouteParameterValues: {},
@@ -228,7 +228,7 @@ describe(`module`, () => {
 
     describe(_module.routeParameterValues, () => {
       const parameterValues = { param: 1 }
-      const stateWithActiveRoute: SimpluxRouterState = {
+      const stateWithActiveRoute: _RouterState = {
         ...routerStateWithTwoRoutes,
         activeRouteId: 1,
         activeRouteParameterValues: parameterValues,
@@ -511,7 +511,7 @@ describe(`module`, () => {
         createCancelPromiseMock.mockReturnValueOnce(cancelPromise)
 
         const interceptor = jest
-          .fn<Promise<void>, [OnNavigateToArgs<_NavigationParameters>]>()
+          .fn<Promise<void>, [OnNavigateToArgs<NavigationParameters>]>()
           .mockImplementationOnce(({ cancelled }) => {
             cancellationPromise = cancelled
             return new Promise<void>(() => {})

@@ -12,19 +12,19 @@ import { SimpluxSelector } from '@simplux/core';
 export function getSimpluxRouter(): SimpluxRouter;
 
 // @public
-export type NavigateToFn<TParameters> = keyof TParameters extends never ? () => NavigationResult : _RequiredPropertyNames<TParameters> extends never ? (parameters?: TParameters) => NavigationResult : (parameters: TParameters) => NavigationResult;
+export type NavigateToFn<TParameters> = keyof TParameters extends never ? () => NavigationResult : RequiredPropertyNames<TParameters> extends never ? (parameters?: TParameters) => NavigationResult : (parameters: TParameters) => NavigationResult;
 
 // @public
 export const NAVIGATION_CANCELLED: unique symbol;
 
 // @public
-export type _NavigationParameters = Readonly<Record<string, any>>;
+export type NavigationParameters = Readonly<Record<string, any>>;
 
 // @public
 export type NavigationResult = Promise<typeof NAVIGATION_CANCELLED | void>;
 
 // @public
-export type OnNavigateTo<TParameters = _NavigationParameters> = (args: OnNavigateToArgs<TParameters>) => void | Promise<void>;
+export type OnNavigateTo<TParameters = NavigationParameters> = (args: OnNavigateToArgs<TParameters>) => void | Promise<void>;
 
 // @public
 export interface OnNavigateToArgs<TParameters> {
@@ -33,18 +33,37 @@ export interface OnNavigateToArgs<TParameters> {
 }
 
 // @public
-export type _RequiredPropertyNames<T> = {
+export type RequiredPropertyNames<T> = {
     [K in keyof T]-?: undefined extends T[K] ? never : K;
 }[keyof T];
+
+// @internal
+export type _RouteId = number;
+
+// @internal
+export type _RouteName = string;
+
+// @internal
+export interface _RouterState {
+    activeRouteId: _RouteId | undefined;
+    activeRouteParameterValues: NavigationParameters;
+    navigationIsInProgress: boolean;
+    readonly routes: _RouteState[];
+}
+
+// @internal
+export interface _RouteState {
+    readonly name: _RouteName;
+}
 
 // @public
 export interface SimpluxRoute<TParameters = {}> {
     // @internal
-    readonly id: SimpluxRouteId;
-    readonly isActive: SimpluxSelector<SimpluxRouterState, [], boolean>;
-    readonly name: SimpluxRouteName;
+    readonly id: _RouteId;
+    readonly isActive: SimpluxSelector<never, [], boolean>;
+    readonly name: string;
     readonly navigateTo: SimpluxEffect<NavigateToFn<TParameters>>;
-    readonly parameterValues: SimpluxSelector<SimpluxRouterState, [], TParameters>;
+    readonly parameterValues: SimpluxSelector<never, [], TParameters>;
 }
 
 // @public
@@ -53,39 +72,18 @@ export interface SimpluxRouteConfiguration<TParameters> {
 }
 
 // @public
-export type SimpluxRouteId = number;
-
-// @public
-export type SimpluxRouteName = string;
-
-// @public
 export interface SimpluxRouter extends SimpluxRouterSelectors {
-    readonly addRoute: SimpluxEffect<(<TParameters extends _NavigationParameters = {}>(name: SimpluxRouteName, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TParameters>)>;
+    readonly addRoute: SimpluxEffect<(<TParameters extends NavigationParameters = {}>(name: string, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TParameters>)>;
     // @internal
-    readonly navigateToRouteById: SimpluxEffect<(routeId: SimpluxRouteId, parameters?: Readonly<_NavigationParameters>) => NavigationResult>;
+    readonly navigateToRouteById: SimpluxEffect<(routeId: _RouteId, parameters?: Readonly<NavigationParameters>) => NavigationResult>;
     // @internal
-    readonly state: SimpluxSelector<SimpluxRouterState, [
-    ], Immutable<SimpluxRouterState>>;
+    readonly state: SimpluxSelector<_RouterState, [], Immutable<_RouterState>>;
 }
 
 // @public
 export interface SimpluxRouterSelectors {
-    readonly anyRouteIsActive: SimpluxSelector<SimpluxRouterState, [], boolean>;
-    readonly navigationIsInProgress: SimpluxSelector<SimpluxRouterState, [
-    ], boolean>;
-}
-
-// @public
-export interface SimpluxRouterState {
-    activeRouteId: SimpluxRouteId | undefined;
-    activeRouteParameterValues: _NavigationParameters;
-    navigationIsInProgress: boolean;
-    readonly routes: SimpluxRouteState[];
-}
-
-// @public
-export interface SimpluxRouteState {
-    readonly name: SimpluxRouteName;
+    readonly anyRouteIsActive: SimpluxSelector<never, [], boolean>;
+    readonly navigationIsInProgress: SimpluxSelector<never, [], boolean>;
 }
 
 
