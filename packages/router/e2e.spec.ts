@@ -84,6 +84,17 @@ describe(`@simplux/router`, () => {
       },
     })
 
+    const routeThatRedirectsNavSync = router.addRoute('syncRedirect', {
+      onNavigateTo: () => testRoute1.navigateTo(),
+    })
+
+    const routeThatRedirectsNavAsync = router.addRoute('asyncRedirect', {
+      onNavigateTo: async () => {
+        await Promise.resolve()
+        return testRoute2.navigateTo()
+      },
+    })
+
     expect(router.anyRouteIsActive()).toBe(false)
 
     await testRoute1.navigateTo()
@@ -157,8 +168,19 @@ describe(`@simplux/router`, () => {
 
     const shouldFinish = routeThatCancelsNavIfActive.navigateTo()
     await expect(shouldFinish).resolves.toBe(NAVIGATION_FINISHED)
+    expect(routeThatCancelsNavIfActive.isActive()).toBe(true)
 
     const shouldCancel = routeThatCancelsNavIfActive.navigateTo()
     await expect(shouldCancel).resolves.toBe(NAVIGATION_CANCELLED)
+
+    const redirectedCancelSync = routeThatRedirectsNavSync.navigateTo()
+    await expect(redirectedCancelSync).resolves.toBe(NAVIGATION_CANCELLED)
+    expect(routeThatRedirectsNavSync.isActive()).toBe(false)
+    expect(testRoute1.isActive()).toBe(true)
+
+    const redirectedCancelAsync = routeThatRedirectsNavAsync.navigateTo()
+    await expect(redirectedCancelAsync).resolves.toBe(NAVIGATION_CANCELLED)
+    expect(routeThatRedirectsNavAsync.isActive()).toBe(false)
+    expect(testRoute2.isActive()).toBe(true)
   })
 })

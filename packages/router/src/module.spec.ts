@@ -561,6 +561,65 @@ describe(`module`, () => {
 
         await expect(promise).resolves.toBe(NAVIGATION_CANCELLED)
       })
+
+      it('cancels navigation if onNavigateTo redirects navigation synchronously', async () => {
+        const [activateMock] = mockMutation(_module.activateRoute, jest.fn())
+        const [mock] = mockEffect(
+          _module.createNavigationCancellationPromise,
+          jest.fn(),
+        )
+
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: () => {
+            cancelNav()
+            return NAVIGATION_FINISHED
+          },
+        }))
+
+        let cancelNav = () => {}
+        const cancelPromise = new Promise<typeof NAVIGATION_CANCELLED>(
+          (r) => (cancelNav = () => r(NAVIGATION_CANCELLED)),
+        )
+
+        mock.mockReturnValueOnce(cancelPromise)
+
+        const parameterValues = { param: 'value' }
+        const promise = _module.navigateToRoute(1, parameterValues)
+
+        await promise
+
+        expect(activateMock).not.toHaveBeenCalled()
+      })
+
+      it('cancels navigation if onNavigateTo redirects navigation asynchronously', async () => {
+        const [activateMock] = mockMutation(_module.activateRoute, jest.fn())
+        const [mock] = mockEffect(
+          _module.createNavigationCancellationPromise,
+          jest.fn(),
+        )
+
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: async () => {
+            cancelNav()
+            await Promise.resolve()
+            return NAVIGATION_FINISHED as any
+          },
+        }))
+
+        let cancelNav = () => {}
+        const cancelPromise = new Promise<typeof NAVIGATION_CANCELLED>(
+          (r) => (cancelNav = () => r(NAVIGATION_CANCELLED)),
+        )
+
+        mock.mockReturnValueOnce(cancelPromise)
+
+        const parameterValues = { param: 'value' }
+        const promise = _module.navigateToRoute(1, parameterValues)
+
+        await promise
+
+        expect(activateMock).not.toHaveBeenCalled()
+      })
     })
 
     describe('onNavigateTo interceptors', () => {

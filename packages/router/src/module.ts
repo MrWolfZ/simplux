@@ -87,8 +87,9 @@ export type OnNavigateTo<
   extras: TExtras,
 ) =>
   | void
+  | typeof NAVIGATION_FINISHED
   | typeof NAVIGATION_CANCELLED
-  | Promise<void | typeof NAVIGATION_CANCELLED>
+  | Promise<void | typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED>
 
 /**
  * The state of a simplux route.
@@ -242,7 +243,7 @@ const effects = createEffects({
       cancellationPromise,
     ])
 
-    if (result === NAVIGATION_CANCELLED) {
+    if (result === NAVIGATION_CANCELLED || result === NAVIGATION_FINISHED) {
       return NAVIGATION_CANCELLED
     }
 
