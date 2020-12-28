@@ -1,4 +1,9 @@
-import { createEffects, createSelectors, SimpluxSelector } from '@simplux/core'
+import {
+  createEffects,
+  createSelectors,
+  Immutable,
+  SimpluxSelector,
+} from '@simplux/core'
 import {
   getSimpluxRouter,
   NavigateToFn,
@@ -7,8 +12,10 @@ import {
   RequiredPropertyNames,
   SimpluxRoute,
   SimpluxRouteConfiguration,
+  _RouteId,
 } from '@simplux/router'
-import { _module, _UrlTemplate } from './module.js'
+import type { _Url } from './location.js'
+import { _BrowserRouterState, _module, _UrlTemplate } from './module.js'
 import type { _ParsePathParameters } from './path.js'
 import type { _ParseQueryParameters } from './query.js'
 
@@ -130,8 +137,7 @@ function addRoute(
   _module.addRoute(route.id, urlTemplate)
 
   const selectors = createSelectors(_module, {
-    href: (state, parameterValues?: NavigationParameters) =>
-      _module.href.withState(state, route.id, parameterValues),
+    href: createMemoizedHrefFn(route.id),
   })
 
   const { navigateTo } = createEffects({
@@ -151,3 +157,42 @@ function addRoute(
 export const _routeEffects = createEffects({
   addRoute,
 })
+
+type HrefSelectorFn = (
+  state: Immutable<_BrowserRouterState>,
+  parameterValues: NavigationParameters | undefined,
+) => _Url
+
+function createMemoizedHrefFn(routeId: _RouteId): HrefSelectorFn {
+  let memParams: NavigationParameters | undefined
+  let memHref: _Url
+
+  const memoizedFunction: HrefSelectorFn = (state, newParams) => {
+    const needToRefresh = !memHref || !shallowEquals(memParams, newParams)
+
+    if (needToRefresh) {
+      memParams = newParams
+      memHref = _module.href.withState(state, routeId, newParams)
+    }
+
+    return memHref
+  }
+
+  return memoizedFunction
+}
+
+function shallowEquals(
+  left: NavigationParameters | undefined,
+  right: NavigationParameters | undefined,
+) {
+  if (left === right) {
+    return true
+  }
+
+  if (!left || !right) {
+    return false
+  }
+
+  const allKeys = Object.keys({ ...left, ...right })
+  return allKeys.every((key) => left[key] === right[key])
+}

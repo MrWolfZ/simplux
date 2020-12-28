@@ -186,6 +186,43 @@ describe(`route`, () => {
               )}`,
           )
         })
+
+        it('returns different result for different parameters (tests memoization)', () => {
+          const path = 'root/:pathParam?queryParam'
+
+          const state = makeBrowserRouterState({
+            pathTemplateSegments: [
+              'root',
+              {
+                parameterName: 'pathParam',
+                parameterType: 'string',
+              },
+            ],
+            queryParameters: [
+              {
+                parameterName: 'queryParam',
+                parameterType: 'string',
+                isOptional: false,
+              },
+            ],
+          })
+
+          mockModuleState(_module, state)
+
+          const testRoute = addRoute(path)
+
+          const href1 = testRoute.href({
+            pathParam: 'pathValue',
+            queryParam: 'queryValue',
+          })
+
+          const href2 = testRoute.href({
+            pathParam: 'pathValue2',
+            queryParam: 'queryValue2',
+          })
+
+          expect(href1).not.toEqual(href2)
+        })
       })
 
       describe('onNavigateTo', () => {
