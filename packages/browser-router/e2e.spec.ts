@@ -8,8 +8,6 @@ import {
 import {
   emptyRouterState,
   rootRouteTemplate,
-  routeTemplateForCancellation,
-  routeTemplateThatCancelsNav,
   routeTemplateWithOnlyOptionalQueryParameter,
   routeTemplateWithOnNavigateTo,
   routeTemplateWithOnNavigateToAndParameters,
@@ -113,7 +111,7 @@ describe(`@simplux/browser-router`, () => {
     })
 
     let cancelledNavigation = new Promise<typeof NAVIGATION_CANCELLED>(() => {})
-    const routeForCancellation = router.addRoute(routeTemplateForCancellation, {
+    const routeForCancellation = router.addRoute('root/forCancellation', {
       onNavigateTo: async (_, { cancelled }) => {
         cancelledNavigation = cancelled
         await new Promise<typeof NAVIGATION_CANCELLED>(() => {})
@@ -126,7 +124,7 @@ describe(`@simplux/browser-router`, () => {
       { cancelled: undefined!, cancelNavigation: NAVIGATION_CANCELLED },
     )
 
-    const routeThatCancelsNav = router.addRoute(routeTemplateThatCancelsNav, {
+    const routeThatCancelsNav = router.addRoute('root/cancelsNav', {
       onNavigateTo: (_, { cancelNavigation }) => {
         return Promise.resolve(cancelNavigation)
       },
@@ -136,6 +134,19 @@ describe(`@simplux/browser-router`, () => {
       {},
       { cancelled: undefined!, cancelNavigation: NAVIGATION_CANCELLED },
     )
+
+    const routeThatThrowsSync = router.addRoute('root/syncThrow', {
+      onNavigateTo: () => {
+        throw new Error()
+      },
+    })
+
+    const routeThatThrowsAsync = router.addRoute('root/asyncThrow', {
+      onNavigateTo: async () => {
+        await Promise.resolve()
+        throw new Error()
+      },
+    })
 
     expect(router.anyRouteIsActive()).toBe(false)
 
@@ -254,6 +265,15 @@ describe(`@simplux/browser-router`, () => {
 
     const cancelledNav = routeThatCancelsNav.navigateTo()
     await expect(cancelledNav).resolves.toBe(NAVIGATION_CANCELLED)
+
+    const syncThrowNav = routeThatThrowsSync.navigateTo()
+    await expect(syncThrowNav).rejects.toBeDefined()
+
+    const asyncThrowNav = routeThatThrowsAsync.navigateTo()
+    await expect(asyncThrowNav).rejects.toBeDefined()
+
+    const notExistsNav = router.navigateToUrl('/doesNotExist')
+    await expect(notExistsNav).rejects.toBeDefined()
 
     router.activate(window)
 

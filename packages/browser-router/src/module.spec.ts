@@ -1173,11 +1173,12 @@ describe(`module`, () => {
         expect(result).toBe(delegatedResult)
       })
 
-      it('ignores the navigation if no matching route path is found', async () => {
+      it('throws if no matching route path is found', async () => {
         mockSelector(_module.routeIdAndParametersByUrl, jest.fn())
 
-        await _module.navigateToRouteByUrl('/doesNotExist')
+        const promise = _module.navigateToRouteByUrl('/doesNotExist')
 
+        await expect(promise).rejects.toBeDefined()
         expect(navAndPushUrlMock).not.toHaveBeenCalled()
       })
 

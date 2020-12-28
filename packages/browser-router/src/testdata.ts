@@ -131,8 +131,6 @@ export const routeStateWithPathAndQueryParameters: _BrowserRouteState = {
 export const routeTemplateWithOnNavigateTo = 'root/withOnNavigateTo'
 export const routeTemplateWithOnNavigateToAndParameters =
   'root/withOnNavigateTo/:pathParam?queryParam'
-export const routeTemplateForCancellation = 'root/forCancellation'
-export const routeTemplateThatCancelsNav = 'root/cancelsNav'
 
 export function makeBrowserRouterState(
   ...routes: _BrowserRouteState[]

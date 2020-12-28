@@ -173,8 +173,7 @@ const effects = createEffects({
         url,
       )
     } else {
-      // should this throw?
-      return NAVIGATION_CANCELLED
+      throw new Error(`could not find matching route for URL ${url}`)
     }
   },
 
