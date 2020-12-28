@@ -76,6 +76,14 @@ describe(`@simplux/router`, () => {
       { cancelled: undefined!, cancelNavigation: NAVIGATION_CANCELLED },
     )
 
+    const routeThatCancelsNavIfActive = router.addRoute('asyncCancelIfActive', {
+      onNavigateTo: (_, { cancelNavigation }) => {
+        if (routeThatCancelsNavIfActive.isActive()) {
+          return Promise.resolve(cancelNavigation)
+        }
+      },
+    })
+
     expect(router.anyRouteIsActive()).toBe(false)
 
     await testRoute1.navigateTo()
@@ -146,5 +154,11 @@ describe(`@simplux/router`, () => {
 
     const cancelledNav = routeThatCancelsNav.navigateTo()
     await expect(cancelledNav).resolves.toBe(NAVIGATION_CANCELLED)
+
+    const shouldFinish = routeThatCancelsNavIfActive.navigateTo()
+    await expect(shouldFinish).resolves.toBe(NAVIGATION_FINISHED)
+
+    const shouldCancel = routeThatCancelsNavIfActive.navigateTo()
+    await expect(shouldCancel).resolves.toBe(NAVIGATION_CANCELLED)
   })
 })
