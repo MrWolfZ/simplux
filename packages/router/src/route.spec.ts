@@ -54,7 +54,26 @@ describe(`route`, () => {
     })
 
     describe('created route', () => {
-      describe(keyOf<SimpluxRoute>('isActive'), () => {
+      describe(keyOf<SimpluxRoute<any, any>>('onNavigateTo'), () => {
+        it('is the passed callback', () => {
+          mockEffect(_module.registerRoute, () => 1)
+
+          const onNavigateTo = jest.fn()
+          const testRoute = addRoute(routeName2, { onNavigateTo })
+
+          expect(testRoute.onNavigateTo).toBe(onNavigateTo)
+        })
+
+        it('is undefined if no callback was passed', () => {
+          mockEffect(_module.registerRoute, () => 1)
+
+          const testRoute = addRoute(routeName2, {})
+
+          expect(testRoute.onNavigateTo).toBe(undefined)
+        })
+      })
+
+      describe(keyOf<SimpluxRoute<any, any>>('isActive'), () => {
         const stateWithActiveRoute: _RouterState = {
           ...routerStateWithTwoRoutes,
           activeRouteId: 1,
@@ -79,7 +98,7 @@ describe(`route`, () => {
         })
       })
 
-      describe(keyOf<SimpluxRoute>('parameterValues'), () => {
+      describe(keyOf<SimpluxRoute<any, any>>('parameterValues'), () => {
         const parameterValues = { param: 1 }
         const stateWithActiveRoute: _RouterState = {
           ...routerStateWithTwoRoutes,
@@ -128,7 +147,7 @@ describe(`route`, () => {
         })
       })
 
-      describe(keyOf<SimpluxRoute>('navigateTo'), () => {
+      describe(keyOf<SimpluxRoute<any, any>>('navigateTo'), () => {
         it('navigates to the route', async () => {
           mockEffect(_module.registerRoute, () => 1)
           const [mock] = mockEffect(_module.navigateToRoute, jest.fn())

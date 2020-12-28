@@ -35,16 +35,11 @@ export type NavigationParameters = Readonly<Record<string, any>>
 export type NavigationResult = Promise<typeof NAVIGATION_CANCELLED | void>
 
 /**
- * Arguments for an `onNavigateTo` callback.
+ * Extra utility arguments for an `onNavigateTo` callback.
  *
  * @public
  */
-export interface OnNavigateToArgs<TParameters> {
-  /**
-   * The parameters for the navigation.
-   */
-  parameters: TParameters
-
+export interface OnNavigateToExtras {
   /**
    * A promise that resolves when the navigation is cancelled
    * (e.g. because a new navigation has started while this
@@ -56,6 +51,7 @@ export interface OnNavigateToArgs<TParameters> {
 /**
  * A function to be called when navigating to a route.
  *
+ * @param parameters - the parameters for the navigation (if any).
  * @param args - the arguments for the function.
  *
  * @returns nothing or a promise to wait for during navigation
@@ -63,7 +59,8 @@ export interface OnNavigateToArgs<TParameters> {
  * @public
  */
 export type OnNavigateTo<TParameters = NavigationParameters> = (
-  args: OnNavigateToArgs<TParameters>,
+  parameters: TParameters,
+  extras: OnNavigateToExtras,
 ) => void | Promise<void>
 
 /**
@@ -215,13 +212,12 @@ const effects = createEffects({
     const onNavigateTo = effects.getOnNavigateToInterceptors()[routeId]
     const cancellationPromise = effects.createNavigationCancellationPromise()
 
-    const onNavigateToArgs: OnNavigateToArgs<NavigationParameters> = {
-      parameters: parameters || {},
+    const onNavigateToExtras: OnNavigateToExtras = {
       cancelled: cancellationPromise,
     }
 
     const result = await Promise.race([
-      onNavigateTo?.(onNavigateToArgs) || Promise.resolve(),
+      onNavigateTo?.(parameters || {}, onNavigateToExtras) || Promise.resolve(),
       cancellationPromise,
     ])
 

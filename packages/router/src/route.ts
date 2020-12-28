@@ -5,7 +5,6 @@ import {
   SimpluxSelector,
 } from '@simplux/core'
 import {
-  NavigationParameters,
   NavigationResult,
   OnNavigateTo,
   _module,
@@ -50,7 +49,10 @@ export type NavigateToFn<TParameters> = keyof TParameters extends never
  *
  * @public
  */
-export interface SimpluxRoute<TParameters = {}> {
+export interface SimpluxRoute<
+  TParameters,
+  TConfiguration extends SimpluxRouteConfiguration<TParameters> = {}
+> {
   /**
    * The id of the route.
    *
@@ -84,14 +86,23 @@ export interface SimpluxRoute<TParameters = {}> {
    * @param parameters - the parameters for the navigation
    */
   readonly navigateTo: SimpluxEffect<NavigateToFn<TParameters>>
+
+  /**
+   * The `onNavigateTo` function (if any) from the route configuration.
+   */
+  readonly onNavigateTo: TConfiguration['onNavigateTo']
 }
 
 // tslint:disable-next-line:variable-name (internal export)
 export const _routeEffects = createEffects({
-  addRoute: <TParameters extends NavigationParameters = {}>(
+  addRoute: <
+    TParameters,
+    // tslint:disable-next-line: max-line-length
+    TConfiguration extends SimpluxRouteConfiguration<TParameters> = SimpluxRouteConfiguration<TParameters>
+  >(
     name: _RouteName,
-    configuration?: SimpluxRouteConfiguration<TParameters>,
-  ): SimpluxRoute<TParameters> => {
+    configuration?: TConfiguration,
+  ): SimpluxRoute<TParameters, TConfiguration> => {
     const routeId = _module.registerRoute(name, configuration)
 
     const selectors = createSelectors(_module, {
@@ -114,6 +125,7 @@ export const _routeEffects = createEffects({
       isActive: selectors.isActive as any,
       parameterValues: selectors.parameterValues as any,
       navigateTo: navigateTo as SimpluxEffect<NavigateToFn<TParameters>>,
+      onNavigateTo: configuration?.onNavigateTo,
     }
   },
 })

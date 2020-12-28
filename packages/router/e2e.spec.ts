@@ -36,16 +36,20 @@ describe(`@simplux/router`, () => {
       },
     })
 
+    await testRoute4.onNavigateTo()
+
     const testRoute5 = router.addRoute<{ param: string }>('asyncParams', {
-      onNavigateTo: async ({ parameters }) => {
-        expect(parameters.param).toBe('value')
+      onNavigateTo: async ({ param }) => {
+        expect(param).toBe('value')
         await Promise.resolve()
       },
     })
 
+    await testRoute5.onNavigateTo!({ param: 'value' }, undefined!)
+
     let cancelledNavigation = new Promise<typeof NAVIGATION_CANCELLED>(() => {})
     const testRoute6 = router.addRoute('asyncNever', {
-      onNavigateTo: ({ cancelled }) => {
+      onNavigateTo: (_, { cancelled }) => {
         cancelledNavigation = cancelled
         return new Promise<void>(() => {})
       },

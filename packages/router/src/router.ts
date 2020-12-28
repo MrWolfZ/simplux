@@ -58,10 +58,14 @@ export interface SimpluxRouter extends SimpluxRouterSelectors {
    * @returns a route object for interacting with the route
    */
   readonly addRoute: SimpluxEffect<
-    <TParameters extends NavigationParameters = {}>(
+    <
+      TParameters extends NavigationParameters = {},
+      // tslint:disable-next-line: max-line-length
+      TConfiguration extends SimpluxRouteConfiguration<TParameters> = SimpluxRouteConfiguration<TParameters>
+    >(
       name: string,
-      routeConfiguration?: SimpluxRouteConfiguration<TParameters>,
-    ) => SimpluxRoute<TParameters>
+      routeConfiguration?: TConfiguration,
+    ) => SimpluxRoute<TParameters, TConfiguration>
   >
 
   /**

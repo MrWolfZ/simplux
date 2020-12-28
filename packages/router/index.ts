@@ -5,7 +5,7 @@ export type {
   NavigationParameters,
   NavigationResult,
   OnNavigateTo,
-  OnNavigateToArgs,
+  OnNavigateToExtras,
   _RouteId,
   _RouteName,
   _RouterState,

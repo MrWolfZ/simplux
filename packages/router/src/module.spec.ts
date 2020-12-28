@@ -4,9 +4,8 @@ import {
   mockMutation,
 } from '@simplux/testing'
 import {
-  NavigationParameters,
   NAVIGATION_CANCELLED,
-  OnNavigateToArgs,
+  OnNavigateToExtras,
   _module,
   _RouterState,
 } from './module.js'
@@ -328,9 +327,10 @@ describe(`module`, () => {
         const parameterValues = { param: 'value' }
         await _module.navigateToRoute(1, parameterValues)
 
-        expect(interceptor).toHaveBeenCalledWith({
-          parameters: parameterValues,
-        })
+        expect(interceptor).toHaveBeenCalledWith(
+          parameterValues,
+          expect.anything(),
+        )
       })
 
       it('calls the onNavigateTo interceptor for the route without parameters', async () => {
@@ -341,7 +341,7 @@ describe(`module`, () => {
 
         await _module.navigateToRoute(1)
 
-        expect(interceptor).toHaveBeenCalledWith({ parameters: {} })
+        expect(interceptor).toHaveBeenCalledWith({}, expect.anything())
       })
 
       it('activates the route at the end of the navigation', async () => {
@@ -511,8 +511,8 @@ describe(`module`, () => {
         createCancelPromiseMock.mockReturnValueOnce(cancelPromise)
 
         const interceptor = jest
-          .fn<Promise<void>, [OnNavigateToArgs<NavigationParameters>]>()
-          .mockImplementationOnce(({ cancelled }) => {
+          .fn<Promise<void>, [any, OnNavigateToExtras]>()
+          .mockImplementationOnce((_, { cancelled }) => {
             cancellationPromise = cancelled
             return new Promise<void>(() => {})
           })

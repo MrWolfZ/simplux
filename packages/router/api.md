@@ -24,12 +24,11 @@ export type NavigationParameters = Readonly<Record<string, any>>;
 export type NavigationResult = Promise<typeof NAVIGATION_CANCELLED | void>;
 
 // @public
-export type OnNavigateTo<TParameters = NavigationParameters> = (args: OnNavigateToArgs<TParameters>) => void | Promise<void>;
+export type OnNavigateTo<TParameters = NavigationParameters> = (parameters: TParameters, extras: OnNavigateToExtras) => void | Promise<void>;
 
 // @public
-export interface OnNavigateToArgs<TParameters> {
+export interface OnNavigateToExtras {
     cancelled: Promise<typeof NAVIGATION_CANCELLED>;
-    parameters: TParameters;
 }
 
 // @public
@@ -57,12 +56,13 @@ export interface _RouteState {
 }
 
 // @public
-export interface SimpluxRoute<TParameters = {}> {
+export interface SimpluxRoute<TParameters, TConfiguration extends SimpluxRouteConfiguration<TParameters> = {}> {
     // @internal
     readonly id: _RouteId;
     readonly isActive: SimpluxSelector<never, [], boolean>;
     readonly name: string;
     readonly navigateTo: SimpluxEffect<NavigateToFn<TParameters>>;
+    readonly onNavigateTo: TConfiguration['onNavigateTo'];
     readonly parameterValues: SimpluxSelector<never, [], TParameters>;
 }
 
@@ -73,7 +73,7 @@ export interface SimpluxRouteConfiguration<TParameters> {
 
 // @public
 export interface SimpluxRouter extends SimpluxRouterSelectors {
-    readonly addRoute: SimpluxEffect<(<TParameters extends NavigationParameters = {}>(name: string, routeConfiguration?: SimpluxRouteConfiguration<TParameters>) => SimpluxRoute<TParameters>)>;
+    readonly addRoute: SimpluxEffect<(<TParameters extends NavigationParameters = {}, TConfiguration extends SimpluxRouteConfiguration<TParameters> = SimpluxRouteConfiguration<TParameters>>(name: string, routeConfiguration?: TConfiguration) => SimpluxRoute<TParameters, TConfiguration>)>;
     // @internal
     readonly navigateToRouteById: SimpluxEffect<(routeId: _RouteId, parameters?: Readonly<NavigationParameters>) => NavigationResult>;
     // @internal
