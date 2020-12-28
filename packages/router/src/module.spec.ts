@@ -5,6 +5,7 @@ import {
 } from '@simplux/testing'
 import {
   NAVIGATION_CANCELLED,
+  NAVIGATION_FINISHED,
   OnNavigateToExtras,
   _module,
   _RouterState,
@@ -442,6 +443,22 @@ describe(`module`, () => {
         await promise
 
         expect(activateMock).not.toHaveBeenCalled()
+      })
+
+      it('returns the correct value if navigation succeeds', async () => {
+        let resolve = () => {}
+        const onNavToPromise = new Promise<void>((r) => (resolve = r))
+
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: () => onNavToPromise,
+        }))
+
+        const parameterValues = { param: 'value' }
+        const promise = _module.navigateToRoute(1, parameterValues)
+
+        resolve()
+
+        await expect(promise).resolves.toBe(NAVIGATION_FINISHED)
       })
 
       it('returns the correct value if navigation is cancelled', async () => {

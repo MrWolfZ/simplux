@@ -1,6 +1,7 @@
 // this file contains an end-to-end test for the public API
 
 import { getSimpluxRouter, NAVIGATION_CANCELLED } from '@simplux/router'
+import { NAVIGATION_FINISHED } from './src/module.js'
 import {
   emptyRouterState,
   routeName1,
@@ -113,8 +114,9 @@ describe(`@simplux/router`, () => {
     expect(testRoute6.isActive()).toBe(false)
     expect(router.navigationIsInProgress()).toBe(true)
 
-    await testRoute1.navigateTo()
+    const finishedNav = testRoute1.navigateTo()
 
+    await expect(finishedNav).resolves.toBe(NAVIGATION_FINISHED)
     await expect(cancelledNavigation).resolves.toBe(NAVIGATION_CANCELLED)
     await expect(navToCancel).resolves.toBe(NAVIGATION_CANCELLED)
 

@@ -18,10 +18,13 @@ export type NavigateToFn<TParameters> = keyof TParameters extends never ? () => 
 export const NAVIGATION_CANCELLED: unique symbol;
 
 // @public
+export const NAVIGATION_FINISHED: unique symbol;
+
+// @public
 export type NavigationParameters = Readonly<Record<string, any>>;
 
 // @public
-export type NavigationResult = Promise<typeof NAVIGATION_CANCELLED | void>;
+export type NavigationResult = Promise<typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED>;
 
 // @public
 export type OnNavigateTo<TParameters = NavigationParameters> = (parameters: TParameters, extras: OnNavigateToExtras) => void | Promise<void>;

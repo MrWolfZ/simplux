@@ -21,6 +21,20 @@ export type _RouteName = string
 export type _RouteId = number
 
 /**
+ * A marker symbol used when navigations finish successfully.
+ *
+ * @public
+ */
+export const NAVIGATION_FINISHED = Symbol('NAVIGATION_FINISHED')
+
+/**
+ * A marker symbol used when navigations are cancelled.
+ *
+ * @public
+ */
+export const NAVIGATION_CANCELLED = Symbol('NAVIGATION_CANCELLED')
+
+/**
  * Base type for navigation parameters.
  *
  * @public
@@ -32,7 +46,9 @@ export type NavigationParameters = Readonly<Record<string, any>>
  *
  * @public
  */
-export type NavigationResult = Promise<typeof NAVIGATION_CANCELLED | void>
+export type NavigationResult = Promise<
+  typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED
+>
 
 /**
  * Extra utility arguments for an `onNavigateTo` callback.
@@ -62,13 +78,6 @@ export type OnNavigateTo<TParameters = NavigationParameters> = (
   parameters: TParameters,
   extras: OnNavigateToExtras,
 ) => void | Promise<void>
-
-/**
- * A marker symbol used when navigations are cancelled.
- *
- * @public
- */
-export const NAVIGATION_CANCELLED = Symbol('NAVIGATION_CANCELLED')
 
 /**
  * The state of a simplux route.
@@ -228,6 +237,8 @@ const effects = createEffects({
     mutations.activateRoute(routeId, parameters || {})
     mutations.setNavigationIsInProgress(false)
     effects.clearNavigationCancellationCallback()
+
+    return NAVIGATION_FINISHED
   },
 
   createNavigationCancellationPromise: () => {
