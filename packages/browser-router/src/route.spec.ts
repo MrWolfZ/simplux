@@ -104,6 +104,8 @@ describe(`route`, () => {
             stringParam: 'string',
             numberParam: 100,
             booleanParam: true,
+            arrayStringParam: ['a', 'b', 'charlie'],
+            arrayNumberParam: [100, -100, 9999999],
           }
 
           await testRoute.navigateTo(parameterValues)

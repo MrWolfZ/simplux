@@ -12,6 +12,7 @@ import {
   _RouteId,
 } from '@simplux/router'
 import { _extractOrigin, _locationModule, _Url } from './location.js'
+import type { _ParameterValueType } from './parameter.js'
 import {
   _BrowserRouteTemplate,
   _BrowserRouteTreeNode,
@@ -183,7 +184,7 @@ function createPathForHref(
   function renderSegment(segment: _RoutePathTemplateSegment) {
     return typeof segment === 'string'
       ? encodeURIComponent(segment)
-      : encodeURIComponent(parameterValues?.[segment.parameterName]!)
+      : encodeHrefParameterValue(parameterValues?.[segment.parameterName]!)
   }
 }
 
@@ -202,12 +203,18 @@ function createQueryForHref(
   function renderParameter({ parameterName }: _RouteQueryTemplateParameter) {
     const value = parameterValues?.[parameterName]
 
-    if (!value) {
+    if (value === undefined) {
       return ''
     }
 
     const encodedName = encodeURIComponent(parameterName)
-    const encodedValue = encodeURIComponent(`${value}`)
+    const encodedValue = encodeHrefParameterValue(value)
     return `${encodedName}=${encodedValue}`
   }
+}
+
+function encodeHrefParameterValue(value: _ParameterValueType): string {
+  return Array.isArray(value)
+    ? value.map(encodeHrefParameterValue).join(',')
+    : encodeURIComponent(`${value}`)
 }

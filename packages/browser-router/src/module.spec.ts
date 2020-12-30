@@ -33,7 +33,117 @@ describe(`module`, () => {
       expect(href).toBe(url)
     })
 
-    it('works for template with path parameters', () => {
+    it('works for template with path string parameter', () => {
+      const template = 'root/:param'
+
+      const parameterValues = {
+        param: 'parameterValue',
+      }
+
+      const url = `/root/${parameterValues.param}`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with path number parameter', () => {
+      const template = 'root/:param:number'
+
+      const parameterValues = {
+        param: 100,
+      }
+
+      const url = `/root/${parameterValues.param}`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with path boolean parameter', () => {
+      const template = 'root/:param:boolean'
+
+      const parameterValues = {
+        param: false,
+      }
+
+      const url = `/root/${parameterValues.param}`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with path array parameter', () => {
+      const template = 'root/:param:string[]/child'
+
+      const parameterValues = {
+        param: ['a', 'b', 'charlie'],
+      }
+
+      const url = `/root/${parameterValues.param.join(',')}/child`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with empty path array parameter', () => {
+      const template = 'root/:param:string[]/child'
+
+      const parameterValues = {
+        param: [],
+      }
+
+      const url = `/root//child`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with multiple path parameters', () => {
       const template =
         'root/:stringParam/intermediate/:numberParam:number/trailing'
 
@@ -49,6 +159,7 @@ describe(`module`, () => {
         foundId,
         foundParameterValues,
       ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
       const href = _module.href.withState(state, 2, parameterValues)
 
       expect(foundId).toBe(2)
@@ -56,7 +167,139 @@ describe(`module`, () => {
       expect(href).toBe(url)
     })
 
-    it('works for template with query parameters', () => {
+    it('works for template with query string parameter', () => {
+      const template = 'root?param'
+
+      const parameterValues = {
+        param: 'parameterValue',
+      }
+
+      const url = `/root?param=${parameterValues.param}`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with query number parameter', () => {
+      const template = 'root?param:number'
+
+      const parameterValues = {
+        param: 100,
+      }
+
+      const url = `/root?param=${parameterValues.param}`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with query boolean parameter', () => {
+      const template = 'root?param:boolean'
+
+      const parameterValues = {
+        param: false,
+      }
+
+      const url = `/root?param=${parameterValues.param}`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with query array parameter', () => {
+      const template = 'root?param:string[]'
+
+      const parameterValues = {
+        param: ['a', 'b', 'charlie'],
+      }
+
+      const url = `/root?param=${parameterValues.param.join(',')}`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with optional query array parameter', () => {
+      const template = 'root[?param:string[]]'
+
+      const parameterValues = {
+        param: ['a', 'b', 'charlie'],
+      }
+
+      const url = `/root?param=${parameterValues.param.join(',')}`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with empty query array parameter', () => {
+      const template = 'root?param:string[]'
+
+      const parameterValues = {
+        param: [],
+      }
+
+      const url = `/root?param=`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with multiple query parameters', () => {
       const template = 'root/nested?stringParam:string&numberParam:number'
 
       const parameterValues = {
@@ -124,6 +367,28 @@ describe(`module`, () => {
 
     it('works for template with required and optional missing query parameters', () => {
       const template = 'root/nested?requiredParam:string[&optionalParam:string]'
+
+      const parameterValues = {
+        requiredParam: 'parameterValue',
+      }
+
+      const url = `/root/nested?requiredParam=${parameterValues.requiredParam}`
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for template with required and optional missing array query parameters', () => {
+      const template =
+        'root/nested?requiredParam:string[&optionalParam:string[]]'
 
       const parameterValues = {
         requiredParam: 'parameterValue',
@@ -419,6 +684,29 @@ describe(`module`, () => {
       }
 
       const url = '/root/should%2F%3D%3Fencode?queryParam=should%2F%3D%3Fencode'
+
+      const state = _module.addRoute.withState(emptyRouterState, 2, template)
+      const [
+        foundId,
+        foundParameterValues,
+      ] = _module.routeIdAndParametersByUrl.withState(state, url)!
+      const href = _module.href.withState(state, 2, parameterValues)
+
+      expect(foundId).toBe(2)
+      expect(foundParameterValues).toEqual(parameterValues)
+      expect(href).toBe(url)
+    })
+
+    it('works for array parameter values that need to be encoded', () => {
+      const template = '/root/:pathParam:string[]/child?queryParam:string[]'
+
+      const parameterValues = {
+        pathParam: ['should/=?encode', 'other,comma'],
+        queryParam: ['should/=?encode', 'other,comma'],
+      }
+
+      const url =
+        '/root/should%2F%3D%3Fencode,other%2Ccomma/child?queryParam=should%2F%3D%3Fencode,other%2Ccomma'
 
       const state = _module.addRoute.withState(emptyRouterState, 2, template)
       const [
@@ -831,7 +1119,6 @@ describe(`module`, () => {
   })
 
   describe('selectors', () => {
-    // TODO: once array support is added add test for multiple same query parameters
     describe(_module.routeIdAndParametersByUrl, () => {
       it('returns undefined if no matching route path is found', () => {
         const state = _module.addRoute.withState(emptyRouterState, 2, 'root')
@@ -880,12 +1167,19 @@ describe(`module`, () => {
           queryParam: '',
         }
 
-        const result = _module.routeIdAndParametersByUrl.withState(
-          state,
-          `/root?queryParam`,
-        )
+        expect(
+          _module.routeIdAndParametersByUrl.withState(
+            state,
+            `/root?queryParam`,
+          ),
+        ).toEqual([2, parameterValues])
 
-        expect(result).toEqual([2, parameterValues])
+        expect(
+          _module.routeIdAndParametersByUrl.withState(
+            state,
+            `/root?queryParam=`,
+          ),
+        ).toEqual([2, parameterValues])
       })
 
       it('treats number query parameters without value as zero', () => {
@@ -896,12 +1190,19 @@ describe(`module`, () => {
           queryParam: 0,
         }
 
-        const result = _module.routeIdAndParametersByUrl.withState(
-          state,
-          `/root?queryParam`,
-        )
+        expect(
+          _module.routeIdAndParametersByUrl.withState(
+            state,
+            `/root?queryParam`,
+          ),
+        ).toEqual([2, parameterValues])
 
-        expect(result).toEqual([2, parameterValues])
+        expect(
+          _module.routeIdAndParametersByUrl.withState(
+            state,
+            `/root?queryParam=`,
+          ),
+        ).toEqual([2, parameterValues])
       })
 
       it('treats boolean query parameters without value as true', () => {
@@ -912,12 +1213,58 @@ describe(`module`, () => {
           queryParam: true,
         }
 
-        const result = _module.routeIdAndParametersByUrl.withState(
-          state,
-          `/root?queryParam`,
-        )
+        expect(
+          _module.routeIdAndParametersByUrl.withState(
+            state,
+            `/root?queryParam`,
+          ),
+        ).toEqual([2, parameterValues])
 
-        expect(result).toEqual([2, parameterValues])
+        expect(
+          _module.routeIdAndParametersByUrl.withState(
+            state,
+            `/root?queryParam=`,
+          ),
+        ).toEqual([2, parameterValues])
+      })
+
+      it('treats array query parameters without value as ampty array', () => {
+        const template = 'root?queryParam:string[]'
+        const state = _module.addRoute.withState(emptyRouterState, 2, template)
+
+        const parameterValues = {
+          queryParam: [],
+        }
+
+        expect(
+          _module.routeIdAndParametersByUrl.withState(
+            state,
+            `/root?queryParam`,
+          ),
+        ).toEqual([2, parameterValues])
+
+        expect(
+          _module.routeIdAndParametersByUrl.withState(
+            state,
+            `/root?queryParam=`,
+          ),
+        ).toEqual([2, parameterValues])
+      })
+
+      it('treats multiple query parameters for array param as one array', () => {
+        const template = 'root?queryParam:string[]'
+        const state = _module.addRoute.withState(emptyRouterState, 2, template)
+
+        const parameterValues = {
+          queryParam: ['first', 'second'],
+        }
+
+        expect(
+          _module.routeIdAndParametersByUrl.withState(
+            state,
+            `/root?queryParam=first&queryParam=second`,
+          ),
+        ).toEqual([2, parameterValues])
       })
     })
   })

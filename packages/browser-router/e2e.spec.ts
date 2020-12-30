@@ -163,6 +163,8 @@ describe(`@simplux/browser-router`, () => {
       stringParam: 'a',
       numberParam: 1,
       booleanParam: false,
+      arrayStringParam: ['b', 'c', 'long'],
+      arrayNumberParam: [100, -100, 9999999999],
     })
 
     expect(routeWithPathParameters.isActive()).toBe(true)
@@ -170,12 +172,16 @@ describe(`@simplux/browser-router`, () => {
       stringParam: 'a',
       numberParam: 1,
       booleanParam: false,
+      arrayStringParam: ['b', 'c', 'long'],
+      arrayNumberParam: [100, -100, 9999999999],
     })
 
     await routeWithQueryParameters.navigateTo({
       stringParam: 'a',
       numberParam: 1,
       booleanParam: false,
+      arrayStringParam: ['b', 'c', 'long'],
+      arrayNumberParam: [100, -100, 9999999999],
     })
 
     expect(routeWithQueryParameters.isActive()).toBe(true)
@@ -183,6 +189,8 @@ describe(`@simplux/browser-router`, () => {
       stringParam: 'a',
       numberParam: 1,
       booleanParam: false,
+      arrayStringParam: ['b', 'c', 'long'],
+      arrayNumberParam: [100, -100, 9999999999],
     })
 
     await routeWithOptionalQueryParameter.navigateTo({

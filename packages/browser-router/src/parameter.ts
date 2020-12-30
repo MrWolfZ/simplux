@@ -10,19 +10,28 @@ export type _ParameterName = string
  *
  * @public
  */
-export type _ParameterType = 'string' | 'number' | 'boolean' // TODO: add object and array support
+// TODO: add object support
+export type _ParameterType =
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'string[]'
+  | 'number[]'
+  | 'boolean[]'
 
 /**
  * @internal
  */
-export type _ParameterValueType = string | number | boolean
+export type _ParameterValueType = string | number | boolean | any[]
 
 /**
  * Helper type to parse the type of a parameter from a parameter template.
  *
  * @public
  */
-export type _ParseParameterType<T> = T extends `string`
+export type _ParseParameterType<T> = T extends `${infer TItem}[]`
+  ? _ParseParameterType<TItem>[]
+  : T extends `string`
   ? string
   : T extends `number`
   ? number

@@ -12,10 +12,10 @@ export const rootRouteTemplate = '/'
 export const routeTemplateWithoutParameters = 'root'
 
 export const routeTemplateWithPathParameters =
-  'root/:stringParam/intermediate/:numberParam:number/:booleanParam:boolean'
+  'root/:stringParam/intermediate/:numberParam:number/:booleanParam:boolean/:arrayStringParam:string[]/:arrayNumberParam:number[]'
 
 export const routeTemplateWithQueryParameters =
-  'root?stringParam&numberParam:number&booleanParam:boolean'
+  'root?stringParam&numberParam:number&booleanParam:boolean&arrayStringParam:string[]&arrayNumberParam:number[]'
 
 export const routeTemplateWithOptionalQueryParameter =
   'root/withRequiredQuery?requiredParam[&optionalParam]'

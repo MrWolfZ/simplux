@@ -122,7 +122,10 @@ function parseQueryTemplate(
     return []
   }
 
-  const [requiredPart, optionalPart] = template.replace('[&', '[').split('[')
+  const [requiredPart, optionalPart] = template
+    .replace('[&', '&[')
+    .replace(/^\[/, '&[')
+    .split('&[')
 
   const required = !requiredPart
     ? []
@@ -242,16 +245,21 @@ function findRoute(
 
   const trimmedPath = path!.replace(/^\//, '')
 
-  const pathSegments =
-    trimmedPath === '' ? [] : trimmedPath.split('/').map(decodeURIComponent)
+  const pathSegments = trimmedPath === '' ? [] : trimmedPath.split('/')
 
   const queryParameters = query
     ?.split('&')
     .map((p) => p.split('='))
-    .reduce(
-      (v, [name, value]) => ({ ...v, [decodeURIComponent(name!)]: value }),
-      {} as _QueryParameterValues,
-    )
+    .reduce((v, [name, value]) => {
+      const decodedName = decodeURIComponent(name!)
+
+      if (Object.prototype.hasOwnProperty.call(v, decodedName)) {
+        const existingValue = v[decodedName]!
+        value = `${existingValue},${value}`
+      }
+
+      return { ...v, [decodedName]: value }
+    }, {} as _QueryParameterValues)
 
   return findRouteForPathSegmentsAndQuery(
     node,
@@ -402,7 +410,7 @@ function findRouteForPathSegmentsAndQuery(
     segment: _Url,
   ) {
     if (typeof template === 'string') {
-      return template === segment
+      return template === decodeURIComponent(segment)
     }
 
     return valueIsOfType(segment, template.parameterType)
@@ -419,33 +427,86 @@ function findRouteForPathSegmentsAndQuery(
     rawValue: string | undefined,
     valueType: _ParameterType,
   ): _ParameterValueType {
-    if (rawValue === undefined) {
+    if (rawValue === undefined || rawValue === '') {
       return true
     }
 
-    if (valueType === 'number') {
-      return /^[+-]?\d+(\.\d+)?$/.test(rawValue)
-    }
+    const checkString = (_: string) => true
 
-    if (valueType === 'boolean') {
-      return rawValue === 'true' || rawValue === 'false'
-    }
+    const checkNumber = (rawValue: string) =>
+      /^[+-]?\d+(\.\d+)?$/.test(rawValue)
 
-    return true
+    const checkBoolean = (rawValue: string) =>
+      rawValue === 'true' || rawValue === 'false'
+
+    const checkArray = (rawValue: string, checkValue: (s: string) => boolean) =>
+      rawValue.split(',').every(checkValue)
+
+    switch (valueType) {
+      case 'string':
+        return checkString(rawValue)
+
+      case 'number':
+        return checkNumber(rawValue)
+
+      case 'boolean':
+        return checkBoolean(rawValue)
+
+      case 'string[]':
+        return checkArray(rawValue, checkString)
+
+      case 'number[]':
+        return checkArray(rawValue, checkNumber)
+
+      case 'boolean[]':
+        return checkArray(rawValue, checkBoolean)
+
+      default:
+        assertNever(valueType)
+    }
   }
 
   function parseValue(
     rawValue: string,
     valueType: _ParameterType,
   ): _ParameterValueType {
-    if (valueType === 'number') {
-      return !rawValue ? 0 : parseInt(rawValue, 10)
-    }
+    const parseString = (rawValue: string) =>
+      !rawValue ? '' : decodeURIComponent(rawValue)
 
-    if (valueType === 'boolean') {
-      return !rawValue ? true : rawValue === 'true'
-    }
+    const parseNumber = (rawValue: string) =>
+      !rawValue ? 0 : parseInt(rawValue, 10)
 
-    return !rawValue ? '' : decodeURIComponent(rawValue)
+    const parseBoolean = (rawValue: string) =>
+      !rawValue ? true : rawValue === 'true'
+
+    const parseArray = <T>(rawValue: string, parseValue: (s: string) => T) =>
+      !rawValue ? [] : rawValue.split(',').map(parseValue)
+
+    switch (valueType) {
+      case 'string':
+        return parseString(rawValue)
+
+      case 'number':
+        return parseNumber(rawValue)
+
+      case 'boolean':
+        return parseBoolean(rawValue)
+
+      case 'string[]':
+        return parseArray(rawValue, parseString)
+
+      case 'number[]':
+        return parseArray(rawValue, parseNumber)
+
+      case 'boolean[]':
+        return parseArray(rawValue, parseBoolean)
+
+      default:
+        assertNever(valueType)
+    }
   }
+}
+
+function assertNever(_: never): never {
+  throw new Error(`missing case`)
 }
