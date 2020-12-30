@@ -1,91 +1,24 @@
-import type { _BrowserRouterState, _BrowserRouteState } from './module.js'
+import type { _BrowserRouterState } from './module.js'
 import { _routeTree } from './route-tree.js'
 
 export const emptyRouterState: _BrowserRouterState = {
-  routes: [],
+  templates: [],
   rootNode: _routeTree.rootNode,
   currentNavigationUrl: undefined,
 }
 
 export const rootRouteTemplate = '/'
 
-export const rootRoute: _BrowserRouteState = {
-  pathTemplateSegments: [],
-  queryParameters: [],
-}
-
 export const routeTemplateWithoutParameters = 'root'
-
-export const routeStateWithoutParameters: _BrowserRouteState = {
-  pathTemplateSegments: ['root'],
-  queryParameters: [],
-}
 
 export const routeTemplateWithPathParameters =
   'root/:stringParam/intermediate/:numberParam:number/:booleanParam:boolean'
 
-export const routeStateWithPathParameters: _BrowserRouteState = {
-  pathTemplateSegments: [
-    'root',
-    {
-      parameterName: 'stringParam',
-      parameterType: 'string',
-    },
-    'intermediate',
-    {
-      parameterName: 'numberParam',
-      parameterType: 'number',
-    },
-    {
-      parameterName: 'booleanParam',
-      parameterType: 'boolean',
-    },
-  ],
-  queryParameters: [],
-}
-
 export const routeTemplateWithQueryParameters =
   'root?stringParam&numberParam:number&booleanParam:boolean'
 
-export const routeStateWithQueryParameters: _BrowserRouteState = {
-  pathTemplateSegments: ['root'],
-  queryParameters: [
-    {
-      parameterName: 'stringParam',
-      parameterType: 'string',
-      isOptional: false,
-    },
-    {
-      parameterName: 'numberParam',
-      parameterType: 'number',
-      isOptional: false,
-    },
-    {
-      parameterName: 'booleanParam',
-      parameterType: 'boolean',
-      isOptional: false,
-    },
-  ],
-}
-
 export const routeTemplateWithOptionalQueryParameter =
   'root/withRequiredQuery?requiredParam[&optionalParam]'
-
-export const routeStateWithOptionalQueryParameters: _BrowserRouteState = {
-  pathTemplateSegments: ['root'],
-  queryParameters: [
-    {
-      parameterName: 'requiredParam',
-      parameterType: 'string',
-      isOptional: false,
-    },
-    {
-      parameterName: 'optionalParam',
-      parameterType: 'string',
-      isOptional: true,
-    },
-  ],
-}
 
 export const routeTemplateWithOnlyOptionalQueryParameter =
   'root/withOptionalQuery[?optionalParam]'
@@ -102,33 +35,6 @@ export interface RouteWithPathAndQueryParametersQueryPart {
 
 export const routeTemplateWithPathAndQueryParameters =
   'root/:pathStringParam/intermediate/:pathNumberParam:number?queryStringParam&queryNumberParam:number'
-
-export const routeStateWithPathAndQueryParameters: _BrowserRouteState = {
-  pathTemplateSegments: [
-    'root',
-    {
-      parameterName: 'pathStringParam',
-      parameterType: 'string',
-    },
-    'intermediate',
-    {
-      parameterName: 'pathNumberParam',
-      parameterType: 'number',
-    },
-  ],
-  queryParameters: [
-    {
-      parameterName: 'queryStringParam',
-      parameterType: 'string',
-      isOptional: false,
-    },
-    {
-      parameterName: 'queryNumberParam',
-      parameterType: 'number',
-      isOptional: false,
-    },
-  ],
-}
 
 export const routeTemplateWithOnNavigateTo = 'root/withOnNavigateTo'
 export const routeTemplateWithOnNavigateToAndParameters =

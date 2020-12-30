@@ -18,13 +18,7 @@ export type {
   SimpluxRouteConfiguration,
   SimpluxRouterSelectors,
 } from '@simplux/router'
-export type {
-  _BrowserRouterState,
-  _BrowserRouteState,
-  _QueryParameterValues,
-  _RouteQueryParameterState,
-  _UrlTemplate,
-} from './src/module.js'
+export type { _BrowserRouterState } from './src/module.js'
 export type {
   _ParameterName,
   _ParameterType,
@@ -32,12 +26,7 @@ export type {
   _ParseParameter,
   _ParseParameterType,
 } from './src/parameter.js'
-export type {
-  _ParsePathParameters,
-  _RoutePathTemplateConstantSegment,
-  _RoutePathTemplateParameterSegment,
-  _RoutePathTemplateSegment,
-} from './src/path.js'
+export type { _ParsePathParameters } from './src/path.js'
 export type { _ParseQueryParameters } from './src/query.js'
 export type {
   HrefSelectorParameters,

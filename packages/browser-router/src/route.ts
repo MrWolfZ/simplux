@@ -15,9 +15,10 @@ import {
   _RouteId,
 } from '@simplux/router'
 import type { _Url } from './location.js'
-import { _BrowserRouterState, _module, _UrlTemplate } from './module.js'
+import { _BrowserRouterState, _module } from './module.js'
 import type { _ParsePathParameters } from './path.js'
 import type { _ParseQueryParameters } from './query.js'
+import type { _UrlTemplate } from './route-tree.js'
 
 /**
  * Helper type to parse parameters from a URL template.

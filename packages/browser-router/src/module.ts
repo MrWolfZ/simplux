@@ -12,56 +12,35 @@ import {
   _RouteId,
 } from '@simplux/router'
 import { _extractOrigin, _locationModule, _Url } from './location.js'
-import type { _ParameterName, _ParameterType } from './parameter.js'
-import type { _RoutePathTemplateSegment } from './path.js'
-import { _BrowserRouteTreeNode, _routeTree } from './route-tree.js'
+import {
+  _BrowserRouteTemplate,
+  _BrowserRouteTreeNode,
+  _RoutePathTemplateSegment,
+  _RouteQueryTemplateParameter,
+  _routeTree,
+  _UrlTemplate,
+} from './route-tree.js'
 
 const simpluxRouter = getSimpluxRouter()
 
 /**
- * Helper type to distinguish url template values.
- *
  * @internal
  */
-export type _UrlTemplate = string
-
-/**
- * @internal
- */
-export type _QueryParameterValues = Readonly<
-  Record<_ParameterName, string | undefined>
->
-
-/**
- * A query parameter for a route.
- *
- * @internal
- */
-export interface _RouteQueryParameterState {
-  readonly parameterName: _ParameterName
-  readonly parameterType: _ParameterType
-  readonly isOptional: boolean
-}
-
-/**
- * @internal
- */
-export interface _BrowserRouteState {
-  readonly pathTemplateSegments: readonly _RoutePathTemplateSegment[]
-  readonly queryParameters: readonly _RouteQueryParameterState[]
+export interface _PreRenderedRouteTemplate {
+  readonly pathTemplate: string
 }
 
 /**
  * @internal
  */
 export interface _BrowserRouterState {
-  readonly routes: _BrowserRouteState[]
+  readonly templates: _BrowserRouteTemplate[]
   rootNode: _BrowserRouteTreeNode
   currentNavigationUrl: _Url | undefined
 }
 
 const initialState: _BrowserRouterState = {
-  routes: [],
+  templates: [],
   rootNode: _routeTree.rootNode,
   currentNavigationUrl: undefined,
 }
@@ -78,7 +57,7 @@ const mutations = createMutations(browserRouterModule, {
 
     if (updatedTree !== state.rootNode) {
       state.rootNode = updatedTree
-      state.routes[routeId - 1] = route
+      state.templates[routeId - 1] = route
     }
   },
 
@@ -93,11 +72,11 @@ const selectors = createSelectors(browserRouterModule, {
   currentNavigationUrl: ({ currentNavigationUrl }) => currentNavigationUrl,
 
   href: (
-    { routes },
+    { templates },
     routeId: _RouteId,
     parameterValues?: NavigationParameters,
   ) => {
-    const { pathTemplateSegments, queryParameters } = routes[routeId - 1]!
+    const { pathTemplateSegments, queryParameters } = templates[routeId - 1]!
 
     const path = createPathForHref(pathTemplateSegments, parameterValues)
     const query = createQueryForHref(queryParameters, parameterValues)
@@ -209,7 +188,7 @@ function createPathForHref(
 }
 
 function createQueryForHref(
-  parameters: readonly _RouteQueryParameterState[],
+  parameters: readonly _RouteQueryTemplateParameter[],
   parameterValues?: NavigationParameters,
 ) {
   const formattedValues = parameters.map(renderParameter).filter((p) => !!p)
@@ -220,7 +199,7 @@ function createQueryForHref(
 
   return `?${formattedValues.join('&')}`
 
-  function renderParameter({ parameterName }: _RouteQueryParameterState) {
+  function renderParameter({ parameterName }: _RouteQueryTemplateParameter) {
     const value = parameterValues?.[parameterName]
 
     if (!value) {
@@ -228,7 +207,7 @@ function createQueryForHref(
     }
 
     const encodedName = encodeURIComponent(parameterName)
-    const encodedValue = encodeURIComponent(value)
+    const encodedValue = encodeURIComponent(`${value}`)
     return `${encodedName}=${encodedValue}`
   }
 }

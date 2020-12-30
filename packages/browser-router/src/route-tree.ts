@@ -1,17 +1,61 @@
 import type { NavigationParameters, _RouteId } from '@simplux/router'
 import type { _Url } from './location.js'
 import type {
-  _BrowserRouteState,
-  _QueryParameterValues,
-  _RouteQueryParameterState,
-  _UrlTemplate,
-} from './module.js'
-import type {
   _ParameterName,
   _ParameterType,
   _ParameterValueType,
 } from './parameter.js'
-import type { _RoutePathTemplateSegment } from './path.js'
+
+/**
+ * Helper type to distinguish url template values.
+ *
+ * @public
+ */
+export type _UrlTemplate = string
+
+/**
+ * @internal
+ */
+export type _RoutePathTemplateConstantSegment = string
+
+/**
+ * @internal
+ */
+export interface _RoutePathTemplateParameterSegment {
+  readonly parameterName: _ParameterName
+  readonly parameterType: _ParameterType
+}
+
+/**
+ * @internal
+ */
+export type _RoutePathTemplateSegment =
+  | _RoutePathTemplateConstantSegment
+  | _RoutePathTemplateParameterSegment
+
+/**
+ * @internal
+ */
+export interface _RouteQueryTemplateParameter {
+  readonly parameterName: _ParameterName
+  readonly parameterType: _ParameterType
+  readonly isOptional: boolean
+}
+
+/**
+ * @internal
+ */
+export type _QueryParameterValues = Readonly<
+  Record<_ParameterName, string | undefined>
+>
+
+/**
+ * @internal
+ */
+export interface _BrowserRouteTemplate {
+  readonly pathTemplateSegments: readonly _RoutePathTemplateSegment[]
+  readonly queryParameters: readonly _RouteQueryTemplateParameter[]
+}
 
 /**
  * To efficiently find routes by URL as well as detect conflicts when creating routes,
@@ -28,7 +72,7 @@ export interface _BrowserRouteTreeNode {
   routesEndingAtThisSegment: [
     routeId: _RouteId,
     template: _UrlTemplate,
-    queryParameters: readonly _RouteQueryParameterState[],
+    queryParameters: readonly _RouteQueryTemplateParameter[],
   ][]
 }
 
@@ -42,7 +86,7 @@ function addRoute(
   node: _BrowserRouteTreeNode,
   routeId: _RouteId,
   urlTemplate: _UrlTemplate,
-): [_BrowserRouteTreeNode, _BrowserRouteState] {
+): [_BrowserRouteTreeNode, _BrowserRouteTemplate] {
   urlTemplate = urlTemplate.replace(/^\//, '')
   const [path, query] = urlTemplate.replace('[?', '?[').split('?')
   const pathTemplateSegments = !path ? [] : parsePathTemplate(path!)
@@ -73,7 +117,7 @@ function parsePathTemplate(
 
 function parseQueryTemplate(
   template: string | undefined,
-): readonly _RouteQueryParameterState[] {
+): readonly _RouteQueryTemplateParameter[] {
   if (!template) {
     return []
   }
@@ -94,7 +138,7 @@ function parseQueryTemplate(
   function parseParameter(
     parameter: string,
     isOptional: boolean,
-  ): _RouteQueryParameterState {
+  ): _RouteQueryTemplateParameter {
     const [name, type] = parameter.split(':')
 
     return {
@@ -109,7 +153,7 @@ function addRouteRecursive(
   node: _BrowserRouteTreeNode,
   routeId: _RouteId,
   template: _UrlTemplate,
-  route: _BrowserRouteState,
+  route: _BrowserRouteTemplate,
   pathSegmentIndex: number,
 ): _BrowserRouteTreeNode {
   if (pathSegmentIndex >= route.pathTemplateSegments.length) {
@@ -293,11 +337,11 @@ function findRouteForPathSegmentsAndQuery(
     routes: [
       routeId: _RouteId,
       template: _UrlTemplate,
-      queryParameters: readonly _RouteQueryParameterState[],
+      queryParameters: readonly _RouteQueryTemplateParameter[],
     ][],
     queryParameterValues: _QueryParameterValues,
   ) {
-    const results: [_RouteId, readonly _RouteQueryParameterState[]][] = []
+    const results: [_RouteId, readonly _RouteQueryTemplateParameter[]][] = []
 
     outer: for (const [routeId, _, queryParameters] of routes) {
       const requiredParameters = queryParameters.filter((p) => !p.isOptional)
@@ -321,7 +365,7 @@ function findRouteForPathSegmentsAndQuery(
 
   function tryMatchRoute({
     queryParameters,
-  }: _BrowserRouteState): NavigationParameters | undefined {
+  }: _BrowserRouteTemplate): NavigationParameters | undefined {
     const requiredQueryParameters = queryParameters.filter((p) => !p.isOptional)
     for (const { parameterName, parameterType } of requiredQueryParameters) {
       const parameterExists = queryParameterExists(parameterName)
