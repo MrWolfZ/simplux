@@ -64,6 +64,25 @@ describe(`module`, () => {
 
         expect(updatedState).toEqual(routerStateWithTwoRoutes)
       })
+
+      it('ignores same route name', () => {
+        const updatedState = _module.addRoute.withState(
+          emptyRouterState,
+          routeName1,
+        )
+
+        const updatedState2 = _module.addRoute.withState(
+          updatedState,
+          routeName1,
+        )
+
+        const updatedState3 = _module.addRoute.withState(
+          updatedState2,
+          routeName1,
+        )
+
+        expect(updatedState3).toBe(updatedState2)
+      })
     })
 
     describe(_module.activateRoute, () => {
@@ -304,17 +323,54 @@ describe(`module`, () => {
         expect(routeId2).toEqual(2)
       })
 
+      it('returns the same id for same route name', () => {
+        mockMutation(
+          _module.addRoute,
+          jest
+            .fn()
+            .mockReturnValueOnce(routerStateWithRoute1)
+            .mockReturnValueOnce(routerStateWithTwoRoutes)
+            .mockReturnValueOnce(routerStateWithTwoRoutes),
+        )
+
+        const routeId1 = _module.registerRoute(routeName1)
+
+        const routeId2 = _module.registerRoute(routeName2)
+
+        const routeId3 = _module.registerRoute(routeName1)
+
+        expect(routeId1).toEqual(1)
+        expect(routeId2).toEqual(2)
+        expect(routeId3).toEqual(routeId1)
+      })
+
       it('stores the onNavigateTo function', () => {
         mockMutation(_module.addRoute, () => routerStateWithRoute1)
-        const [addInterceptorMock] = mockEffect(
-          _module.addOnNavigateToInterceptor,
+        const [setInterceptorMock] = mockEffect(
+          _module.setOnNavigateToInterceptor,
           jest.fn(),
         )
 
         const onNavigateTo = jest.fn()
         _module.registerRoute(routeName1, { onNavigateTo })
 
-        expect(addInterceptorMock).toHaveBeenCalledWith(1, onNavigateTo)
+        expect(setInterceptorMock).toHaveBeenCalledWith(1, onNavigateTo)
+      })
+
+      it('overwrites the onNavigateTo function for the same name', () => {
+        mockMutation(_module.addRoute, () => routerStateWithRoute1)
+        const [setInterceptorMock] = mockEffect(
+          _module.setOnNavigateToInterceptor,
+          jest.fn(),
+        )
+
+        const onNavigateTo1 = jest.fn()
+        const onNavigateTo2 = jest.fn()
+        _module.registerRoute(routeName1, { onNavigateTo: onNavigateTo1 })
+        _module.registerRoute(routeName1, { onNavigateTo: onNavigateTo2 })
+
+        expect(setInterceptorMock).toHaveBeenCalledWith(1, onNavigateTo1)
+        expect(setInterceptorMock).toHaveBeenCalledWith(1, onNavigateTo2)
       })
     })
 
@@ -657,7 +713,7 @@ describe(`module`, () => {
 
       it('can be added', () => {
         const interceptor = jest.fn()
-        _module.addOnNavigateToInterceptor(1, interceptor)
+        _module.setOnNavigateToInterceptor(1, interceptor)
 
         const interceptors = _module.getOnNavigateToInterceptors()
 
@@ -666,7 +722,7 @@ describe(`module`, () => {
 
       it('can be cleared', () => {
         const interceptor = jest.fn()
-        _module.addOnNavigateToInterceptor(1, interceptor)
+        _module.setOnNavigateToInterceptor(1, interceptor)
 
         _module.clearOnNavigateToInterceptors()
 

@@ -144,6 +144,10 @@ const routerModule = createSimpluxModule('router', initialState)
 
 const mutations = createMutations(routerModule, {
   addRoute: ({ routes }, name: _RouteName) => {
+    if (routes.some((r) => r.name === name)) {
+      return
+    }
+
     routes.push({
       name,
     })
@@ -211,11 +215,11 @@ const effects = createEffects({
     configuration?: SimpluxRouteConfiguration<any>,
   ): _RouteId => {
     const updatedState = mutations.addRoute(name)
-    const routeId = updatedState.routes.length
+    const routeId = updatedState.routes.findIndex((r) => r.name === name) + 1
 
     if (configuration) {
       if (configuration.onNavigateTo) {
-        effects.addOnNavigateToInterceptor(routeId, configuration.onNavigateTo)
+        effects.setOnNavigateToInterceptor(routeId, configuration.onNavigateTo)
       }
     }
 
@@ -268,7 +272,7 @@ const effects = createEffects({
     cancelNavigationInProgress = undefined
   },
 
-  addOnNavigateToInterceptor: (
+  setOnNavigateToInterceptor: (
     routeId: _RouteId,
     interceptor: OnNavigateTo,
   ) => {
