@@ -32,32 +32,16 @@ describe(`router`, () => {
       expect(addMock).toHaveBeenCalledWith(routeTemplateWithPathParameters)
     })
 
-    it('adds route with name', () => {
-      const [addMock] = mockEffect(_routeEffects.addRoute, jest.fn())
-
-      _router.addRoute(routeTemplateWithPathParameters, {
-        name: 'customName',
-      })
-
-      expect(addMock).toHaveBeenCalledWith(routeTemplateWithPathParameters, {
-        name: 'customName',
-      })
-    })
-
     it('adds multiple routes', () => {
       const [addMock] = mockEffect(_routeEffects.addRoute, jest.fn())
 
       _router.addRoute(routeTemplateWithoutParameters)
 
-      _router.addRoute(routeTemplateWithPathParameters, {
-        name: 'customName',
-      })
+      _router.addRoute(routeTemplateWithPathParameters, {})
 
       expect(addMock).toHaveBeenCalledWith(routeTemplateWithoutParameters)
 
-      expect(addMock).toHaveBeenCalledWith(routeTemplateWithPathParameters, {
-        name: 'customName',
-      })
+      expect(addMock).toHaveBeenCalledWith(routeTemplateWithPathParameters, {})
     })
 
     it('delegates active route check to base router', () => {

@@ -80,9 +80,6 @@ describe(`@simplux/browser-router`, () => {
       routeTemplateWithPathAndQueryParameters,
     )
 
-    const namedRoute = router.addRoute(rootRouteTemplate, { name: 'testName' })
-    expect(namedRoute.name).toBe('testName')
-
     const routeWithOnNavigateTo = router.addRoute(
       routeTemplateWithOnNavigateTo,
       {

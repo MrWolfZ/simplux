@@ -65,14 +65,6 @@ describe(`route`, () => {
       )
     })
 
-    it('creates a base route with a specific name', () => {
-      addRoute(rootRouteTemplate, { name: 'testName' })
-
-      expect(routerAddMock).toHaveBeenCalledWith('testName', {
-        name: 'testName',
-      })
-    })
-
     describe('created route', () => {
       const mockRoute = addRoute('')
 

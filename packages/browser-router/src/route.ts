@@ -39,13 +39,7 @@ export type TemplateParameters<
  * @public
  */
 export interface SimpluxBrowserRouteConfiguration<TParameters>
-  extends SimpluxRouteConfiguration<TParameters> {
-  /**
-   * An optional name for the route. If not provided the template will be
-   * used as the name.
-   */
-  readonly name?: string
-}
+  extends SimpluxRouteConfiguration<TParameters> {}
 
 /**
  * Helper type to specify the parameters for an href selector
@@ -130,9 +124,7 @@ function addRoute(
   urlTemplate: _UrlTemplate,
   routeConfiguration?: SimpluxBrowserRouteConfiguration<any>,
 ): SimpluxBrowserRoute<unknown> {
-  const name = routeConfiguration?.name || urlTemplate
-
-  const route = getSimpluxRouter().addRoute(name, routeConfiguration)
+  const route = getSimpluxRouter().addRoute(urlTemplate, routeConfiguration)
 
   _module.addRoute(route.id, urlTemplate)
 
