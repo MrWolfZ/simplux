@@ -13,7 +13,7 @@
         "--detectOpenHandles",
         "--no-cache",
         "--colors",
-        "--config=./jest.config.js"
+        "--config=../jest.config.js"
       ],
       "cwd": "${fileDirname}",
       "console": "integratedTerminal",
