@@ -162,33 +162,56 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ## Open points
 
-- core: add `CallableSelector` interface that does not have extras and can be used for public library selector properties
-- core: remove `nameFunction` in production
-- core: add a `combineSelectors` utility function
-- testing: add functions to throw when calling unmocked mutations or effects
-- router: allow `onNavigateTo` to cancel or redirect the navigation
-- router: explicitly specify what happened (i.e. success, fail, cancel, redirect) in return value of `navigateTo` functions
-- router: capture navigation history
-- router: allow going back to previously active route
-- router: allow creating child routes
-- router: pass info into `onNavigateTo` whether this is the final route to allow easy default redirects
-- router: method `addRoutes` on `SimpluxRouter` to create multiple routes at once
-- router: add type tests
-- browser-router: allow defining global query parameters
-- browser-router: throw when creating conflicting route definition
-- browser-router: configuration parameter for setting URL at start or end of navigation (or not at all); also add these as navigation options
-- browser-router: configuration parameter for replacing history entry; also add these as navigation options
-- browser-router: allow ?[, [?, &[, and [& for optional query parameters
-- browser-router: add type tests
-- browser-router: add support for setting hash parameter in history mode
-- browser-router: add support for base href in history mode
-- browser-router: add support for hash mode
-- browser-router: allow defining default values for parameters (e.g. /:id:string|defaultValue/)
-- browser-router: alternatively add function configuration parameter to fill in defaults dynamically (also infer correct full parameter type from return value of callback)
-- entities: create package for managing collections of entities
-- entities: create default set of entity management mutations
-- entities: allow creating custom mutations that act on one entity
-- entities: create default set of selectors for entities
+### core
+
+- add a `subscribe` function to selectors to get notified of value changes
+- add a `combineSelectors` utility function
+
+### testing
+
+- add functions to throw when calling unmocked mutations or effects
+
+### router
+
+- allow creating child routes
+- add extras property `navigationIsToChildRoute` to `onNavigateTo` to allow easy default redirects
+- add extras property `navigationIsToActiveRoute` to `onNavigateTo` to allow parent routes to cancel navigation to identical child routes
+
+- add type tests
+- capture navigation history
+- allow going back to previously active route
+
+### browser-router
+
+- allow defining global query parameters
+- configuration parameter for setting URL at start or end of navigation (or not at all); also add these as navigation options
+- configuration parameter for replacing browser history entry; also add these as navigation options
+- allow ?[, [?, &[, and [& for optional query parameters
+- add support for base href in history mode
+
+- add type tests
+- add support for setting hash parameter in history mode
+- add support for hash mode
+- allow defining default values for parameters (e.g. /:id:string|defaultValue/)
+- alternatively add function configuration parameter to fill in defaults dynamically (also infer correct full parameter type from return value of callback)
+
+### entities
+
+- create package for managing collections of entities
+- create default set of entity management mutations
+- allow creating custom mutations that act on one entity
+- create default set of selectors for entities
+
+### react
+
+nothing
+
+### angular
+
+nothing
+
+### misc
+
 - docs: create website
 - recipes: add example effects to recipe for `creating non-trivial modules` and explicitly mention mixin pattern
 - build: create root jest config to run tests of all projects at once
