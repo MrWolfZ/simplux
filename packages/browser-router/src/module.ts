@@ -12,12 +12,9 @@ import {
   _RouteId,
 } from '@simplux/router'
 import { _extractOrigin, _locationModule, _Url } from './location.js'
-import type {
-  _ParameterName,
-  _ParameterType,
-  _ParameterValueType,
-} from './parameter.js'
+import type { _ParameterName, _ParameterType } from './parameter.js'
 import type { _RoutePathTemplateSegment } from './path.js'
+import { _BrowserRouteTreeNode, _routeTree } from './route-tree.js'
 
 const simpluxRouter = getSimpluxRouter()
 
@@ -47,56 +44,41 @@ export interface _RouteQueryParameterState {
 }
 
 /**
- * The state of a browser route.
- *
  * @internal
  */
 export interface _BrowserRouteState {
-  /**
-   * The path segments of the route.
-   */
   readonly pathTemplateSegments: readonly _RoutePathTemplateSegment[]
-
-  /**
-   * The query parameters of the route.
-   */
   readonly queryParameters: readonly _RouteQueryParameterState[]
 }
 
 /**
- * The state of the browser router.
- *
  * @internal
  */
 export interface _BrowserRouterState {
-  /**
-   * All registered routes.
-   */
   readonly routes: _BrowserRouteState[]
-
-  /**
-   * The URL of the current navigation.
-   */
+  rootNode: _BrowserRouteTreeNode
   currentNavigationUrl: _Url | undefined
 }
 
 const initialState: _BrowserRouterState = {
   routes: [],
+  rootNode: _routeTree.rootNode,
   currentNavigationUrl: undefined,
 }
 
 const browserRouterModule = createSimpluxModule('browserRouter', initialState)
 
 const mutations = createMutations(browserRouterModule, {
-  addRoute: ({ routes }, routeId: _RouteId, urlTemplate: _UrlTemplate) => {
-    urlTemplate = urlTemplate.replace(/^\//, '').replace(/\/$/, '')
-    const [path, query] = urlTemplate.replace('[?', '?[').split('?')
-    const pathTemplateSegments = !path ? [] : parsePathTemplate(path!)
-    const queryParameters = parseQueryTemplate(query)
+  addRoute: (state, routeId: _RouteId, urlTemplate: _UrlTemplate) => {
+    const [updatedTree, route] = _routeTree.addRoute(
+      state.rootNode,
+      routeId,
+      urlTemplate,
+    )
 
-    routes[routeId - 1] = {
-      pathTemplateSegments,
-      queryParameters,
+    if (updatedTree !== state.rootNode) {
+      state.rootNode = updatedTree
+      state.routes[routeId - 1] = route
     }
   },
 
@@ -107,6 +89,8 @@ const mutations = createMutations(browserRouterModule, {
 
 const selectors = createSelectors(browserRouterModule, {
   state: (s) => s,
+
+  currentNavigationUrl: ({ currentNavigationUrl }) => currentNavigationUrl,
 
   href: (
     { routes },
@@ -122,29 +106,10 @@ const selectors = createSelectors(browserRouterModule, {
   },
 
   routeIdAndParametersByUrl: (
-    { routes },
+    { rootNode },
     url: _Url,
   ): [_RouteId, NavigationParameters] | undefined => {
-    const [path, query] = url.split('?')
-
-    const trimmedPath = path!.replace(/^\//, '').replace(/\/$/, '')
-
-    const pathSegments =
-      trimmedPath === '' ? [] : trimmedPath.split('/').map(decodeURIComponent)
-
-    const queryParameters = query
-      ?.split('&')
-      .map((p) => p.split('='))
-      .reduce(
-        (v, [name, value]) => ({ ...v, [decodeURIComponent(name!)]: value }),
-        {} as _QueryParameterValues,
-      )
-
-    return findRouteForPathSegmentsAndQuery(
-      routes,
-      pathSegments,
-      queryParameters || {},
-    )
+    return _routeTree.findRoute(rootNode as _BrowserRouteTreeNode, url)
   },
 })
 
@@ -159,7 +124,7 @@ const effects = createEffects({
     url = url.replace(origin, '')
     url = !url || url === '/' ? '' : url.startsWith('/') ? url : `/${url}`
 
-    if (url === selectors.state().currentNavigationUrl) {
+    if (url === selectors.currentNavigationUrl()) {
       return NAVIGATION_CANCELLED
     }
 
@@ -230,59 +195,6 @@ export const _module = {
   ...effects,
 }
 
-function parsePathTemplate(
-  template: string,
-): readonly _RoutePathTemplateSegment[] {
-  return template.split('/').map(parseSegment)
-
-  function parseSegment(segment: string): _RoutePathTemplateSegment {
-    if (segment.startsWith(':')) {
-      const [, name, type] = segment.split(':')
-
-      return {
-        parameterName: name!,
-        parameterType: (type || 'string') as _ParameterType,
-      }
-    }
-
-    return segment
-  }
-}
-
-function parseQueryTemplate(
-  template: string | undefined,
-): readonly _RouteQueryParameterState[] {
-  if (!template) {
-    return []
-  }
-
-  const [requiredPart, optionalPart] = template.replace('[&', '[').split('[')
-
-  const required = !requiredPart
-    ? []
-    : requiredPart.split('&').map((p) => parseParameter(p, false))
-
-  const optional = optionalPart
-    ?.substr(0, optionalPart.length - 1)
-    .split('&')
-    .map((p) => parseParameter(p, true))
-
-  return [...required, ...(optional || [])]
-
-  function parseParameter(
-    parameter: string,
-    isOptional: boolean,
-  ): _RouteQueryParameterState {
-    const [name, type] = parameter.split(':')
-
-    return {
-      parameterName: name!,
-      parameterType: (type || 'string') as _ParameterType,
-      isOptional,
-    }
-  }
-}
-
 function createPathForHref(
   segments: readonly _RoutePathTemplateSegment[],
   parameterValues?: NavigationParameters,
@@ -318,131 +230,5 @@ function createQueryForHref(
     const encodedName = encodeURIComponent(parameterName)
     const encodedValue = encodeURIComponent(value)
     return `${encodedName}=${encodedValue}`
-  }
-}
-
-function findRouteForPathSegmentsAndQuery(
-  routes: readonly _BrowserRouteState[],
-  pathSegments: _Url[],
-  queryParameterValues: _QueryParameterValues,
-): [_RouteId, NavigationParameters] | undefined {
-  for (let i = 0; i < routes.length; i += 1) {
-    const result = tryMatchRoute(routes[i]!)
-
-    if (result) {
-      return [i + 1, result]
-    }
-  }
-
-  return undefined
-
-  function tryMatchRoute({
-    pathTemplateSegments,
-    queryParameters,
-  }: _BrowserRouteState): NavigationParameters | undefined {
-    if (pathTemplateSegments.length !== pathSegments.length) {
-      return undefined
-    }
-
-    for (let i = 0; i < pathTemplateSegments.length; i += 1) {
-      if (!pathSegmentMatches(pathTemplateSegments[i]!, pathSegments[i]!)) {
-        return undefined
-      }
-    }
-
-    const requiredQueryParameters = queryParameters.filter((p) => !p.isOptional)
-    for (const { parameterName, parameterType } of requiredQueryParameters) {
-      const parameterExists = queryParameterExists(parameterName)
-      const parameterValue = queryParameterValues[parameterName]
-      const parameterIsOfType = valueIsOfType(parameterValue, parameterType)
-
-      if (!parameterExists || !parameterIsOfType) {
-        return undefined
-      }
-    }
-
-    return parseParameterValues()
-
-    function parseParameterValues() {
-      const parameters: Record<_ParameterName, _ParameterValueType> = {}
-
-      for (let i = 0; i < pathTemplateSegments.length; i += 1) {
-        const template = pathTemplateSegments[i]!
-
-        if (typeof template === 'string') {
-          continue
-        }
-
-        parameters[template.parameterName] = parseValue(
-          pathSegments[i]!,
-          template.parameterType,
-        )
-      }
-
-      for (const { parameterName, parameterType } of queryParameters) {
-        if (!queryParameterExists(parameterName)) {
-          continue
-        }
-
-        parameters[parameterName] = parseValue(
-          queryParameterValues[parameterName]!,
-          parameterType,
-        )
-      }
-
-      return parameters
-    }
-  }
-
-  function pathSegmentMatches(
-    template: _RoutePathTemplateSegment,
-    segment: _Url,
-  ) {
-    if (typeof template === 'string') {
-      return template === segment
-    }
-
-    return valueIsOfType(segment, template.parameterType)
-  }
-
-  function queryParameterExists(parameterName: _ParameterName) {
-    return Object.prototype.hasOwnProperty.call(
-      queryParameterValues,
-      parameterName,
-    )
-  }
-
-  function valueIsOfType(
-    rawValue: string | undefined,
-    valueType: _ParameterType,
-  ): _ParameterValueType {
-    if (rawValue === undefined) {
-      return true
-    }
-
-    if (valueType === 'number') {
-      return /^[+-]?\d+(\.\d+)?$/.test(rawValue)
-    }
-
-    if (valueType === 'boolean') {
-      return rawValue === 'true' || rawValue === 'false'
-    }
-
-    return true
-  }
-
-  function parseValue(
-    rawValue: string,
-    valueType: _ParameterType,
-  ): _ParameterValueType {
-    if (valueType === 'number') {
-      return !rawValue ? 0 : parseInt(rawValue, 10)
-    }
-
-    if (valueType === 'boolean') {
-      return !rawValue ? true : rawValue === 'true'
-    }
-
-    return !rawValue ? '' : decodeURIComponent(rawValue)
   }
 }

@@ -1,7 +1,9 @@
 import type { _BrowserRouterState, _BrowserRouteState } from './module.js'
+import { _routeTree } from './route-tree.js'
 
 export const emptyRouterState: _BrowserRouterState = {
   routes: [],
+  rootNode: _routeTree.rootNode,
   currentNavigationUrl: undefined,
 }
 
@@ -67,7 +69,7 @@ export const routeStateWithQueryParameters: _BrowserRouteState = {
 }
 
 export const routeTemplateWithOptionalQueryParameter =
-  'root?requiredParam[&optionalParam]'
+  'root/withRequiredQuery?requiredParam[&optionalParam]'
 
 export const routeStateWithOptionalQueryParameters: _BrowserRouteState = {
   pathTemplateSegments: ['root'],
@@ -86,7 +88,7 @@ export const routeStateWithOptionalQueryParameters: _BrowserRouteState = {
 }
 
 export const routeTemplateWithOnlyOptionalQueryParameter =
-  'root[?optionalParam]'
+  'root/withOptionalQuery[?optionalParam]'
 
 export interface RouteWithPathAndQueryParametersPathPart {
   pathStringParam: string
@@ -131,12 +133,3 @@ export const routeStateWithPathAndQueryParameters: _BrowserRouteState = {
 export const routeTemplateWithOnNavigateTo = 'root/withOnNavigateTo'
 export const routeTemplateWithOnNavigateToAndParameters =
   'root/withOnNavigateTo/:pathParam?queryParam'
-
-export function makeBrowserRouterState(
-  ...routes: _BrowserRouteState[]
-): _BrowserRouterState {
-  return {
-    routes,
-    currentNavigationUrl: undefined,
-  }
-}

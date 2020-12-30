@@ -8,7 +8,7 @@ import {
 import { _module } from './module.js'
 import { _routeEffects } from './route.js'
 import {
-  makeBrowserRouterState,
+  emptyRouterState,
   rootRouteTemplate,
   routeTemplateWithoutParameters,
   routeTemplateWithPathParameters,
@@ -139,24 +139,13 @@ describe(`route`, () => {
 
       describe(mockRoute.href, () => {
         it('delegates to module selector', () => {
-          const path = 'root/:pathParam?queryParam'
+          const template = 'root/:pathParam?queryParam'
 
-          const state = makeBrowserRouterState({
-            pathTemplateSegments: [
-              'root',
-              {
-                parameterName: 'pathParam',
-                parameterType: 'string',
-              },
-            ],
-            queryParameters: [
-              {
-                parameterName: 'queryParam',
-                parameterType: 'string',
-                isOptional: false,
-              },
-            ],
-          })
+          const state = _module.addRoute.withState(
+            emptyRouterState,
+            1,
+            template,
+          )
 
           mockModuleState(_module, state)
 
@@ -165,12 +154,12 @@ describe(`route`, () => {
             queryParam: 'queryValue',
           }
 
-          const testRoute = addRoute(path)
+          const testRoute = addRoute(template)
 
           const href = testRoute.href(parameterValues)
 
           expect(href).toBe(
-            `/${path
+            `/${template
               .replace(':pathParam', parameterValues.pathParam)
               .replace(
                 'queryParam',
@@ -180,28 +169,17 @@ describe(`route`, () => {
         })
 
         it('returns different result for different parameters (tests memoization)', () => {
-          const path = 'root/:pathParam?queryParam'
+          const template = 'root/:pathParam?queryParam'
 
-          const state = makeBrowserRouterState({
-            pathTemplateSegments: [
-              'root',
-              {
-                parameterName: 'pathParam',
-                parameterType: 'string',
-              },
-            ],
-            queryParameters: [
-              {
-                parameterName: 'queryParam',
-                parameterType: 'string',
-                isOptional: false,
-              },
-            ],
-          })
+          const state = _module.addRoute.withState(
+            emptyRouterState,
+            1,
+            template,
+          )
 
           mockModuleState(_module, state)
 
-          const testRoute = addRoute(path)
+          const testRoute = addRoute(template)
 
           const href1 = testRoute.href({
             pathParam: 'pathValue',
