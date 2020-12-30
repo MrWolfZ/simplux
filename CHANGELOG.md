@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.9](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.8...v0.18.0-alpha.9) (2020-12-30)
+
+
+### Features
+
+* **browser-router:** allow `onNavigateTo` callbacks to cancel the navigation ([65c42b5](https://github.com/MrWolfZ/simplux/commit/65c42b5a3c12210dc0a25fedb88b5d5414304571))
+* **router:** allow `onNavigateTo` callbacks to cancel the navigation ([00e81e1](https://github.com/MrWolfZ/simplux/commit/00e81e19449e2016900fee5eaa5a6c1554df76d7))
+
+
+### Performance Improvements
+
+* **browser-router:** memoize calls to `href` ([36e470f](https://github.com/MrWolfZ/simplux/commit/36e470fd9d8c4153d23c995fdeb5c72247dd7ab8))
+
+
+
+
+
 # [0.18.0-alpha.8](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.7...v0.18.0-alpha.8) (2020-12-27)
 
 
