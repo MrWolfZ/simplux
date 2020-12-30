@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.10](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.9...v0.18.0-alpha.10) (2020-12-30)
+
+
+### Features
+
+* **browser-router:** support array parameters ([6564a7a](https://github.com/MrWolfZ/simplux/commit/6564a7ae8502ed9eb2ba81f751506c72b34f45c6))
+
+
+
+
+
 # [0.18.0-alpha.9](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.8...v0.18.0-alpha.9) (2020-12-30)
 
 
