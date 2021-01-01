@@ -107,7 +107,11 @@ describe(`@simplux/browser-router`, () => {
     // tslint:disable-next-line: no-floating-promises
     routeForCancellation.onNavigateTo(
       {},
-      { cancelled: undefined!, cancelNavigation: NAVIGATION_CANCELLED },
+      {
+        cancelled: undefined!,
+        cancelNavigation: NAVIGATION_CANCELLED,
+        navigationIsToChildRoute: false,
+      },
     )
 
     const routeThatCancelsNav = router.addRoute('root/cancelsNav', {
@@ -118,7 +122,11 @@ describe(`@simplux/browser-router`, () => {
 
     await routeThatCancelsNav.onNavigateTo(
       {},
-      { cancelled: undefined!, cancelNavigation: NAVIGATION_CANCELLED },
+      {
+        cancelled: undefined!,
+        cancelNavigation: NAVIGATION_CANCELLED,
+        navigationIsToChildRoute: false,
+      },
     )
 
     const routeThatThrowsSync = router.addRoute('root/syncThrow', {
