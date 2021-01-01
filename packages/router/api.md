@@ -4,7 +4,7 @@
 
 ```ts
 
-import type { Immutable } from '@simplux/core';
+import { Immutable } from '@simplux/core';
 import { SimpluxEffect } from '@simplux/core';
 import { SimpluxSelector } from '@simplux/core';
 
@@ -30,12 +30,12 @@ export type NavigationParameters = Readonly<Record<string, any>>;
 export type NavigationResult = Promise<typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED>;
 
 // @public
-export type OnNavigateTo<TParameters = NavigationParameters> = (parameters: TParameters, extras: OnNavigateToExtras) => void | typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED | Promise<void | typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED>;
+export type OnNavigateTo<TParameters = NavigationParameters> = (parameters: Immutable<TParameters>, extras: OnNavigateToExtras) => void | typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED | Promise<void | typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED>;
 
 // @public
 export interface OnNavigateToExtras {
-    cancelled: Promise<typeof NAVIGATION_CANCELLED>;
-    cancelNavigation: typeof NAVIGATION_CANCELLED;
+    readonly cancelled: Promise<typeof NAVIGATION_CANCELLED>;
+    readonly cancelNavigation: typeof NAVIGATION_CANCELLED;
 }
 
 // @public

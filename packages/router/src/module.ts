@@ -62,12 +62,12 @@ export interface OnNavigateToExtras {
    * (e.g. because a new navigation has started while this
    * function was running).
    */
-  cancelled: Promise<typeof NAVIGATION_CANCELLED>
+  readonly cancelled: Promise<typeof NAVIGATION_CANCELLED>
 
   /**
    * This object can be returned to cancel the navigation.
    */
-  cancelNavigation: typeof NAVIGATION_CANCELLED
+  readonly cancelNavigation: typeof NAVIGATION_CANCELLED
 }
 
 /**
@@ -81,7 +81,7 @@ export interface OnNavigateToExtras {
  * @public
  */
 export type OnNavigateTo<TParameters = NavigationParameters> = (
-  parameters: TParameters,
+  parameters: Immutable<TParameters>,
   extras: OnNavigateToExtras,
 ) =>
   | void
