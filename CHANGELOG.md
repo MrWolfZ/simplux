@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.11](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.10...v0.18.0-alpha.11) (2021-01-01)
+
+
+### Features
+
+* **browser-router:** support adding child routes ([569bea2](https://github.com/MrWolfZ/simplux/commit/569bea268f3c8f920ddb86f9c71d5b063d62eef1))
+* **router:** add property to `onNavigateTo` args to indicate whether navigation is to child route ([7982240](https://github.com/MrWolfZ/simplux/commit/798224024a9c301dda7305fedc01582c55d353e2))
+* **router:** support adding child routes ([31ce3b7](https://github.com/MrWolfZ/simplux/commit/31ce3b747a21dbea3fecd55d95bd610f024df0b1))
+
+
+
+
+
 # [0.18.0-alpha.10](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.9...v0.18.0-alpha.10) (2020-12-30)
 
 
