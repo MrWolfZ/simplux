@@ -1,7 +1,6 @@
 import type { Immutable, SimpluxEffect, SimpluxSelector } from '@simplux/core'
 import {
   getSimpluxRouter,
-  NavigationParameters,
   NavigationResult,
   SimpluxRouterSelectors,
 } from '@simplux/router'
@@ -15,62 +14,6 @@ import {
 } from './route.js'
 
 const simpluxRouter = getSimpluxRouter()
-
-/**
- * Add a new route with the given template to the router.
- *
- * Parameter types are automatically parsed from the template.
- *
- * @param name - the name of the route
- * @param routeConfiguration - configuration for the route
- *
- * @returns a route object for interacting with the route
- *
- * @public
- */
-export declare function _addRoute<
-  TUrlTemplate extends string,
-  TConfiguration extends SimpluxBrowserRouteConfiguration<
-    {
-      // this duplication is to get tooling to display the inferred parameter object
-      // as a single object instead of an intersection of objects, e.g. show
-      // { param1: string; param2?: string } instead of { param1: string } & { param2?: string };
-      // introducing another wrapper type (e.g. _Params) would also lead to _Params<'route'>
-      // to be shown
-      [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
-    }
-  >
->(
-  urlTemplate: TUrlTemplate,
-  routeConfiguration?: TConfiguration,
-): SimpluxBrowserRoute<
-  {
-    [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
-  },
-  TConfiguration
->
-
-/**
- * Add a new route with the given template and parameter types
- * to the router.
- *
- * @param name - the name of the route
- * @param routeConfiguration - configuration for the route
- *
- * @returns a route object for interacting with the route
- *
- * @public
- */
-export declare function _addRoute<
-  TPathParameters extends NavigationParameters = {},
-  TQueryParameters extends NavigationParameters = {},
-  TConfiguration extends SimpluxBrowserRouteConfiguration<
-    TPathParameters & TQueryParameters
-  > = SimpluxBrowserRouteConfiguration<TPathParameters & TQueryParameters>
->(
-  urlTemplate: string,
-  routeConfiguration?: TConfiguration,
-): SimpluxBrowserRoute<TPathParameters & TQueryParameters, TConfiguration>
 
 /**
  * A router that allows navigating between different routes by
@@ -92,9 +35,39 @@ export interface SimpluxBrowserRouter extends SimpluxRouterSelectors {
     Immutable<_BrowserRouterState>
   >
 
-  // no tsdoc since it inherits the docs of the declared
-  // function above
-  readonly addRoute: SimpluxEffect<typeof _addRoute>
+  /**
+   * Add a new route with the given template to the router.
+   *
+   * Parameter types are automatically parsed from the template.
+   *
+   * @param template - the template of the route
+   * @param routeConfiguration - configuration for the route
+   *
+   * @returns a route object for interacting with the route
+   */
+  readonly addRoute: SimpluxEffect<
+    <
+      TUrlTemplate extends string,
+      TConfiguration extends SimpluxBrowserRouteConfiguration<
+        {
+          [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
+        }
+      >
+    >(
+      template: TUrlTemplate,
+      routeConfiguration?: TConfiguration,
+    ) => SimpluxBrowserRoute<
+      {
+        // this duplication is to get tooling to display the inferred parameter object
+        // as a single object instead of an intersection of objects, e.g. show
+        // { param1: string; param2?: string } instead of { param1: string } & { param2?: string };
+        // introducing another wrapper type (e.g. _Params) would also lead to _Params<'route'>
+        // to be shown
+        [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
+      },
+      TConfiguration
+    >
+  >
 
   /**
    * Navigate to a URL. Does the same as if the URL was entered in the
@@ -124,7 +97,7 @@ export const _router: SimpluxBrowserRouter = {
   state: _module.state,
   anyRouteIsActive: simpluxRouter.anyRouteIsActive,
   navigationIsInProgress: simpluxRouter.navigationIsInProgress,
-  addRoute: _routeEffects.addRoute,
+  addRoute: _routeEffects.addRoute as any,
   navigateToUrl: _module.navigateToRouteByUrl,
   activate: _locationModule.activate,
 }

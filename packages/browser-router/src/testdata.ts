@@ -23,16 +23,6 @@ export const routeTemplateWithOptionalQueryParameter =
 export const routeTemplateWithOnlyOptionalQueryParameter =
   'root/withOptionalQuery[?optionalParam]'
 
-export interface RouteWithPathAndQueryParametersPathPart {
-  pathStringParam: string
-  pathNumberParam: number
-}
-
-export interface RouteWithPathAndQueryParametersQueryPart {
-  queryStringParam: string
-  queryNumberParam: number
-}
-
 export const routeTemplateWithPathAndQueryParameters =
   'root/:pathStringParam/intermediate/:pathNumberParam:number?queryStringParam&queryNumberParam:number'
 

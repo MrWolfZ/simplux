@@ -2,6 +2,7 @@ import {
   createEffects,
   createSelectors,
   Immutable,
+  SimpluxEffect,
   SimpluxSelector,
 } from '@simplux/core'
 import {
@@ -65,7 +66,7 @@ export type _HrefFunction<TParameters> = NavigateToFn<TParameters>
 export interface SimpluxBrowserRoute<
   TParameters,
   TConfiguration extends SimpluxRouteConfiguration<TParameters> = {}
-> extends SimpluxRoute<TParameters, TConfiguration> {
+> extends Omit<SimpluxRoute<TParameters, TConfiguration>, 'addChildRoute'> {
   /**
    * Helper property to get the parameter type of this route via
    * `typeof route.$parameterTypes`. Will be `undefined` at runtime.
@@ -86,62 +87,87 @@ export interface SimpluxBrowserRoute<
     HrefSelectorParameters<TParameters>,
     string
   >
+
+  /**
+   * Add a child route with the given template to the route. The child
+   * route's template will be the concatenation of this route's template
+   * and the child's template.
+   *
+   * Parameter types are automatically parsed from the template.
+   *
+   * @param template - the template of the route
+   * @param routeConfiguration - configuration for the route
+   *
+   * @returns a route object for interacting with the child route
+   */
+  readonly addChildRoute: SimpluxEffect<
+    <
+      TUrlTemplate extends string,
+      TConfiguration extends SimpluxBrowserRouteConfiguration<
+        {
+          [p in keyof (TemplateParameters<TUrlTemplate> &
+            TParameters)]: (TemplateParameters<TUrlTemplate> & TParameters)[p]
+        }
+      >
+    >(
+      template: TUrlTemplate,
+      routeConfiguration?: TConfiguration,
+    ) => SimpluxBrowserRoute<
+      {
+        // this duplication is to get tooling to display the inferred parameter object
+        // as a single object instead of an intersection of objects, e.g. show
+        // { param1: string; param2?: string } instead of { param1: string } & { param2?: string };
+        // introducing another wrapper type (e.g. _Params) would also lead to _Params<'route'>
+        // to be shown
+        [p in keyof (TemplateParameters<TUrlTemplate> &
+          TParameters)]: (TemplateParameters<TUrlTemplate> & TParameters)[p]
+      },
+      TConfiguration
+    >
+  >
 }
 
 function addRoute<
   TUrlTemplate extends _UrlTemplate,
   TConfiguration extends SimpluxBrowserRouteConfiguration<
-    {
-      // this duplication is to get tooling to display the inferred parameter object
-      // as a single object instead of an intersection of objects, e.g. show
-      // { param1: string; param2?: string } instead of { param1: string } & { param2?: string };
-      // introducing another wrapper type (e.g. _Params) would also lead to _Params<'route'>
-      // to be shown
-      [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
-    }
+    TemplateParameters<TUrlTemplate>
   >
 >(
   urlTemplate: TUrlTemplate,
   routeConfiguration?: TConfiguration,
-): SimpluxBrowserRoute<
-  {
-    [p in keyof TemplateParameters<TUrlTemplate>]: TemplateParameters<TUrlTemplate>[p]
-  },
-  TConfiguration
->
+  parentRouteId?: _RouteId,
+): SimpluxBrowserRoute<TemplateParameters<TUrlTemplate>, TConfiguration> {
+  const route = getSimpluxRouter().addRouteInternal(
+    urlTemplate,
+    routeConfiguration as SimpluxRouteConfiguration<NavigationParameters>,
+    parentRouteId,
+  )
 
-function addRoute<
-  TPathParameters extends NavigationParameters = {},
-  TQueryParameters extends NavigationParameters = {},
-  TConfiguration extends SimpluxBrowserRouteConfiguration<
-    TPathParameters & TQueryParameters
-  > = SimpluxBrowserRouteConfiguration<TPathParameters & TQueryParameters>
->(
-  urlTemplate: string,
-  routeConfiguration?: TConfiguration,
-): SimpluxBrowserRoute<TPathParameters & TQueryParameters, TConfiguration>
-
-function addRoute(
-  urlTemplate: _UrlTemplate,
-  routeConfiguration?: SimpluxBrowserRouteConfiguration<any>,
-): SimpluxBrowserRoute<unknown> {
-  const route = getSimpluxRouter().addRoute(urlTemplate, routeConfiguration)
-
-  _module.addRoute(route.id, urlTemplate)
+  if (!parentRouteId) {
+    _module.addRoute(route.id, urlTemplate)
+  } else {
+    _module.addChildRoute(parentRouteId, route.id, urlTemplate)
+  }
 
   const selectors = createSelectors(_module, {
     href: createMemoizedHrefFn(route.id),
   })
 
-  const { navigateTo } = createEffects({
+  const { addChildRoute, navigateTo } = createEffects({
+    addChildRoute: (
+      childTemplate: _UrlTemplate,
+      childConfiguration: SimpluxBrowserRouteConfiguration<any>,
+    ) => addRoute(childTemplate, childConfiguration, route.id),
+
     navigateTo: (parameters?: NavigationParameters): NavigationResult =>
       _module.navigateToRouteById(route.id, parameters || {}),
   })
 
   return {
-    ...route,
+    ...(route as SimpluxRoute<any, TConfiguration>),
     href: selectors.href as any,
-    navigateTo,
+    addChildRoute: addChildRoute as any,
+    navigateTo: navigateTo as any,
     $parameterTypes: undefined!,
   }
 }

@@ -16,8 +16,6 @@ import {
   routeTemplateWithPathAndQueryParameters,
   routeTemplateWithPathParameters,
   routeTemplateWithQueryParameters,
-  RouteWithPathAndQueryParametersPathPart,
-  RouteWithPathAndQueryParametersQueryPart,
 } from './src/testdata.js'
 
 describe(`@simplux/browser-router`, () => {
@@ -68,15 +66,6 @@ describe(`@simplux/browser-router`, () => {
     )
 
     expect(routeWithPathAndQueryParameters.name).toBe(
-      routeTemplateWithPathAndQueryParameters,
-    )
-
-    const routeWithExplicitParameterInterfaces = router.addRoute<
-      RouteWithPathAndQueryParametersPathPart,
-      RouteWithPathAndQueryParametersQueryPart
-    >(routeTemplateWithPathAndQueryParameters)
-
-    expect(routeWithExplicitParameterInterfaces.name).toBe(
       routeTemplateWithPathAndQueryParameters,
     )
 
@@ -145,12 +134,124 @@ describe(`@simplux/browser-router`, () => {
       },
     })
 
+    const parentRoute = router.addRoute(
+      'parent/:parentParam?parentQueryParam',
+      {
+        onNavigateTo: async ({ parentParam, parentQueryParam }) => {
+          parentParam
+          parentQueryParam
+          await Promise.resolve()
+        },
+      },
+    )
+
+    expect(
+      parentRoute.href({
+        parentParam: 'parent',
+        parentQueryParam: 'parent',
+      }),
+    ).toBe('/parent/parent?parentQueryParam=parent')
+
+    const childRoute1 = parentRoute.addChildRoute(
+      'child1/:child1Param?childQueryParam1',
+      {
+        onNavigateTo: async ({
+          parentParam,
+          parentQueryParam,
+          child1Param,
+          childQueryParam1,
+        }) => {
+          parentParam
+          parentQueryParam
+          child1Param
+          childQueryParam1
+          await Promise.resolve()
+        },
+      },
+    )
+
+    expect(
+      childRoute1.href({
+        parentParam: 'parent',
+        parentQueryParam: 'parent',
+        child1Param: 'child1',
+        childQueryParam1: 'child1',
+      }),
+    ).toBe(
+      '/parent/parent/child1/child1?parentQueryParam=parent&childQueryParam1=child1',
+    )
+
+    const childRoute2 = parentRoute.addChildRoute(
+      'child2/:child2Param:number?childQueryParam2:number',
+      {
+        onNavigateTo: async ({
+          parentParam,
+          parentQueryParam,
+          child2Param,
+          childQueryParam2,
+        }) => {
+          parentParam
+          parentQueryParam
+          child2Param
+          childQueryParam2
+          await Promise.resolve()
+        },
+      },
+    )
+
+    expect(
+      childRoute2.href({
+        parentParam: 'parent',
+        parentQueryParam: 'parent',
+        child2Param: 100,
+        childQueryParam2: -100,
+      }),
+    ).toBe(
+      '/parent/parent/child2/100?parentQueryParam=parent&childQueryParam2=-100',
+    )
+
+    const nestedChildRoute = childRoute1.addChildRoute(
+      'nested/:nestedChildParam?nestedChildQueryParam',
+      {
+        onNavigateTo: async ({
+          parentParam,
+          parentQueryParam,
+          child1Param,
+          childQueryParam1,
+          nestedChildParam,
+          nestedChildQueryParam,
+        }) => {
+          parentParam
+          parentQueryParam
+          child1Param
+          childQueryParam1
+          nestedChildParam
+          nestedChildQueryParam
+          await Promise.resolve()
+        },
+      },
+    )
+
+    expect(
+      nestedChildRoute.href({
+        parentParam: 'parent',
+        parentQueryParam: 'parent',
+        child1Param: 'child1',
+        childQueryParam1: 'child1',
+        nestedChildParam: 'nested',
+        nestedChildQueryParam: 'nested',
+      }),
+    ).toBe(
+      '/parent/parent/child1/child1/nested/nested?parentQueryParam=parent&childQueryParam1=child1&nestedChildQueryParam=nested',
+    )
+
     expect(router.anyRouteIsActive()).toBe(false)
 
     await rootRoute.navigateTo()
 
     expect(rootRoute.isActive()).toBe(true)
     expect(rootRoute.parameterValues()).toEqual({})
+    expect(rootRoute.href()).toBe('')
 
     expect(router.anyRouteIsActive()).toBe(true)
 
@@ -158,6 +259,7 @@ describe(`@simplux/browser-router`, () => {
 
     expect(routeWithoutParameters.isActive()).toBe(true)
     expect(routeWithoutParameters.parameterValues()).toEqual({})
+    expect(routeWithoutParameters.href()).toBe('/root')
 
     await routeWithPathParameters.navigateTo({
       stringParam: 'a',
@@ -175,6 +277,15 @@ describe(`@simplux/browser-router`, () => {
       arrayStringParam: ['b', 'c', 'long'],
       arrayNumberParam: [100, -100, 9999999999],
     })
+    expect(
+      routeWithPathParameters.href({
+        stringParam: 'a',
+        numberParam: 1,
+        booleanParam: false,
+        arrayStringParam: ['b', 'c', 'long'],
+        arrayNumberParam: [100, -100, 9999999999],
+      }),
+    ).toBe('/root/a/intermediate/1/false/b,c,long/100,-100,9999999999')
 
     await routeWithQueryParameters.navigateTo({
       stringParam: 'a',
@@ -192,6 +303,17 @@ describe(`@simplux/browser-router`, () => {
       arrayStringParam: ['b', 'c', 'long'],
       arrayNumberParam: [100, -100, 9999999999],
     })
+    expect(
+      routeWithQueryParameters.href({
+        stringParam: 'a',
+        numberParam: 1,
+        booleanParam: false,
+        arrayStringParam: ['b', 'c', 'long'],
+        arrayNumberParam: [100, -100, 9999999999],
+      }),
+    ).toBe(
+      '/root?stringParam=a&numberParam=1&booleanParam=false&arrayStringParam=b,c,long&arrayNumberParam=100,-100,9999999999',
+    )
 
     await routeWithOptionalQueryParameter.navigateTo({
       requiredParam: 'a',
@@ -201,11 +323,23 @@ describe(`@simplux/browser-router`, () => {
     expect(routeWithOptionalQueryParameter.parameterValues()).toEqual({
       requiredParam: 'a',
     })
+    expect(routeWithOptionalQueryParameter.href({ requiredParam: 'a' })).toBe(
+      '/root/withRequiredQuery?requiredParam=a',
+    )
+    expect(
+      routeWithOptionalQueryParameter.href({
+        requiredParam: 'a',
+        optionalParam: 'b',
+      }),
+    ).toBe('/root/withRequiredQuery?requiredParam=a&optionalParam=b')
 
     await routeWithOnlyOptionalQueryParameter.navigateTo()
 
     expect(routeWithOnlyOptionalQueryParameter.isActive()).toBe(true)
     expect(routeWithOnlyOptionalQueryParameter.parameterValues()).toEqual({})
+    expect(routeWithOnlyOptionalQueryParameter.href()).toBe(
+      '/root/withOptionalQuery',
+    )
 
     await routeWithOnlyOptionalQueryParameter.navigateTo({
       optionalParam: 'opt',
@@ -215,6 +349,9 @@ describe(`@simplux/browser-router`, () => {
     expect(routeWithOnlyOptionalQueryParameter.parameterValues()).toEqual({
       optionalParam: 'opt',
     })
+    expect(
+      routeWithOnlyOptionalQueryParameter.href({ optionalParam: 'opt' }),
+    ).toBe('/root/withOptionalQuery?optionalParam=opt')
 
     await routeWithPathAndQueryParameters.navigateTo({
       pathStringParam: 'path',
@@ -230,6 +367,16 @@ describe(`@simplux/browser-router`, () => {
       queryStringParam: 'query',
       queryNumberParam: -100,
     })
+    expect(
+      routeWithPathAndQueryParameters.href({
+        pathStringParam: 'path',
+        pathNumberParam: 100,
+        queryStringParam: 'query',
+        queryNumberParam: -100,
+      }),
+    ).toBe(
+      '/root/path/intermediate/100?queryStringParam=query&queryNumberParam=-100',
+    )
 
     await router.navigateToUrl(rootRoute.href())
 
@@ -255,6 +402,109 @@ describe(`@simplux/browser-router`, () => {
 
     expect(routeForCancellation.isActive()).toBe(false)
     expect(router.navigationIsInProgress()).toBe(true)
+
+    await parentRoute.navigateTo({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+    })
+
+    expect(parentRoute.isActive()).toBe(true)
+    expect(parentRoute.parameterValues()).toEqual({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+    })
+    expect(childRoute1.isActive()).toBe(false)
+    expect(childRoute2.isActive()).toBe(false)
+    expect(nestedChildRoute.isActive()).toBe(false)
+
+    await childRoute1.navigateTo({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+      child1Param: 'child1',
+      childQueryParam1: 'child1',
+    })
+
+    expect(parentRoute.isActive()).toBe(true)
+    expect(parentRoute.parameterValues()).toEqual({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+      child1Param: 'child1',
+      childQueryParam1: 'child1',
+    })
+    expect(childRoute1.isActive()).toBe(true)
+    expect(childRoute1.parameterValues()).toEqual({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+      child1Param: 'child1',
+      childQueryParam1: 'child1',
+    })
+    expect(childRoute2.isActive()).toBe(false)
+    expect(nestedChildRoute.isActive()).toBe(false)
+
+    await childRoute2.navigateTo({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+      child2Param: 100,
+      childQueryParam2: -100,
+    })
+
+    expect(parentRoute.isActive()).toBe(true)
+    expect(parentRoute.parameterValues()).toEqual({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+      child2Param: 100,
+      childQueryParam2: -100,
+    })
+    expect(childRoute1.isActive()).toBe(false)
+    expect(childRoute2.isActive()).toBe(true)
+    expect(childRoute2.parameterValues()).toEqual({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+      child2Param: 100,
+      childQueryParam2: -100,
+    })
+    expect(nestedChildRoute.isActive()).toBe(false)
+
+    await nestedChildRoute.navigateTo({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+      child1Param: 'child1',
+      childQueryParam1: 'child1',
+      nestedChildParam: 'nested',
+      nestedChildQueryParam: 'nested',
+    })
+
+    expect(parentRoute.isActive()).toBe(true)
+    expect(parentRoute.parameterValues()).toEqual({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+      child1Param: 'child1',
+      childQueryParam1: 'child1',
+      nestedChildParam: 'nested',
+      nestedChildQueryParam: 'nested',
+    })
+    expect(childRoute1.isActive()).toBe(true)
+    expect(childRoute1.parameterValues()).toEqual({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+      child1Param: 'child1',
+      childQueryParam1: 'child1',
+      nestedChildParam: 'nested',
+      nestedChildQueryParam: 'nested',
+    })
+    expect(childRoute2.isActive()).toBe(false)
+    expect(nestedChildRoute.isActive()).toBe(true)
+    expect(nestedChildRoute.parameterValues()).toEqual({
+      parentParam: 'parent',
+      parentQueryParam: 'parent',
+      child1Param: 'child1',
+      childQueryParam1: 'child1',
+      nestedChildParam: 'nested',
+      nestedChildQueryParam: 'nested',
+    })
+
+    const rootChild = rootRoute.addChildRoute('rootChild')
+    expect(rootChild.href()).toBe(`/rootChild`)
 
     const window: any = {
       location: {

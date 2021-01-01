@@ -71,7 +71,6 @@ export interface _BrowserRouteTreeNode {
   childNodes: _BrowserRouteTreeNode[]
   routesEndingAtThisSegment: [
     routeId: _RouteId,
-    template: _UrlTemplate,
     queryParameters: readonly _RouteQueryTemplateParameter[],
   ][]
 }
@@ -84,6 +83,7 @@ const rootNode: _BrowserRouteTreeNode = {
 
 function addRoute(
   node: _BrowserRouteTreeNode,
+  parentRouteId: _RouteId | undefined,
   routeId: _RouteId,
   urlTemplate: _UrlTemplate,
 ): [_BrowserRouteTreeNode, _BrowserRouteTemplate] {
@@ -91,9 +91,70 @@ function addRoute(
   const [path, query] = urlTemplate.replace('[?', '?[').split('?')
   const pathTemplateSegments = !path ? [] : parsePathTemplate(path!)
   const queryParameters = parseQueryTemplate(query)
-  const route = { pathTemplateSegments, queryParameters }
+  let route = { pathTemplateSegments, queryParameters }
+  const pathToParent = findPathToRouteId(node, parentRouteId) || []
+  const parentTemplate = getRouteTemplate(
+    node,
+    [...pathToParent],
+    parentRouteId,
+  )
 
-  return [addRouteRecursive(node, routeId, urlTemplate, route, 0), route]
+  let fullRoute = route
+
+  if (parentTemplate) {
+    route = {
+      pathTemplateSegments,
+      queryParameters: [...parentTemplate.queryParameters, ...queryParameters],
+    }
+
+    fullRoute = {
+      pathTemplateSegments: [
+        ...parentTemplate.pathTemplateSegments,
+        ...pathTemplateSegments,
+      ],
+      queryParameters: [...parentTemplate.queryParameters, ...queryParameters],
+    }
+  }
+
+  try {
+    return [
+      addRouteRecursive(
+        node,
+        [...pathToParent],
+        routeId,
+        urlTemplate,
+        route,
+        0,
+      ),
+      fullRoute,
+    ]
+  } catch (err) {
+    if (typeof err !== 'number') {
+      throw err
+    }
+
+    const routeId = err as _RouteId
+    const pathToRoute = findPathToRouteId(node, routeId)!
+    const conflictingTemplate = getRouteTemplate(
+      node,
+      [...pathToRoute],
+      routeId,
+    )!
+
+    const renderedTemplate = renderTemplate(fullRoute)
+    const renderedConflictingTemplate = renderTemplate(conflictingTemplate)
+
+    throw new Error(
+      `route with template '${renderedTemplate}' conflicts with route with template '${renderedConflictingTemplate}'`,
+    )
+  }
+}
+
+// tslint:disable-next-line:variable-name (internal export)
+export const _routeTree = {
+  rootNode,
+  addRoute,
+  findRoute,
 }
 
 function parsePathTemplate(
@@ -154,14 +215,41 @@ function parseQueryTemplate(
 
 function addRouteRecursive(
   node: _BrowserRouteTreeNode,
+  pathToParent: number[],
   routeId: _RouteId,
   template: _UrlTemplate,
   route: _BrowserRouteTemplate,
   pathSegmentIndex: number,
 ): _BrowserRouteTreeNode {
+  if (pathToParent.length > 0) {
+    const childIdx = pathToParent.shift()
+
+    const childNode = node.childNodes[childIdx!]!
+    const updatedChildNode = addRouteRecursive(
+      childNode,
+      pathToParent,
+      routeId,
+      template,
+      route,
+      pathSegmentIndex,
+    )
+
+    if (updatedChildNode === childNode) {
+      return node
+    }
+
+    const updatedChildNodes = [...node.childNodes]
+    updatedChildNodes.splice(childIdx!, 1, updatedChildNode)
+
+    return {
+      ...node,
+      childNodes: updatedChildNodes,
+    }
+  }
+
   if (pathSegmentIndex >= route.pathTemplateSegments.length) {
     const routeWithSameParameters = node.routesEndingAtThisSegment.find(
-      ([, , params]) =>
+      ([, params]) =>
         route.queryParameters
           .filter((p) => !p.isOptional)
           .every((p) =>
@@ -174,16 +262,14 @@ function addRouteRecursive(
         return node
       }
 
-      throw new Error(
-        `route with template ${template} conflicts with route with template ${routeWithSameParameters[1]}`,
-      )
+      throw routeWithSameParameters[0]
     }
 
     return {
       ...node,
       routesEndingAtThisSegment: [
         ...node.routesEndingAtThisSegment,
-        [routeId, template, route.queryParameters],
+        [routeId, route.queryParameters],
       ],
     }
   }
@@ -207,6 +293,7 @@ function addRouteRecursive(
 
   const updatedChildNode = addRouteRecursive(
     childNode,
+    pathToParent,
     routeId,
     template,
     route,
@@ -268,13 +355,6 @@ function findRoute(
     0,
     {},
   )
-}
-
-// tslint:disable-next-line:variable-name (internal export)
-export const _routeTree = {
-  rootNode,
-  addRoute,
-  findRoute,
 }
 
 function findRouteForPathSegmentsAndQuery(
@@ -344,14 +424,13 @@ function findRouteForPathSegmentsAndQuery(
   function findRoutesForQuery(
     routes: [
       routeId: _RouteId,
-      template: _UrlTemplate,
       queryParameters: readonly _RouteQueryTemplateParameter[],
     ][],
     queryParameterValues: _QueryParameterValues,
   ) {
     const results: [_RouteId, readonly _RouteQueryTemplateParameter[]][] = []
 
-    outer: for (const [routeId, _, queryParameters] of routes) {
+    outer: for (const [routeId, queryParameters] of routes) {
       const requiredParameters = queryParameters.filter((p) => !p.isOptional)
 
       for (const { parameterName, parameterType } of requiredParameters) {
@@ -504,6 +583,120 @@ function findRouteForPathSegmentsAndQuery(
       default:
         assertNever(valueType)
     }
+  }
+}
+
+function findPathToRouteId(
+  { childNodes, routesEndingAtThisSegment }: _BrowserRouteTreeNode,
+  routeId: _RouteId | undefined,
+): readonly number[] | undefined {
+  if (!routeId) {
+    return undefined
+  }
+
+  if (routesEndingAtThisSegment.some(([id]) => id === routeId)) {
+    return []
+  }
+
+  for (let i = 0; i < childNodes.length; i += 1) {
+    const childResult = findPathToRouteId(childNodes[i]!, routeId)
+
+    if (childResult) {
+      return [i, ...childResult]
+    }
+  }
+
+  return undefined
+}
+
+function getRouteTemplate(
+  {
+    childNodes,
+    pathTemplateSegment,
+    routesEndingAtThisSegment,
+  }: _BrowserRouteTreeNode,
+  pathToRoute: number[],
+  routeId: _RouteId | undefined,
+): _BrowserRouteTemplate | undefined {
+  if (!routeId) {
+    return undefined
+  }
+
+  if (pathToRoute.length === 0) {
+    const parentQueryParams = routesEndingAtThisSegment.find(
+      ([id]) => id === routeId,
+    )?.[1]
+
+    if (!parentQueryParams) {
+      return undefined
+    }
+
+    if (pathTemplateSegment === '') {
+      return {
+        pathTemplateSegments: [],
+        queryParameters: parentQueryParams,
+      }
+    }
+
+    return {
+      pathTemplateSegments: [pathTemplateSegment],
+      queryParameters: parentQueryParams,
+    }
+  }
+
+  const childIdx = pathToRoute.shift()
+
+  const childResult = getRouteTemplate(
+    childNodes[childIdx!]!,
+    pathToRoute,
+    routeId,
+  )
+
+  if (!childResult || pathTemplateSegment === '') {
+    return childResult
+  }
+
+  return {
+    ...childResult,
+    pathTemplateSegments: [
+      pathTemplateSegment,
+      ...childResult.pathTemplateSegments,
+    ],
+  }
+}
+
+function renderTemplate({
+  pathTemplateSegments,
+  queryParameters,
+}: _BrowserRouteTemplate) {
+  const requiredQueryParams = queryParameters.filter((p) => !p.isOptional)
+  const optionalQueryParams = queryParameters.filter((p) => p.isOptional)
+
+  const path = pathTemplateSegments.map(renderPathSegment).join('/')
+
+  let query = ''
+
+  if (requiredQueryParams.length > 0) {
+    query = `?${requiredQueryParams.map(renderQueryParameter).join('&')}`
+  }
+
+  if (optionalQueryParams.length > 0) {
+    query = query ? `${query}[&` : `[?`
+    query += `${optionalQueryParams.map(renderQueryParameter).join('&')}]`
+  }
+
+  return `${path}${query}`
+
+  function renderPathSegment(segment: _RoutePathTemplateSegment) {
+    if (typeof segment === 'string') {
+      return segment
+    }
+
+    return `:${segment.parameterName}:${segment.parameterType}`
+  }
+
+  function renderQueryParameter(parameter: _RouteQueryTemplateParameter) {
+    return `${parameter.parameterName}:${parameter.parameterType}`
   }
 }
 

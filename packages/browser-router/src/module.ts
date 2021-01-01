@@ -52,6 +52,26 @@ const mutations = createMutations(browserRouterModule, {
   addRoute: (state, routeId: _RouteId, urlTemplate: _UrlTemplate) => {
     const [updatedTree, route] = _routeTree.addRoute(
       state.rootNode,
+      undefined,
+      routeId,
+      urlTemplate,
+    )
+
+    if (updatedTree !== state.rootNode) {
+      state.rootNode = updatedTree
+      state.templates[routeId - 1] = route
+    }
+  },
+
+  addChildRoute: (
+    state,
+    parentRouteId: _RouteId,
+    routeId: _RouteId,
+    urlTemplate: _UrlTemplate,
+  ) => {
+    const [updatedTree, route] = _routeTree.addRoute(
+      state.rootNode,
+      parentRouteId,
       routeId,
       urlTemplate,
     )

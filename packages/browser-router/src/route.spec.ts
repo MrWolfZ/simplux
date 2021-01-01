@@ -9,7 +9,6 @@ import { _module } from './module.js'
 import { _routeEffects } from './route.js'
 import {
   emptyRouterState,
-  rootRouteTemplate,
   routeTemplateWithoutParameters,
   routeTemplateWithPathParameters,
 } from './testdata.js'
@@ -37,24 +36,52 @@ describe(`route`, () => {
 
   const routerAddMock = jest
     .fn()
-    .mockImplementation((_, config = {}) => ({ ...mockRoute, ...config }))
+    .mockImplementationOnce((_, config = {}) => ({
+      ...mockRoute,
+      ...config,
+    }))
+    .mockImplementationOnce((_, config = {}) => ({
+      ...mockRoute,
+      ...config,
+      id: 2,
+    }))
 
   const moduleAddMock = jest.fn()
+  const moduleAddChildMock = jest.fn()
   const moduleNavigateToIdMock = jest.fn().mockResolvedValue(undefined)
 
   beforeEach(() => {
     clearAllSimpluxMocks()
-    mockEffect(router.addRoute, routerAddMock)
+
+    routerAddMock
+      .mockReset()
+      .mockImplementationOnce((_, config = {}) => ({
+        ...mockRoute,
+        ...config,
+      }))
+      .mockImplementationOnce((_, config = {}) => ({
+        ...mockRoute,
+        ...config,
+        id: 2,
+      }))
+      .mockImplementationOnce((_, config = {}) => ({
+        ...mockRoute,
+        ...config,
+        id: 3,
+      }))
+
+    mockEffect(router.addRouteInternal, routerAddMock)
     mockMutation(_module.addRoute, moduleAddMock)
+    mockMutation(_module.addChildRoute, moduleAddChildMock)
     mockEffect(_module.navigateToRouteById, moduleNavigateToIdMock)
     jest.clearAllMocks()
   })
 
   describe(addRoute, () => {
     it('creates a base route using the template as the name', () => {
-      addRoute(rootRouteTemplate)
+      addRoute('root')
 
-      expect(routerAddMock).toHaveBeenCalledWith(rootRouteTemplate, undefined)
+      expect(routerAddMock).toHaveBeenCalledWith('root', undefined, undefined)
     })
 
     it('adds the route to the module', () => {
@@ -67,7 +94,7 @@ describe(`route`, () => {
     })
 
     describe('created route', () => {
-      const mockRoute = addRoute('')
+      const mockRoute = addRoute('mock')
 
       describe(mockRoute.isActive, () => {
         it('delegates to the base route', () => {
@@ -126,13 +153,7 @@ describe(`route`, () => {
         })
 
         it('makes parameters optional if route has only optional parameters', async () => {
-          interface Parameters {
-            opt?: string
-          }
-
-          const testRoute = addRoute<Parameters>(
-            routeTemplateWithPathParameters,
-          )
+          const testRoute = addRoute('root[?opt]')
 
           await testRoute.navigateTo()
 
@@ -212,6 +233,119 @@ describe(`route`, () => {
           const testRoute = addRoute(routeTemplateWithPathParameters)
 
           expect(testRoute.onNavigateTo).toBe(undefined)
+        })
+      })
+
+      describe(mockRoute.addChildRoute, () => {
+        const childRoute = mockRoute.addChildRoute('child')
+
+        it('creates a base route using the template as the name', () => {
+          const parentRoute = addRoute('parent')
+          parentRoute.addChildRoute('child')
+
+          expect(routerAddMock).toHaveBeenCalledWith('child', undefined, 1)
+        })
+
+        it('adds the child route to the module', () => {
+          const parentRoute = addRoute('parent')
+          parentRoute.addChildRoute('child')
+
+          expect(moduleAddChildMock).toHaveBeenCalledWith(1, 2, 'child')
+        })
+
+        describe(childRoute.isActive, () => {
+          it('delegates to the base route', () => {
+            const parentRoute = addRoute('parent')
+            const testRoute = parentRoute.addChildRoute('child')
+
+            testRoute.isActive()
+
+            expect(isActiveMock).toHaveBeenCalled()
+          })
+        })
+
+        describe(childRoute.parameterValues, () => {
+          it('delegates to the base route', () => {
+            const parentRoute = addRoute('parent')
+            const testRoute = parentRoute.addChildRoute('child')
+
+            testRoute.parameterValues()
+
+            expect(parameterValuesMock).toHaveBeenCalled()
+          })
+        })
+
+        describe(childRoute.navigateTo, () => {
+          it('delegates to the module', async () => {
+            const parentRoute = addRoute('parent')
+            const testRoute = parentRoute.addChildRoute('child')
+
+            await testRoute.navigateTo()
+
+            expect(moduleNavigateToIdMock).toHaveBeenCalled()
+          })
+
+          it('enforces correct parameters', async () => {
+            const parentRoute = addRoute(routeTemplateWithPathParameters)
+            const testRoute = parentRoute.addChildRoute('child')
+
+            const parameterValues: typeof testRoute.$parameterTypes = {
+              stringParam: 'string',
+              numberParam: 100,
+              booleanParam: true,
+              arrayStringParam: ['a', 'b', 'charlie'],
+              arrayNumberParam: [100, -100, 9999999],
+            }
+
+            await testRoute.navigateTo(parameterValues)
+
+            expect(moduleNavigateToIdMock).toHaveBeenCalledWith(
+              2,
+              parameterValues,
+            )
+          })
+
+          it('makes parameters optional if route has only optional parameters', async () => {
+            const parentRoute = addRoute('parent')
+            const testRoute = parentRoute.addChildRoute('child[?opt]')
+
+            await testRoute.navigateTo()
+
+            expect(moduleNavigateToIdMock).toHaveBeenCalledWith(2, {})
+          })
+        })
+
+        describe(childRoute.href, () => {
+          it('delegates to module selector', () => {
+            const parentTemplate = 'root/:pathParam?queryParam'
+            const childTemplate = 'child/:childPathParam?childQueryParam'
+
+            let state = _module.addRoute.withState(
+              emptyRouterState,
+              1,
+              parentTemplate,
+            )
+
+            state = _module.addChildRoute.withState(state, 1, 2, childTemplate)
+
+            mockModuleState(_module, state)
+
+            const parameterValues = {
+              pathParam: 'pathValue',
+              queryParam: 'queryValue',
+              childPathParam: 'childPathValue',
+              childQueryParam: 'childQueryValue',
+            }
+
+            const parentRoute = addRoute(parentTemplate)
+            const testRoute = parentRoute.addChildRoute(childTemplate)
+
+            const href = testRoute.href(parameterValues)
+
+            expect(href).toBe(
+              `/root/pathValue/child/childPathValue?queryParam=queryValue&childQueryParam=childQueryValue`,
+            )
+          })
         })
       })
     })

@@ -35,7 +35,7 @@ export type {
   TemplateParameters,
   _HrefFunction,
 } from './src/route.js'
-export type { SimpluxBrowserRouter, _addRoute } from './src/router.js'
+export type { SimpluxBrowserRouter } from './src/router.js'
 
 /**
  * Get the simplux browser router.
