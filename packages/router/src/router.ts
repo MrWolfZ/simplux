@@ -69,6 +69,30 @@ export interface SimpluxRouter extends SimpluxRouterSelectors {
   >
 
   /**
+   * Add a new route to the router.
+   *
+   * @param name - the name of the route
+   * @param routeConfiguration - configuration for the route
+   * @param parentRouteId - the parent route ID (if any)
+   *
+   * @returns a route object for interacting with the route
+   *
+   * @internal
+   */
+  readonly addRouteInternal: SimpluxEffect<
+    (
+      name: string,
+      routeConfiguration:
+        | SimpluxRouteConfiguration<NavigationParameters>
+        | undefined,
+      parentRouteId: _RouteId | undefined,
+    ) => SimpluxRoute<
+      NavigationParameters,
+      SimpluxRouteConfiguration<NavigationParameters>
+    >
+  >
+
+  /**
    * Navigate to a route with the given parameters.
    *
    * @param routeId - the ID of the route to navigate to
@@ -90,5 +114,6 @@ export const _router: SimpluxRouter = {
   anyRouteIsActive: _module.anyRouteIsActive as any,
   navigationIsInProgress: _module.navigationIsInProgress as any,
   addRoute: _routeEffects.addRoute,
+  addRouteInternal: _routeEffects.addRoute,
   navigateToRouteById: _module.navigateToRoute,
 }

@@ -171,10 +171,11 @@ export const _routeEffects = createEffects({
   >(
     name: _RouteName,
     configuration?: TConfiguration,
-    predefinedRouteId?: _RouteId,
+    parentRouteId?: _RouteId,
   ): SimpluxRoute<TParameters, TConfiguration> => {
-    const routeId =
-      predefinedRouteId || _module.registerRoute(name, configuration)
+    const routeId = !parentRouteId
+      ? _module.registerRoute(name, configuration)
+      : _module.registerChildRoute(parentRouteId, name, configuration)
 
     const selectors = createSelectors(_module, {
       isActive: (state) => _module.routeIsActive.withState(state, routeId),
@@ -190,13 +191,7 @@ export const _routeEffects = createEffects({
         childName: _RouteName,
         childConfiguration: SimpluxRouteConfiguration<NavigationParameters>,
       ): SimpluxRoute<NavigationParameters> => {
-        const childId = _module.registerChildRoute(
-          routeId,
-          childName,
-          childConfiguration,
-        )
-
-        return _routeEffects.addRoute(childName, childConfiguration, childId)
+        return _routeEffects.addRoute(childName, childConfiguration, routeId)
       },
 
       navigateTo: (parameters?: TParameters): NavigationResult =>

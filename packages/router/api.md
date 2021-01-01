@@ -98,6 +98,8 @@ export interface SimpluxRouteMarker<TParameters, TConfiguration extends SimpluxR
 export interface SimpluxRouter extends SimpluxRouterSelectors {
     readonly addRoute: SimpluxEffect<(<TParameters extends NavigationParameters = {}, TConfiguration extends SimpluxRouteConfiguration<TParameters> = SimpluxRouteConfiguration<TParameters>>(name: string, routeConfiguration?: TConfiguration) => SimpluxRoute<TParameters, TConfiguration>)>;
     // @internal
+    readonly addRouteInternal: SimpluxEffect<(name: string, routeConfiguration: SimpluxRouteConfiguration<NavigationParameters> | undefined, parentRouteId: _RouteId | undefined) => SimpluxRoute<NavigationParameters, SimpluxRouteConfiguration<NavigationParameters>>>;
+    // @internal
     readonly navigateToRouteById: SimpluxEffect<(routeId: _RouteId, parameters?: Readonly<NavigationParameters>) => NavigationResult>;
     // @internal
     readonly state: SimpluxSelector<_RouterState, [], Immutable<_RouterState>>;
