@@ -73,18 +73,15 @@ export interface OnNavigateToExtras {
  * A function to be called when navigating to a route.
  *
  * @param parameters - the parameters for the navigation (if any).
- * @param args - the arguments for the function.
+ * @param extras - additional arguments
  *
  * @returns nothing or a promise to wait for during navigation
  *
  * @public
  */
-export type OnNavigateTo<
-  TParameters = NavigationParameters,
-  TExtras extends OnNavigateToExtras = OnNavigateToExtras
-> = (
+export type OnNavigateTo<TParameters = NavigationParameters> = (
   parameters: TParameters,
-  extras: TExtras,
+  extras: OnNavigateToExtras,
 ) =>
   | void
   | typeof NAVIGATION_FINISHED

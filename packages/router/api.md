@@ -30,7 +30,7 @@ export type NavigationParameters = Readonly<Record<string, any>>;
 export type NavigationResult = Promise<typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED>;
 
 // @public
-export type OnNavigateTo<TParameters = NavigationParameters, TExtras extends OnNavigateToExtras = OnNavigateToExtras> = (parameters: TParameters, extras: TExtras) => void | typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED | Promise<void | typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED>;
+export type OnNavigateTo<TParameters = NavigationParameters> = (parameters: TParameters, extras: OnNavigateToExtras) => void | typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED | Promise<void | typeof NAVIGATION_FINISHED | typeof NAVIGATION_CANCELLED>;
 
 // @public
 export interface OnNavigateToExtras {
