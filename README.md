@@ -173,10 +173,6 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ### router
 
-- allow creating child routes
-- add extras property `navigationIsToChildRoute` to `onNavigateTo` to allow easy default redirects
-- add extras property `navigationIsToActiveRoute` to `onNavigateTo` to allow parent routes to cancel navigation to identical child routes
-
 - add type tests
 - capture navigation history
 - allow going back to previously active route
