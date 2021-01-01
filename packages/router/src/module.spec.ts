@@ -1192,6 +1192,40 @@ describe(`module`, () => {
           expect(activateMock).not.toHaveBeenCalled()
         })
 
+        it('signals whether navigation is targeting child route', async () => {
+          mockEffect(_module.getOnNavigateToInterceptors, () => ({
+            1: (_: unknown, extras: OnNavigateToExtras) => {
+              expect(extras.navigationIsToChildRoute).toBe(true)
+            },
+            2: (_: unknown, extras: OnNavigateToExtras) => {
+              expect(extras.navigationIsToChildRoute).toBe(false)
+            },
+          }))
+
+          await _module.navigateToRoute(2)
+        })
+
+        it('signals whether navigation is targeting deeply nested child route', async () => {
+          mockSelector(
+            _module.parentRouteId,
+            jest.fn().mockReturnValueOnce(2).mockReturnValueOnce(1),
+          )
+
+          mockEffect(_module.getOnNavigateToInterceptors, () => ({
+            1: (_: unknown, extras: OnNavigateToExtras) => {
+              expect(extras.navigationIsToChildRoute).toBe(true)
+            },
+            2: (_: unknown, extras: OnNavigateToExtras) => {
+              expect(extras.navigationIsToChildRoute).toBe(true)
+            },
+            3: (_: unknown, extras: OnNavigateToExtras) => {
+              expect(extras.navigationIsToChildRoute).toBe(false)
+            },
+          }))
+
+          await _module.navigateToRoute(3)
+        })
+
         // tslint:disable-next-line: max-line-length
         it('notifies the onNavigateTo interceptor for the child route of cancellation', async () => {
           let childCancellationPromise = new Promise<

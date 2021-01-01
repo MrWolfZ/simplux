@@ -68,6 +68,13 @@ export interface OnNavigateToExtras {
    * This object can be returned to cancel the navigation.
    */
   readonly cancelNavigation: typeof NAVIGATION_CANCELLED
+
+  /**
+   * Indicates whether the current navigation is targeting a
+   * child route of this route. Useful for implementing a
+   * redirect to a default child route.
+   */
+  readonly navigationIsToChildRoute: boolean
 }
 
 /**
@@ -257,7 +264,7 @@ const effects = createEffects({
   },
 
   navigateToRoute: async (
-    routeId: _RouteId,
+    targetRouteId: _RouteId,
     parameters?: NavigationParameters,
   ): NavigationResult => {
     effects.cancelNavigationInProgress()
@@ -265,7 +272,7 @@ const effects = createEffects({
     mutations.setNavigationIsInProgress(true)
 
     const routeIdsToActivate: _RouteId[] = []
-    let currentRouteId: _RouteId | undefined = routeId
+    let currentRouteId: _RouteId | undefined = targetRouteId
 
     while (!!currentRouteId) {
       routeIdsToActivate.push(currentRouteId)
@@ -275,16 +282,17 @@ const effects = createEffects({
     const interceptors = effects.getOnNavigateToInterceptors()
     const cancellationPromise = effects.createNavigationCancellationPromise()
 
-    const onNavigateToExtras: OnNavigateToExtras = {
-      cancelled: cancellationPromise,
-      cancelNavigation: NAVIGATION_CANCELLED,
-    }
-
     const onNavigateTo = async () => {
       for (const routeId of [...routeIdsToActivate].reverse()) {
         const interceptor = interceptors[routeId]
 
         if (interceptor) {
+          const onNavigateToExtras: OnNavigateToExtras = {
+            cancelled: cancellationPromise,
+            cancelNavigation: NAVIGATION_CANCELLED,
+            navigationIsToChildRoute: routeId !== targetRouteId,
+          }
+
           const res = await interceptor(parameters || {}, onNavigateToExtras)
 
           if (res) {

@@ -62,7 +62,11 @@ describe(`@simplux/router`, () => {
     // tslint:disable-next-line: no-floating-promises
     cancelledNavRoute.onNavigateTo(
       {},
-      { cancelled: undefined!, cancelNavigation: NAVIGATION_CANCELLED },
+      {
+        cancelled: undefined!,
+        cancelNavigation: NAVIGATION_CANCELLED,
+        navigationIsToChildRoute: false,
+      },
     )
 
     const routeThatCancelsNav = router.addRoute('asyncCancel', {
@@ -73,7 +77,11 @@ describe(`@simplux/router`, () => {
 
     await routeThatCancelsNav.onNavigateTo(
       {},
-      { cancelled: undefined!, cancelNavigation: NAVIGATION_CANCELLED },
+      {
+        cancelled: undefined!,
+        cancelNavigation: NAVIGATION_CANCELLED,
+        navigationIsToChildRoute: false,
+      },
     )
 
     const routeThatCancelsNavIfActive = router.addRoute('asyncCancelIfActive', {
@@ -109,8 +117,8 @@ describe(`@simplux/router`, () => {
     })
 
     const parentRoute = router.addRoute<{ parent: string }>('parent', {
-      onNavigateTo: async ({ parent }) => {
-        parent
+      onNavigateTo: async ({ parent }, { navigationIsToChildRoute }) => {
+        expect(navigationIsToChildRoute).toBe(parent !== 'direct')
         await Promise.resolve()
       },
     })
@@ -118,9 +126,13 @@ describe(`@simplux/router`, () => {
     const childRoute1 = parentRoute.addChildRoute<{ child1: string }>(
       'child1',
       {
-        onNavigateTo: async ({ parent, child1 }) => {
+        onNavigateTo: async (
+          { parent, child1 },
+          { navigationIsToChildRoute },
+        ) => {
           parent
           child1
+          navigationIsToChildRoute
           await Promise.resolve()
         },
       },
@@ -129,9 +141,13 @@ describe(`@simplux/router`, () => {
     const childRoute2 = parentRoute.addChildRoute<{ child2: string }>(
       'child2',
       {
-        onNavigateTo: async ({ parent, child2 }) => {
+        onNavigateTo: async (
+          { parent, child2 },
+          { navigationIsToChildRoute },
+        ) => {
           parent
           child2
+          navigationIsToChildRoute
           await Promise.resolve()
         },
       },
@@ -140,10 +156,14 @@ describe(`@simplux/router`, () => {
     const nestedChildRoute1 = childRoute1.addChildRoute<{ nested: string }>(
       'nestedChild1',
       {
-        onNavigateTo: async ({ parent, child1, nested }) => {
+        onNavigateTo: async (
+          { parent, child1, nested },
+          { navigationIsToChildRoute },
+        ) => {
           parent
           child1
           nested
+          navigationIsToChildRoute
           await Promise.resolve()
         },
       },
@@ -249,9 +269,9 @@ describe(`@simplux/router`, () => {
     const asyncThrowNav = routeThatThrowsAsync.navigateTo()
     await expect(asyncThrowNav).rejects.toBeDefined()
 
-    await parentRoute.navigateTo({ parent: 'parent' })
+    await parentRoute.navigateTo({ parent: 'direct' })
     expect(parentRoute.isActive()).toBe(true)
-    expect(parentRoute.parameterValues()).toEqual({ parent: 'parent' })
+    expect(parentRoute.parameterValues()).toEqual({ parent: 'direct' })
     expect(childRoute1.isActive()).toBe(false)
     expect(childRoute2.isActive()).toBe(false)
     expect(nestedChildRoute1.isActive()).toBe(false)

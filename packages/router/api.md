@@ -36,6 +36,7 @@ export type OnNavigateTo<TParameters = NavigationParameters> = (parameters: Immu
 export interface OnNavigateToExtras {
     readonly cancelled: Promise<typeof NAVIGATION_CANCELLED>;
     readonly cancelNavigation: typeof NAVIGATION_CANCELLED;
+    readonly navigationIsToChildRoute: boolean;
 }
 
 // @public
