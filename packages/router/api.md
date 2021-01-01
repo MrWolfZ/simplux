@@ -51,7 +51,7 @@ export type _RouteName = string;
 
 // @internal
 export interface _RouterState {
-    activeRouteId: _RouteId | undefined;
+    activeRouteIds: _RouteId | _RouteId[] | undefined;
     activeRouteParameterValues: NavigationParameters;
     navigationIsInProgress: boolean;
     readonly routes: _RouteState[];
@@ -59,7 +59,10 @@ export interface _RouterState {
 
 // @internal
 export interface _RouteState {
+    // (undocumented)
     readonly name: _RouteName;
+    // (undocumented)
+    readonly parentRouteId: _RouteId | undefined;
 }
 
 // @public
@@ -67,6 +70,11 @@ export const SIMPLUX_ROUTE = "[SIMPLUX_ROUTE]";
 
 // @public
 export interface SimpluxRoute<TParameters, TConfiguration extends SimpluxRouteConfiguration<TParameters> = {}> extends SimpluxRouteMarker<TParameters, TConfiguration> {
+    readonly addChildRoute: SimpluxEffect<(<TChildParameters extends NavigationParameters = {}, TChildConfiguration extends SimpluxRouteConfiguration<TParameters & TChildParameters> = SimpluxRouteConfiguration<{
+        [p in keyof (TParameters & TChildParameters)]: (TParameters & TChildParameters)[p];
+    }>>(name: string, routeConfiguration?: TChildConfiguration) => SimpluxRoute<{
+        [p in keyof (TParameters & TChildParameters)]: (TParameters & TChildParameters)[p];
+    }, TChildConfiguration>)>;
     // @internal
     readonly id: _RouteId;
     readonly isActive: SimpluxSelector<never, [], boolean>;

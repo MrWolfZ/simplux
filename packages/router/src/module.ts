@@ -3,6 +3,7 @@ import {
   createMutations,
   createSelectors,
   createSimpluxModule,
+  Immutable,
 } from '@simplux/core'
 import type { SimpluxRouteConfiguration } from './route.js'
 
@@ -94,10 +95,8 @@ export type OnNavigateTo<TParameters = NavigationParameters> = (
  * @internal
  */
 export interface _RouteState {
-  /**
-   * The name of the route.
-   */
   readonly name: _RouteName
+  readonly parentRouteId: _RouteId | undefined
 }
 
 /**
@@ -116,7 +115,7 @@ export interface _RouterState {
    * no route is currently active, e.g. after creating the
    * router).
    */
-  activeRouteId: _RouteId | undefined
+  activeRouteIds: _RouteId | _RouteId[] | undefined
 
   /**
    * The parameter values for the currently active route. Will
@@ -132,7 +131,7 @@ export interface _RouterState {
 
 const initialState: _RouterState = {
   routes: [],
-  activeRouteId: undefined,
+  activeRouteIds: undefined,
   activeRouteParameterValues: {},
   navigationIsInProgress: false,
 }
@@ -141,21 +140,35 @@ const routerModule = createSimpluxModule('router', initialState)
 
 const mutations = createMutations(routerModule, {
   addRoute: ({ routes }, name: _RouteName) => {
-    if (routes.some((r) => r.name === name)) {
+    if (routes.some((r) => r.name === name && r.parentRouteId === undefined)) {
       return
     }
 
     routes.push({
       name,
+      parentRouteId: undefined,
     })
   },
 
-  activateRoute: (
+  addChildRoute: ({ routes }, parentRouteId: _RouteId, name: _RouteName) => {
+    if (
+      routes.some((r) => r.name === name && r.parentRouteId === parentRouteId)
+    ) {
+      return
+    }
+
+    routes.push({
+      name,
+      parentRouteId,
+    })
+  },
+
+  activateRoutes: (
     state,
-    routeId: _RouteId,
+    routeIds: _RouteId[],
     parameters: NavigationParameters,
   ) => {
-    state.activeRouteId = routeId
+    state.activeRouteIds = routeIds.length === 1 ? routeIds[0] : routeIds
     state.activeRouteParameterValues = parameters
   },
 
@@ -167,36 +180,39 @@ const mutations = createMutations(routerModule, {
 const selectors = createSelectors(routerModule, {
   state: (s) => s,
 
-  anyRouteIsActive: ({ activeRouteId }) => !!activeRouteId,
+  anyRouteIsActive: ({ activeRouteIds }) => !!activeRouteIds,
 
   navigationIsInProgress: ({ navigationIsInProgress }) =>
     navigationIsInProgress,
 
-  routeIsActive: ({ activeRouteId }, routeId: _RouteId) =>
-    activeRouteId === routeId,
+  routeIsActive: ({ activeRouteIds }, routeId: _RouteId) =>
+    activeRouteIds === routeId ||
+    (Array.isArray(activeRouteIds) && activeRouteIds.includes(routeId)),
 
-  routeParameterValues: (
-    { routes, activeRouteId, activeRouteParameterValues },
-    routeId: _RouteId,
-  ) => {
+  routeParameterValues: (state, routeId: _RouteId) => {
+    const { routes, activeRouteParameterValues } = state
     const route = routes[routeId - 1]
+    const isActive = selectors.routeIsActive.withState(state, routeId)
 
     if (process.env.NODE_ENV !== 'production') {
       if (!route) {
         throw new Error(`route with ID ${routeId} does not exist`)
       }
 
-      if (activeRouteId !== routeId) {
+      if (!isActive) {
         throw new Error(`route ${route.name} with ID ${routeId} is not active`)
       }
     }
 
-    if (!route || activeRouteId !== routeId) {
+    if (!route || !isActive) {
       return {}
     }
 
     return activeRouteParameterValues
   },
+
+  parentRouteId: ({ routes }, routeId: _RouteId) =>
+    routes[routeId - 1]?.parentRouteId,
 })
 
 type OnNavigateToInterceptors = {
@@ -223,6 +239,23 @@ const effects = createEffects({
     return routeId
   },
 
+  registerChildRoute: (
+    parentRouteId: _RouteId,
+    name: _RouteName,
+    configuration?: SimpluxRouteConfiguration<any>,
+  ): _RouteId => {
+    const updatedState = mutations.addChildRoute(parentRouteId, name)
+    const routeId = updatedState.routes.findIndex((r) => r.name === name) + 1
+
+    if (configuration) {
+      if (configuration.onNavigateTo) {
+        effects.setOnNavigateToInterceptor(routeId, configuration.onNavigateTo)
+      }
+    }
+
+    return routeId
+  },
+
   navigateToRoute: async (
     routeId: _RouteId,
     parameters?: NavigationParameters,
@@ -231,7 +264,15 @@ const effects = createEffects({
 
     mutations.setNavigationIsInProgress(true)
 
-    const onNavigateTo = effects.getOnNavigateToInterceptors()[routeId]
+    const routeIdsToActivate: _RouteId[] = []
+    let currentRouteId: _RouteId | undefined = routeId
+
+    while (!!currentRouteId) {
+      routeIdsToActivate.push(currentRouteId)
+      currentRouteId = selectors.parentRouteId(currentRouteId)
+    }
+
+    const interceptors = effects.getOnNavigateToInterceptors()
     const cancellationPromise = effects.createNavigationCancellationPromise()
 
     const onNavigateToExtras: OnNavigateToExtras = {
@@ -239,16 +280,27 @@ const effects = createEffects({
       cancelNavigation: NAVIGATION_CANCELLED,
     }
 
-    const result = await Promise.race([
-      onNavigateTo?.(parameters || {}, onNavigateToExtras) || Promise.resolve(),
-      cancellationPromise,
-    ])
+    const onNavigateTo = async () => {
+      for (const routeId of [...routeIdsToActivate].reverse()) {
+        const interceptor = interceptors[routeId]
+
+        if (interceptor) {
+          const res = await interceptor(parameters || {}, onNavigateToExtras)
+
+          if (res) {
+            return res
+          }
+        }
+      }
+    }
+
+    const result = await Promise.race([onNavigateTo(), cancellationPromise])
 
     if (result === NAVIGATION_CANCELLED || result === NAVIGATION_FINISHED) {
       return NAVIGATION_CANCELLED
     }
 
-    mutations.activateRoute(routeId, parameters || {})
+    mutations.activateRoutes(routeIdsToActivate, parameters || {})
     mutations.setNavigationIsInProgress(false)
     effects.clearNavigationCancellationCallback()
 

@@ -5,6 +5,7 @@ import {
   SimpluxSelector,
 } from '@simplux/core'
 import {
+  NavigationParameters,
   NavigationResult,
   OnNavigateTo,
   _module,
@@ -112,6 +113,43 @@ export interface SimpluxRoute<
   readonly parameterValues: SimpluxSelector<never, [], TParameters>
 
   /**
+   * Add a child route to this route.
+   *
+   * @param name - the name of the route
+   * @param routeConfiguration - configuration for the route
+   *
+   * @returns a route object for interacting with the child route
+   */
+  readonly addChildRoute: SimpluxEffect<
+    <
+      TChildParameters extends NavigationParameters = {},
+      // tslint:disable-next-line: max-line-length
+      TChildConfiguration extends SimpluxRouteConfiguration<
+        TParameters & TChildParameters
+      > = SimpluxRouteConfiguration<
+        {
+          [p in keyof (TParameters & TChildParameters)]: (TParameters &
+            TChildParameters)[p]
+        }
+      >
+    >(
+      name: string,
+      routeConfiguration?: TChildConfiguration,
+    ) => SimpluxRoute<
+      {
+        // this duplication is to get tooling to display the inferred parameter object
+        // as a single object instead of an intersection of objects, e.g. show
+        // { parent: string; child?: string } instead of { parent: string } & { child?: string };
+        // introducing another wrapper type (e.g. _Params) would also lead to _Params<'route'>
+        // to be shown
+        [p in keyof (TParameters & TChildParameters)]: (TParameters &
+          TChildParameters)[p]
+      },
+      TChildConfiguration
+    >
+  >
+
+  /**
    * Navigate to this route with the given parameters.
    *
    * @param parameters - the parameters for the navigation
@@ -133,8 +171,10 @@ export const _routeEffects = createEffects({
   >(
     name: _RouteName,
     configuration?: TConfiguration,
+    predefinedRouteId?: _RouteId,
   ): SimpluxRoute<TParameters, TConfiguration> => {
-    const routeId = _module.registerRoute(name, configuration)
+    const routeId =
+      predefinedRouteId || _module.registerRoute(name, configuration)
 
     const selectors = createSelectors(_module, {
       isActive: (state) => _module.routeIsActive.withState(state, routeId),
@@ -145,7 +185,20 @@ export const _routeEffects = createEffects({
       },
     })
 
-    const { navigateTo } = createEffects({
+    const { addChildRoute, navigateTo } = createEffects({
+      addChildRoute: (
+        childName: _RouteName,
+        childConfiguration: SimpluxRouteConfiguration<NavigationParameters>,
+      ): SimpluxRoute<NavigationParameters> => {
+        const childId = _module.registerChildRoute(
+          routeId,
+          childName,
+          childConfiguration,
+        )
+
+        return _routeEffects.addRoute(childName, childConfiguration, childId)
+      },
+
       navigateTo: (parameters?: TParameters): NavigationResult =>
         _module.navigateToRoute(routeId, parameters || {}),
     })
@@ -155,6 +208,7 @@ export const _routeEffects = createEffects({
       name,
       isActive: selectors.isActive as any,
       parameterValues: selectors.parameterValues as any,
+      addChildRoute: addChildRoute as any,
       navigateTo: navigateTo as SimpluxEffect<NavigateToFn<TParameters>>,
       onNavigateTo: configuration?.onNavigateTo,
       [SIMPLUX_ROUTE]: undefined!,

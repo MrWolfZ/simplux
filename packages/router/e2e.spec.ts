@@ -108,6 +108,53 @@ describe(`@simplux/router`, () => {
       },
     })
 
+    const parentRoute = router.addRoute<{ parent: string }>('parent', {
+      onNavigateTo: async ({ parent }) => {
+        parent
+        await Promise.resolve()
+      },
+    })
+
+    const childRoute1 = parentRoute.addChildRoute<{ child1: string }>(
+      'child1',
+      {
+        onNavigateTo: async ({ parent, child1 }) => {
+          parent
+          child1
+          await Promise.resolve()
+        },
+      },
+    )
+
+    const childRoute2 = parentRoute.addChildRoute<{ child2: string }>(
+      'child2',
+      {
+        onNavigateTo: async ({ parent, child2 }) => {
+          parent
+          child2
+          await Promise.resolve()
+        },
+      },
+    )
+
+    const nestedChildRoute1 = childRoute1.addChildRoute<{ nested: string }>(
+      'nestedChild1',
+      {
+        onNavigateTo: async ({ parent, child1, nested }) => {
+          parent
+          child1
+          nested
+          await Promise.resolve()
+        },
+      },
+    )
+
+    const cancellingChildRoute = parentRoute.addChildRoute('cancellingChild', {
+      onNavigateTo: (_, { cancelNavigation }) => {
+        return Promise.resolve(cancelNavigation)
+      },
+    })
+
     expect(router.anyRouteIsActive()).toBe(false)
 
     await testRoute1.navigateTo()
@@ -201,5 +248,71 @@ describe(`@simplux/router`, () => {
 
     const asyncThrowNav = routeThatThrowsAsync.navigateTo()
     await expect(asyncThrowNav).rejects.toBeDefined()
+
+    await parentRoute.navigateTo({ parent: 'parent' })
+    expect(parentRoute.isActive()).toBe(true)
+    expect(parentRoute.parameterValues()).toEqual({ parent: 'parent' })
+    expect(childRoute1.isActive()).toBe(false)
+    expect(childRoute2.isActive()).toBe(false)
+    expect(nestedChildRoute1.isActive()).toBe(false)
+
+    await childRoute1.navigateTo({ parent: 'parent', child1: 'child' })
+    expect(parentRoute.isActive()).toBe(true)
+    expect(parentRoute.parameterValues()).toEqual({
+      parent: 'parent',
+      child1: 'child',
+    })
+    expect(childRoute1.isActive()).toBe(true)
+    expect(childRoute1.parameterValues()).toEqual({
+      parent: 'parent',
+      child1: 'child',
+    })
+    expect(childRoute2.isActive()).toBe(false)
+    expect(nestedChildRoute1.isActive()).toBe(false)
+
+    await childRoute2.navigateTo({ parent: 'parent', child2: 'child' })
+    expect(parentRoute.isActive()).toBe(true)
+    expect(parentRoute.parameterValues()).toEqual({
+      parent: 'parent',
+      child2: 'child',
+    })
+    expect(childRoute1.isActive()).toBe(false)
+    expect(childRoute2.isActive()).toBe(true)
+    expect(childRoute2.parameterValues()).toEqual({
+      parent: 'parent',
+      child2: 'child',
+    })
+    expect(nestedChildRoute1.isActive()).toBe(false)
+
+    await nestedChildRoute1.navigateTo({
+      parent: 'parent',
+      child1: 'child',
+      nested: 'nested',
+    })
+
+    expect(parentRoute.isActive()).toBe(true)
+    expect(parentRoute.parameterValues()).toEqual({
+      parent: 'parent',
+      child1: 'child',
+      nested: 'nested',
+    })
+    expect(childRoute1.isActive()).toBe(true)
+    expect(childRoute1.parameterValues()).toEqual({
+      parent: 'parent',
+      child1: 'child',
+      nested: 'nested',
+    })
+    expect(childRoute2.isActive()).toBe(false)
+    expect(nestedChildRoute1.isActive()).toBe(true)
+    expect(nestedChildRoute1.parameterValues()).toEqual({
+      parent: 'parent',
+      child1: 'child',
+      nested: 'nested',
+    })
+
+    const canceledNavFromChild = cancellingChildRoute.navigateTo({
+      parent: 'parent',
+    })
+    await expect(canceledNavFromChild).resolves.toBe(NAVIGATION_CANCELLED)
   })
 })

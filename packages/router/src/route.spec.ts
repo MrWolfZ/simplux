@@ -7,6 +7,7 @@ import {
   routeName3,
   RouteParameters3,
   routerStateWithTwoRoutes,
+  routerStateWithTwoRoutesAndOneChild,
 } from './testdata.js'
 
 const addRoute = _routeEffects.addRoute
@@ -86,25 +87,46 @@ describe(`route`, () => {
       describe(keyOf<SimpluxRoute<any, any>>('isActive'), () => {
         const stateWithActiveRoute: _RouterState = {
           ...routerStateWithTwoRoutes,
-          activeRouteId: 1,
+          activeRouteIds: 1,
         }
 
         it('returns true if route is active', () => {
           mockEffect(_module.registerRoute, () => 1)
           const testRoute = addRoute(routeName1)
+
           const isActive = testRoute.isActive.withState(
             stateWithActiveRoute as never,
           )
+
           expect(isActive).toBe(true)
         })
 
         it('returns false if route is inactive', () => {
           mockEffect(_module.registerRoute, () => 2)
           const testRoute = addRoute(routeName2)
+
           const isActive = testRoute.isActive.withState(
             stateWithActiveRoute as never,
           )
+
           expect(isActive).toBe(false)
+        })
+
+        it('returns true if child route is active', () => {
+          mockEffect(_module.registerRoute, () => 1)
+          mockEffect(_module.registerChildRoute, () => 2)
+
+          const parentRoute = addRoute(routeName1)
+          parentRoute.addChildRoute(routeName2)
+
+          const state: _RouterState = {
+            ...routerStateWithTwoRoutesAndOneChild,
+            activeRouteIds: [1, 2],
+          }
+
+          const isActive = parentRoute.isActive.withState(state as never)
+
+          expect(isActive).toBe(true)
         })
       })
 
@@ -112,7 +134,7 @@ describe(`route`, () => {
         const parameterValues = { param: 1 }
         const stateWithActiveRoute: _RouterState = {
           ...routerStateWithTwoRoutes,
-          activeRouteId: 1,
+          activeRouteIds: 1,
           activeRouteParameterValues: parameterValues,
         }
 
@@ -146,6 +168,36 @@ describe(`route`, () => {
           expect(result.num).toBe(parameterValues.num)
           expect(result.bool).toBe(parameterValues.bool)
           expect(result.opt).toBeUndefined()
+        })
+
+        it('returns parameter values of the correct type for child route', () => {
+          mockEffect(_module.registerRoute, () => 1)
+          mockEffect(_module.registerChildRoute, () => 2)
+
+          const parentParameterValues = {
+            parent: 'p',
+          }
+
+          const childParameterValues = {
+            child: 'p',
+          }
+
+          const parentRoute = addRoute<typeof parentParameterValues>(routeName1)
+          const childRoute = parentRoute.addChildRoute<
+            typeof childParameterValues
+          >(routeName2)
+
+          const result = childRoute.parameterValues.withState({
+            ...routerStateWithTwoRoutesAndOneChild,
+            activeRouteIds: [1, 2],
+            activeRouteParameterValues: {
+              ...parentParameterValues,
+              ...childParameterValues,
+            },
+          } as never)
+
+          expect(result.parent).toBe(parentParameterValues.parent)
+          expect(result.child).toBe(childParameterValues.child)
         })
 
         it('throws if route is inactive', () => {
@@ -218,6 +270,71 @@ describe(`route`, () => {
           expect(mock).toHaveBeenCalledWith(1, {})
         })
       })
+    })
+  })
+
+  describe('adding child route', () => {
+    it('allows creating route without configuration', () => {
+      const [registerMock] = mockEffect(
+        _module.registerRoute,
+        jest.fn().mockReturnValue(1),
+      )
+
+      const [registerChildMock] = mockEffect(
+        _module.registerChildRoute,
+        jest.fn().mockReturnValue(2),
+      )
+
+      const parentRoute = addRoute(routeName1)
+      const childRoute = parentRoute.addChildRoute(routeName2)
+
+      expect(childRoute.id).toBe(2)
+      expect(childRoute.name).toBe(routeName2)
+      expect(registerMock).toHaveBeenCalledWith(routeName1, undefined)
+      expect(registerChildMock).toHaveBeenCalledWith(1, routeName2, undefined)
+    })
+
+    it('allows creating route with configuration', () => {
+      const [registerMock] = mockEffect(
+        _module.registerRoute,
+        jest.fn().mockReturnValue(1),
+      )
+
+      const [registerChildMock] = mockEffect(
+        _module.registerChildRoute,
+        jest.fn().mockReturnValue(2),
+      )
+
+      const parentRoute = addRoute(routeName1)
+      const childRoute = parentRoute.addChildRoute(routeName2, {})
+
+      expect(childRoute.id).toBe(2)
+      expect(childRoute.name).toBe(routeName2)
+      expect(registerMock).toHaveBeenCalledWith(routeName1, undefined)
+      expect(registerChildMock).toHaveBeenCalledWith(1, routeName2, {})
+    })
+
+    it('allows creating route with explicit parameters type', () => {
+      const [registerMock] = mockEffect(
+        _module.registerRoute,
+        jest.fn().mockReturnValue(1),
+      )
+
+      const [registerChildMock] = mockEffect(
+        _module.registerChildRoute,
+        jest.fn().mockReturnValue(2),
+      )
+
+      const parentRoute = addRoute(routeName1)
+      const childRoute = parentRoute.addChildRoute<RouteParameters3>(
+        routeName3,
+        {},
+      )
+
+      expect(childRoute.id).toBe(2)
+      expect(childRoute.name).toBe(routeName3)
+      expect(registerMock).toHaveBeenCalledWith(routeName1, undefined)
+      expect(registerChildMock).toHaveBeenCalledWith(1, routeName3, {})
     })
   })
 })
