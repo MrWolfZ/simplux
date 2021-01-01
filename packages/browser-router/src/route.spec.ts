@@ -29,6 +29,7 @@ describe(`route`, () => {
     name: 'testRoute',
     isActive: isActiveMock as any,
     parameterValues: parameterValuesMock as any,
+    addChildRoute: undefined!,
     navigateTo: undefined!,
     onNavigateTo: undefined,
     [SIMPLUX_ROUTE]: undefined!,
