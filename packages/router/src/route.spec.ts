@@ -1,6 +1,11 @@
 import { clearAllSimpluxMocks, mockEffect } from '@simplux/testing'
 import { _module, _RouterState } from './module.js'
-import { SimpluxRoute, SIMPLUX_ROUTE, _routeEffects } from './route.js'
+import {
+  SimpluxRoute,
+  SIMPLUX_ROUTE,
+  _isSimpluxRoute,
+  _routeEffects,
+} from './route.js'
 import {
   routeName1,
   routeName2,
@@ -335,6 +340,20 @@ describe(`route`, () => {
       expect(childRoute.name).toBe(routeName3)
       expect(registerMock).toHaveBeenCalledWith(routeName1, undefined)
       expect(registerChildMock).toHaveBeenCalledWith(1, routeName3, {})
+    })
+  })
+
+  describe(_isSimpluxRoute, () => {
+    it('correctly identifies route objects', () => {
+      mockEffect(_module.registerRoute, () => 1)
+
+      const testRoute = addRoute(routeName1)
+
+      expect(_isSimpluxRoute(testRoute)).toBe(true)
+    })
+
+    it('correctly identifies non-route objects', () => {
+      expect(_isSimpluxRoute({})).toBe(false)
     })
   })
 })
