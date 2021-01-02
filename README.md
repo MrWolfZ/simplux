@@ -179,12 +179,12 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ### browser-router
 
-- configuration parameter for setting URL at start or end of navigation (or not at all); also add these as navigation options
-- configuration parameter for replacing browser history entry; also add these as navigation options
 - allow ?[, [?, &[, and [& for optional query parameters
+- configuration parameter for replacing browser history entry; also add these as navigation options
+- configuration parameter for setting URL at start or end of navigation (or not at all); also add these as navigation options
 - add support for base href in history mode
 
-- support object query properties
+- support object parameters
 - add type tests
 - add support for setting hash parameter in history mode
 - add support for hash mode
