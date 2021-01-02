@@ -53,8 +53,8 @@ describe(`@simplux/router`, () => {
 
     let cancelledNavigation = new Promise<typeof NAVIGATION_CANCELLED>(() => {})
     const cancelledNavRoute = router.addRoute('asyncNever', {
-      onNavigateTo: (_, { cancelled }) => {
-        cancelledNavigation = cancelled
+      onNavigateTo: (_, { navigationWasCancelled }) => {
+        cancelledNavigation = navigationWasCancelled
         return new Promise<void>(() => {})
       },
     })
@@ -63,7 +63,7 @@ describe(`@simplux/router`, () => {
     cancelledNavRoute.onNavigateTo(
       {},
       {
-        cancelled: undefined!,
+        navigationWasCancelled: undefined!,
         cancelNavigation: NAVIGATION_CANCELLED,
         navigationIsToChildRoute: false,
       },
@@ -78,7 +78,7 @@ describe(`@simplux/router`, () => {
     await routeThatCancelsNav.onNavigateTo(
       {},
       {
-        cancelled: undefined!,
+        navigationWasCancelled: undefined!,
         cancelNavigation: NAVIGATION_CANCELLED,
         navigationIsToChildRoute: false,
       },

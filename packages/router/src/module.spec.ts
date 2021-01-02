@@ -854,8 +854,8 @@ describe(`module`, () => {
 
         const interceptor = jest
           .fn<Promise<void>, [any, OnNavigateToExtras]>()
-          .mockImplementationOnce((_, { cancelled }) => {
-            cancellationPromise = cancelled
+          .mockImplementationOnce((_, { navigationWasCancelled }) => {
+            cancellationPromise = navigationWasCancelled
             return new Promise<void>(() => {})
           })
 
@@ -1320,8 +1320,8 @@ describe(`module`, () => {
 
           const childInterceptor = jest
             .fn<Promise<void>, [any, OnNavigateToExtras]>()
-            .mockImplementationOnce((_, { cancelled }) => {
-              childCancellationPromise = cancelled
+            .mockImplementationOnce((_, { navigationWasCancelled }) => {
+              childCancellationPromise = navigationWasCancelled
               return new Promise<void>(() => {})
             })
 
@@ -1363,8 +1363,8 @@ describe(`module`, () => {
 
           const parentInterceptor = jest
             .fn<Promise<void>, [any, OnNavigateToExtras]>()
-            .mockImplementationOnce((_, { cancelled }) => {
-              parentCancellationPromise = cancelled
+            .mockImplementationOnce((_, { navigationWasCancelled }) => {
+              parentCancellationPromise = navigationWasCancelled
               return new Promise<void>(() => {})
             })
 

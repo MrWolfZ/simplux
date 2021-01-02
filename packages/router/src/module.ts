@@ -62,7 +62,7 @@ export interface OnNavigateToExtras {
    * (e.g. because a new navigation has started while this
    * function was running).
    */
-  readonly cancelled: Promise<typeof NAVIGATION_CANCELLED>
+  readonly navigationWasCancelled: Promise<typeof NAVIGATION_CANCELLED>
 
   /**
    * This object can be returned to cancel the navigation.
@@ -291,7 +291,7 @@ const effects = createEffects({
 
         if (interceptor) {
           const onNavigateToExtras: OnNavigateToExtras = {
-            cancelled: cancellationPromise,
+            navigationWasCancelled: cancellationPromise,
             cancelNavigation: NAVIGATION_CANCELLED,
             navigationIsToChildRoute: routeId !== targetRouteId,
           }
