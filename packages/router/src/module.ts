@@ -133,14 +133,14 @@ export interface _RouterState {
   /**
    * Indicates whether a navigation is currently in progress.
    */
-  navigationIsInProgress: boolean
+  navigationSemaphore: number
 }
 
 const initialState: _RouterState = {
   routes: [],
   activeRouteIds: undefined,
   activeRouteParameterValues: {},
-  navigationIsInProgress: false,
+  navigationSemaphore: 0,
 }
 
 const routerModule = createSimpluxModule('router', initialState)
@@ -179,8 +179,12 @@ const mutations = createMutations(routerModule, {
     state.activeRouteParameterValues = parameters
   },
 
-  setNavigationIsInProgress: (state, navigationIsInProgress: boolean) => {
-    state.navigationIsInProgress = navigationIsInProgress
+  incrementNavigationSemaphore: (state) => {
+    state.navigationSemaphore += 1
+  },
+
+  decrementNavigationSemaphore: (state) => {
+    state.navigationSemaphore -= 1
   },
 })
 
@@ -189,8 +193,7 @@ const selectors = createSelectors(routerModule, {
 
   anyRouteIsActive: ({ activeRouteIds }) => !!activeRouteIds,
 
-  navigationIsInProgress: ({ navigationIsInProgress }) =>
-    navigationIsInProgress,
+  navigationIsInProgress: ({ navigationSemaphore }) => navigationSemaphore > 0,
 
   routeIsActive: ({ activeRouteIds }, routeId: _RouteId) =>
     activeRouteIds === routeId ||
@@ -269,7 +272,7 @@ const effects = createEffects({
   ): NavigationResult => {
     effects.cancelNavigationInProgress()
 
-    mutations.setNavigationIsInProgress(true)
+    mutations.incrementNavigationSemaphore()
 
     const routeIdsToActivate: _RouteId[] = []
     let currentRouteId: _RouteId | undefined = targetRouteId
@@ -302,17 +305,20 @@ const effects = createEffects({
       }
     }
 
-    const result = await Promise.race([onNavigateTo(), cancellationPromise])
+    try {
+      const result = await Promise.race([onNavigateTo(), cancellationPromise])
 
-    if (result === NAVIGATION_CANCELLED || result === NAVIGATION_FINISHED) {
-      return NAVIGATION_CANCELLED
+      if (result === NAVIGATION_CANCELLED || result === NAVIGATION_FINISHED) {
+        return NAVIGATION_CANCELLED
+      }
+
+      mutations.activateRoutes(routeIdsToActivate, parameters || {})
+
+      return NAVIGATION_FINISHED
+    } finally {
+      mutations.decrementNavigationSemaphore()
+      effects.clearNavigationCancellationCallback()
     }
-
-    mutations.activateRoutes(routeIdsToActivate, parameters || {})
-    mutations.setNavigationIsInProgress(false)
-    effects.clearNavigationCancellationCallback()
-
-    return NAVIGATION_FINISHED
   },
 
   createNavigationCancellationPromise: () => {

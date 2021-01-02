@@ -235,7 +235,11 @@ describe(`@simplux/router`, () => {
 
     const finishedNav = testRoute1.navigateTo()
 
+    expect(router.navigationIsInProgress()).toBe(true)
+
     await expect(finishedNav).resolves.toBe(NAVIGATION_FINISHED)
+    expect(router.navigationIsInProgress()).toBe(false)
+
     await expect(cancelledNavigation).resolves.toBe(NAVIGATION_CANCELLED)
     await expect(navToCancel).resolves.toBe(NAVIGATION_CANCELLED)
 
@@ -252,6 +256,7 @@ describe(`@simplux/router`, () => {
 
     const shouldCancel = routeThatCancelsNavIfActive.navigateTo()
     await expect(shouldCancel).resolves.toBe(NAVIGATION_CANCELLED)
+    expect(router.navigationIsInProgress()).toBe(false)
 
     const redirectedCancelSync = routeThatRedirectsNavSync.navigateTo()
     await expect(redirectedCancelSync).resolves.toBe(NAVIGATION_CANCELLED)
@@ -265,9 +270,11 @@ describe(`@simplux/router`, () => {
 
     const syncThrowNav = routeThatThrowsSync.navigateTo()
     await expect(syncThrowNav).rejects.toBeDefined()
+    expect(router.navigationIsInProgress()).toBe(false)
 
     const asyncThrowNav = routeThatThrowsAsync.navigateTo()
     await expect(asyncThrowNav).rejects.toBeDefined()
+    expect(router.navigationIsInProgress()).toBe(false)
 
     await parentRoute.navigateTo({ parent: 'direct' })
     expect(parentRoute.isActive()).toBe(true)
@@ -333,6 +340,8 @@ describe(`@simplux/router`, () => {
     const canceledNavFromChild = cancellingChildRoute.navigateTo({
       parent: 'parent',
     })
+
     await expect(canceledNavFromChild).resolves.toBe(NAVIGATION_CANCELLED)
+    expect(router.navigationIsInProgress()).toBe(false)
   })
 })

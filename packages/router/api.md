@@ -54,7 +54,7 @@ export type _RouteName = string;
 export interface _RouterState {
     activeRouteIds: _RouteId | _RouteId[] | undefined;
     activeRouteParameterValues: NavigationParameters;
-    navigationIsInProgress: boolean;
+    navigationSemaphore: number;
     readonly routes: _RouteState[];
 }
 

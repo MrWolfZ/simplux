@@ -37,7 +37,8 @@ describe(`module`, () => {
   beforeEach(() => {
     mockMutation(_module.addRoute, jest.fn())
     mockMutation(_module.activateRoutes, jest.fn())
-    mockMutation(_module.setNavigationIsInProgress, jest.fn())
+    mockMutation(_module.incrementNavigationSemaphore, jest.fn())
+    mockMutation(_module.decrementNavigationSemaphore, jest.fn())
     mockEffect(
       _module.createNavigationCancellationPromise,
       jest.fn().mockReturnValue(
@@ -265,14 +266,24 @@ describe(`module`, () => {
       })
     })
 
-    describe(_module.setNavigationIsInProgress, () => {
-      it('sets the property', () => {
-        const updatedState = _module.setNavigationIsInProgress.withState(
+    describe(_module.incrementNavigationSemaphore, () => {
+      it('increments the semaphore', () => {
+        const updatedState = _module.incrementNavigationSemaphore.withState(
           emptyRouterState,
-          true,
         )
 
-        expect(updatedState.navigationIsInProgress).toBe(true)
+        expect(updatedState.navigationSemaphore).toBe(1)
+      })
+    })
+
+    describe(_module.decrementNavigationSemaphore, () => {
+      it('decrements the semaphore', () => {
+        const updatedState = _module.decrementNavigationSemaphore.withState({
+          ...emptyRouterState,
+          navigationSemaphore: 1,
+        })
+
+        expect(updatedState.navigationSemaphore).toBe(0)
       })
     })
   })
@@ -301,7 +312,7 @@ describe(`module`, () => {
       it('returns true if navigation is in progress', () => {
         const state: _RouterState = {
           ...routerStateWithTwoRoutes,
-          navigationIsInProgress: true,
+          navigationSemaphore: 1,
         }
 
         const navIsInProgress = _module.navigationIsInProgress.withState(state)
@@ -647,9 +658,9 @@ describe(`module`, () => {
         expect(mock).toHaveBeenCalledWith([1], parameterValues)
       })
 
-      it('marks navigation as running at the start of the navigation', async () => {
+      it('increments navigation semaphore at the start of the navigation', async () => {
         const [mock] = mockMutation(
-          _module.setNavigationIsInProgress,
+          _module.incrementNavigationSemaphore,
           jest.fn(),
         )
 
@@ -662,15 +673,15 @@ describe(`module`, () => {
         const parameterValues = { param: 'value' }
         const promise = _module.navigateToRoute(1, parameterValues)
 
-        expect(mock).toHaveBeenCalledWith(true)
+        expect(mock).toHaveBeenCalled()
 
         resolve()
         await promise
       })
 
-      it('marks navigation as not running at the end of the navigation', async () => {
+      it('decrements navigation semaphore at the end of the navigation', async () => {
         const [mock] = mockMutation(
-          _module.setNavigationIsInProgress,
+          _module.decrementNavigationSemaphore,
           jest.fn(),
         )
 
@@ -688,7 +699,7 @@ describe(`module`, () => {
         resolve()
         await promise
 
-        expect(mock).toHaveBeenCalledWith(false)
+        expect(mock).toHaveBeenCalled()
       })
 
       it('cancels navigation in progress', async () => {
@@ -768,6 +779,38 @@ describe(`module`, () => {
         await expect(promise).resolves.toBe(NAVIGATION_CANCELLED)
       })
 
+      it('decrements navigation semaphore if navigation is cancelled', async () => {
+        const [cancelPromiseMock] = mockEffect(
+          _module.createNavigationCancellationPromise,
+          jest.fn(),
+        )
+
+        const [decrementSemaphoreMock] = mockMutation(
+          _module.decrementNavigationSemaphore,
+          jest.fn(),
+        )
+
+        mockEffect(_module.getOnNavigateToInterceptors, () => ({
+          1: () => new Promise<void>(() => {}),
+        }))
+
+        let cancelNav = () => {}
+        const cancelPromise = new Promise<typeof NAVIGATION_CANCELLED>(
+          (r) => (cancelNav = () => r(NAVIGATION_CANCELLED)),
+        )
+
+        cancelPromiseMock.mockReturnValueOnce(cancelPromise)
+
+        const parameterValues = { param: 'value' }
+        const promise = _module.navigateToRoute(1, parameterValues)
+
+        cancelNav()
+
+        await expect(promise).resolves.toBe(NAVIGATION_CANCELLED)
+
+        expect(decrementSemaphoreMock).toHaveBeenCalled()
+      })
+
       it('clears cancellation callback at the end of the navigation', async () => {
         mockMutation(_module.activateRoutes, jest.fn())
         const [mock] = mockEffect(
@@ -829,6 +872,11 @@ describe(`module`, () => {
       })
 
       it('cancels navigation if onNavigateTo wants to cancel navigation', async () => {
+        const [decrementSemaphoreMock] = mockMutation(
+          _module.decrementNavigationSemaphore,
+          jest.fn(),
+        )
+
         const interceptor = jest
           .fn<Promise<typeof NAVIGATION_CANCELLED>, [any, OnNavigateToExtras]>()
           .mockImplementationOnce((_, { cancelNavigation }) => {
@@ -842,9 +890,16 @@ describe(`module`, () => {
         const promise = _module.navigateToRoute(1)
 
         await expect(promise).resolves.toBe(NAVIGATION_CANCELLED)
+
+        expect(decrementSemaphoreMock).toHaveBeenCalled()
       })
 
       it('cancels navigation if onNavigateTo redirects navigation synchronously', async () => {
+        const [decrementSemaphoreMock] = mockMutation(
+          _module.decrementNavigationSemaphore,
+          jest.fn(),
+        )
+
         const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
         const [mock] = mockEffect(
           _module.createNavigationCancellationPromise,
@@ -871,9 +926,15 @@ describe(`module`, () => {
         await promise
 
         expect(activateMock).not.toHaveBeenCalled()
+        expect(decrementSemaphoreMock).toHaveBeenCalled()
       })
 
       it('cancels navigation if onNavigateTo redirects navigation asynchronously', async () => {
+        const [decrementSemaphoreMock] = mockMutation(
+          _module.decrementNavigationSemaphore,
+          jest.fn(),
+        )
+
         const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
         const [mock] = mockEffect(
           _module.createNavigationCancellationPromise,
@@ -901,9 +962,15 @@ describe(`module`, () => {
         await promise
 
         expect(activateMock).not.toHaveBeenCalled()
+        expect(decrementSemaphoreMock).toHaveBeenCalled()
       })
 
       it('rejects the navigation if onNavigateTo throws', async () => {
+        const [decrementSemaphoreMock] = mockMutation(
+          _module.decrementNavigationSemaphore,
+          jest.fn(),
+        )
+
         const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
 
         mockEffect(_module.getOnNavigateToInterceptors, () => ({
@@ -917,9 +984,15 @@ describe(`module`, () => {
 
         await expect(promise).rejects.toBeDefined()
         expect(activateMock).not.toHaveBeenCalled()
+        expect(decrementSemaphoreMock).toHaveBeenCalled()
       })
 
       it('rejects the navigation if onNavigateTo rejects', async () => {
+        const [decrementSemaphoreMock] = mockMutation(
+          _module.decrementNavigationSemaphore,
+          jest.fn(),
+        )
+
         const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
 
         mockEffect(_module.getOnNavigateToInterceptors, () => ({
@@ -931,6 +1004,7 @@ describe(`module`, () => {
 
         await expect(promise).rejects.toBeDefined()
         expect(activateMock).not.toHaveBeenCalled()
+        expect(decrementSemaphoreMock).toHaveBeenCalled()
       })
 
       describe('with child route', () => {
@@ -1315,6 +1389,11 @@ describe(`module`, () => {
         })
 
         it('cancels navigation if child onNavigateTo wants to cancel navigation', async () => {
+          const [decrementSemaphoreMock] = mockMutation(
+            _module.decrementNavigationSemaphore,
+            jest.fn(),
+          )
+
           const parentInterceptor = jest
             .fn<Promise<void>, [any, OnNavigateToExtras]>()
             .mockImplementationOnce(() => Promise.resolve())
@@ -1336,9 +1415,15 @@ describe(`module`, () => {
           const promise = _module.navigateToRoute(2)
 
           await expect(promise).resolves.toBe(NAVIGATION_CANCELLED)
+          expect(decrementSemaphoreMock).toHaveBeenCalled()
         })
 
         it('cancels navigation if parent onNavigateTo wants to cancel navigation', async () => {
+          const [decrementSemaphoreMock] = mockMutation(
+            _module.decrementNavigationSemaphore,
+            jest.fn(),
+          )
+
           const parentInterceptor = jest
             .fn<
               Promise<typeof NAVIGATION_CANCELLED>,
@@ -1360,10 +1445,16 @@ describe(`module`, () => {
           const promise = _module.navigateToRoute(2)
 
           await expect(promise).resolves.toBe(NAVIGATION_CANCELLED)
+          expect(decrementSemaphoreMock).toHaveBeenCalled()
         })
 
         // tslint:disable-next-line: max-line-length
         it('cancels navigation if child onNavigateTo redirects navigation synchronously', async () => {
+          const [decrementSemaphoreMock] = mockMutation(
+            _module.decrementNavigationSemaphore,
+            jest.fn(),
+          )
+
           const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
           const [mock] = mockEffect(
             _module.createNavigationCancellationPromise,
@@ -1391,10 +1482,16 @@ describe(`module`, () => {
           await promise
 
           expect(activateMock).not.toHaveBeenCalled()
+          expect(decrementSemaphoreMock).toHaveBeenCalled()
         })
 
         // tslint:disable-next-line: max-line-length
         it('cancels navigation if parent onNavigateTo redirects navigation synchronously', async () => {
+          const [decrementSemaphoreMock] = mockMutation(
+            _module.decrementNavigationSemaphore,
+            jest.fn(),
+          )
+
           const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
           const [mock] = mockEffect(
             _module.createNavigationCancellationPromise,
@@ -1422,10 +1519,16 @@ describe(`module`, () => {
           await promise
 
           expect(activateMock).not.toHaveBeenCalled()
+          expect(decrementSemaphoreMock).toHaveBeenCalled()
         })
 
         // tslint:disable-next-line: max-line-length
         it('cancels navigation if child onNavigateTo redirects navigation asynchronously', async () => {
+          const [decrementSemaphoreMock] = mockMutation(
+            _module.decrementNavigationSemaphore,
+            jest.fn(),
+          )
+
           const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
           const [mock] = mockEffect(
             _module.createNavigationCancellationPromise,
@@ -1454,10 +1557,16 @@ describe(`module`, () => {
           await promise
 
           expect(activateMock).not.toHaveBeenCalled()
+          expect(decrementSemaphoreMock).toHaveBeenCalled()
         })
 
         // tslint:disable-next-line: max-line-length
         it('cancels navigation if parent onNavigateTo redirects navigation asynchronously', async () => {
+          const [decrementSemaphoreMock] = mockMutation(
+            _module.decrementNavigationSemaphore,
+            jest.fn(),
+          )
+
           const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
           const [mock] = mockEffect(
             _module.createNavigationCancellationPromise,
@@ -1486,9 +1595,15 @@ describe(`module`, () => {
           await promise
 
           expect(activateMock).not.toHaveBeenCalled()
+          expect(decrementSemaphoreMock).toHaveBeenCalled()
         })
 
         it('rejects the navigation if child onNavigateTo throws', async () => {
+          const [decrementSemaphoreMock] = mockMutation(
+            _module.decrementNavigationSemaphore,
+            jest.fn(),
+          )
+
           const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
 
           mockEffect(_module.getOnNavigateToInterceptors, () => ({
@@ -1503,9 +1618,15 @@ describe(`module`, () => {
 
           await expect(promise).rejects.toBeDefined()
           expect(activateMock).not.toHaveBeenCalled()
+          expect(decrementSemaphoreMock).toHaveBeenCalled()
         })
 
         it('rejects the navigation if parent onNavigateTo throws', async () => {
+          const [decrementSemaphoreMock] = mockMutation(
+            _module.decrementNavigationSemaphore,
+            jest.fn(),
+          )
+
           const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
 
           mockEffect(_module.getOnNavigateToInterceptors, () => ({
@@ -1520,9 +1641,15 @@ describe(`module`, () => {
 
           await expect(promise).rejects.toBeDefined()
           expect(activateMock).not.toHaveBeenCalled()
+          expect(decrementSemaphoreMock).toHaveBeenCalled()
         })
 
         it('rejects the navigation if child onNavigateTo rejects', async () => {
+          const [decrementSemaphoreMock] = mockMutation(
+            _module.decrementNavigationSemaphore,
+            jest.fn(),
+          )
+
           const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
 
           mockEffect(_module.getOnNavigateToInterceptors, () => ({
@@ -1535,9 +1662,15 @@ describe(`module`, () => {
 
           await expect(promise).rejects.toBeDefined()
           expect(activateMock).not.toHaveBeenCalled()
+          expect(decrementSemaphoreMock).toHaveBeenCalled()
         })
 
         it('rejects the navigation if parent onNavigateTo rejects', async () => {
+          const [decrementSemaphoreMock] = mockMutation(
+            _module.decrementNavigationSemaphore,
+            jest.fn(),
+          )
+
           const [activateMock] = mockMutation(_module.activateRoutes, jest.fn())
 
           mockEffect(_module.getOnNavigateToInterceptors, () => ({
@@ -1550,6 +1683,7 @@ describe(`module`, () => {
 
           await expect(promise).rejects.toBeDefined()
           expect(activateMock).not.toHaveBeenCalled()
+          expect(decrementSemaphoreMock).toHaveBeenCalled()
         })
       })
     })

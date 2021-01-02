@@ -8,7 +8,7 @@ export const emptyRouterState: _RouterState = {
   routes: [],
   activeRouteIds: undefined,
   activeRouteParameterValues: {},
-  navigationIsInProgress: false,
+  navigationSemaphore: 0,
 }
 
 export const routeState1: _RouteState = {
