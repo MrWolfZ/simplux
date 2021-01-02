@@ -60,6 +60,14 @@ describe(`router`, () => {
       expect(mock).toHaveBeenCalled()
     })
 
+    it('delegates current navigation URL check to module', () => {
+      const [mock] = mockSelector(_module.currentNavigationUrl, jest.fn())
+
+      _router.currentNavigationUrl()
+
+      expect(mock).toHaveBeenCalled()
+    })
+
     it('delegates navigation by URL to module', async () => {
       const [navMock] = mockEffect(_module.navigateToRouteByUrl, jest.fn())
       navMock.mockResolvedValueOnce(void 0)

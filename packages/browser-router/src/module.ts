@@ -201,19 +201,25 @@ const effects = createEffects({
     url: _Url,
   ): NavigationResult => {
     mutations.setCurrentNavigationUrl(url)
-    const result = await simpluxRouter.navigateToRouteById(
-      routeId,
-      parameterValues,
-    )
 
-    if (result === NAVIGATION_CANCELLED) {
-      return NAVIGATION_CANCELLED
+    try {
+      const result = await simpluxRouter.navigateToRouteById(
+        routeId,
+        parameterValues,
+      )
+
+      if (result === NAVIGATION_CANCELLED) {
+        return NAVIGATION_CANCELLED
+      }
+
+      _locationModule.pushNewUrl(url)
+
+      return result
+    } finally {
+      if (!simpluxRouter.navigationIsInProgress()) {
+        mutations.setCurrentNavigationUrl(undefined)
+      }
     }
-
-    _locationModule.pushNewUrl(url)
-    mutations.setCurrentNavigationUrl(undefined)
-
-    return result
   },
 })
 

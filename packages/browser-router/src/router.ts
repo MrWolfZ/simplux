@@ -36,6 +36,16 @@ export interface SimpluxBrowserRouter extends SimpluxRouterSelectors {
   >
 
   /**
+   * A selector to get the URL of the current navigation (if a navigation
+   * is currently ongoing). Useful for remembering the URL when redirecting
+   * to a different route inside `onNavigateTo`.
+   *
+   * @returns the URL of the current navigation if a navigation is currently
+   * ongoing, otherwise `undefined`
+   */
+  readonly currentNavigationUrl: SimpluxSelector<never, [], string | undefined>
+
+  /**
    * Add a new route with the given template to the router.
    *
    * Parameter types are automatically parsed from the template.
@@ -97,6 +107,7 @@ export const _router: SimpluxBrowserRouter = {
   state: _module.state,
   anyRouteIsActive: simpluxRouter.anyRouteIsActive,
   navigationIsInProgress: simpluxRouter.navigationIsInProgress,
+  currentNavigationUrl: _module.currentNavigationUrl as any,
   addRoute: _routeEffects.addRoute as any,
   navigateToUrl: _module.navigateToRouteByUrl,
   activate: _locationModule.activate,

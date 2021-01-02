@@ -255,7 +255,9 @@ describe(`@simplux/browser-router`, () => {
 
     expect(router.anyRouteIsActive()).toBe(false)
 
-    await rootRoute.navigateTo()
+    let nav = rootRoute.navigateTo()
+    expect(router.currentNavigationUrl()).toBe('')
+    await nav
 
     expect(rootRoute.isActive()).toBe(true)
     expect(rootRoute.parameterValues()).toEqual({})
@@ -263,19 +265,29 @@ describe(`@simplux/browser-router`, () => {
 
     expect(router.anyRouteIsActive()).toBe(true)
 
-    await routeWithoutParameters.navigateTo()
+    nav = routeWithoutParameters.navigateTo()
+
+    expect(router.currentNavigationUrl()).toBe('/root')
+
+    await nav
 
     expect(routeWithoutParameters.isActive()).toBe(true)
     expect(routeWithoutParameters.parameterValues()).toEqual({})
     expect(routeWithoutParameters.href()).toBe('/root')
 
-    await routeWithPathParameters.navigateTo({
+    nav = routeWithPathParameters.navigateTo({
       stringParam: 'a',
       numberParam: 1,
       booleanParam: false,
       arrayStringParam: ['b', 'c', 'long'],
       arrayNumberParam: [100, -100, 9999999999],
     })
+
+    expect(router.currentNavigationUrl()).toBe(
+      '/root/a/intermediate/1/false/b,c,long/100,-100,9999999999',
+    )
+
+    await nav
 
     expect(routeWithPathParameters.isActive()).toBe(true)
     expect(routeWithPathParameters.parameterValues()).toEqual({
@@ -295,13 +307,19 @@ describe(`@simplux/browser-router`, () => {
       }),
     ).toBe('/root/a/intermediate/1/false/b,c,long/100,-100,9999999999')
 
-    await routeWithQueryParameters.navigateTo({
+    nav = routeWithQueryParameters.navigateTo({
       stringParam: 'a',
       numberParam: 1,
       booleanParam: false,
       arrayStringParam: ['b', 'c', 'long'],
       arrayNumberParam: [100, -100, 9999999999],
     })
+
+    expect(router.currentNavigationUrl()).toBe(
+      '/root?stringParam=a&numberParam=1&booleanParam=false&arrayStringParam=b,c,long&arrayNumberParam=100,-100,9999999999',
+    )
+
+    await nav
 
     expect(routeWithQueryParameters.isActive()).toBe(true)
     expect(routeWithQueryParameters.parameterValues()).toEqual({
@@ -323,9 +341,15 @@ describe(`@simplux/browser-router`, () => {
       '/root?stringParam=a&numberParam=1&booleanParam=false&arrayStringParam=b,c,long&arrayNumberParam=100,-100,9999999999',
     )
 
-    await routeWithOptionalQueryParameter.navigateTo({
+    nav = routeWithOptionalQueryParameter.navigateTo({
       requiredParam: 'a',
     })
+
+    expect(router.currentNavigationUrl()).toBe(
+      '/root/withRequiredQuery?requiredParam=a',
+    )
+
+    await nav
 
     expect(routeWithOptionalQueryParameter.isActive()).toBe(true)
     expect(routeWithOptionalQueryParameter.parameterValues()).toEqual({
@@ -341,7 +365,11 @@ describe(`@simplux/browser-router`, () => {
       }),
     ).toBe('/root/withRequiredQuery?requiredParam=a&optionalParam=b')
 
-    await routeWithOnlyOptionalQueryParameter.navigateTo()
+    nav = routeWithOnlyOptionalQueryParameter.navigateTo()
+
+    expect(router.currentNavigationUrl()).toBe('/root/withOptionalQuery')
+
+    await nav
 
     expect(routeWithOnlyOptionalQueryParameter.isActive()).toBe(true)
     expect(routeWithOnlyOptionalQueryParameter.parameterValues()).toEqual({})
@@ -349,9 +377,15 @@ describe(`@simplux/browser-router`, () => {
       '/root/withOptionalQuery',
     )
 
-    await routeWithOnlyOptionalQueryParameter.navigateTo({
+    nav = routeWithOnlyOptionalQueryParameter.navigateTo({
       optionalParam: 'opt',
     })
+
+    expect(router.currentNavigationUrl()).toBe(
+      '/root/withOptionalQuery?optionalParam=opt',
+    )
+
+    await nav
 
     expect(routeWithOnlyOptionalQueryParameter.isActive()).toBe(true)
     expect(routeWithOnlyOptionalQueryParameter.parameterValues()).toEqual({
@@ -361,12 +395,18 @@ describe(`@simplux/browser-router`, () => {
       routeWithOnlyOptionalQueryParameter.href({ optionalParam: 'opt' }),
     ).toBe('/root/withOptionalQuery?optionalParam=opt')
 
-    await routeWithPathAndQueryParameters.navigateTo({
+    nav = routeWithPathAndQueryParameters.navigateTo({
       pathStringParam: 'path',
       pathNumberParam: 100,
       queryStringParam: 'query',
       queryNumberParam: -100,
     })
+
+    expect(router.currentNavigationUrl()).toBe(
+      '/root/path/intermediate/100?queryStringParam=query&queryNumberParam=-100',
+    )
+
+    await nav
 
     expect(routeWithPathAndQueryParameters.isActive()).toBe(true)
     expect(routeWithPathAndQueryParameters.parameterValues()).toEqual({
@@ -392,6 +432,7 @@ describe(`@simplux/browser-router`, () => {
     expect(rootRoute.parameterValues()).toEqual({})
 
     await routeWithOnNavigateTo.navigateTo()
+
     expect(routeWithOnNavigateTo.isActive()).toBe(true)
     expect(routeWithOnNavigateTo.parameterValues()).toEqual({})
 
@@ -411,26 +452,44 @@ describe(`@simplux/browser-router`, () => {
     expect(routeForCancellation.isActive()).toBe(false)
     expect(router.navigationIsInProgress()).toBe(true)
 
-    await parentRoute.navigateTo({
+    nav = parentRoute.navigateTo({
       parentParam: 'parent',
       parentQueryParam: 'parent',
     })
+
+    expect(router.currentNavigationUrl()).toBe(
+      '/parent/parent?parentQueryParam=parent',
+    )
+
+    await nav
 
     expect(parentRoute.isActive()).toBe(true)
     expect(parentRoute.parameterValues()).toEqual({
       parentParam: 'parent',
       parentQueryParam: 'parent',
     })
+    expect(
+      parentRoute.href({
+        parentParam: 'parent',
+        parentQueryParam: 'parent',
+      }),
+    ).toEqual('/parent/parent?parentQueryParam=parent')
     expect(childRoute1.isActive()).toBe(false)
     expect(childRoute2.isActive()).toBe(false)
     expect(nestedChildRoute.isActive()).toBe(false)
 
-    await childRoute1.navigateTo({
+    nav = childRoute1.navigateTo({
       parentParam: 'parent',
       parentQueryParam: 'parent',
       child1Param: 'child1',
       childQueryParam1: 'child1',
     })
+
+    expect(router.currentNavigationUrl()).toBe(
+      '/parent/parent/child1/child1?parentQueryParam=parent&childQueryParam1=child1',
+    )
+
+    await nav
 
     expect(parentRoute.isActive()).toBe(true)
     expect(parentRoute.parameterValues()).toEqual({
@@ -444,15 +503,31 @@ describe(`@simplux/browser-router`, () => {
       child1Param: 'child1',
       childQueryParam1: 'child1',
     })
+    expect(
+      childRoute1.href({
+        parentParam: 'parent',
+        parentQueryParam: 'parent',
+        child1Param: 'child1',
+        childQueryParam1: 'child1',
+      }),
+    ).toEqual(
+      '/parent/parent/child1/child1?parentQueryParam=parent&childQueryParam1=child1',
+    )
     expect(childRoute2.isActive()).toBe(false)
     expect(nestedChildRoute.isActive()).toBe(false)
 
-    await childRoute2.navigateTo({
+    nav = childRoute2.navigateTo({
       parentParam: 'parent',
       parentQueryParam: 'parent',
       child2Param: 100,
       childQueryParam2: -100,
     })
+
+    expect(router.currentNavigationUrl()).toBe(
+      '/parent/parent/child2/100?parentQueryParam=parent&childQueryParam2=-100',
+    )
+
+    await nav
 
     expect(parentRoute.isActive()).toBe(true)
     expect(parentRoute.parameterValues()).toEqual({
@@ -467,9 +542,19 @@ describe(`@simplux/browser-router`, () => {
       child2Param: 100,
       childQueryParam2: -100,
     })
+    expect(
+      childRoute2.href({
+        parentParam: 'parent',
+        parentQueryParam: 'parent',
+        child2Param: 100,
+        childQueryParam2: -100,
+      }),
+    ).toEqual(
+      '/parent/parent/child2/100?parentQueryParam=parent&childQueryParam2=-100',
+    )
     expect(nestedChildRoute.isActive()).toBe(false)
 
-    await nestedChildRoute.navigateTo({
+    nav = nestedChildRoute.navigateTo({
       parentParam: 'parent',
       parentQueryParam: 'parent',
       child1Param: 'child1',
@@ -477,6 +562,12 @@ describe(`@simplux/browser-router`, () => {
       nestedChildParam: 'nested',
       nestedChildQueryParam: 'nested',
     })
+
+    expect(router.currentNavigationUrl()).toBe(
+      '/parent/parent/child1/child1/nested/nested?parentQueryParam=parent&childQueryParam1=child1&nestedChildQueryParam=nested',
+    )
+
+    await nav
 
     expect(parentRoute.isActive()).toBe(true)
     expect(parentRoute.parameterValues()).toEqual({
@@ -500,9 +591,45 @@ describe(`@simplux/browser-router`, () => {
       nestedChildParam: 'nested',
       nestedChildQueryParam: 'nested',
     })
+    expect(
+      nestedChildRoute.href({
+        parentParam: 'parent',
+        parentQueryParam: 'parent',
+        child1Param: 'child1',
+        childQueryParam1: 'child1',
+        nestedChildParam: 'nested',
+        nestedChildQueryParam: 'nested',
+      }),
+    ).toEqual(
+      '/parent/parent/child1/child1/nested/nested?parentQueryParam=parent&childQueryParam1=child1&nestedChildQueryParam=nested',
+    )
 
     const rootChild = rootRoute.addChildRoute('rootChild')
     expect(rootChild.href()).toBe(`/rootChild`)
+
+    const finishedNav = rootRoute.navigateTo()
+    expect(router.currentNavigationUrl()).toBe('')
+    await expect(finishedNav).resolves.toBe(NAVIGATION_FINISHED)
+    expect(router.currentNavigationUrl()).toBe(undefined)
+
+    const cancelledNav = routeThatCancelsNav.navigateTo()
+    expect(router.currentNavigationUrl()).toBe('/root/cancelsNav')
+    await expect(cancelledNav).resolves.toBe(NAVIGATION_CANCELLED)
+    expect(router.currentNavigationUrl()).toBe(undefined)
+
+    const syncThrowNav = routeThatThrowsSync.navigateTo()
+    expect(router.currentNavigationUrl()).toBe('/root/syncThrow')
+    await expect(syncThrowNav).rejects.toBeDefined()
+    expect(router.currentNavigationUrl()).toBe(undefined)
+
+    const asyncThrowNav = routeThatThrowsAsync.navigateTo()
+    expect(router.currentNavigationUrl()).toBe('/root/asyncThrow')
+    await expect(asyncThrowNav).rejects.toBeDefined()
+    expect(router.currentNavigationUrl()).toBe(undefined)
+
+    const notExistsNav = router.navigateToUrl('/doesNotExist')
+    await expect(notExistsNav).rejects.toBeDefined()
+    expect(router.currentNavigationUrl()).toBe(undefined)
 
     const window: any = {
       location: {
@@ -512,21 +639,6 @@ describe(`@simplux/browser-router`, () => {
       },
       addEventListener: jest.fn(),
     }
-
-    const finishedNav = rootRoute.navigateTo()
-    await expect(finishedNav).resolves.toBe(NAVIGATION_FINISHED)
-
-    const cancelledNav = routeThatCancelsNav.navigateTo()
-    await expect(cancelledNav).resolves.toBe(NAVIGATION_CANCELLED)
-
-    const syncThrowNav = routeThatThrowsSync.navigateTo()
-    await expect(syncThrowNav).rejects.toBeDefined()
-
-    const asyncThrowNav = routeThatThrowsAsync.navigateTo()
-    await expect(asyncThrowNav).rejects.toBeDefined()
-
-    const notExistsNav = router.navigateToUrl('/doesNotExist')
-    await expect(notExistsNav).rejects.toBeDefined()
 
     router.activate(window)
 

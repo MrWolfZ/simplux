@@ -2930,6 +2930,7 @@ describe(`module`, () => {
       mockEffect(_locationModule.pushNewUrl, pushUrlMock)
       mockSelector(_module.currentNavigationUrl, () => undefined)
       mockSelector(_module.routeIdAndParametersByUrl, () => [1, {}])
+      mockSelector(getSimpluxRouter().navigationIsInProgress, () => false)
     })
 
     describe(_module.navigateToRouteByUrl, () => {
@@ -3177,13 +3178,15 @@ describe(`module`, () => {
         expect(setCurrentNavigationUrlMock).toHaveBeenCalledWith(undefined)
       })
 
-      it('does not clear the current navigation url if navigation is cancelled', async () => {
+      it('clears the current navigation url if navigation is cancelled and no navigation is in progress', async () => {
         let cancelNav = () => {}
         const routerNavByIdPromise = new Promise<typeof NAVIGATION_CANCELLED>(
           (r) => (cancelNav = () => r(NAVIGATION_CANCELLED)),
         )
 
         routerNavByIdMock.mockReturnValueOnce(routerNavByIdPromise)
+
+        mockSelector(getSimpluxRouter().navigationIsInProgress, () => false)
 
         const url = `/root/nested`
         const promise = _module.navigateToRouteByIdAndPushUrl(1, {}, url)
@@ -3192,6 +3195,64 @@ describe(`module`, () => {
 
         cancelNav()
         await promise
+
+        expect(setCurrentNavigationUrlMock).toHaveBeenCalledWith(undefined)
+      })
+
+      it('does not clear the current navigation url if navigation is cancelled and navigation is in progress', async () => {
+        let cancelNav = () => {}
+        const routerNavByIdPromise = new Promise<typeof NAVIGATION_CANCELLED>(
+          (r) => (cancelNav = () => r(NAVIGATION_CANCELLED)),
+        )
+
+        routerNavByIdMock.mockReturnValueOnce(routerNavByIdPromise)
+
+        mockSelector(getSimpluxRouter().navigationIsInProgress, () => true)
+
+        const url = `/root/nested`
+        const promise = _module.navigateToRouteByIdAndPushUrl(1, {}, url)
+
+        setCurrentNavigationUrlMock.mockClear()
+
+        cancelNav()
+        await promise
+
+        expect(setCurrentNavigationUrlMock).not.toHaveBeenCalled()
+      })
+
+      // tslint:disable-next-line: max-line-length
+      it('clears the current navigation url if navigation throws and no navigation is in progress', async () => {
+        routerNavByIdMock.mockImplementationOnce(async () => {
+          await Promise.resolve()
+          throw new Error()
+        })
+
+        mockSelector(getSimpluxRouter().navigationIsInProgress, () => false)
+
+        const url = `/root/nested`
+        const promise = _module.navigateToRouteByIdAndPushUrl(1, {}, url)
+
+        setCurrentNavigationUrlMock.mockClear()
+
+        await expect(promise).rejects.toBeDefined()
+
+        expect(setCurrentNavigationUrlMock).toHaveBeenCalledWith(undefined)
+      })
+
+      it('does not clear the current navigation url if navigation throws and navigation is in progress', async () => {
+        routerNavByIdMock.mockImplementationOnce(async () => {
+          await Promise.resolve()
+          throw new Error()
+        })
+
+        mockSelector(getSimpluxRouter().navigationIsInProgress, () => true)
+
+        const url = `/root/nested`
+        const promise = _module.navigateToRouteByIdAndPushUrl(1, {}, url)
+
+        setCurrentNavigationUrlMock.mockClear()
+
+        await expect(promise).rejects.toBeDefined()
 
         expect(setCurrentNavigationUrlMock).not.toHaveBeenCalled()
       })
