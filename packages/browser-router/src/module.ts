@@ -12,7 +12,7 @@ import {
   _RouteId,
 } from '@simplux/router'
 import { _extractOrigin, _locationModule, _Url } from './location.js'
-import type { _ParameterValueType } from './parameter.js'
+import type { _ParameterName, _ParameterValueType } from './parameter.js'
 import {
   _BrowserRouteTemplate,
   _BrowserRouteTreeNode,
@@ -50,11 +50,16 @@ const browserRouterModule = createSimpluxModule('browserRouter', initialState)
 
 const mutations = createMutations(browserRouterModule, {
   addRoute: (state, routeId: _RouteId, urlTemplate: _UrlTemplate) => {
-    const [updatedTree, route] = _routeTree.addRoute(
+    const template = _routeTree.getFullTemplate(
       state.rootNode,
       undefined,
-      routeId,
       urlTemplate,
+    )
+
+    const [updatedTree, route] = _routeTree.addRoute(
+      state.rootNode,
+      routeId,
+      template,
     )
 
     if (updatedTree !== state.rootNode) {
@@ -69,11 +74,16 @@ const mutations = createMutations(browserRouterModule, {
     routeId: _RouteId,
     urlTemplate: _UrlTemplate,
   ) => {
-    const [updatedTree, route] = _routeTree.addRoute(
+    const template = _routeTree.getFullTemplate(
       state.rootNode,
       parentRouteId,
-      routeId,
       urlTemplate,
+    )
+
+    const [updatedTree, route] = _routeTree.addRoute(
+      state.rootNode,
+      routeId,
+      template,
     )
 
     if (updatedTree !== state.rootNode) {
@@ -110,6 +120,37 @@ const selectors = createSelectors(browserRouterModule, {
     url: _Url,
   ): [_RouteId, NavigationParameters] | undefined => {
     return _routeTree.findRoute(rootNode as _BrowserRouteTreeNode, url)
+  },
+
+  parameterNamesForTemplate: (
+    { rootNode },
+    parentRouteId: _RouteId | undefined,
+    urlTemplate: _UrlTemplate,
+  ): _ParameterName[] => {
+    const {
+      pathTemplateSegments,
+      queryParameters,
+    } = _routeTree.getFullTemplate(
+      rootNode as _BrowserRouteTreeNode,
+      parentRouteId,
+      urlTemplate,
+    )
+
+    const parameterNames: _ParameterName[] = []
+
+    for (const segment of pathTemplateSegments) {
+      if (typeof segment === 'string') {
+        continue
+      }
+
+      parameterNames.push(segment.parameterName)
+    }
+
+    for (const parameter of queryParameters) {
+      parameterNames.push(parameter.parameterName)
+    }
+
+    return parameterNames
   },
 })
 

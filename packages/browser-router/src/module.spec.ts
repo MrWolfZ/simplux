@@ -2873,6 +2873,48 @@ describe(`module`, () => {
         ).toEqual([2, parameterValues])
       })
     })
+
+    describe(_module.parameterNamesForTemplate, () => {
+      it('gets parameter names for template', () => {
+        const parentTemplate =
+          'root/:parentParam?requiredParam:string[&optionalParam:string]'
+        const childTemplate =
+          'child/:childParam?childRequiredParam[&childOptionalParam:string]'
+
+        const stateWithParent = _module.addRoute.withState(
+          emptyRouterState,
+          1,
+          parentTemplate,
+        )
+
+        const parentNames = _module.parameterNamesForTemplate.withState(
+          emptyRouterState,
+          undefined,
+          parentTemplate,
+        )
+
+        const childNames = _module.parameterNamesForTemplate.withState(
+          stateWithParent,
+          1,
+          childTemplate,
+        )
+
+        expect(parentNames).toEqual([
+          'parentParam',
+          'requiredParam',
+          'optionalParam',
+        ])
+
+        expect(childNames).toEqual([
+          'parentParam',
+          'childParam',
+          'requiredParam',
+          'optionalParam',
+          'childRequiredParam',
+          'childOptionalParam',
+        ])
+      })
+    })
   })
 
   describe('effects', () => {

@@ -4,6 +4,7 @@ import {
   mockEffect,
   mockModuleState,
   mockMutation,
+  mockSelector,
 } from '@simplux/testing'
 import { _module } from './module.js'
 import { _routeEffects } from './route.js'
@@ -79,9 +80,19 @@ describe(`route`, () => {
 
   describe(addRoute, () => {
     it('creates a base route using the template as the name', () => {
-      addRoute('root')
+      mockSelector(_module.parameterNamesForTemplate, () => [
+        'param',
+        'queryParam',
+      ])
 
-      expect(routerAddMock).toHaveBeenCalledWith('root', undefined, undefined)
+      addRoute('root/:param?queryParam')
+
+      expect(routerAddMock).toHaveBeenCalledWith(
+        'root/:param?queryParam',
+        undefined,
+        undefined,
+        ['param', 'queryParam'],
+      )
     })
 
     it('adds the route to the module', () => {
@@ -240,10 +251,23 @@ describe(`route`, () => {
         const childRoute = mockRoute.addChildRoute('child')
 
         it('creates a base route using the template as the name', () => {
-          const parentRoute = addRoute('parent')
-          parentRoute.addChildRoute('child')
+          mockSelector(
+            _module.parameterNamesForTemplate,
+            jest
+              .fn()
+              .mockReturnValueOnce(['parentParam'])
+              .mockReturnValueOnce(['parentParam', 'param', 'queryParam']),
+          )
 
-          expect(routerAddMock).toHaveBeenCalledWith('child', undefined, 1)
+          const parentRoute = addRoute('parent/:parentParam')
+          parentRoute.addChildRoute('child/:param?queryParam')
+
+          expect(routerAddMock).toHaveBeenCalledWith(
+            'child/:param?queryParam',
+            undefined,
+            1,
+            ['parentParam', 'param', 'queryParam'],
+          )
         })
 
         it('adds the child route to the module', () => {

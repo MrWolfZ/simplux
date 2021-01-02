@@ -98,8 +98,8 @@ describe(`@simplux/browser-router`, () => {
 
     let cancelledNavigation = new Promise<typeof NAVIGATION_CANCELLED>(() => {})
     const routeForCancellation = router.addRoute('root/forCancellation', {
-      onNavigateTo: async (_, { cancelled }) => {
-        cancelledNavigation = cancelled
+      onNavigateTo: async (_, { navigationWasCancelled }) => {
+        cancelledNavigation = navigationWasCancelled
         await new Promise<typeof NAVIGATION_CANCELLED>(() => {})
       },
     })
@@ -108,7 +108,7 @@ describe(`@simplux/browser-router`, () => {
     routeForCancellation.onNavigateTo(
       {},
       {
-        cancelled: undefined!,
+        navigationWasCancelled: undefined!,
         cancelNavigation: NAVIGATION_CANCELLED,
         navigationIsToChildRoute: false,
       },
@@ -123,7 +123,7 @@ describe(`@simplux/browser-router`, () => {
     await routeThatCancelsNav.onNavigateTo(
       {},
       {
-        cancelled: undefined!,
+        navigationWasCancelled: undefined!,
         cancelNavigation: NAVIGATION_CANCELLED,
         navigationIsToChildRoute: false,
       },
@@ -436,8 +436,6 @@ describe(`@simplux/browser-router`, () => {
     expect(parentRoute.parameterValues()).toEqual({
       parentParam: 'parent',
       parentQueryParam: 'parent',
-      child1Param: 'child1',
-      childQueryParam1: 'child1',
     })
     expect(childRoute1.isActive()).toBe(true)
     expect(childRoute1.parameterValues()).toEqual({
@@ -460,8 +458,6 @@ describe(`@simplux/browser-router`, () => {
     expect(parentRoute.parameterValues()).toEqual({
       parentParam: 'parent',
       parentQueryParam: 'parent',
-      child2Param: 100,
-      childQueryParam2: -100,
     })
     expect(childRoute1.isActive()).toBe(false)
     expect(childRoute2.isActive()).toBe(true)
@@ -486,10 +482,6 @@ describe(`@simplux/browser-router`, () => {
     expect(parentRoute.parameterValues()).toEqual({
       parentParam: 'parent',
       parentQueryParam: 'parent',
-      child1Param: 'child1',
-      childQueryParam1: 'child1',
-      nestedChildParam: 'nested',
-      nestedChildQueryParam: 'nested',
     })
     expect(childRoute1.isActive()).toBe(true)
     expect(childRoute1.parameterValues()).toEqual({
@@ -497,8 +489,6 @@ describe(`@simplux/browser-router`, () => {
       parentQueryParam: 'parent',
       child1Param: 'child1',
       childQueryParam1: 'child1',
-      nestedChildParam: 'nested',
-      nestedChildQueryParam: 'nested',
     })
     expect(childRoute2.isActive()).toBe(false)
     expect(nestedChildRoute.isActive()).toBe(true)
