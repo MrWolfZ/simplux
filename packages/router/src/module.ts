@@ -26,14 +26,20 @@ export type _RouteId = number
  *
  * @public
  */
-export const NAVIGATION_FINISHED = Symbol('NAVIGATION_FINISHED')
+// should be a symbol, but TypeScript has type inference issues
+// in async functions with unique symbols, so we use a plain
+// string instead as a workaround
+export const NAVIGATION_FINISHED = '[NAVIGATION_FINISHED]'
 
 /**
  * A marker symbol used when navigations are cancelled.
  *
  * @public
  */
-export const NAVIGATION_CANCELLED = Symbol('NAVIGATION_CANCELLED')
+// should be a symbol, but TypeScript has type inference issues
+// in async functions with unique symbols, so we use a plain
+// string instead as a workaround
+export const NAVIGATION_CANCELLED = '[NAVIGATION_CANCELLED]'
 
 /**
  * Base type for navigation parameters.

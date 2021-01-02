@@ -18,10 +18,10 @@ export function _isSimpluxRoute<TParameters, TConfiguration extends SimpluxRoute
 export type NavigateToFn<TParameters> = keyof TParameters extends never ? () => NavigationResult : RequiredPropertyNames<TParameters> extends never ? (parameters?: TParameters) => NavigationResult : (parameters: TParameters) => NavigationResult;
 
 // @public
-export const NAVIGATION_CANCELLED: unique symbol;
+export const NAVIGATION_CANCELLED = "[NAVIGATION_CANCELLED]";
 
 // @public
-export const NAVIGATION_FINISHED: unique symbol;
+export const NAVIGATION_FINISHED = "[NAVIGATION_FINISHED]";
 
 // @public
 export type NavigationParameters = Readonly<Record<string, any>>;
