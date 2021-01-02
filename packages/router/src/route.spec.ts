@@ -30,7 +30,11 @@ describe(`route`, () => {
       const testRoute = addRoute(routeName1)
       expect(testRoute.id).toBe(1)
       expect(testRoute.name).toBe(routeName1)
-      expect(registerMock).toHaveBeenCalledWith(routeName1, undefined)
+      expect(registerMock).toHaveBeenCalledWith(
+        routeName1,
+        undefined,
+        undefined,
+      )
     })
 
     it('allows creating route with configuration', () => {
@@ -43,7 +47,21 @@ describe(`route`, () => {
 
       expect(testRoute.id).toBe(1)
       expect(testRoute.name).toBe(routeName2)
-      expect(registerMock).toHaveBeenCalledWith(routeName2, {})
+      expect(registerMock).toHaveBeenCalledWith(routeName2, {}, undefined)
+    })
+
+    it('allows creating route with parameter names', () => {
+      const [registerMock] = mockEffect(
+        _module.registerRoute,
+        jest.fn().mockReturnValue(1),
+      )
+
+      const testRoute = addRoute(routeName1, undefined, undefined, ['param'])
+      expect(testRoute.id).toBe(1)
+      expect(testRoute.name).toBe(routeName1)
+      expect(registerMock).toHaveBeenCalledWith(routeName1, undefined, [
+        'param',
+      ])
     })
 
     it('allows creating route with explicit parameters type', () => {
@@ -56,7 +74,7 @@ describe(`route`, () => {
 
       expect(testRoute.id).toBe(1)
       expect(testRoute.name).toBe(routeName3)
-      expect(registerMock).toHaveBeenCalledWith(routeName3, {})
+      expect(registerMock).toHaveBeenCalledWith(routeName3, {}, undefined)
     })
 
     describe('created route', () => {
@@ -295,8 +313,17 @@ describe(`route`, () => {
 
       expect(childRoute.id).toBe(2)
       expect(childRoute.name).toBe(routeName2)
-      expect(registerMock).toHaveBeenCalledWith(routeName1, undefined)
-      expect(registerChildMock).toHaveBeenCalledWith(1, routeName2, undefined)
+      expect(registerMock).toHaveBeenCalledWith(
+        routeName1,
+        undefined,
+        undefined,
+      )
+      expect(registerChildMock).toHaveBeenCalledWith(
+        1,
+        routeName2,
+        undefined,
+        undefined,
+      )
     })
 
     it('allows creating route with configuration', () => {
@@ -315,8 +342,17 @@ describe(`route`, () => {
 
       expect(childRoute.id).toBe(2)
       expect(childRoute.name).toBe(routeName2)
-      expect(registerMock).toHaveBeenCalledWith(routeName1, undefined)
-      expect(registerChildMock).toHaveBeenCalledWith(1, routeName2, {})
+      expect(registerMock).toHaveBeenCalledWith(
+        routeName1,
+        undefined,
+        undefined,
+      )
+      expect(registerChildMock).toHaveBeenCalledWith(
+        1,
+        routeName2,
+        {},
+        undefined,
+      )
     })
 
     it('allows creating route with explicit parameters type', () => {
@@ -338,8 +374,17 @@ describe(`route`, () => {
 
       expect(childRoute.id).toBe(2)
       expect(childRoute.name).toBe(routeName3)
-      expect(registerMock).toHaveBeenCalledWith(routeName1, undefined)
-      expect(registerChildMock).toHaveBeenCalledWith(1, routeName3, {})
+      expect(registerMock).toHaveBeenCalledWith(
+        routeName1,
+        undefined,
+        undefined,
+      )
+      expect(registerChildMock).toHaveBeenCalledWith(
+        1,
+        routeName3,
+        {},
+        undefined,
+      )
     })
   })
 

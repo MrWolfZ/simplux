@@ -172,10 +172,16 @@ export const _routeEffects = createEffects({
     name: _RouteName,
     configuration?: TConfiguration,
     parentRouteId?: _RouteId,
+    parameterNames?: string[],
   ): SimpluxRoute<TParameters, TConfiguration> => {
     const routeId = !parentRouteId
-      ? _module.registerRoute(name, configuration)
-      : _module.registerChildRoute(parentRouteId, name, configuration)
+      ? _module.registerRoute(name, configuration, parameterNames)
+      : _module.registerChildRoute(
+          parentRouteId,
+          name,
+          configuration,
+          parameterNames,
+        )
 
     const selectors = createSelectors(_module, {
       isActive: (state) => _module.routeIsActive.withState(state, routeId),

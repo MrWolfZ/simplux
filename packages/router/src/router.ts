@@ -3,6 +3,7 @@ import {
   NavigationParameters,
   NavigationResult,
   _module,
+  _ParameterName,
   _RouteId,
   _RouterState,
 } from './module.js'
@@ -86,6 +87,7 @@ export interface SimpluxRouter extends SimpluxRouterSelectors {
         | SimpluxRouteConfiguration<NavigationParameters>
         | undefined,
       parentRouteId: _RouteId | undefined,
+      parameterNames: _ParameterName[] | undefined,
     ) => SimpluxRoute<
       NavigationParameters,
       SimpluxRouteConfiguration<NavigationParameters>

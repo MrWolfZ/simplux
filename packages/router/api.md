@@ -39,6 +39,9 @@ export interface OnNavigateToExtras {
     readonly navigationWasCancelled: Promise<typeof NAVIGATION_CANCELLED>;
 }
 
+// @internal (undocumented)
+export type _ParameterName = string;
+
 // @public
 export type RequiredPropertyNames<T> = {
     [K in keyof T]-?: undefined extends T[K] ? never : K;
@@ -62,6 +65,8 @@ export interface _RouterState {
 export interface _RouteState {
     // (undocumented)
     readonly name: _RouteName;
+    // (undocumented)
+    readonly parameterNames: _ParameterName[] | undefined;
     // (undocumented)
     readonly parentRouteId: _RouteId | undefined;
 }
@@ -99,7 +104,7 @@ export interface SimpluxRouteMarker<TParameters, TConfiguration extends SimpluxR
 export interface SimpluxRouter extends SimpluxRouterSelectors {
     readonly addRoute: SimpluxEffect<(<TParameters extends NavigationParameters = {}, TConfiguration extends SimpluxRouteConfiguration<TParameters> = SimpluxRouteConfiguration<TParameters>>(name: string, routeConfiguration?: TConfiguration) => SimpluxRoute<TParameters, TConfiguration>)>;
     // @internal
-    readonly addRouteInternal: SimpluxEffect<(name: string, routeConfiguration: SimpluxRouteConfiguration<NavigationParameters> | undefined, parentRouteId: _RouteId | undefined) => SimpluxRoute<NavigationParameters, SimpluxRouteConfiguration<NavigationParameters>>>;
+    readonly addRouteInternal: SimpluxEffect<(name: string, routeConfiguration: SimpluxRouteConfiguration<NavigationParameters> | undefined, parentRouteId: _RouteId | undefined, parameterNames: _ParameterName[] | undefined) => SimpluxRoute<NavigationParameters, SimpluxRouteConfiguration<NavigationParameters>>>;
     // @internal
     readonly navigateToRouteById: SimpluxEffect<(routeId: _RouteId, parameters?: Readonly<NavigationParameters>) => NavigationResult>;
     // @internal

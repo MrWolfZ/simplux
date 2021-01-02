@@ -14,21 +14,25 @@ export const emptyRouterState: _RouterState = {
 export const routeState1: _RouteState = {
   name: routeName1,
   parentRouteId: undefined,
+  parameterNames: undefined,
 }
 
 export const routeState2: _RouteState = {
   name: routeName2,
   parentRouteId: undefined,
+  parameterNames: undefined,
 }
 
 export const childRouteState1: _RouteState = {
   name: routeName2,
   parentRouteId: 1,
+  parameterNames: undefined,
 }
 
 export const childRouteState2: _RouteState = {
   name: routeName3,
   parentRouteId: 1,
+  parameterNames: undefined,
 }
 
 export interface RouteParameters3 {
@@ -41,6 +45,7 @@ export interface RouteParameters3 {
 export const routeState3: _RouteState = {
   name: routeName3,
   parentRouteId: undefined,
+  parameterNames: undefined,
 }
 
 export const routerStateWithRoute1: _RouterState = {

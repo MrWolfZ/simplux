@@ -141,6 +141,7 @@ function addRoute<
     urlTemplate,
     routeConfiguration as SimpluxRouteConfiguration<NavigationParameters>,
     parentRouteId,
+    [],
   )
 
   if (!parentRouteId) {

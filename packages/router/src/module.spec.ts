@@ -12,6 +12,7 @@ import {
   _RouterState,
 } from './module.js'
 import {
+  childRouteState1,
   emptyRouterState,
   routeName1,
   routeName2,
@@ -21,6 +22,7 @@ import {
   routerStateWithRoute1AndChild1AndChild2,
   routerStateWithTwoRoutes,
   routerStateWithTwoRoutesAndOneChild,
+  routeState1,
 } from './testdata.js'
 
 describe(`module`, () => {
@@ -39,6 +41,7 @@ describe(`module`, () => {
     mockMutation(_module.activateRoutes, jest.fn())
     mockMutation(_module.incrementNavigationSemaphore, jest.fn())
     mockMutation(_module.decrementNavigationSemaphore, jest.fn())
+    mockSelector(_module.routeParameterNames, jest.fn())
     mockEffect(
       _module.createNavigationCancellationPromise,
       jest.fn().mockReturnValue(
@@ -75,6 +78,26 @@ describe(`module`, () => {
         updatedState = _module.addRoute.withState(updatedState, routeName2)
 
         expect(updatedState).toEqual(routerStateWithTwoRoutes)
+      })
+
+      it('allows adding route with parameter names', () => {
+        const updatedState = _module.addRoute.withState(
+          emptyRouterState,
+          routeName1,
+          ['param'],
+        )
+
+        const expectedState: _RouterState = {
+          ...emptyRouterState,
+          routes: [
+            {
+              ...routeState1,
+              parameterNames: ['param'],
+            },
+          ],
+        }
+
+        expect(updatedState).toEqual(expectedState)
       })
 
       it('ignores same route name', () => {
@@ -131,6 +154,28 @@ describe(`module`, () => {
         )
 
         expect(updatedState).toEqual(routerStateWithRoute1AndChild1AndChild2)
+      })
+
+      it('allows adding route with parameter names', () => {
+        const updatedState = _module.addChildRoute.withState(
+          routerStateWithRoute1,
+          1,
+          routeName2,
+          ['param'],
+        )
+
+        const expectedState: _RouterState = {
+          ...routerStateWithRoute1,
+          routes: [
+            routeState1,
+            {
+              ...childRouteState1,
+              parameterNames: ['param'],
+            },
+          ],
+        }
+
+        expect(updatedState).toEqual(expectedState)
       })
 
       it('ignores same route name for the same parent id', () => {
@@ -370,6 +415,36 @@ describe(`module`, () => {
       })
     })
 
+    describe(_module.routeParameterNames, () => {
+      it('returns undefined for route without parameter names', () => {
+        const state = routerStateWithRoute1
+        const parameterNames = _module.routeParameterNames.withState(state, 1)
+        expect(parameterNames).toBe(undefined)
+      })
+
+      it('returns names for route with parameter names', () => {
+        const state: _RouterState = {
+          ...emptyRouterState,
+          routes: [
+            {
+              ...routeState1,
+              parameterNames: ['param'],
+            },
+          ],
+        }
+
+        const parameterNames = _module.routeParameterNames.withState(state, 1)
+
+        expect(parameterNames).toEqual(['param'])
+      })
+
+      it('returns undefined for non-existing route', () => {
+        const state = routerStateWithRoute1
+        const parameterNames = _module.routeParameterNames.withState(state, 3)
+        expect(parameterNames).toBe(undefined)
+      })
+    })
+
     describe(_module.routeParameterValues, () => {
       const parameterValues = { param: 1 }
       const stateWithActiveRoute: _RouterState = {
@@ -385,6 +460,25 @@ describe(`module`, () => {
         )
 
         expect(result).toEqual(parameterValues)
+      })
+
+      it('filters parameter values by route parameter names (if any)', () => {
+        const parameterValues = { param: 1, filtered: 'string' }
+        const state: _RouterState = {
+          ...emptyRouterState,
+          routes: [
+            {
+              ...routeState1,
+              parameterNames: ['param'],
+            },
+          ],
+          activeRouteIds: 1,
+          activeRouteParameterValues: parameterValues,
+        }
+
+        const result = _module.routeParameterValues.withState(state, 1)
+
+        expect(result).toEqual({ param: 1 })
       })
 
       it('throws for an inactive route', () => {
@@ -1073,6 +1167,57 @@ describe(`module`, () => {
 
           expect(child1Interceptor).toHaveBeenCalledWith(
             parameterValues,
+            expect.anything(),
+          )
+
+          expect(child2Interceptor).toHaveBeenCalledWith(
+            parameterValues,
+            expect.anything(),
+          )
+        })
+
+        it('calls the onNavigateTo interceptors with filtered parameters for the deeply nested routes', async () => {
+          mockSelector(
+            _module.parentRouteId,
+            jest.fn().mockReturnValueOnce(2).mockReturnValueOnce(1),
+          )
+
+          mockSelector(
+            _module.routeParameterNames,
+            jest
+              .fn()
+              .mockReturnValueOnce(['parent'])
+              .mockReturnValueOnce(['child1', 'parent'])
+              .mockReturnValueOnce(['child2', 'child1', 'parent']),
+          )
+
+          const parentInterceptor = jest.fn().mockResolvedValueOnce(undefined)
+          const child1Interceptor = jest.fn().mockResolvedValueOnce(undefined)
+          const child2Interceptor = jest.fn().mockResolvedValueOnce(undefined)
+          mockEffect(_module.getOnNavigateToInterceptors, () => ({
+            1: parentInterceptor,
+            2: child1Interceptor,
+            3: child2Interceptor,
+          }))
+
+          const parentParameterValues = { parent: 'parent' }
+          const child1ParameterValues = { child1: 'child1' }
+          const child2ParameterValues = { child2: 'child2' }
+          const parameterValues = {
+            ...parentParameterValues,
+            ...child1ParameterValues,
+            ...child2ParameterValues,
+          }
+
+          await _module.navigateToRoute(3, parameterValues)
+
+          expect(parentInterceptor).toHaveBeenCalledWith(
+            parentParameterValues,
+            expect.anything(),
+          )
+
+          expect(child1Interceptor).toHaveBeenCalledWith(
+            { ...child1ParameterValues, ...parentParameterValues },
             expect.anything(),
           )
 

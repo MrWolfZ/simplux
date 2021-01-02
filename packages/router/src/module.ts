@@ -22,6 +22,11 @@ export type _RouteName = string
 export type _RouteId = number
 
 /**
+ * @internal
+ */
+export type _ParameterName = string
+
+/**
  * A marker symbol used when navigations finish successfully.
  *
  * @public
@@ -110,6 +115,7 @@ export type OnNavigateTo<TParameters = NavigationParameters> = (
 export interface _RouteState {
   readonly name: _RouteName
   readonly parentRouteId: _RouteId | undefined
+  readonly parameterNames: _ParameterName[] | undefined
 }
 
 /**
@@ -152,7 +158,11 @@ const initialState: _RouterState = {
 const routerModule = createSimpluxModule('router', initialState)
 
 const mutations = createMutations(routerModule, {
-  addRoute: ({ routes }, name: _RouteName) => {
+  addRoute: (
+    { routes },
+    name: _RouteName,
+    parameterNames?: _ParameterName[],
+  ) => {
     if (routes.some((r) => r.name === name && r.parentRouteId === undefined)) {
       return
     }
@@ -160,10 +170,16 @@ const mutations = createMutations(routerModule, {
     routes.push({
       name,
       parentRouteId: undefined,
+      parameterNames,
     })
   },
 
-  addChildRoute: ({ routes }, parentRouteId: _RouteId, name: _RouteName) => {
+  addChildRoute: (
+    { routes },
+    parentRouteId: _RouteId,
+    name: _RouteName,
+    parameterNames?: _ParameterName[],
+  ) => {
     if (
       routes.some((r) => r.name === name && r.parentRouteId === parentRouteId)
     ) {
@@ -173,6 +189,7 @@ const mutations = createMutations(routerModule, {
     routes.push({
       name,
       parentRouteId,
+      parameterNames,
     })
   },
 
@@ -205,6 +222,9 @@ const selectors = createSelectors(routerModule, {
     activeRouteIds === routeId ||
     (Array.isArray(activeRouteIds) && activeRouteIds.includes(routeId)),
 
+  routeParameterNames: ({ routes }, routeId: _RouteId) =>
+    routes[routeId - 1]?.parameterNames,
+
   routeParameterValues: (state, routeId: _RouteId) => {
     const { routes, activeRouteParameterValues } = state
     const route = routes[routeId - 1]
@@ -224,7 +244,14 @@ const selectors = createSelectors(routerModule, {
       return {}
     }
 
-    return activeRouteParameterValues
+    const allowedKeys = Object.keys(activeRouteParameterValues).filter(
+      (key) => !route.parameterNames || route.parameterNames.includes(key),
+    )
+
+    return allowedKeys.reduce(
+      (res, key) => ({ ...res, [key]: activeRouteParameterValues[key] }),
+      {},
+    )
   },
 
   parentRouteId: ({ routes }, routeId: _RouteId) =>
@@ -242,8 +269,9 @@ const effects = createEffects({
   registerRoute: (
     name: _RouteName,
     configuration?: SimpluxRouteConfiguration<any>,
+    parameterNames?: _ParameterName[],
   ): _RouteId => {
-    const updatedState = mutations.addRoute(name)
+    const updatedState = mutations.addRoute(name, parameterNames)
     const routeId = updatedState.routes.findIndex((r) => r.name === name) + 1
 
     if (configuration) {
@@ -259,8 +287,13 @@ const effects = createEffects({
     parentRouteId: _RouteId,
     name: _RouteName,
     configuration?: SimpluxRouteConfiguration<any>,
+    parameterNames?: _ParameterName[],
   ): _RouteId => {
-    const updatedState = mutations.addChildRoute(parentRouteId, name)
+    const updatedState = mutations.addChildRoute(
+      parentRouteId,
+      name,
+      parameterNames,
+    )
     const routeId = updatedState.routes.findIndex((r) => r.name === name) + 1
 
     if (configuration) {
@@ -274,7 +307,7 @@ const effects = createEffects({
 
   navigateToRoute: async (
     targetRouteId: _RouteId,
-    parameters?: NavigationParameters,
+    parameters: NavigationParameters = {},
   ): NavigationResult => {
     effects.cancelNavigationInProgress()
 
@@ -302,7 +335,18 @@ const effects = createEffects({
             navigationIsToChildRoute: routeId !== targetRouteId,
           }
 
-          const res = await interceptor(parameters || {}, onNavigateToExtras)
+          const parameterNames = _module.routeParameterNames(routeId)
+
+          const allowedKeys = Object.keys(parameters).filter(
+            (key) => !parameterNames || parameterNames.includes(key),
+          )
+
+          const filteredParameters = allowedKeys.reduce(
+            (res, key) => ({ ...res, [key]: parameters[key] }),
+            {},
+          )
+
+          const res = await interceptor(filteredParameters, onNavigateToExtras)
 
           if (res) {
             return res
@@ -318,7 +362,7 @@ const effects = createEffects({
         return NAVIGATION_CANCELLED
       }
 
-      mutations.activateRoutes(routeIdsToActivate, parameters || {})
+      mutations.activateRoutes(routeIdsToActivate, parameters)
 
       return NAVIGATION_FINISHED
     } finally {

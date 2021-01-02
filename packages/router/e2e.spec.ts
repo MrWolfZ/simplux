@@ -130,8 +130,8 @@ describe(`@simplux/router`, () => {
           { parent, child1 },
           { navigationIsToChildRoute },
         ) => {
-          parent
-          child1
+          expect(parent).toBe('parent')
+          expect(child1).toBe('child')
           navigationIsToChildRoute
           await Promise.resolve()
         },
@@ -145,9 +145,9 @@ describe(`@simplux/router`, () => {
           { parent, child2 },
           { navigationIsToChildRoute },
         ) => {
-          parent
-          child2
-          navigationIsToChildRoute
+          expect(parent).toBe('parent')
+          expect(child2).toBe('child')
+          expect(navigationIsToChildRoute).toBe(false)
           await Promise.resolve()
         },
       },
@@ -160,10 +160,10 @@ describe(`@simplux/router`, () => {
           { parent, child1, nested },
           { navigationIsToChildRoute },
         ) => {
-          parent
-          child1
-          nested
-          navigationIsToChildRoute
+          expect(parent).toBe('parent')
+          expect(child1).toBe('child')
+          expect(nested).toBe('nested')
+          expect(navigationIsToChildRoute).toBe(false)
           await Promise.resolve()
         },
       },
