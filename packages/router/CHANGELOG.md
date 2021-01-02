@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.12](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.11...v0.18.0-alpha.12) (2021-01-02)
+
+
+### Bug Fixes
+
+* **router:** fix `navigationIsInProgress` result if navigations are cancelled or rejected ([cd249ae](https://github.com/MrWolfZ/simplux/commit/cd249ae5fda1aa4391fa967120a667fa099bd820))
+
+
+
+
+
 # [0.18.0-alpha.11](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.10...v0.18.0-alpha.11) (2021-01-01)
 
 
