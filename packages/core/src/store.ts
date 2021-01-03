@@ -24,7 +24,7 @@ let proxy: _InternalReduxStoreProxy | undefined
 /**
  * @internal
  */
-export const simpluxStore = _createSimpluxStore(_getInternalReduxStoreProxy)
+export const simpluxStore = _createSimpluxStore(_getStoreProxy)
 
 /**
  * This function is part of the internal simplux API that should only ever
@@ -32,7 +32,7 @@ export const simpluxStore = _createSimpluxStore(_getInternalReduxStoreProxy)
  *
  * @internal
  */
-export function _getInternalReduxStoreProxy() {
+export function _getStoreProxy() {
   if (process.env.NODE_ENV !== 'production') {
     if (!proxy) {
       throw new Error(

@@ -3,7 +3,7 @@ import {
   simpluxStore,
   _createReduxStoreProxy,
   _createSimpluxStore,
-  _getInternalReduxStoreProxy,
+  _getStoreProxy,
   _setReduxStore,
 } from './store.js'
 
@@ -24,24 +24,24 @@ describe('store', () => {
     process.env.NODE_ENV = nodeEnv
   })
 
-  describe(_getInternalReduxStoreProxy.name, () => {
+  describe(_getStoreProxy.name, () => {
     it(`returns the proxy`, () => {
       cleanup = _setReduxStore(
         createStore((c: number = 10) => c),
         (s) => s,
       )
-      const proxy = _getInternalReduxStoreProxy()
+      const proxy = _getStoreProxy()
 
       expect(proxy.getState()).toBe(10)
     })
 
     it(`throws if proxy is not set`, () => {
-      expect(_getInternalReduxStoreProxy).toThrow()
+      expect(_getStoreProxy).toThrow()
     })
 
     it(`does not throw if proxy is not set in production`, () => {
       process.env.NODE_ENV = 'production'
-      expect(_getInternalReduxStoreProxy).not.toThrow()
+      expect(_getStoreProxy).not.toThrow()
     })
   })
 

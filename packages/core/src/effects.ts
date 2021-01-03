@@ -163,7 +163,7 @@ export function createEffects<
  *
  * @internal
  */
-export function _getEffectMockDefinitionsInternal() {
+export function _getEffectMocks() {
   return mocks
 }
 

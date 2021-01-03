@@ -2,7 +2,7 @@ import {
   FunctionSignature,
   SimpluxEffect,
   _EffectMockDefinition,
-  _getEffectMockDefinitionsInternal,
+  _getEffectMocks,
 } from '@simplux/core'
 import { registerMockCleanupFunction } from './cleanup.js'
 
@@ -22,7 +22,7 @@ export function mockEffect<
   TEffect extends SimpluxEffect<(...args: any[]) => any>,
   TMock extends FunctionSignature<TEffect>
 >(effectToMock: TEffect, mockFn: TMock): [TMock, () => void] {
-  const mockDefinitions = _getEffectMockDefinitionsInternal()
+  const mockDefinitions = _getEffectMocks()
 
   removeMock(mockDefinitions, effectToMock)
 

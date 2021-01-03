@@ -42,13 +42,13 @@ export interface _EffectMockDefinition {
 export type FunctionSignature<TFunction extends (...args: any[]) => any> = _NonFunctionProperties<TFunction> extends never ? TFunction : TFunction extends (...args: infer TArgs) => infer TReturn ? (...args: TArgs) => TReturn : never;
 
 // @internal
-export function _getEffectMockDefinitionsInternal(): _EffectMockDefinition[];
-
-// @internal
-export function _getInternalReduxStoreProxy(): _InternalReduxStoreProxy;
+export function _getEffectMocks(): _EffectMockDefinition[];
 
 // @public
 export function getSimpluxReducer(): Reducer;
+
+// @internal
+export function _getStoreProxy(): _InternalReduxStoreProxy;
 
 // @public (undocumented)
 export type _IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;

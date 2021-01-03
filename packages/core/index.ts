@@ -13,7 +13,7 @@ export {
   createEffect,
   createEffects,
   SIMPLUX_EFFECT,
-  _getEffectMockDefinitionsInternal,
+  _getEffectMocks,
   _isSimpluxEffect,
 } from './src/effects.js'
 export type {
@@ -63,7 +63,7 @@ export type {
   SimpluxSelectorMarker,
   SimpluxSelectors,
 } from './src/selectors.js'
-export { _getInternalReduxStoreProxy } from './src/store.js'
+export { _getStoreProxy } from './src/store.js'
 export type { _InternalReduxStoreProxy, _SimpluxStore } from './src/store.js'
 export * from './src/types.js'
 

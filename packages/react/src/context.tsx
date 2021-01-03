@@ -1,7 +1,7 @@
 import {
   Immutable,
   SimpluxModule,
-  _getInternalReduxStoreProxy,
+  _getStoreProxy,
   _InternalReduxStoreProxy,
 } from '@simplux/core'
 import React, {
@@ -140,7 +140,7 @@ export const useSimpluxSubscription = (
  * @public
  */
 export const SimpluxProvider: FunctionComponent = ({ children }) => {
-  const contextValue = useSimpluxSubscription(_getInternalReduxStoreProxy)
+  const contextValue = useSimpluxSubscription(_getStoreProxy)
 
   return (
     <SimpluxContext.Provider value={contextValue}>

@@ -1,7 +1,7 @@
 import {
   createEffect,
   createEffects,
-  _getEffectMockDefinitionsInternal,
+  _getEffectMocks,
   _isSimpluxEffect,
 } from './effects.js'
 
@@ -21,7 +21,7 @@ describe(createEffect.name, () => {
       const mockSpy = jest.fn()
       const effect = createEffect(spy)
 
-      _getEffectMockDefinitionsInternal().push({
+      _getEffectMocks().push({
         effectToMock: effect,
         mockFn: mockSpy,
       })
@@ -31,7 +31,7 @@ describe(createEffect.name, () => {
       expect(spy).not.toHaveBeenCalled()
       expect(mockSpy).toHaveBeenCalledWith('foo', 1)
 
-      _getEffectMockDefinitionsInternal().splice(0, 1)
+      _getEffectMocks().splice(0, 1)
     })
 
     it('has name n/a', () => {
@@ -69,7 +69,7 @@ describe(createEffects.name, () => {
         effect2: spy2,
       })
 
-      _getEffectMockDefinitionsInternal().push({
+      _getEffectMocks().push({
         effectToMock: effect1,
         mockFn: mockSpy,
       })
@@ -80,7 +80,7 @@ describe(createEffects.name, () => {
       expect(spy1).not.toHaveBeenCalled()
       expect(mockSpy).toHaveBeenCalledWith('foo', 1)
       expect(spy2).toHaveBeenCalled()
-      _getEffectMockDefinitionsInternal().splice(0, 1)
+      _getEffectMocks().splice(0, 1)
     })
 
     it('have correct name', () => {
