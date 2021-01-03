@@ -47,12 +47,12 @@ export function mockSelector<
   TArgs extends any[],
   TReturn,
   TMock extends (...args: TArgs) => TReturn
->(mutation: SimpluxSelectorMarker<TState, TArgs, TReturn>, mockFn: TMock) {
-  const mut = mutation as SimpluxSelector<TState, TArgs, TReturn>
+>(selector: SimpluxSelectorMarker<TState, TArgs, TReturn>, mockFn: TMock) {
+  const sel = selector as SimpluxSelector<TState, TArgs, TReturn>
 
   return setupMutationMock<TState, TArgs, TReturn, TMock>(
-    mut.owningModule,
-    mut.selectorId,
+    sel.owningModule,
+    sel.selectorId,
     mockFn,
   )
 }
