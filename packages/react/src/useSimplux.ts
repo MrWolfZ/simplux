@@ -49,7 +49,7 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
 ): TResult {
   if (_isSimpluxModule(selectorOrModule)) {
     const selector = typeof selectorOrArg === 'function' ? selectorOrArg : id
-    const result = useSimpluxInternal(selectorOrModule, selector, [])
+    const result = useSelector(selectorOrModule, selector, [])
     return (result as unknown) as TResult
   }
 
@@ -64,69 +64,69 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
     return selectorMock(...args)
   }
 
-  return useSimpluxInternal(module, selector.withState, args)
-}
+  return useSelector(module, selector.withState, args)
 
-export function useSimpluxInternal<TState, TArgs extends any[], TResult>(
-  module: SimpluxModule<TState>,
-  selector: (state: Immutable<TState>, ...args: TArgs) => TResult,
-  args: TArgs,
-): TResult {
-  const [, forceRender] = useReducer((s: number) => s + 1, 0)
+  function useSelector<TState, TArgs extends any[], TResult>(
+    module: SimpluxModule<TState>,
+    selector: (state: Immutable<TState>, ...args: TArgs) => TResult,
+    args: TArgs,
+  ): TResult {
+    const [, forceRender] = useReducer((s: number) => s + 1, 0)
 
-  const context = useSimpluxContext()
+    const context = useSimpluxContext()
 
-  const memoizingSelector = useMemo(() => {
-    let memoizedState: Immutable<TState> | undefined
-    let memoizedResult: TResult | undefined
+    const memoizingSelector = useMemo(() => {
+      let memoizedState: Immutable<TState> | undefined
+      let memoizedResult: TResult | undefined
 
-    return (state: Immutable<TState>) => {
-      if (state === memoizedState) {
-        return memoizedResult!
-      }
-
-      const result = selector(state, ...args)
-
-      memoizedState = state
-      memoizedResult = result
-
-      return result
-    }
-  }, [selector, ...args])
-
-  const selectedState = memoizingSelector(context.getModuleState(module))
-
-  useEffect(() => {
-    let previousSelectedState = selectedState
-    let hadError = false
-
-    function checkForUpdates(state: Immutable<TState>) {
-      try {
-        const newSelectedState = memoizingSelector(state)
-
-        if (newSelectedState === previousSelectedState && !hadError) {
-          return
+      return (state: Immutable<TState>) => {
+        if (state === memoizedState) {
+          return memoizedResult!
         }
 
-        previousSelectedState = newSelectedState
-        hadError = false
-      } catch (err) {
-        // we ignore all errors here, since when the component
-        // is re-rendered, the selector is called again, and
-        // will throw again, if neither args nor module state
-        // changed
-        hadError = true
+        const result = selector(state, ...args)
+
+        memoizedState = state
+        memoizedResult = result
+
+        return result
+      }
+    }, [selector, ...args])
+
+    const selectedState = memoizingSelector(context.getModuleState(module))
+
+    useEffect(() => {
+      let previousSelectedState = selectedState
+      let hadError = false
+
+      function checkForUpdates(state: Immutable<TState>) {
+        try {
+          const newSelectedState = memoizingSelector(state)
+
+          if (newSelectedState === previousSelectedState && !hadError) {
+            return
+          }
+
+          previousSelectedState = newSelectedState
+          hadError = false
+        } catch (err) {
+          // we ignore all errors here, since when the component
+          // is re-rendered, the selector is called again, and
+          // will throw again, if neither args nor module state
+          // changed
+          hadError = true
+        }
+
+        forceRender()
       }
 
-      forceRender()
-    }
+      return context.subscribeToModuleStateChanges(module, checkForUpdates)
+    }, [memoizingSelector])
 
-    return context.subscribeToModuleStateChanges(module, checkForUpdates)
-  }, [memoizingSelector])
+    return selectedState
+  }
 
-  return selectedState
-}
-
-function id<T>(t: T) {
-  return t
+  function id<T>(t: T) {
+    return t
+  }
 }

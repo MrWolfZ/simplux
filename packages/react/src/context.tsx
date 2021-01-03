@@ -6,7 +6,7 @@ import {
 } from '@simplux/core'
 import React, {
   Context,
-  createContext as createContextReact,
+  createContext,
   FunctionComponent,
   useCallback,
   useContext,
@@ -21,8 +21,6 @@ type CreateContextFn = <T>(
   defaultValue: T,
   calculateChangedBits: () => number,
 ) => Context<T>
-
-const createContext = createContextReact as CreateContextFn
 
 export interface SimpluxContextValue {
   subscribeToModuleStateChanges: <TState>(
@@ -45,7 +43,7 @@ interface ModuleStates {
 // this default context value just passes calls through to the module; this
 // is mainly useful for testing since you do not have to wrap your component
 // in a provider
-const defaultContextValue: SimpluxContextValue = {
+const defaultValue: SimpluxContextValue = {
   subscribeToModuleStateChanges(simpluxModule, handler) {
     return simpluxModule.subscribeToStateChanges(handler).unsubscribe
   },
@@ -57,7 +55,7 @@ const defaultContextValue: SimpluxContextValue = {
 // it is up to each component to decide when to render, the context is just
 // responsible for providing a consistent state value during each render
 // pass
-const SimpluxContext = createContext(defaultContextValue, () => 0)
+const SimpluxContext = (createContext as CreateContextFn)(defaultValue, () => 0)
 
 // we only support accessing the context via the useSimplux hook
 delete (SimpluxContext as Partial<typeof SimpluxContext>).Consumer
