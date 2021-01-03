@@ -26,7 +26,7 @@ describe('selectors', () => {
         getReducer: undefined!,
         getState: getModuleStateMock,
       },
-      [SIMPLUX_MODULE]: undefined!,
+      [SIMPLUX_MODULE]: '' as any,
     }
 
     jest.clearAllMocks()
@@ -130,7 +130,7 @@ describe('selectors', () => {
           getReducer: undefined!,
           getState: getModuleStateMock,
         },
-        [SIMPLUX_MODULE]: undefined!,
+        [SIMPLUX_MODULE]: '' as any,
       }
 
       const { plusOne, plus } = createSelectors(moduleMock, {

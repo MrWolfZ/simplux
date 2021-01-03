@@ -1,6 +1,10 @@
 import { createImmerReducer } from './immer.js'
 import { SimpluxModule, SIMPLUX_MODULE } from './module.js'
-import { createMutations, MutationDefinitions } from './mutations.js'
+import {
+  createMutations,
+  MutationDefinitions,
+  _isSimpluxMutation,
+} from './mutations.js'
 import { createModuleReducer } from './reducer.js'
 
 declare class Event {
@@ -36,7 +40,7 @@ describe('mutations', () => {
         getReducer: getReducerMock,
         getState: getModuleStateMock,
       },
-      [SIMPLUX_MODULE]: undefined!,
+      [SIMPLUX_MODULE]: '' as any,
     }
     jest.clearAllMocks()
     nodeEnv = process.env.NODE_ENV
@@ -417,6 +421,36 @@ describe('mutations', () => {
           /mutation .* was attempted to be dispatched from within mutation/,
         )
       })
+    })
+  })
+
+  describe(_isSimpluxMutation, () => {
+    it('returns true for a simplux effect', () => {
+      const { increment } = createMutations(moduleMock, {
+        increment: (c) => c + 1,
+      })
+
+      expect(_isSimpluxMutation(increment)).toBe(true)
+    })
+
+    it('returns false for a string value', () => {
+      expect(_isSimpluxMutation('string')).toBe(false)
+    })
+
+    it('returns false for a number value', () => {
+      expect(_isSimpluxMutation(10)).toBe(false)
+    })
+
+    it('returns false for an object value', () => {
+      expect(_isSimpluxMutation({})).toBe(false)
+    })
+
+    it('returns false for an undefined value', () => {
+      expect(_isSimpluxMutation(undefined)).toBe(false)
+    })
+
+    it('returns false for an null value', () => {
+      expect(_isSimpluxMutation(null)).toBe(false)
     })
   })
 })

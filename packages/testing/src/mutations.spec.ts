@@ -26,7 +26,7 @@ describe('mutations', () => {
         getReducer: undefined!,
         getState: getModuleStateMock,
       },
-      [SIMPLUX_MODULE]: undefined!,
+      [SIMPLUX_MODULE]: '' as any,
     }
 
     jest.clearAllMocks()
@@ -125,7 +125,7 @@ describe('mutations', () => {
           getReducer: undefined!,
           getState: getModuleStateMock,
         },
-        [SIMPLUX_MODULE]: undefined!,
+        [SIMPLUX_MODULE]: '' as any,
       }
 
       const { increment, incrementBy } = createMutations(moduleMock, {

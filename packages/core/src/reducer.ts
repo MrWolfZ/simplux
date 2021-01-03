@@ -1,5 +1,5 @@
 import type { Action } from 'redux'
-import { createMutationPrefix, MutationDefinitions } from './mutations.js'
+import type { MutationDefinitions } from './mutations.js'
 
 /**
  * @internal
@@ -9,7 +9,7 @@ export function createModuleReducer<TState>(
   initialState: TState,
   moduleMutations: MutationDefinitions<TState>,
 ) {
-  const mutationPrefix = createMutationPrefix(moduleName)
+  const mutationPrefix = `@simplux/${moduleName}/mutation/`
 
   return <TAction extends Action<string>>(
     state = initialState,

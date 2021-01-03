@@ -135,24 +135,6 @@ export type SimpluxMutations<
 }
 
 /**
- * @internal
- */
-export const createMutationPrefix = (moduleName: string) =>
-  `@simplux/${moduleName}/mutation/`
-
-// this helper function allows creating a function with a dynamic name (only works with ES6+)
-function nameFunction<T extends (...args: any[]) => any>(
-  name: string,
-  body: T,
-): T {
-  return {
-    [name](...args: any[]) {
-      return body(...args)
-    },
-  }[name] as T
-}
-
-/**
  * Create new mutations for the module. A mutation is a function
  * that takes the module state and optionally additional parameters
  * and updates the state.
@@ -176,8 +158,6 @@ export function createMutations<
 
   const { name: moduleName, dispatch, getReducer, mutations } = module.$simplux
 
-  const mutationPrefix = createMutationPrefix(moduleName)
-
   if (process.env.NODE_ENV !== 'production') {
     for (const mutationName of Object.keys(mutationDefinitions)) {
       if (mutations[mutationName]) {
@@ -194,9 +174,9 @@ export function createMutations<
 
   const resolvedMutations = Object.keys(mutationDefinitions).reduce(
     (acc, mutationName: keyof TMutations) => {
-      const type = `${mutationPrefix}${mutationName}`
+      const type = `@simplux/${moduleName}/mutation/${mutationName}`
 
-      const createAction = (...allArgs: any[]) => {
+      function createAction(...allArgs: any[]) {
         const args = filterEventArgs(allArgs)
 
         if (process.env.NODE_ENV !== 'production') {
@@ -250,7 +230,7 @@ export function createMutations<
 
       extras.mutationName = mutationName as string
       extras.owningModule = module
-      extras[SIMPLUX_MUTATION] = undefined!
+      extras[SIMPLUX_MUTATION] = '' as any
 
       return acc
     },
@@ -258,6 +238,18 @@ export function createMutations<
   )
 
   return resolvedMutations
+
+  // this helper function allows creating a function with a dynamic name (only works with ES6+)
+  function nameFunction<T extends (...args: any[]) => any>(
+    name: string,
+    body: T,
+  ): T {
+    return {
+      [name](...args: any[]) {
+        return body(...args)
+      },
+    }[name] as T
+  }
 }
 
 // a very common use case for mutations in frontend applications is to
@@ -305,10 +297,10 @@ function isEvent(arg: any) {
   }
 
   return false
-}
 
-function hasProp(arg: any, name: string) {
-  return Object.prototype.hasOwnProperty.call(arg, name)
+  function hasProp(arg: any, name: string) {
+    return Object.prototype.hasOwnProperty.call(arg, name)
+  }
 }
 
 /**
@@ -323,7 +315,5 @@ function hasProp(arg: any, name: string) {
 export function _isSimpluxMutation<TState, TArgs extends any[], TOther>(
   object: SimpluxMutationMarker<TState, TArgs> | TOther,
 ): object is SimpluxMutation<TState, TArgs> {
-  return (
-    object && Object.prototype.hasOwnProperty.call(object, SIMPLUX_MUTATION)
-  )
+  return (object as any)?.[SIMPLUX_MUTATION] === ''
 }

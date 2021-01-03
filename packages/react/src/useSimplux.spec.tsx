@@ -35,7 +35,7 @@ describe(useSimplux.name, () => {
     mutableSelector.selectorName = 'testSelector'
     mutableSelector.owningModule = moduleMock
     mutableSelector.withState = fn
-    mutableSelector[SIMPLUX_SELECTOR] = undefined!
+    mutableSelector[SIMPLUX_SELECTOR] = '' as any
 
     return mutableSelector as any
   }
@@ -67,7 +67,7 @@ describe(useSimplux.name, () => {
         getReducer: undefined!,
         getState: getModuleStateMock,
       },
-      [SIMPLUX_MODULE]: undefined!,
+      [SIMPLUX_MODULE]: '' as any,
     }
 
     jest.clearAllMocks()

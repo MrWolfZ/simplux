@@ -60,7 +60,7 @@ describe('context', () => {
         getReducer: undefined!,
         getState: getModuleStateMock,
       },
-      [SIMPLUX_MODULE]: undefined!,
+      [SIMPLUX_MODULE]: '' as any,
     }
 
     moduleMock2 = {
@@ -74,7 +74,7 @@ describe('context', () => {
         getReducer: undefined!,
         getState: getModuleStateMock2,
       },
-      [SIMPLUX_MODULE]: undefined!,
+      [SIMPLUX_MODULE]: '' as any,
     }
 
     reduxStoreProxyMock = {

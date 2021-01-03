@@ -350,7 +350,7 @@ export function createModule<TState>(
     setState: setModuleState,
     subscribeToStateChanges,
     $simplux: internals,
-    [SIMPLUX_MODULE]: undefined!,
+    [SIMPLUX_MODULE]: '' as any,
   }
 
   const selectors = createSelectors(result, {
@@ -374,5 +374,5 @@ export function createModule<TState>(
 export function _isSimpluxModule<TState, TOther>(
   object: SimpluxModuleMarker<TState> | TOther,
 ): object is SimpluxModule<TState> {
-  return object && Object.prototype.hasOwnProperty.call(object, SIMPLUX_MODULE)
+  return (object as any)?.[SIMPLUX_MODULE] === ''
 }

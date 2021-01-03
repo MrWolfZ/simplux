@@ -18,8 +18,8 @@ export interface _InternalReduxStoreProxy {
   actionsToDispatchOnStoreChange: Action[]
 }
 
-let latestReduxStoreId = 0
-let reduxStoreProxy: _InternalReduxStoreProxy | undefined
+let lastStoreId = 0
+let proxy: _InternalReduxStoreProxy | undefined
 
 /**
  * @internal
@@ -34,14 +34,14 @@ export const simpluxStore = _createSimpluxStore(_getInternalReduxStoreProxy)
  */
 export function _getInternalReduxStoreProxy() {
   if (process.env.NODE_ENV !== 'production') {
-    if (!reduxStoreProxy) {
+    if (!proxy) {
       throw new Error(
         'simplux must be initialized with a redux store before it can be used!',
       )
     }
   }
 
-  return reduxStoreProxy!
+  return proxy!
 }
 
 /**
@@ -51,21 +51,20 @@ export function _setReduxStore<TState>(
   storeToUse: ReduxStore<TState>,
   simpluxStateGetter: (rootState: TState) => any,
 ) {
-  const previousStoreProxy = reduxStoreProxy
+  const previousStoreProxy = proxy
 
   if (!storeToUse) {
-    reduxStoreProxy = undefined
+    proxy = undefined
     return () => {
-      reduxStoreProxy = previousStoreProxy
+      proxy = previousStoreProxy
     }
   }
 
-  const id = latestReduxStoreId
-  latestReduxStoreId += 1
+  const id = lastStoreId++
 
   const subscribers: _InternalReduxStoreProxy['subscribers'] = []
 
-  reduxStoreProxy = _createReduxStoreProxy(
+  proxy = _createReduxStoreProxy(
     storeToUse,
     simpluxStateGetter,
     id,
@@ -73,44 +72,41 @@ export function _setReduxStore<TState>(
   )
 
   if (previousStoreProxy) {
-    _transferSubscribersToNewStore(previousStoreProxy, reduxStoreProxy)
-    _dispatchActionsFromPreviousStore(previousStoreProxy, reduxStoreProxy)
+    _transferSubscribersToNewStore(previousStoreProxy, proxy)
+    _dispatchActionsFromPreviousStore(previousStoreProxy, proxy)
   }
 
   return () => {
     if (process.env.NODE_ENV !== 'production') {
-      if (!reduxStoreProxy) {
+      if (!proxy) {
         return
       }
 
-      if (reduxStoreProxy.id !== id) {
+      if (proxy.id !== id) {
         throw new Error('cannot cleanup store since another store has been set')
       }
     }
 
-    reduxStoreProxy = previousStoreProxy
+    proxy = previousStoreProxy
   }
-}
 
-/**
- * @internal
- */
-export function _transferSubscribersToNewStore(
-  previousStoreProxy: _InternalReduxStoreProxy,
-  newReduxStoreProxy: _InternalReduxStoreProxy,
-) {
-  for (const subscriber of previousStoreProxy.subscribers) {
-    subscriber.unsubscribe()
-    newReduxStoreProxy.subscribe(subscriber.handler)
+  function _transferSubscribersToNewStore(
+    previousStoreProxy: _InternalReduxStoreProxy,
+    newReduxStoreProxy: _InternalReduxStoreProxy,
+  ) {
+    for (const subscriber of previousStoreProxy.subscribers) {
+      subscriber.unsubscribe()
+      newReduxStoreProxy.subscribe(subscriber.handler)
+    }
   }
-}
 
-function _dispatchActionsFromPreviousStore(
-  { actionsToDispatchOnStoreChange }: _InternalReduxStoreProxy,
-  newReduxStoreProxy: _InternalReduxStoreProxy,
-) {
-  for (const action of actionsToDispatchOnStoreChange) {
-    newReduxStoreProxy.dispatch(action)
+  function _dispatchActionsFromPreviousStore(
+    { actionsToDispatchOnStoreChange }: _InternalReduxStoreProxy,
+    newReduxStoreProxy: _InternalReduxStoreProxy,
+  ) {
+    for (const action of actionsToDispatchOnStoreChange) {
+      newReduxStoreProxy.dispatch(action)
+    }
   }
 }
 
@@ -134,11 +130,12 @@ export function _createReduxStoreProxy<TState>(
   let shouldCaptureActions = true
   const actionsToDispatchOnStoreChange: Action[] = []
 
-  async function stopCapture() {
-    await Promise.resolve()
-    shouldCaptureActions = false
-    const actions = actionsToDispatchOnStoreChange
-    actions.splice(0, actions.length)
+  function stopCapture() {
+    return Promise.resolve().then(() => {
+      shouldCaptureActions = false
+      const actions = actionsToDispatchOnStoreChange
+      actions.splice(0, actions.length)
+    })
   }
 
   stopCapture().catch(() => void 0)

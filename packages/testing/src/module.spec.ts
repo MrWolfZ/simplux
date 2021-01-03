@@ -26,7 +26,7 @@ describe('module', () => {
         getReducer: undefined!,
         getState: getModuleStateMock,
       },
-      [SIMPLUX_MODULE]: undefined!,
+      [SIMPLUX_MODULE]: '' as any,
     }
 
     jest.clearAllMocks()

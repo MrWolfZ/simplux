@@ -127,18 +127,6 @@ export type SimpluxSelectors<
   >
 }
 
-// this helper function allows creating a function with a dynamic name (only works with ES6+)
-function nameFunction<T extends (...args: any[]) => any>(
-  name: string,
-  body: T,
-): T {
-  return {
-    [name](...args: any[]) {
-      return body(...args)
-    },
-  }[name] as T
-}
-
 /**
  * Create new selectors for the module. A selector is a function
  * that takes the module state and optionally additional parameters
@@ -194,7 +182,7 @@ export function createSelectors<
       extras.selectorId = selectorId
       extras.selectorName = selectorName as string
       extras.owningModule = module
-      extras[SIMPLUX_SELECTOR] = undefined!
+      extras[SIMPLUX_SELECTOR] = '' as any
 
       return acc
     },
@@ -202,27 +190,39 @@ export function createSelectors<
   )
 
   return resolvedSelectors
-}
 
-function memoize<TFunction extends Function>(fn: TFunction): TFunction {
-  let memoizedArgs: any[] | undefined
-  let memoizedResult: any
-
-  const memoizedFunction = (...args: any[]) => {
-    const memoizedResultNeedsToBeRefreshed =
-      !memoizedArgs ||
-      memoizedArgs.length !== args.length ||
-      !memoizedArgs.every((a, idx) => a === args[idx])
-
-    if (memoizedResultNeedsToBeRefreshed) {
-      memoizedArgs = args
-      memoizedResult = fn(...args)
-    }
-
-    return memoizedResult
+  // this helper function allows creating a function with a dynamic name (only works with ES6+)
+  function nameFunction<T extends (...args: any[]) => any>(
+    name: string,
+    body: T,
+  ): T {
+    return {
+      [name](...args: any[]) {
+        return body(...args)
+      },
+    }[name] as T
   }
 
-  return (memoizedFunction as unknown) as TFunction
+  function memoize<TFunction extends Function>(fn: TFunction): TFunction {
+    let memoizedArgs: any[] | undefined
+    let memoizedResult: any
+
+    function memoizedFunction(...args: any[]) {
+      const memoizedResultNeedsToBeRefreshed =
+        !memoizedArgs ||
+        memoizedArgs.length !== args.length ||
+        !memoizedArgs.every((a, idx) => a === args[idx])
+
+      if (memoizedResultNeedsToBeRefreshed) {
+        memoizedArgs = args
+        memoizedResult = fn(...args)
+      }
+
+      return memoizedResult
+    }
+
+    return (memoizedFunction as unknown) as TFunction
+  }
 }
 
 /**
@@ -242,7 +242,5 @@ export function _isSimpluxSelector<
 >(
   object: SimpluxSelectorMarker<TState, TArgs, TReturn> | TOther,
 ): object is SimpluxSelector<TState, TArgs, TReturn> {
-  return (
-    object && Object.prototype.hasOwnProperty.call(object, SIMPLUX_SELECTOR)
-  )
+  return (object as any)?.[SIMPLUX_SELECTOR] === ''
 }

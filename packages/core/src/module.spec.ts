@@ -396,5 +396,13 @@ describe('module', () => {
     it('returns false for an object value', () => {
       expect(_isSimpluxModule({})).toBe(false)
     })
+
+    it('returns false for an undefined value', () => {
+      expect(_isSimpluxModule(undefined)).toBe(false)
+    })
+
+    it('returns false for an null value', () => {
+      expect(_isSimpluxModule(null)).toBe(false)
+    })
   })
 })

@@ -5,7 +5,6 @@ import {
   _createSimpluxStore,
   _getInternalReduxStoreProxy,
   _setReduxStore,
-  _transferSubscribersToNewStore,
 } from './store.js'
 
 describe('store', () => {
@@ -260,8 +259,6 @@ describe('store', () => {
       2,
       [],
     )
-
-    _transferSubscribersToNewStore(storeProxy, newStoreProxy)
 
     expect(newStoreProxy.getState().test).toBe(initialState)
   })

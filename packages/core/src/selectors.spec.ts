@@ -1,5 +1,5 @@
 import { SimpluxModule, SIMPLUX_MODULE } from './module.js'
-import { createSelectors } from './selectors.js'
+import { createSelectors, _isSimpluxSelector } from './selectors.js'
 
 describe('selectors', () => {
   let nodeEnv: string | undefined
@@ -25,7 +25,7 @@ describe('selectors', () => {
         getReducer: undefined!,
         getState: getModuleStateMock,
       },
-      [SIMPLUX_MODULE]: undefined!,
+      [SIMPLUX_MODULE]: '' as any,
     }
 
     jest.clearAllMocks()
@@ -214,6 +214,36 @@ describe('selectors', () => {
 
         expect(mock).toHaveBeenCalledTimes(4)
       })
+    })
+  })
+
+  describe(_isSimpluxSelector, () => {
+    it('returns true for a simplux effect', () => {
+      const { plusOne } = createSelectors(moduleMock, {
+        plusOne: (c) => c + 1,
+      })
+
+      expect(_isSimpluxSelector(plusOne)).toBe(true)
+    })
+
+    it('returns false for a string value', () => {
+      expect(_isSimpluxSelector('string')).toBe(false)
+    })
+
+    it('returns false for a number value', () => {
+      expect(_isSimpluxSelector(10)).toBe(false)
+    })
+
+    it('returns false for an object value', () => {
+      expect(_isSimpluxSelector({})).toBe(false)
+    })
+
+    it('returns false for an undefined value', () => {
+      expect(_isSimpluxSelector(undefined)).toBe(false)
+    })
+
+    it('returns false for an null value', () => {
+      expect(_isSimpluxSelector(null)).toBe(false)
     })
   })
 })

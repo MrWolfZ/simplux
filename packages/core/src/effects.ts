@@ -83,7 +83,7 @@ export type SimpluxEffects<
   >
 }
 
-const mockDefinitions: _EffectMockDefinition[] = []
+const mocks: _EffectMockDefinition[] = []
 
 /**
  * Create a new effect. An effect is any function that has side effects.
@@ -99,7 +99,7 @@ const mockDefinitions: _EffectMockDefinition[] = []
 export function createEffect<TEffectFunction extends (...args: any[]) => any>(
   effect: TEffectFunction,
 ): SimpluxEffect<TEffectFunction> {
-  return createEffectInternal(effect, 'n/a')
+  return createEffects({ ['n/a']: effect })['n/a']
 }
 
 /**
@@ -117,43 +117,43 @@ export function createEffects<
   TEffectDefinitions extends SimpluxEffectDefinitions
 >(effects: TEffectDefinitions): SimpluxEffects<TEffectDefinitions> {
   return Object.keys(effects).reduce(
-    (res, key) => ({ ...res, [key]: createEffectInternal(effects[key]!, key) }),
+    (res, key) => ({ ...res, [key]: _createEffect(effects[key]!, key) }),
     {} as SimpluxEffects<TEffectDefinitions>,
   )
-}
 
-// this helper function allows creating a function with a dynamic name (only works with ES6+)
-function nameFunction<T extends (...args: any[]) => any>(
-  name: string,
-  body: T,
-): T {
-  return {
-    [name](...args: any[]) {
-      return body(...args)
-    },
-  }[name] as T
-}
+  function _createEffect<TEffectFunction extends (...args: any[]) => any>(
+    effect: TEffectFunction,
+    effectName: string,
+  ): SimpluxEffect<TEffectFunction> {
+    const effectFn = (nameFunction(effectName, (...args: any[]) => {
+      const mockDef = mocks.find(
+        ({ effectToMock }) => effectToMock === effectFn,
+      )
 
-function createEffectInternal<TEffectFunction extends (...args: any[]) => any>(
-  effect: TEffectFunction,
-  effectName: string,
-): SimpluxEffect<TEffectFunction> {
-  const effectFn = (nameFunction(effectName, (...args: any[]) => {
-    const mockDef = mockDefinitions.find(
-      ({ effectToMock }) => effectToMock === effectFn,
-    )
+      if (mockDef) {
+        return mockDef.mockFn(...args)
+      }
 
-    if (mockDef) {
-      return mockDef.mockFn(...args)
+      return effect(...args)
+    }) as unknown) as Mutable<SimpluxEffect<TEffectFunction>>
+
+    effectFn.effectName = effectName
+    effectFn[SIMPLUX_EFFECT] = '' as any
+
+    return effectFn as SimpluxEffect<TEffectFunction>
+
+    // this helper function allows creating a function with a dynamic name (only works with ES6+)
+    function nameFunction<T extends (...args: any[]) => any>(
+      name: string,
+      body: T,
+    ): T {
+      return {
+        [name](...args: any[]) {
+          return body(...args)
+        },
+      }[name] as T
     }
-
-    return effect(...args)
-  }) as unknown) as Mutable<SimpluxEffect<TEffectFunction>>
-
-  effectFn.effectName = effectName
-  effectFn[SIMPLUX_EFFECT] = undefined!
-
-  return effectFn as SimpluxEffect<TEffectFunction>
+  }
 }
 
 /**
@@ -164,7 +164,7 @@ function createEffectInternal<TEffectFunction extends (...args: any[]) => any>(
  * @internal
  */
 export function _getEffectMockDefinitionsInternal() {
-  return mockDefinitions
+  return mocks
 }
 
 /**
@@ -182,5 +182,5 @@ export function _isSimpluxEffect<
 >(
   object: SimpluxEffectMarker<TFunction> | TOther,
 ): object is SimpluxEffect<TFunction> {
-  return object && Object.prototype.hasOwnProperty.call(object, SIMPLUX_EFFECT)
+  return (object as any)?.[SIMPLUX_EFFECT] === ''
 }
