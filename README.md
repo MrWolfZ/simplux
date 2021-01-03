@@ -164,8 +164,10 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ### core
 
-- add a `subscribe` function to selectors to get notified of value changes
+- add a function that "activates" subscriptions which has to be called during app initialization
+- add a `resetSimplux` function that resets all modules to their initial state (useful for SSR)
 - add a `combineSelectors` utility function
+- add a `subscribe` function to selectors to get notified of value changes
 
 ### testing
 
