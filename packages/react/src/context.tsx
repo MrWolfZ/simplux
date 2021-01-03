@@ -49,7 +49,7 @@ const defaultContextValue: SimpluxContextValue = {
   subscribeToModuleStateChanges(simpluxModule, handler) {
     return simpluxModule.subscribeToStateChanges(handler).unsubscribe
   },
-  getModuleState: (simpluxModule) => simpluxModule.$simpluxInternals.getState(),
+  getModuleState: (simpluxModule) => simpluxModule.$simplux.getState(),
 }
 
 // by always returning 0 for `calculateChangedBits` we prevent components
@@ -101,8 +101,8 @@ export const useSimpluxSubscription = (
 
   function getModuleState<TState>(simpluxModule: SimpluxModule<TState>) {
     return (
-      simpluxModule.$simpluxInternals.mockStateValue ||
-      moduleStates[simpluxModule.$simpluxInternals.name] ||
+      simpluxModule.$simplux.mockStateValue ||
+      moduleStates[simpluxModule.$simplux.name] ||
       simpluxModule.state()
     )
   }
@@ -110,7 +110,7 @@ export const useSimpluxSubscription = (
   type Subscribe = SimpluxContextValue['subscribeToModuleStateChanges']
   const subscribeToModuleStateChanges = useCallback<Subscribe>(
     (simpluxModule, handler) => {
-      const moduleName = simpluxModule.$simpluxInternals.name
+      const moduleName = simpluxModule.$simplux.name
       const moduleState = getModuleState(simpluxModule)
 
       if (!subscribers.has(moduleName)) {

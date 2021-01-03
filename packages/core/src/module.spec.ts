@@ -153,7 +153,7 @@ describe('module', () => {
         })
 
         const mockStateValue: typeof initialState = { prop: 'mocked' }
-        testModule.$simpluxInternals.mockStateValue = mockStateValue
+        testModule.$simplux.mockStateValue = mockStateValue
 
         expect(testModule.state()).toBe(mockStateValue)
       })
@@ -252,7 +252,7 @@ describe('module', () => {
         })
 
         const mockStateValue: typeof initialState = { prop: 'mocked' }
-        testModule.$simpluxInternals.mockStateValue = mockStateValue
+        testModule.$simplux.mockStateValue = mockStateValue
 
         const { unsubscribe } = testModule.subscribeToStateChanges(handlerSpy)
 
@@ -295,7 +295,7 @@ describe('module', () => {
         handlerSpy.mockClear()
 
         const mockStateValue: typeof initialState = { prop: 'mocked' }
-        testModule.$simpluxInternals.mockStateValue = mockStateValue
+        testModule.$simplux.mockStateValue = mockStateValue
 
         expect(handlerSpy).not.toHaveBeenCalled()
 

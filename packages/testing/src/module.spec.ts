@@ -19,13 +19,9 @@ describe('module', () => {
       state: getModuleStateMock as any,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
-      $simpluxInternals: {
+      $simplux: {
         name: 'test',
-        mockStateValue: undefined,
         mutations: {},
-        mutationMocks: {},
-        lastSelectorId: -1,
-        selectorMocks: {},
         dispatch: dispatchMock,
         getReducer: undefined!,
         getState: getModuleStateMock,
@@ -45,7 +41,7 @@ describe('module', () => {
   it('sets the module mock state value on the extension state container', () => {
     mockModuleState(moduleMock, 10)
 
-    expect(moduleMock.$simpluxInternals.mockStateValue).toBe(10)
+    expect(moduleMock.$simplux.mockStateValue).toBe(10)
   })
 
   describe('mock state value', () => {
@@ -54,7 +50,7 @@ describe('module', () => {
 
       clear()
 
-      expect(moduleMock.$simpluxInternals.mockStateValue).toBeUndefined()
+      expect(moduleMock.$simplux.mockStateValue).toBeUndefined()
     })
 
     it('can be cleared globally', () => {
@@ -62,7 +58,7 @@ describe('module', () => {
 
       clearAllSimpluxMocks()
 
-      expect(moduleMock.$simpluxInternals.mockStateValue).toBeUndefined()
+      expect(moduleMock.$simplux.mockStateValue).toBeUndefined()
     })
   })
 })

@@ -60,13 +60,9 @@ describe(useSimplux.name, () => {
       state: getModuleStateMock as any,
       setState: undefined!,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
-      $simpluxInternals: {
+      $simplux: {
         name: 'test',
-        mockStateValue: undefined,
         mutations: {},
-        mutationMocks: {},
-        lastSelectorId: -1,
-        selectorMocks: {},
         dispatch: undefined!,
         getReducer: undefined!,
         getState: getModuleStateMock,
@@ -443,7 +439,9 @@ describe(useSimplux.name, () => {
       const selector = createSelector((s) => s.count)
 
       const mock = jest.fn().mockReturnValueOnce(-1)
-      moduleMock.$simpluxInternals.selectorMocks[selector.selectorId] = mock
+      moduleMock.$simplux.selectorMocks = {
+        [selector.selectorId]: mock,
+      }
 
       const { result } = renderHook(() => useSimplux(selector))
 

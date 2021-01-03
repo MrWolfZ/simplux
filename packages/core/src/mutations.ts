@@ -174,13 +174,7 @@ export function createMutations<
 ): SimpluxMutations<TState, TMutations> {
   const module = simpluxModule as SimpluxModule<TState>
 
-  const {
-    name: moduleName,
-    dispatch,
-    getReducer,
-    mutations,
-    mutationMocks,
-  } = module.$simpluxInternals
+  const { name: moduleName, dispatch, getReducer, mutations } = module.$simplux
 
   const mutationPrefix = createMutationPrefix(moduleName)
 
@@ -220,7 +214,8 @@ export function createMutations<
       const mutation = nameFunction(
         mutationName as string,
         (...args: any[]) => {
-          const mock = mutationMocks[mutationName as string]
+          const mock = module.$simplux.mutationMocks?.[mutationName as string]
+
           if (mock) {
             return mock(...args)
           }

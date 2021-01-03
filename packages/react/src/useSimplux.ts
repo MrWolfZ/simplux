@@ -57,7 +57,7 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
   const selector = selectorOrModule
   args = [selectorOrArg, ...args] as TArgs
 
-  const selectorMocks = module.$simpluxInternals.selectorMocks
+  const selectorMocks = module.$simplux.selectorMocks || {}
   const selectorMock = selectorMocks[selectorOrModule.selectorId]
 
   if (selectorMock) {

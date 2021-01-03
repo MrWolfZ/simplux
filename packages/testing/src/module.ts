@@ -25,10 +25,10 @@ export function mockModuleState<TState>(
   mockStateValue: TState,
 ) {
   const module = simpluxModule as SimpluxModule<TState>
-  module.$simpluxInternals.mockStateValue = mockStateValue
+  module.$simplux.mockStateValue = mockStateValue
 
   const cleanup = () => {
-    delete module.$simpluxInternals.mockStateValue
+    delete module.$simplux.mockStateValue
     clearCleanup()
   }
 

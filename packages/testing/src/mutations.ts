@@ -14,14 +14,17 @@ function setupMutationMock<
   mutationName: string,
   mockFn: TMock,
 ): [TMock, () => void] {
+  const internals = owningModule.$simplux
+
   const cleanup = () => {
-    delete owningModule.$simpluxInternals.mutationMocks[mutationName]
+    delete internals.mutationMocks?.[mutationName]
     clearCleanup()
   }
 
   const clearCleanup = registerMockCleanupFunction(cleanup)
 
-  owningModule.$simpluxInternals.mutationMocks[mutationName] = mockFn as any
+  internals.mutationMocks = internals.mutationMocks || {}
+  internals.mutationMocks[mutationName] = mockFn as any
 
   return [mockFn, cleanup]
 }

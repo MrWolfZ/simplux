@@ -163,26 +163,25 @@ export function createSelectors<
   selectorDefinitions: TSelectorDefinitions,
 ): SimpluxSelectors<TState, TSelectorDefinitions> {
   const module = simpluxModule as SimpluxModule<TState>
-  const selectorMocks = module.$simpluxInternals.selectorMocks
+  const internals = module.$simplux
 
   const resolvedSelectors = Object.keys(selectorDefinitions).reduce(
     (acc, selectorName: keyof TSelectorDefinitions) => {
       const definition = selectorDefinitions[selectorName as string]!
       const memoizedDefinition = memoize(definition)
-      const selectorId = ++module.$simpluxInternals.lastSelectorId
+
+      const selectorId = (internals.lastSelectorId || 0) + 1
+      internals.lastSelectorId = selectorId
 
       const namedSelector = nameFunction(
         selectorName as string,
         (...args: any[]) => {
-          const mock = selectorMocks[selectorId]
+          const mock = internals.selectorMocks?.[selectorId]
           if (mock) {
             return mock(...args)
           }
 
-          return memoizedDefinition(
-            module.$simpluxInternals.getState(),
-            ...args,
-          )
+          return memoizedDefinition(internals.getState(), ...args)
         },
       ) as ResolvedSelector<TState, TSelectorDefinitions[typeof selectorName]>
 

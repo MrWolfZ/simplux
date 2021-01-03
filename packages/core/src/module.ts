@@ -131,7 +131,7 @@ export interface _SimpluxModuleInternals<TState> {
    * The mock state value to return instead of the real state when the
    * module's state is accessed.
    */
-  mockStateValue: TState | undefined
+  mockStateValue?: TState
 
   /**
    * Track all module mutations to be able to detect duplicates etc.
@@ -141,17 +141,17 @@ export interface _SimpluxModuleInternals<TState> {
   /**
    * Mock functions that should be called instead of real mutations.
    */
-  readonly mutationMocks: { [mutationName: string]: (...args: any[]) => TState }
+  mutationMocks?: { [name: string]: (...args: any[]) => TState }
 
   /**
    * Track generated selector IDs for the module.
    */
-  lastSelectorId: number
+  lastSelectorId?: number
 
   /**
    * Mock functions that should be called instead of real selectors.
    */
-  readonly selectorMocks: { [selectorId: number]: (...args: any[]) => any }
+  selectorMocks?: { [selectorId: number]: (...args: any[]) => any }
 
   /**
    * A proxy to the Redux store's dispatch function. This is part of the
@@ -231,7 +231,7 @@ export interface SimpluxModule<TState> extends SimpluxModuleMarker<TState> {
    *
    * @internal
    */
-  readonly $simpluxInternals: _SimpluxModuleInternals<TState>
+  readonly $simplux: _SimpluxModuleInternals<TState>
 }
 
 /**
@@ -254,11 +254,7 @@ export function createModule<TState>(
 
   const internals: _SimpluxModuleInternals<TState> = {
     name: config.name,
-    mockStateValue: undefined,
     mutations: {},
-    mutationMocks: {},
-    lastSelectorId: -1,
-    selectorMocks: {},
     dispatch,
     getReducer: () => simpluxStore.getReducer(config.name),
     getState: getModuleState,
@@ -268,7 +264,7 @@ export function createModule<TState>(
     return internals.mockStateValue || getState()[config.name]
   }
 
-  const setModuleState = (state: Immutable<TState>) => {
+  function setModuleState(state: Immutable<TState>) {
     dispatch({
       type: `@simplux/${config.name}/setState`,
       state,
@@ -353,7 +349,7 @@ export function createModule<TState>(
     state: undefined!,
     setState: setModuleState,
     subscribeToStateChanges,
-    $simpluxInternals: internals,
+    $simplux: internals,
     [SIMPLUX_MODULE]: undefined!,
   }
 

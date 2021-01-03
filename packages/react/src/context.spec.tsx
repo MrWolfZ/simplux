@@ -53,13 +53,9 @@ describe('context', () => {
       state: getModuleStateMock as any,
       setState: undefined!,
       subscribeToStateChanges: subscribeToModuleMock,
-      $simpluxInternals: {
+      $simplux: {
         name: 'test',
-        mockStateValue: undefined,
         mutations: {},
-        mutationMocks: {},
-        lastSelectorId: -1,
-        selectorMocks: {},
         dispatch: undefined!,
         getReducer: undefined!,
         getState: getModuleStateMock,
@@ -71,13 +67,9 @@ describe('context', () => {
       state: getModuleStateMock2 as any,
       setState: undefined!,
       subscribeToStateChanges: subscribeToModuleMock,
-      $simpluxInternals: {
+      $simplux: {
         name: 'test2',
-        mockStateValue: undefined,
         mutations: {},
-        mutationMocks: {},
-        lastSelectorId: -1,
-        selectorMocks: {},
         dispatch: undefined!,
         getReducer: undefined!,
         getState: getModuleStateMock2,

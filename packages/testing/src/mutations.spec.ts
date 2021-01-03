@@ -19,13 +19,9 @@ describe('mutations', () => {
       state: getModuleStateMock as any,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
-      $simpluxInternals: {
+      $simplux: {
         name: 'test',
-        mockStateValue: undefined,
         mutations: {},
-        mutationMocks: {},
-        lastSelectorId: -1,
-        selectorMocks: {},
         dispatch: dispatchMock,
         getReducer: undefined!,
         getState: getModuleStateMock,
@@ -122,13 +118,9 @@ describe('mutations', () => {
         state: getModuleStateMock as any,
         setState: setModuleStateMock,
         subscribeToStateChanges: subscribeToModuleStateChangesMock,
-        $simpluxInternals: {
+        $simplux: {
           name: 'test2',
-          mockStateValue: undefined,
           mutations: {},
-          mutationMocks: {},
-          lastSelectorId: -1,
-          selectorMocks: {},
           dispatch: dispatchMock,
           getReducer: undefined!,
           getState: getModuleStateMock,

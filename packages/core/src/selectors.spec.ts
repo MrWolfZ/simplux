@@ -18,13 +18,9 @@ describe('selectors', () => {
       state: getModuleStateMock as any,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
-      $simpluxInternals: {
+      $simplux: {
         name: 'test',
-        mockStateValue: undefined,
         mutations: {},
-        mutationMocks: {},
-        lastSelectorId: -1,
-        selectorMocks: {},
         dispatch: undefined!,
         getReducer: undefined!,
         getState: getModuleStateMock,
@@ -69,11 +65,11 @@ describe('selectors', () => {
         const plus2Mock = jest.fn().mockReturnValueOnce(-2)
         const minusOneMock = jest.fn().mockReturnValueOnce(-3)
 
-        moduleMock.$simpluxInternals.selectorMocks[plus.selectorId] = plusMock
-        moduleMock.$simpluxInternals.selectorMocks[plus2.selectorId] = plus2Mock
-        moduleMock.$simpluxInternals.selectorMocks[
-          minusOne.selectorId
-        ] = minusOneMock
+        moduleMock.$simplux.selectorMocks = {
+          [plus.selectorId]: plusMock,
+          [plus2.selectorId]: plus2Mock,
+          [minusOne.selectorId]: minusOneMock,
+        }
 
         expect(plus(5)).toBe(-1)
         expect(plus2(5, 7)).toBe(-2)
@@ -102,7 +98,9 @@ describe('selectors', () => {
 
         const plusMock = jest.fn().mockReturnValueOnce(-1)
 
-        moduleMock.$simpluxInternals.selectorMocks[plus.selectorId] = plusMock
+        moduleMock.$simplux.selectorMocks = {
+          [plus.selectorId]: plusMock,
+        }
 
         expect(plus.withState(1, 5)).toBe(6)
 

@@ -29,13 +29,9 @@ describe('mutations', () => {
       state: getModuleStateMock as any,
       setState: setModuleStateMock,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
-      $simpluxInternals: {
+      $simplux: {
         name: 'test',
-        mockStateValue: undefined,
         mutations: {},
-        mutationMocks: {},
-        lastSelectorId: -1,
-        selectorMocks: {},
         dispatch: dispatchMock,
         getReducer: getReducerMock,
         getState: getModuleStateMock,
@@ -58,21 +54,13 @@ describe('mutations', () => {
     >
 
     beforeEach(() => {
-      moduleMutations = moduleMock.$simpluxInternals.mutations as any
+      moduleMutations = moduleMock.$simplux.mutations as any
       const moduleReducer = createImmerReducer(
         createModuleReducer('test', moduleState, moduleMutations),
       )
 
       moduleReducerSpy = jest.fn().mockImplementation(moduleReducer)
       getReducerMock.mockImplementation(() => moduleReducerSpy)
-    })
-
-    it('creates the mutation mocks extension state container', () => {
-      createMutations(moduleMock, {
-        increment: (c) => c + 1,
-      })
-
-      expect(moduleMock.$simpluxInternals.mutationMocks).toBeDefined()
     })
 
     it('throws when existing mutation is declared again', () => {
@@ -219,7 +207,9 @@ describe('mutations', () => {
         })
 
         const mock = jest.fn()
-        moduleMock.$simpluxInternals.mutationMocks[increment.name] = mock
+        moduleMock.$simplux.mutationMocks = {
+          [increment.name]: mock,
+        }
 
         increment('foo', { nestedArg: true })
 
@@ -410,7 +400,7 @@ describe('mutations', () => {
 
       it('throws an error when calling a nested mutation directly', () => {
         dispatchMock.mockImplementation(({ mutationName }) => {
-          const moduleMutations = moduleMock.$simpluxInternals.mutations
+          const moduleMutations = moduleMock.$simplux.mutations
           const mutation = moduleMutations[mutationName]!
           mutation(moduleMock.state())
         })
