@@ -179,11 +179,12 @@ This library was heavily inspired by [Rematch](https://rematch.gitbooks.io/remat
 
 ### browser-router
 
-- allow ?[, [?, &[, and [& for optional query parameters
-- configuration parameter for replacing browser history entry; also add these as navigation options
-- configuration parameter for setting URL at start or end of navigation (or not at all); also add these as navigation options
 - add support for base href in history mode
+- intercept `click` events on `window` and `navigateToUrl` for same tab target on same origin (only if within base-href)
+- add navigation option for replacing browser history entry
+- allow ?[, [?, &[, and [& for optional query parameters
 
+- add navigation option for setting URL at start or end of navigation (or not at all)
 - support object parameters
 - add type tests
 - add support for setting hash parameter in history mode
