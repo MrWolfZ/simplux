@@ -214,8 +214,8 @@ export function createSelectors<
         !memoizedArgs.every((a, idx) => a === args[idx])
 
       if (memoizedResultNeedsToBeRefreshed) {
-        memoizedArgs = args
         memoizedResult = fn(...args)
+        memoizedArgs = args
       }
 
       return memoizedResult

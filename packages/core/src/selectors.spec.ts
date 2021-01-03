@@ -214,6 +214,28 @@ describe('selectors', () => {
 
         expect(mock).toHaveBeenCalledTimes(4)
       })
+
+      it('does not memoize on exceptions', () => {
+        const { value } = createSelectors(moduleMock, {
+          value: (_, n: number) => {
+            if (n > 0) {
+              throw new Error()
+            }
+
+            return n
+          },
+        })
+
+        value(0)
+
+        expect(() => value(1)).toThrow()
+        expect(() => value(1)).toThrow()
+
+        value.withState(0, 0)
+
+        expect(() => value.withState(0, 1)).toThrow()
+        expect(() => value.withState(0, 1)).toThrow()
+      })
     })
   })
 
