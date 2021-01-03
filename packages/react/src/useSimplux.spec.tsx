@@ -1,8 +1,8 @@
 import {
+  createSelectors,
   SimpluxModule,
   SimpluxSelector,
   SIMPLUX_MODULE,
-  SIMPLUX_SELECTOR,
   StateChangeSubscription,
 } from '@simplux/core'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
@@ -20,24 +20,14 @@ describe(useSimplux.name, () => {
   let subscriptionMock: StateChangeSubscription<any, any>
   let subscribeToModuleStateChangesMock: jest.Mock
 
-  let moduleMock: SimpluxModule<typeof moduleState>
+  let moduleMock: Mutable<SimpluxModule<typeof moduleState>>
 
   function createSelector<TArgs extends any[], TResult>(
     fn: (state: typeof moduleState, ...args: TArgs) => TResult,
   ): SimpluxSelector<typeof moduleState, TArgs, TResult> {
-    const selector = (...args: TArgs) => fn(getModuleStateMock(), ...args)
-
-    const mutableSelector = (selector as unknown) as Mutable<
-      SimpluxSelector<typeof moduleState, TArgs, TResult>
-    >
-
-    mutableSelector.selectorId = 1
-    mutableSelector.selectorName = 'testSelector'
-    mutableSelector.owningModule = moduleMock
-    mutableSelector.withState = fn
-    mutableSelector[SIMPLUX_SELECTOR] = '' as any
-
-    return mutableSelector as any
+    return createSelectors(moduleMock, {
+      selector: fn,
+    }).selector
   }
 
   beforeEach(() => {
@@ -57,7 +47,7 @@ describe(useSimplux.name, () => {
     })
 
     moduleMock = {
-      state: getModuleStateMock as any,
+      state: undefined!,
       setState: undefined!,
       subscribeToStateChanges: subscribeToModuleStateChangesMock,
       $simplux: {
@@ -69,6 +59,8 @@ describe(useSimplux.name, () => {
       },
       [SIMPLUX_MODULE]: '' as any,
     }
+
+    moduleMock.state = createSelector((s) => s)
 
     jest.clearAllMocks()
   })

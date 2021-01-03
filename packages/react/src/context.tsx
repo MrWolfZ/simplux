@@ -1,6 +1,7 @@
 import {
   Immutable,
   SimpluxModule,
+  StateChangeHandler,
   _getStoreProxy,
   _InternalReduxStoreProxy,
 } from '@simplux/core'
@@ -8,10 +9,8 @@ import React, {
   Context,
   createContext,
   FunctionComponent,
-  useCallback,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from 'react'
 import { unstable_batchedUpdates } from 'react-dom'
@@ -25,10 +24,7 @@ type CreateContextFn = <T>(
 export interface SimpluxContextValue {
   subscribeToModuleStateChanges: <TState>(
     simpluxModule: SimpluxModule<TState>,
-    handler: (
-      state: Immutable<TState>,
-      previousState: Immutable<TState>,
-    ) => void,
+    handler: StateChangeHandler<TState>,
   ) => () => void
 
   getModuleState: <TState>(
@@ -69,10 +65,10 @@ export const useSimpluxSubscription = (
     getStoreProxy().getState(),
   )
 
-  const subscribers = useMemo(
-    () => new Map<string, Set<(state: any, previousState: any) => void>>(),
-    [],
-  )
+  const subscribers = new Map<
+    string,
+    Set<(state: any, previousState: any) => void>
+  >()
 
   useEffect(() => {
     let previousModuleStates = moduleStates
@@ -101,28 +97,27 @@ export const useSimpluxSubscription = (
     return (
       simpluxModule.$simplux.mockStateValue ||
       moduleStates[simpluxModule.$simplux.name] ||
-      simpluxModule.state()
+      simpluxModule.$simplux.getState()
     )
   }
 
-  type Subscribe = SimpluxContextValue['subscribeToModuleStateChanges']
-  const subscribeToModuleStateChanges = useCallback<Subscribe>(
-    (simpluxModule, handler) => {
-      const moduleName = simpluxModule.$simplux.name
-      const moduleState = getModuleState(simpluxModule)
+  function subscribeToModuleStateChanges(
+    simpluxModule: SimpluxModule<any>,
+    handler: StateChangeHandler<any>,
+  ) {
+    const moduleName = simpluxModule.$simplux.name
+    const moduleState = getModuleState(simpluxModule)
 
-      if (!subscribers.has(moduleName)) {
-        subscribers.set(moduleName, new Set())
-      }
+    if (!subscribers.has(moduleName)) {
+      subscribers.set(moduleName, new Set())
+    }
 
-      subscribers.get(moduleName)!.add(handler)
+    subscribers.get(moduleName)!.add(handler)
 
-      handler(moduleState, moduleState)
+    handler(moduleState, moduleState)
 
-      return () => subscribers.get(moduleName)!.delete(handler)
-    },
-    [],
-  )
+    return () => subscribers.get(moduleName)!.delete(handler)
+  }
 
   return {
     getModuleState,

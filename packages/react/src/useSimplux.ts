@@ -4,7 +4,7 @@ import {
   SimpluxSelector,
   _isSimpluxModule,
 } from '@simplux/core'
-import { useEffect, useMemo, useReducer } from 'react'
+import { useEffect, useReducer } from 'react'
 import { useSimpluxContext } from './context.js'
 
 /**
@@ -44,56 +44,37 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
   selectorOrModule:
     | SimpluxSelector<TState, TArgs, TResult>
     | SimpluxModule<TState>,
-  selectorOrArg?: any,
   ...args: TArgs
 ): TResult {
-  if (_isSimpluxModule(selectorOrModule)) {
-    const selector = typeof selectorOrArg === 'function' ? selectorOrArg : id
-    const result = useSelector(selectorOrModule, selector, [])
-    return (result as unknown) as TResult
-  }
+  const module = _isSimpluxModule(selectorOrModule)
+    ? selectorOrModule
+    : selectorOrModule.owningModule
 
-  const module = selectorOrModule.owningModule
-  const selector = selectorOrModule
-  args = [selectorOrArg, ...args] as TArgs
+  const selector = _isSimpluxModule(selectorOrModule)
+    ? selectorOrModule.state
+    : selectorOrModule
 
   const selectorMocks = module.$simplux.selectorMocks || {}
-  const selectorMock = selectorMocks[selectorOrModule.selectorId]
+  const selectorMock = selectorMocks[selector.selectorId]
 
   if (selectorMock) {
     return selectorMock(...args)
   }
 
-  return useSelector(module, selector.withState, args)
+  return useSelector(selector as SimpluxSelector<TState, TArgs, TResult>, args)
 
   function useSelector<TState, TArgs extends any[], TResult>(
-    module: SimpluxModule<TState>,
-    selector: (state: Immutable<TState>, ...args: TArgs) => TResult,
+    selector: SimpluxSelector<TState, TArgs, TResult>,
     args: TArgs,
   ): TResult {
     const [, forceRender] = useReducer((s: number) => s + 1, 0)
 
     const context = useSimpluxContext()
 
-    const memoizingSelector = useMemo(() => {
-      let memoizedState: Immutable<TState> | undefined
-      let memoizedResult: TResult | undefined
-
-      return (state: Immutable<TState>) => {
-        if (state === memoizedState) {
-          return memoizedResult!
-        }
-
-        const result = selector(state, ...args)
-
-        memoizedState = state
-        memoizedResult = result
-
-        return result
-      }
-    }, [selector, ...args])
-
-    const selectedState = memoizingSelector(context.getModuleState(module))
+    const selectedState = selector.withState(
+      context.getModuleState(selector.owningModule),
+      ...args,
+    )
 
     useEffect(() => {
       let previousSelectedState = selectedState
@@ -101,7 +82,7 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
 
       function checkForUpdates(state: Immutable<TState>) {
         try {
-          const newSelectedState = memoizingSelector(state)
+          const newSelectedState = selector.withState(state, ...args)
 
           if (newSelectedState === previousSelectedState && !hadError) {
             return
@@ -120,13 +101,12 @@ export function useSimplux<TState, TArgs extends any[], TResult>(
         forceRender()
       }
 
-      return context.subscribeToModuleStateChanges(module, checkForUpdates)
-    }, [memoizingSelector])
+      return context.subscribeToModuleStateChanges(
+        selector.owningModule,
+        checkForUpdates,
+      )
+    }, [...args])
 
     return selectedState
-  }
-
-  function id<T>(t: T) {
-    return t
   }
 }
