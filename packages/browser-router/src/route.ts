@@ -7,7 +7,6 @@ import {
 } from '@simplux/core'
 import {
   getSimpluxRouter,
-  NavigateToFn,
   NavigationParameters,
   NavigationResult,
   RequiredPropertyNames,
@@ -55,8 +54,6 @@ export type HrefSelectorParameters<
   : RequiredPropertyNames<TParameters> extends never
   ? [parameters: TParameters] | []
   : [parameters: TParameters]
-
-export type _HrefFunction<TParameters> = NavigateToFn<TParameters>
 
 /**
  * A simplux browser route.
