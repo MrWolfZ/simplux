@@ -42,7 +42,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "immer": "^7.0.15",
+    "immer": "^8.0.1",
     "redux": "^4.0.5"
   },
   "devDependencies": {
