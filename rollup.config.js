@@ -1,7 +1,7 @@
 const replace = require('@rollup/plugin-replace')
 
 module.exports = {
-  onwarn: warning => {
+  onwarn: (warning) => {
     // Skip certain warnings
 
     // should intercept ... but doesn't in some rollup versions
@@ -12,5 +12,10 @@ module.exports = {
     // console.warn everything else
     console.warn(warning.message)
   },
-  plugins: [replace({ 'process.env.NODE_ENV': "'production'" })],
+  plugins: [
+    replace({
+      values: { 'process.env.NODE_ENV': "'production'" },
+      preventAssignment: true,
+    }),
+  ],
 }

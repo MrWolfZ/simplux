@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { createImmerReducer } from './immer.js'
 import { SimpluxModule, SIMPLUX_MODULE } from './module.js'
 import {
@@ -168,7 +172,7 @@ describe('mutations', () => {
         moduleState = objectState as any
 
         const { update } = createMutations(
-          (moduleMock as any) as SimpluxModule<typeof objectState>,
+          moduleMock as any as SimpluxModule<typeof objectState>,
           {
             // tslint:disable-next-line: no-unnecessary-callback-wrapper variable-name
             update: (state, _arg1: string, _arg2: { nestedArg: boolean }) => {
@@ -308,6 +312,20 @@ describe('mutations', () => {
           type: '@simplux/test/mutation/increment',
           mutationName: 'increment',
           args: [undefined],
+        })
+      })
+
+      it('can take undefined as an argument with multiple arguments', () => {
+        const { increment } = createMutations(moduleMock, {
+          increment: (c, _: undefined, _2: number) => c + 1,
+        })
+
+        increment(undefined, 1)
+
+        expect(dispatchMock).toHaveBeenCalledWith({
+          type: '@simplux/test/mutation/increment',
+          mutationName: 'increment',
+          args: [undefined, 1],
         })
       })
 

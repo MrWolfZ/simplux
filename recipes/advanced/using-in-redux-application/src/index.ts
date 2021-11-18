@@ -30,11 +30,11 @@ setReduxStoreForSimplux(
 
   // this second parameter tells simplux where in the state it
   // can find its slice
-  s => s.simplux,
+  (s) => s.simplux,
 )
 
 // now you are ready to use simplux
-const { getState } = createSimpluxModule('mySimpluxModule', { value: 'mySimpluxState' })
+const { state } = createSimpluxModule('mySimpluxModule', { value: 'mySimpluxState' })
 
-console.log('my module state:', getState())
+console.log('my module state:', state())
 console.log('full redux state:', store.getState())

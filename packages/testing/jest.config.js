@@ -4,6 +4,7 @@ module.exports = {
   moduleNameMapper: {
     '^@simplux/core$': '<rootDir>/../core/index.ts',
     '^@simplux/testing$': '<rootDir>/index.ts',
+    '^(.*)\\.js$': '$1',
   },
   modulePathIgnorePatterns: [
     '<rootDir>/node_modules',
@@ -11,7 +12,7 @@ module.exports = {
     '<rootDir>/dist',
   ],
   transform: {
-    '\\.tsx?$': '../../jest.transform.cjs',
+    '\\.tsx?$': 'ts-jest',
   },
   testMatch: ['<rootDir>/src/**/*.spec.ts?(x)', '<rootDir>/e2e.spec.ts?(x)'],
   reporters: [

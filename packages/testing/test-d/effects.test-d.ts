@@ -10,10 +10,10 @@ expectType<() => Promise<string>>(mockEffect(asyncEffect, async () => '')[0])
 expectType<() => void>(mockEffect(syncEffect, () => '')[1])
 
 // @ts-expect-error
-expectError(mockEffect(syncEffect, (s: string) => 0))
+expectError(mockEffect(syncEffect, (_: string) => 0))
 
 // @ts-expect-error
-expectError(mockEffect(syncEffect, (a: number) => ''))
+expectError(mockEffect(syncEffect, (_: number) => ''))
 
 // @ts-expect-error
-expectError(mockEffect(syncEffect, (s: string, b: number) => ''))
+expectError(mockEffect(syncEffect, (_: string, _2: number) => ''))

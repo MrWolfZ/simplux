@@ -18,10 +18,10 @@ expectType<() => number>(mockSelector(plus, () => 0)[0])
 expectType<(a: number) => number>(mockSelector(plus, (a: number) => a)[0])
 
 // @ts-expect-error
-expectError(mockSelector(plus, (a: number) => ''))
+expectError(mockSelector(plus, (_: number) => ''))
 
 // @ts-expect-error
-expectError(mockSelector(plus, (s: string) => 0))
+expectError(mockSelector(plus, (_: string) => 0))
 
 // @ts-expect-error
-expectError(mockSelector(plus, (a: number, b: number) => 0))
+expectError(mockSelector(plus, (_: number, _2: number) => 0))

@@ -5,6 +5,7 @@ module.exports = {
     '^@simplux/core$': '<rootDir>/../core/index.ts',
     '^@simplux/router$': '<rootDir>/../router/index.ts',
     '^@simplux/browser-router$': '<rootDir>/index.ts',
+    '^(.*)\\.js$': '$1',
   },
   modulePathIgnorePatterns: [
     '<rootDir>/node_modules',
@@ -12,7 +13,7 @@ module.exports = {
     '<rootDir>/dist',
   ],
   transform: {
-    '\\.tsx?$': '../../jest.transform.cjs',
+    '\\.tsx?$': 'ts-jest',
   },
   testMatch: ['<rootDir>/src/**/*.spec.ts?(x)', '<rootDir>/e2e.spec.ts'],
   reporters: [
@@ -20,4 +21,5 @@ module.exports = {
     ['jest-silent-reporter', { useDots: true, showWarnings: true }],
   ],
   setupFilesAfterEnv: ['../../jest.setup.js'],
+  testEnvironment: 'jsdom',
 }

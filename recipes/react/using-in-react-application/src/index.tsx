@@ -70,7 +70,8 @@ render(<App />, document.getElementById('root'))
 // component would look like as a class component
 
 interface CounterProps {
-  value: number
+  // prettier-ignore
+  value: number;
   valueTimesThree: number
 }
 

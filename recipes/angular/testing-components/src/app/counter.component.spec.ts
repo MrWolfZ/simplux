@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'
 import { of } from 'rxjs'
 import { CounterComponent } from './counter.component'
 import { CounterService } from './counter.service'
@@ -8,7 +8,7 @@ describe('CounterComponent', () => {
   let fixture: ComponentFixture<CounterComponent>
   let component: CounterComponent
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     // we can use jasmine to create a mock instance of our service
     counterSpy = jasmine.createSpyObj<CounterService>(
       'CounterService',

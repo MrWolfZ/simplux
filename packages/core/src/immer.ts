@@ -1,4 +1,4 @@
-import { produce } from 'immer'
+import { Draft, produce } from 'immer'
 import type { Reducer } from 'redux'
 
 /**
@@ -18,9 +18,10 @@ export function createImmerReducer<TState>(
       }
 
       if (reducerActivationSemaphore === 1) {
-        state = produce(state, (draft) =>
-          wrappedMutatingReducer(draft as TState, action),
-        ) as TState
+        state = produce<TState>(state, (draft) => {
+          const result = wrappedMutatingReducer(draft as TState, action)
+          return result as Draft<TState>
+        }) as TState
       } else {
         state = wrappedMutatingReducer(state, action)
       }

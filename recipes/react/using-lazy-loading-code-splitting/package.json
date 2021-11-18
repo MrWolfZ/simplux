@@ -3,7 +3,7 @@
   "version": "0.18.0-alpha.12",
   "description": "This recipe shows you how simple it is to use simplux with your lazy loaded React components and while using code splitting for your application",
   "scripts": {
-    "start": "react-scripts start"
+    "start": "PUBLIC_URL=/ react-scripts start"
   },
   "repository": {
     "type": "git",
@@ -32,8 +32,8 @@
   "devDependencies": {
     "@types/react": "^16.14.2",
     "@types/react-dom": "^16.9.10",
-    "react-scripts": "^3.4.4",
-    "typescript": "^4.1.3",
+    "react-scripts": "^4.0.3",
+    "typescript": "~4.2.3",
     "webpack": "^4.32.2",
     "webpack-dev-server": "^3.5.1"
   },

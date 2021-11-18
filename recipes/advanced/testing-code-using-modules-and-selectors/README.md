@@ -90,7 +90,7 @@ it('showBookTitle logs a book title by ID', () => {
 // for code that select only a small portion of a module's state it
 // can be cumbersome to mock the whole state; in those cases you can
 // mock a selector directly
-it('showAllBookTitles logs a all book titles', () => {
+it('showAllBookTitles logs all book titles', () => {
   // we only need to define the test data that our selector should
   // return instead of the whole module's state
   const titles = ['title 1', 'title 2']
@@ -112,7 +112,7 @@ it('showAllBookTitles logs a all book titles', () => {
   // return value of the selector
   showAllBookTitles()
 
-  expect(logSpy).toHaveBeenCalledWith(titles)
+  expect(logSpy).toHaveBeenCalledWith(titles.join(', '))
 })
 ```
 

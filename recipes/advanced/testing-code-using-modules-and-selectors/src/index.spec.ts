@@ -35,7 +35,7 @@ describe('showing book titles', () => {
   // for code that select only a small portion of a module's state it
   // can be cumbersome to mock the whole state; in those cases you can
   // mock a selector directly
-  it('showAllBookTitles logs a all book titles', () => {
+  it('showAllBookTitles logs all book titles', () => {
     // we only need to define the test data that our selector should
     // return instead of the whole module's state
     const titles = ['title 1', 'title 2']
@@ -57,13 +57,16 @@ describe('showing book titles', () => {
     // return value of the selector
     showAllBookTitles()
 
-    expect(logSpy).toHaveBeenCalledWith(titles)
+    expect(logSpy).toHaveBeenCalledWith(titles.join(', '))
   })
 
   // the `mockModuleState` and `mockSelector` calls above mock the state
   // and selector indefinitely; the testing extension provides a way
   // to clear all simplux mocks which we can simply do after each test
   afterEach(clearAllSimpluxMocks)
+
+  // we also clear all jest mocks
+  afterEach(jest.clearAllMocks)
 
   // in specific rare situations it can be useful to manually clear a mock
   // during a test; for this the `mockModuleState` and `mockSelector`
