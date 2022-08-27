@@ -28,7 +28,6 @@ export function mockSelector<TState, TArgs extends any[], TReturn, TMock extends
 // @public
 export function registerMockCleanupFunction(cleanupFunction: () => void): () => void;
 
-
 // (No @packageDocumentation comment for this package)
 
 ```

@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@simplux/core": ["node_modules/@simplux/core/dist"],
+      "@simplux/testing": ["node_modules/@simplux/testing/dist"]
+    }
+  }
+}
