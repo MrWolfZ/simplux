@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.13](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.12...v0.18.0-alpha.13) (2022-08-27)
+
+
+### Features
+
+* **react:** upgrade to react 18 ([604c3cc](https://github.com/MrWolfZ/simplux/commit/604c3cca094343f55b5cec371cf7a08764011b38))
+
+
+
+
+
 # [0.18.0-alpha.12](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.11...v0.18.0-alpha.12) (2021-01-02)
 
 **Note:** Version bump only for package @simplux/recipes.react.testing-components

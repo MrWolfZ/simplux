@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0-alpha.13](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.12...v0.18.0-alpha.13) (2022-08-27)
+
+
+### Bug Fixes
+
+* **core:** do not memoize selector args when selector throws ([a982e61](https://github.com/MrWolfZ/simplux/commit/a982e6122af4ea9ec6108e4c7046fb6c27598228))
+
+
+
+
+
 # [0.18.0-alpha.12](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.11...v0.18.0-alpha.12) (2021-01-02)
 
 **Note:** Version bump only for package @simplux/core
