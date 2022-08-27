@@ -25,13 +25,13 @@
   "dependencies": {
     "@simplux/core": "0.18.0-alpha.12",
     "@simplux/react": "0.18.0-alpha.12",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^16.14.2",
-    "@types/react-dom": "^16.9.10",
-    "react-scripts": "^4.0.3",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "react-scripts": "^5.0.1",
     "typescript": "~4.2.3",
     "webpack": "^4.32.2",
     "webpack-dev-server": "^3.5.1"

@@ -53,8 +53,8 @@
     "typescript": "~4.2.3"
   },
   "peerDependencies": {
-    "react": ">=16.14.0",
-    "react-dom": ">=16.14.0"
+    "react": "^18",
+    "react-dom": "^18"
   },
   "tsd": {
     "compilerOptions": {

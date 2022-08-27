@@ -9,6 +9,7 @@ import React, {
   Context,
   createContext,
   FunctionComponent,
+  ReactNode,
   useContext,
   useEffect,
   useState,
@@ -132,7 +133,9 @@ export const useSimpluxSubscription = (
  *
  * @public
  */
-export const SimpluxProvider: FunctionComponent = ({ children }) => {
+export const SimpluxProvider: FunctionComponent<{ children: ReactNode }> = ({
+  children,
+}) => {
   const contextValue = useSimpluxSubscription(_getStoreProxy)
 
   return (

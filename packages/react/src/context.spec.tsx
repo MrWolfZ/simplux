@@ -6,6 +6,7 @@ import {
 import { cleanup, render } from '@testing-library/react'
 import { renderHook } from '@testing-library/react-hooks'
 import React, { useEffect } from 'react'
+import { act } from 'react-test-renderer'
 import { useSimpluxContext, useSimpluxSubscription } from './context'
 
 describe('context', () => {
@@ -127,15 +128,19 @@ describe('context', () => {
 
       handler.mockClear()
 
-      moduleState = { count: 11 }
-      subscriber()
+      act(() => {
+        moduleState = { count: 11 }
+        subscriber()
+      })
 
       expect(handler).toHaveBeenCalledWith({ count: 11 }, { count: 10 })
 
       handler.mockClear()
 
-      moduleState = { count: 12 }
-      subscriber()
+      act(() => {
+        moduleState = { count: 12 }
+        subscriber()
+      })
 
       expect(handler).toHaveBeenCalledWith({ count: 12 }, { count: 11 })
     })
@@ -171,8 +176,10 @@ describe('context', () => {
       handler.mockClear()
       handler2.mockClear()
 
-      moduleState = { count: 11 }
-      subscriber()
+      act(() => {
+        moduleState = { count: 11 }
+        subscriber()
+      })
 
       expect(handler).toHaveBeenCalledWith({ count: 11 }, { count: 10 })
       expect(handler2).not.toHaveBeenCalled()
@@ -180,8 +187,10 @@ describe('context', () => {
       handler.mockClear()
       handler2.mockClear()
 
-      moduleState2 = { value: 'bar' }
-      subscriber()
+      act(() => {
+        moduleState2 = { value: 'bar' }
+        subscriber()
+      })
 
       expect(handler).not.toHaveBeenCalled()
       expect(handler2).toHaveBeenCalledWith({ value: 'bar' }, { value: 'foo' })

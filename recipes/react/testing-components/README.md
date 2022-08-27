@@ -14,8 +14,6 @@ npm i @simplux/core @simplux/react @simplux/testing -S
 
 Now we're ready to go.
 
-> The code snippets in this recipe use [enzyme](https://airbnb.io/enzyme/) for rendering and asserting our components. However, any other test renderer (e.g. [react-testing-library](https://github.com/testing-library/react-testing-library)) works just as well (in fact the [code sandbox](https://codesandbox.io/s/github/MrWolfZ/simplux/tree/master/recipes/react/testing-components) contains tests for both the mentioned renderers).
-
 In this recipe we are going to test a simple counter component. Let's start by creating a module for the counter as well as the `Counter` component (this is the same code as in [this recipe](../using-in-react-application#readme)).
 
 ```tsx
@@ -72,10 +70,9 @@ it('displays the value', () => {
   // includes accesses via the module's selector hooks
   mockModuleState(counter, { value: 10 })
 
-  const wrapper = shallow(<Counter />)
-  const expected = <span>value: 10</span>
+  const { getByText } = render(<Counter />)
 
-  expect(wrapper.contains(expected)).toBe(true)
+  expect(getByText(/value:\s*10/g)).toBeDefined()
 })
 
 // for components that select only a small portion of a module's
@@ -85,10 +82,9 @@ it('displays the value', () => {
 it('displays the value times three', () => {
   mockSelector(counter.valueTimes, () => 60)
 
-  const wrapper = shallow(<Counter />)
-  const expected = <span>value * 3: 60</span>
+  const { getByText } = render(<Counter />)
 
-  expect(wrapper.contains(expected)).toBe(true)
+  expect(getByText(/value \* 3:\s*60/g)).toBeDefined()
 })
 ```
 
@@ -115,9 +111,9 @@ it('increments the counter when the "Increment" button is clicked', () => {
 
   const [incrementMock] = mockMutation(counter.increment, jest.fn())
 
-  const wrapper = shallow(<Counter />)
+  const { getByText } = render(<Counter />)
 
-  wrapper.findWhere((el) => el.type() === 'button' && el.text() === 'Increment').simulate('click')
+  fireEvent.click(getByText('Increment'))
 
   expect(incrementMock).toHaveBeenCalled()
 })
@@ -128,11 +124,9 @@ it('triggers an increment by 5 when the "Increment by 5" button is clicked', () 
 
   const [incrementByMock] = mockMutation(counter.incrementBy, jest.fn())
 
-  const wrapper = shallow(<Counter />)
+  const { getByText } = render(<Counter />)
 
-  wrapper
-    .findWhere((el) => el.type() === 'button' && el.text() === 'Increment by 5')
-    .simulate('click')
+  fireEvent.click(getByText('Increment by 5'))
 
   expect(incrementByMock).toHaveBeenCalledWith(5)
 })

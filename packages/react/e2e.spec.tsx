@@ -74,19 +74,14 @@ describe(`@simplux/react`, () => {
       },
     })
 
-    const {
-      getTodos,
-      getTodoIds,
-      getNrOfTodos,
-      getById,
-      getTodoIdsFromKeys,
-    } = createSelectors(todosModule, {
-      getTodos: (s) => s,
-      getTodoIds: (s) => s.todoIds,
-      getNrOfTodos: (s) => Object.keys(s.todosById).length,
-      getById: (state, id: string) => state.todosById[id],
-      getTodoIdsFromKeys: (s) => Object.keys(s.todosById),
-    })
+    const { getTodos, getTodoIds, getNrOfTodos, getById, getTodoIdsFromKeys } =
+      createSelectors(todosModule, {
+        getTodos: (s) => s,
+        getTodoIds: (s) => s.todoIds,
+        getNrOfTodos: (s) => Object.keys(s.todosById).length,
+        getById: (state, id: string) => state.todosById[id],
+        getTodoIdsFromKeys: (s) => Object.keys(s.todosById),
+      })
 
     const counterModule = createSimpluxModule({
       name: 'counter',
@@ -363,7 +358,9 @@ describe(`@simplux/react`, () => {
         10,
       ])
 
-      addTodo(todo2)
+      act(() => {
+        addTodo(todo2)
+      })
 
       expect(renderedItems).toEqual([
         todoStoreWithOneTodo,
@@ -380,7 +377,9 @@ describe(`@simplux/react`, () => {
         10,
       ])
 
-      removeTodo(todo2.id)
+      act(() => {
+        removeTodo(todo2.id)
+      })
 
       expect(renderedItems).toEqual([
         todoStoreWithOneTodo,
@@ -403,7 +402,9 @@ describe(`@simplux/react`, () => {
         10,
       ])
 
-      increment()
+      act(() => {
+        increment()
+      })
 
       expect(renderedItems).toEqual([
         todoStoreWithOneTodo,
@@ -540,19 +541,7 @@ describe(`@simplux/react`, () => {
         increment()
       })
 
-      // we intentionally perform the calls below outside of an `act` to
-      // simulate a store update outside of the react lifecycle (e.g. due
-      // to asynchronous events); since the testing tools log an error when
-      // this is done, we simply supress the error by mocking out the error
-      // log function
-      const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
-
-      increment()
-      increment()
-
-      spy.mockRestore()
-
-      expect(renderedItems).toEqual([10, 20, 12, 22, 13, 23, 14, 24])
+      expect(renderedItems).toEqual([10, 20, 12, 22])
     })
   })
 

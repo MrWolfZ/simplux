@@ -1,5 +1,6 @@
 import {
   createSelectors,
+  setReduxStoreForSimplux,
   SimpluxModule,
   SimpluxSelector,
   SIMPLUX_MODULE,
@@ -8,11 +9,18 @@ import {
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { act as actHook, renderHook } from '@testing-library/react-hooks'
 import React, { useLayoutEffect, useState } from 'react'
-import { act as rendererAct, create } from 'react-test-renderer'
+import {
+  act as rendererAct,
+  create as rendererCreate,
+  ReactTestRenderer,
+} from 'react-test-renderer'
+import type { Store } from 'redux'
 import { SimpluxProvider } from './context'
 import { useSimplux } from './useSimplux'
 
 describe(useSimplux.name, () => {
+  let renderer: ReactTestRenderer
+
   let moduleState = { count: 0 }
   let subscriber: (state: typeof moduleState) => void = () => {}
   let getModuleStateMock: jest.Mock<typeof moduleState, []>
@@ -22,12 +30,23 @@ describe(useSimplux.name, () => {
 
   let moduleMock: Mutable<SimpluxModule<typeof moduleState>>
 
+  let storeMock: Store
+  let subscribeToStoreMock: jest.Mock
+
   function createSelector<TArgs extends any[], TResult>(
     fn: (state: typeof moduleState, ...args: TArgs) => TResult,
   ): SimpluxSelector<typeof moduleState, TArgs, TResult> {
     return createSelectors(moduleMock, {
       selector: fn,
     }).selector
+  }
+
+  const create: typeof rendererCreate = (...args) => {
+    rendererAct(() => {
+      renderer = rendererCreate(...args)
+    })
+
+    return renderer!
   }
 
   beforeEach(() => {
@@ -62,10 +81,35 @@ describe(useSimplux.name, () => {
 
     moduleMock.state = createSelector((s) => s)
 
+    subscribeToStoreMock = jest.fn().mockImplementation((handler) => {
+      subscriber = (s) => {
+        moduleState = s
+        handler()
+      }
+
+      subscriber(getModuleStateMock())
+      return () => {
+        subscriber = () => {}
+      }
+    })
+
+    storeMock = {
+      dispatch: undefined!,
+      getState: getModuleStateMock,
+      replaceReducer: undefined!,
+      subscribe: subscribeToStoreMock,
+      [Symbol.observable]: undefined!,
+    }
+
+    setReduxStoreForSimplux(storeMock, (s) => s)
+
     jest.clearAllMocks()
   })
 
-  afterEach(cleanup)
+  afterEach(() => {
+    cleanup()
+    renderer?.unmount()
+  })
 
   it('selects the module state on initial render', () => {
     const selector = createSelector((s) => s.count)

@@ -3,8 +3,6 @@
 
 import { createMutations, createSelectors, createSimpluxModule } from '@simplux/core'
 import { useSimplux } from '@simplux/react'
-import React from 'react'
-import { hot } from 'react-hot-loader'
 
 const counterModule = createSimpluxModule('counter', { value: 0 })
 
@@ -20,7 +18,7 @@ const counter = {
   }),
 }
 
-const CounterImpl = () => {
+export const Counter = () => {
   const value = useSimplux(counter.value)
 
   return (
@@ -30,5 +28,3 @@ const CounterImpl = () => {
     </>
   )
 }
-
-export const Counter = hot(module)(CounterImpl)

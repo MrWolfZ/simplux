@@ -6,18 +6,20 @@
 
 import { FunctionComponent } from 'react';
 import { Immutable } from '@simplux/core';
+import { ReactNode } from 'react';
 import { SimpluxModule } from '@simplux/core';
 import { SimpluxSelector } from '@simplux/core';
 
 // @public
-export const SimpluxProvider: FunctionComponent;
+export const SimpluxProvider: FunctionComponent<{
+    children: ReactNode;
+}>;
 
 // @public
 export function useSimplux<TState>(simpluxModule: SimpluxModule<TState>): Immutable<TState>;
 
 // @public
 export function useSimplux<TState, TArgs extends any[], TResult>(selector: SimpluxSelector<TState, TArgs, TResult>, ...args: TArgs): TResult;
-
 
 // (No @packageDocumentation comment for this package)
 
