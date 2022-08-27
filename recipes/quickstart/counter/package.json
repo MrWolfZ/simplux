@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.quickstart.counter",
-  "version": "0.18.0-alpha.13",
+  "version": "0.18.0",
   "description": "A quickstart for using simplux",
   "main": "src/index.ts",
   "scripts": {
@@ -24,7 +24,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.18.0-alpha.13"
+    "@simplux/core": "0.18.0"
   },
   "devDependencies": {
     "html-webpack-plugin": "^4.0.0",

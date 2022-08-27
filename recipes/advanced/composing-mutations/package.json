@@ -1,6 +1,6 @@
 {
   "name": "@simplux/recipes.advanced.composing-mutations",
-  "version": "0.18.0-alpha.13",
+  "version": "0.18.0",
   "description": "This recipe shows you how simple it is to compose/re-use your simplux mutations",
   "main": "src/index.ts",
   "scripts": {
@@ -27,7 +27,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@simplux/core": "0.18.0-alpha.13"
+    "@simplux/core": "0.18.0"
   },
   "devDependencies": {
     "html-webpack-plugin": "^4.0.0",

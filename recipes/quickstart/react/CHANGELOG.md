@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.13...v0.18.0) (2022-08-27)
+
+**Note:** Version bump only for package @simplux/recipes.quickstart.react
+
+
+
+
+
 # [0.18.0-alpha.13](https://github.com/MrWolfZ/simplux/compare/v0.18.0-alpha.12...v0.18.0-alpha.13) (2022-08-27)
 
 
