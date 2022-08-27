@@ -240,7 +240,7 @@ describe('selectors', () => {
   })
 
   describe(_isSimpluxSelector, () => {
-    it('returns true for a simplux effect', () => {
+    it('returns true for a simplux selector', () => {
       const { plusOne } = createSelectors(moduleMock, {
         plusOne: (c) => c + 1,
       })

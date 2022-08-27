@@ -2,7 +2,7 @@ import type { SimpluxModule, SimpluxModuleMarker } from './module.js'
 import type { Immutable } from './types.js'
 
 /**
- * Helper symbol used for identifying simplux select objects.
+ * Helper symbol used for identifying simplux selector objects.
  *
  * @public
  */
@@ -56,7 +56,7 @@ export interface SimpluxSelectorMarker<TState, TArgs extends any[], TReturn> {
 export interface SimpluxSelector<TState, TArgs extends any[], TReturn>
   extends SimpluxSelectorMarker<TState, TArgs, TReturn> {
   // this signature does not have a TSDoc comment on purpose to allow
-  // consumers to define their own docs for their mutations (which would
+  // consumers to define their own docs for their selectors (which would
   // be overwritten if this signature had a TSDoc comment)
   (...args: TArgs): TReturn
 
