@@ -18,6 +18,7 @@ jobs:
         with:
           node-version: 14.x
 
+      - run: npm install -g npm@^8
       - run: npm ci
       - run: npm run build:composite
       - run: npm run build:ci
@@ -31,6 +32,7 @@ jobs:
         with:
           node-version: 14.x
 
+      - run: npm install -g npm@^8
       - run: npm ci
       - run: npm run lint:ci
 
@@ -43,6 +45,7 @@ jobs:
         with:
           node-version: 14.x
 
+      - run: npm install -g npm@^8
       - run: npm ci
       - run: npm run test:ci
       - run: npm run report-coverage
