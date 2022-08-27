@@ -101,5 +101,8 @@
     "uglifyjs": "^2.4.11",
     "yargs": "^16.2.0",
     "zone.js": "~0.11.4"
+  },
+  "optionalDependencies": {
+    "esbuild-android-arm64": "^0.15.5"
   }
 }
